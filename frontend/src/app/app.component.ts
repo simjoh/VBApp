@@ -1,5 +1,6 @@
 import {Component, Injector} from '@angular/core';
 import {InititatedService} from "./core/inititated.service";
+import {ServiceLocator} from "./core/locator.service";
 
 
 @Component({
@@ -14,5 +15,6 @@ export class AppComponent {
 
 
   constructor(injector: Injector, private initiatedService: InititatedService) {
+    ServiceLocator.injector = injector;
   }
 }

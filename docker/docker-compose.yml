@@ -12,7 +12,7 @@ services:
       - ../api:/var/www/html/api/
       - working_dir:/var/www/html/
     ports:
-      - 8001:80
+      - 8090:80
   database:
     build:
       context: ./database
@@ -43,7 +43,7 @@ services:
   composer:
     image: composer
     volumes:
-      - ../api:/var/www/service
+      - ../api:/var/www/api
     command: install
 volumes:
   working_dir: {}
