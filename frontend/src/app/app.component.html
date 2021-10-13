@@ -1,5 +1,11 @@
+<ng-container *ngIf="init$ | async as init">
 
 
-Brevet frontend up and running
+<main id="main" role="main" class="flex-shrink-0 mb-4">
+  <div class="container">
+    Brevet frontend up and running
+    <router-outlet></router-outlet>
+  </div>
 
-<router-outlet></router-outlet>
+</main>
+</ng-container>

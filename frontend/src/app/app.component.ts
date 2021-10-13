@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import {Component, Injector} from '@angular/core';
+import {InititatedService} from "./core/inititated.service";
+
 
 @Component({
   selector: 'brevet-root',
@@ -7,4 +9,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'brevet-frontend';
+
+  init$ = this.initiatedService.initierad$;
+
+
+  constructor(injector: Injector, private initiatedService: InititatedService) {
+  }
 }
