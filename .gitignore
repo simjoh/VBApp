@@ -1,1 +1,9 @@
 frontend/dist/
+
+vendor/
+.idea/
+composer.lock
+
+!tmp/
+tmp/*
+!tmp/empty
