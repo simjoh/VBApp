@@ -1,23 +1,24 @@
 import {Injectable} from '@angular/core';
 import {Observable, ReplaySubject} from "rxjs";
 import {delay, filter} from "rxjs/operators";
-import {Event, EventType} from "./handelser";
+import {AEvent, EventType} from "./aevents";
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class EventsService {
 
-  private eventSubject = new ReplaySubject<Event>(1);
+  private eventSubject = new ReplaySubject<AEvent>(1);
 
   constructor() {
   }
 
   nyHändelse(typ: EventType, data: unknown) {
-    this.eventSubject.next(new Event(typ, data));
+    this.eventSubject.next(new AEvent(typ, data));
   }
 
-  händelser(typer?: (EventType | EventType[])[], delayMillis: number = 0): Observable<Event> {
+  händelser(typer?: (EventType | EventType[])[], delayMillis: number = 0): Observable<AEvent> {
     return this.eventSubject.asObservable()
       .pipe(
         filter(händelse => !typer || typer.filter((typ: EventType | EventType[]) => {

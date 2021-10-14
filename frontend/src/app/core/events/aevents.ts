@@ -11,7 +11,7 @@ export class EventInformation {
   message: unknown;
 }
 
-export class Event {
+export class AEvent {
   constructor(public type: EventType, public data: unknown) {
 
   }
