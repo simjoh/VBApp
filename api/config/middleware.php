@@ -15,4 +15,8 @@ return function (App $app) {
 
     // Catch exceptions and errors
     $app->add(ErrorMiddleware::class);
+
+    $errorMiddleware = $app->addErrorMiddleware(true, true, true);
+    $errorHandler = $errorMiddleware->getDefaultErrorHandler();
+    $errorHandler->forceContentType('application/json');
 };

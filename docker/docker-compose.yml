@@ -13,6 +13,10 @@ services:
       - working_dir:/var/www/html/
     ports:
       - 8090:80
+    environment:
+      PMA_HOST: database
+    links:
+      - database
   database:
     build:
       context: ./database
@@ -25,6 +29,8 @@ services:
     volumes:
       - ./database/schema_create.sql:/docker-entrypoint-initdb.d/1.sql
       - ./database/schema_demo_data.sql:/docker-entrypoint-initdb.d/2.sql
+    ports:
+      - '3306:3306'
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:

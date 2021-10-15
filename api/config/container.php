@@ -42,9 +42,10 @@ return [
         $password = $settings['password'];
         $charset = $settings['charset'];
         $flags = $settings['flags'];
-        $dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";
+        $port = $settings['port'];
+        $dsn = "mysql:host=$host;dbname=$dbname;port=$port;charset=$charset";
 
-        return new PDO($dsn, $username, $password, $flags);
+        return new PDO($dsn, $username, $password);
     },
 
 
