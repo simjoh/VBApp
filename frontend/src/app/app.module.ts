@@ -15,6 +15,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { KontrollerComponent } from './kontroller/kontroller.component';
 import { KontrollFormComponent } from './kontroll-form/kontroll-form.component';
 import { KontrollerCombinerComponent } from './kontroller-combiner/kontroller-combiner.component';
+import { MapComponent } from './map/map.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,6 +24,7 @@ import { KontrollerCombinerComponent } from './kontroller-combiner/kontroller-co
     KontrollerComponent,
     KontrollFormComponent,
     KontrollerCombinerComponent,
+    MapComponent,
   ],
   imports: [
     BrowserModule,
