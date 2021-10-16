@@ -26,14 +26,14 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let country of countries$ | async">
-      <th scope="row">{{ country.id }}</th>
+    <tr *ngFor="let competitor of competitors$ | async">
+      <th scope="row">{{ competitor.id }}</th>
       <td>
-        <img [src]="'https://upload.wikimedia.org/wikipedia/commons/' + country.flag" class="mr-2" style="width: 20px">
-        <ngb-highlight [result]="country.name" [term]="service.searchTerm"></ngb-highlight>
+        <img [src]="'https://upload.wikimedia.org/wikipedia/commons/' + competitor.flag" class="mr-2" style="width: 20px">
+        <ngb-highlight [result]="competitor.name" [term]="service.searchTerm"></ngb-highlight>
       </td>
-      <td><ngb-highlight [result]="country.area | number" [term]="service.searchTerm"></ngb-highlight></td>
-      <td><ngb-highlight [result]="country.population | number" [term]="service.searchTerm"></ngb-highlight></td>
+      <td><ngb-highlight [result]="competitor.area | number" [term]="service.searchTerm"></ngb-highlight></td>
+      <td><ngb-highlight [result]="competitor.population | number" [term]="service.searchTerm"></ngb-highlight></td>
     </tr>
     </tbody>
   </table>
@@ -44,9 +44,9 @@
     </ngb-pagination>
 
     <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="service.pageSize">
-      <option [ngValue]="2">2 items per page</option> -->
-      <option [ngValue]="4">4 items per page</option>
-      <option [ngValue]="6">6 items per page</option>
+      <option [ngValue]="5">5 items per page</option> -->
+      <option [ngValue]="10">10 items per page</option>
+      <option [ngValue]="25">25 items per page</option>
     </select>
   </div>
 
