@@ -13,12 +13,14 @@ import { NgbdSortableHeader } from './competitors-list/sortable.directive';
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { KontrollerComponent } from './kontroller/kontroller.component';
+import { KontrollFormComponent } from './kontroll-form/kontroll-form.component';
 @NgModule({
   declarations: [
     AppComponent,
     NgbdTableComplete,
     NgbdSortableHeader,
     KontrollerComponent,
+    KontrollFormComponent,
   ],
   imports: [
     BrowserModule,
