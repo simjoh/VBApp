@@ -11,14 +11,14 @@ import {PendingRequestInterceptor} from "./core/interceptors/pending-request.int
 import { NgbdTableComplete } from './competitors-list/competitors-table-complete';
 import { NgbdSortableHeader } from './competitors-list/sortable.directive';
 import { CommonModule } from "@angular/common";
-import { FormsModule } from '@angular/forms';
-//import { KontrollerComponent } from './kontroller/kontroller.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { KontrollerComponent } from './kontroller/kontroller.component';
 @NgModule({
   declarations: [
     AppComponent,
     NgbdTableComplete,
     NgbdSortableHeader,
-//    KontrollerComponent,
+    KontrollerComponent,
   ],
   imports: [
     BrowserModule,
@@ -27,7 +27,8 @@ import { FormsModule } from '@angular/forms';
     CoreModule,
     AppRoutingModule,
     CommonModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
 
   ],
   providers: [ {
