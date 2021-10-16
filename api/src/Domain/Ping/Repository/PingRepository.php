@@ -9,11 +9,6 @@ class PingRepository extends BaseRepository
 {
 
     /**
-     * @var PDO The database connection
-     */
-    private $connection;
-
-    /**
      * Constructor.
      *
      * @param PDO $connection The database connection

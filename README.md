@@ -16,7 +16,7 @@ App för att administrera randonnéelopp
  
 ###Starta lokalt för utveckling
 
-####Starta allt i docker
+###Starta allt i docker
 * [Docker](docker/README.md)
        
 #### Endast gui

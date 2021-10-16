@@ -2,7 +2,25 @@
 
 namespace App\common\Repository;
 
-abstract class BaseRepository
+use App\common\Database;
+use PDO;
+
+abstract class BaseRepository extends Database
 {
-    abstract public function sqls();
+
+    /**
+     * @var PDO The database connection
+     */
+    public PDO $connection;
+
+     function __construct(PDO $connection) {
+        $this->connection = $connection;
+    }
+
+     abstract public function sqls();
+
+     public function gets() :PDO{
+         return $this::getConnection();
+    }
+
 }
