@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CompetitorsListComponent } from './competitors-list/competitors-list.component';
+import { NgbdTableComplete } from './competitors-list/table-complete';
 
 const routes: Routes = [
-  { path: 'competitors-list-component', component: CompetitorsListComponent },
+  { path: 'competitors-list-component', component: NgbdTableComplete },
 ];
 
 @NgModule({
