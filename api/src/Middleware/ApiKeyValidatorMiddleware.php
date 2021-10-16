@@ -15,6 +15,8 @@ class ApiKeyValidatorMiddleware
 
     public function validate(Request $request, RequestHandler $handler): Response
     {
+
+        $path = $request->getUri()->getPath();
         // Ska inte ligga här
         $api_key = "notsecret_developer_key";
 

@@ -51,5 +51,7 @@ $settings['db'] = [
     ],
 ];
 
+$settings['secretkey'] = "12345678901234567890123456789012";
+
 
 return $settings;
