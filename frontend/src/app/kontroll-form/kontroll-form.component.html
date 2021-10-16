@@ -1,19 +1,18 @@
-<p>kontroll-for works!</p>
 <div>
-    <h1>Lägg till kontroll</h1>
-    <form  [formGroup]="kontrollForm" (ngSubmit)="onSubmit()">
-        <div class="form-group " >
-            <label for="inputKontrollnamn">Namn</label>
-            <input class="form-control ml-2" type="text" id="inputKontrollnamn" formControlName="kontrollNamn" placeholder="Kontrollnamn"/>
-        </div>
-        <div class="form-group ">
-            <label for="inputLatitud">Latitud</label>
-            <input class="form-control ml-2" type="text" id="inputLatitud" formControlName="kontrollLatitud" placeholder="Latitud i swref 99"/>
-        </div>
-        <div class="form-group ">
-            <label for="inputLongitud">Longitud</label>
-            <input class="form-control ml-2" type="text" type="text" id="inputLongitud" formControlName="kontrollLongitud" placeholder="Longitud i swref 99"/>
-        </div>
-            <button type="submit" class="btn btn-primary">Lägg till kontroll</button>
-      </form>
+  <h1>Lägg till kontroll</h1>
+  <form  [formGroup]="kontrollForm" (ngSubmit)="onSubmit()">
+    <div class="form-group " >
+      <label for="inputKontrollnamn">Namn</label>
+      <input class="form-control ml-2" type="text" id="inputKontrollnamn" formControlName="kontrollNamn" placeholder="Kontrollnamn"/>
+    </div>
+    <div class="form-group ">
+      <label for="inputLatitud">Latitud</label>
+      <input class="form-control ml-2" type="text" id="inputLatitud" formControlName="kontrollLatitud" placeholder="Latitud i swref 99"/>
+    </div>
+    <div class="form-group ">
+      <label for="inputLongitud">Longitud</label>
+      <input class="form-control ml-2" type="text" type="text" id="inputLongitud" formControlName="kontrollLongitud" placeholder="Longitud i swref 99"/>
+    </div>
+    <button type="submit" class="btn btn-primary">Lägg till kontroll</button>
+  </form>
 </div>

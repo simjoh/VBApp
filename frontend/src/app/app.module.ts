@@ -14,6 +14,7 @@ import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { KontrollerComponent } from './kontroller/kontroller.component';
 import { KontrollFormComponent } from './kontroll-form/kontroll-form.component';
+import { KontrollerCombinerComponent } from './kontroller-combiner/kontroller-combiner.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -21,6 +22,7 @@ import { KontrollFormComponent } from './kontroll-form/kontroll-form.component';
     NgbdSortableHeader,
     KontrollerComponent,
     KontrollFormComponent,
+    KontrollerCombinerComponent,
   ],
   imports: [
     BrowserModule,
