@@ -15,7 +15,7 @@ const routes: Routes = [{
     redirectTo: '',
     pathMatch: 'full'
   },
-  { path: 'brevet-map', component: MapComponent },
+  // { path: 'brevet-maps', component: MapComponent },
 ];
 
 @NgModule({
