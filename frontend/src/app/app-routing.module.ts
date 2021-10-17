@@ -4,7 +4,6 @@ import {UnknownRouteComponent} from "./unknown-route/unknown-route.component";
 import {AuthenticatedGuard} from "./core/auth/authenticated.guard";
 import {NgbdTableComplete} from "./competitors-list/competitors-table-complete";
 import {KontrollerCombinerComponent} from "./kontroller-combiner/kontroller-combiner.component";
-import {MapComponent} from "./map/map.component";
 
 export const ROUTES: Routes = [
   {
@@ -38,7 +37,6 @@ export const ROUTES: Routes = [
   // { path: 'kontroller', component: KontrollerComponent },
   // { path: 'kontroll-form', component: KontrollFormComponent },
   { path: 'brevet-kontroller-combiner', component: KontrollerCombinerComponent },
-  { path: 'brevet-map', component: MapComponent },
 ];
 @NgModule({
   imports: [RouterModule.forRoot(ROUTES)],

@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import {AdminComponent} from "../admin/admin.component";
 import {AuthenticatedGuard} from "../core/auth/authenticated.guard";
 import {CompetitorComponent} from "./competitor.component";
+import {MapComponent} from "./map/map.component";
 
 const routes: Routes = [{
   path: 'competitor',
@@ -13,7 +14,8 @@ const routes: Routes = [{
     path: '',
     redirectTo: '',
     pathMatch: 'full'
-  }
+  },
+  { path: 'brevet-map', component: MapComponent },
 ];
 
 @NgModule({

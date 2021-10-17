@@ -4,16 +4,19 @@ import { CommonModule } from '@angular/common';
 import { CompetitorRoutingModule } from './competitor-routing.module';
 import { CompetitorComponent } from './competitor.component';
 import {CoreModule} from "../core/core.module";
+import {MapComponent} from "./map/map.component";
 
 
 @NgModule({
   declarations: [
-    CompetitorComponent
+    CompetitorComponent,
+    MapComponent,
   ],
   imports: [
     CommonModule,
     CoreModule,
     CompetitorRoutingModule
-  ]
+  ],
+  exports: [MapComponent]
 })
 export class CompetitorModule { }
