@@ -12,14 +12,14 @@ import {CompetitorModule} from "./competitor/competitor.module";
 import {AdminModule} from "./admin/admin.module";
 import { UnknownRouteComponent } from './unknown-route/unknown-route.component';
 import {ApiKeyHeaderInterceptor} from "./core/interceptors/api-key-header.interceptor";
-import { NgbdTableComplete } from './competitors-list/competitors-table-complete';
-import { NgbdSortableHeader } from './competitors-list/sortable.directive';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { KontrollerComponent } from './kontroller/kontroller.component';
-import { KontrollFormComponent } from './kontroll-form/kontroll-form.component';
-import { KontrollerCombinerComponent } from './kontroller-combiner/kontroller-combiner.component';
 import {SharedModule} from "./shared/shared.module";
 import {LoginModule} from "./login/login.module";
+import {KontrollFormComponent} from "./admin/kontroll-form/kontroll-form.component";
+import {KontrollerComponent} from "./admin/kontroller/kontroller.component";
+import {NgbdTableComplete} from "./admin/competitors-list/competitors-table-complete";
+import {NgbdSortableHeader} from "./admin/competitors-list/sortable.directive";
+import {KontrollerCombinerComponent} from "./admin/kontroller-combiner/kontroller-combiner.component";
 @NgModule({
   declarations: [
     AppComponent,
