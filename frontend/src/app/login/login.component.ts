@@ -1,8 +1,6 @@
 import {Component, OnInit, ChangeDetectionStrategy, ViewChild, AfterViewInit} from '@angular/core';
 import {AuthService} from "../core/auth/auth.service";
 import {LoginComponentService} from "./login-component.service";
-import {Observable} from "rxjs";
-import {LoginModel} from "./login-model";
 import {NgForm} from "@angular/forms";
 
 @Component({

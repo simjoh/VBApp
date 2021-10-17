@@ -22,11 +22,12 @@ import { KontrollerComponent } from './kontroller/kontroller.component';
 import { KontrollFormComponent } from './kontroll-form/kontroll-form.component';
 import { KontrollerCombinerComponent } from './kontroller-combiner/kontroller-combiner.component';
 import { MapComponent } from './map/map.component';
+import {SharedModule} from "./shared/shared.module";
+import {LoginModule} from "./login/login.module";
 @NgModule({
   declarations: [
     AppComponent,
     UnknownRouteComponent,
-    LoginComponent,
     AppComponent,
     NgbdTableComplete,
     NgbdSortableHeader,
@@ -37,16 +38,17 @@ import { MapComponent } from './map/map.component';
   ],
   imports: [
     BrowserModule,
+    CoreModule,
+    SharedModule,
+    LoginModule,
     HttpClientModule,
     CompetitorModule,
     FormsModule,
     AdminModule,
     NgbModule,
-    CoreModule,
-    AppRoutingModule,
-    CommonModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AppRoutingModule,
 
   ],
   providers: [ {
