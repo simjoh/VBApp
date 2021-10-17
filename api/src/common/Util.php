@@ -2,13 +2,18 @@
 
 namespace App\common;
 
- use Exception;
+
+ use App\common\Exceptions\BrevetException;
 
  final class Util
 {
 
-    public final function nullOrEmpty($str): bool{
-        return strlen(($str) == '' ? True : throw new Exception("Id must have a value"));
+    public static function nullOrEmpty($str){
+        $str = null;
+        if(empty($str) || !isset($str)){
+            throw new BrevetException("id is reqirered", 2);
+        }
+
  }
 
 

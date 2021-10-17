@@ -2,11 +2,12 @@
 namespace App\Action\Ping;
 
 
+use App\common\Action\BaseAction;
 use App\Domain\Ping\Service\PingService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class PingAction
+class PingAction extends BaseAction
 {
     private $pingservice;
 

@@ -2,14 +2,14 @@
 
 namespace App\Domain\Model\User;
 
-use AggregateRoot;
 use App\common\Domain\Id;
 
-class User extends Id implements AggregateRoot
+class User extends Id
 {
 
     private string $givenname;
     private string $familyname;
+    private string $username;
     private string $token;
 
     /**
@@ -17,12 +17,21 @@ class User extends Id implements AggregateRoot
      * @param $familyname
      * @param $token
      */
-    public function __construct($id, $givenname, $familyname, $token)
+    public function __construct($id, $username ,$givenname, $familyname, $token)
     {
         parent::__construct($id);
         $this->givenname = $givenname;
+        $this->username = $username;
         $this->familyname = $familyname;
         $this->token = $token;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        return $this->username;
     }
 
     /**

@@ -6,13 +6,19 @@ import {
   HttpInterceptor
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {finalize} from "rxjs/operators";
+import {PendingRequestsService} from "../pending-requests.service";
 
 @Injectable()
 export class PendingRequestInterceptor implements HttpInterceptor {
 
-  constructor() {}
+  constructor(private pendingRequestsService: PendingRequestsService) {
+  }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    return next.handle(request);
+    this.pendingRequestsService.increase();
+    return next.handle(request).pipe(finalize(() => {
+      this.pendingRequestsService.decrease();
+    }));
   }
 }

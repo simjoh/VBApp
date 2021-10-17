@@ -1,8 +1,9 @@
 <ng-container *ngIf="init$ | async as init">
 
-
-<main id="main" role="main" class="flex-shrink-0 mb-4">
-  <div class="container">
+  <ng-container *ngIf="($authenticated | async) === true">
+    <main id="main" role="main" class="flex-shrink-0 mb-4">
+<!--      Lägg in topbanner med info om vem som är inloggad språkval samt logga ut länk-->
+      <div class="container">
     <nav class="nav">
         <li class="nav-item"><a  class="nav-link" routerLink="/competitors-list-component" routerLinkActive="active">Deltagare</a></li>
         <!-- <li><a routerLink="/kontroller" routerLinkActive="active">Kontroller</a></li> -->
@@ -10,8 +11,15 @@
         <li class="nav-item" ><a class="nav-link" routerLink="/brevet-kontroller-combiner" routerLinkActive="active">Kontroller</a></li>
         <li class="nav-item" ><a class="nav-link" routerLink="/brevet-map" routerLinkActive="active">Karta</a></li>
     </nav>
-    <router-outlet></router-outlet>
-  </div>
+        <router-outlet></router-outlet>
+      </div>
 
-</main>
+    </main>
+  </ng-container>
+
+  <ng-container *ngIf="($authenticated | async) === false">
+   <brevet-login></brevet-login>
+  </ng-container>
+
 </ng-container>
+<!--  Lägg in footer-->

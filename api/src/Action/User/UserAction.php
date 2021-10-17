@@ -2,10 +2,11 @@
 
 namespace App\Action\User;
 
+use App\common\Action\BaseAction;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class UserAction
+class UserAction extends BaseAction
 {
 
     public function allUsers(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface

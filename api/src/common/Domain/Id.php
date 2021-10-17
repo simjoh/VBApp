@@ -2,6 +2,7 @@
 
 namespace App\common\Domain;
 
+use App\common\Exceptions\BrevetException;
 use App\common\Util;
 
 abstract class Id
@@ -13,7 +14,9 @@ abstract class Id
      */
     public  function __construct($id)
     {
-        Util::nullOrEmpty($id);
+//      if(Util::nullOrEmpty($id)){
+//          throw new BrevetException("Id is set",1);
+//      }
         $this->id = $id;
     }
 }

@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  api_key: "prod",
+  mock_login: false
 };

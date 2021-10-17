@@ -11,7 +11,7 @@ return function (App $app) {
     $app->add(ApiKeyValidatorMiddleware::class . ':validate');
 
     // add more endpoints here
-    $app->get('/login', \App\Action\Login\LoginAction::class)->setName('login');
+    $app->post('/login', \App\Action\Login\LoginAction::class)->setName('login');
 
     $app->get('/ping', \App\Action\Ping\PingAction::class)->setName('ping');
 

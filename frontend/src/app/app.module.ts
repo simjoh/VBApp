@@ -8,6 +8,12 @@ import {CoreModule} from "./core/core.module";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {AuthInterceptor} from "./core/interceptors/auth.interceptor";
 import {PendingRequestInterceptor} from "./core/interceptors/pending-request.interceptor";
+import {CompetitorModule} from "./competitor/competitor.module";
+import {AdminModule} from "./admin/admin.module";
+import { UnknownRouteComponent } from './unknown-route/unknown-route.component';
+import { LoginComponent } from './login/login.component';
+import {ApiKeyHeaderInterceptor} from "./core/interceptors/api-key-header.interceptor";
+
 import { NgbdTableComplete } from './competitors-list/competitors-table-complete';
 import { NgbdSortableHeader } from './competitors-list/sortable.directive';
 import { CommonModule } from "@angular/common";
@@ -19,6 +25,9 @@ import { MapComponent } from './map/map.component';
 @NgModule({
   declarations: [
     AppComponent,
+    UnknownRouteComponent,
+    LoginComponent,
+    AppComponent,
     NgbdTableComplete,
     NgbdSortableHeader,
     KontrollerComponent,
@@ -29,6 +38,9 @@ import { MapComponent } from './map/map.component';
   imports: [
     BrowserModule,
     HttpClientModule,
+    CompetitorModule,
+    FormsModule,
+    AdminModule,
     NgbModule,
     CoreModule,
     AppRoutingModule,
@@ -44,7 +56,12 @@ import { MapComponent } from './map/map.component';
     provide: HTTP_INTERCEPTORS,
     useClass: PendingRequestInterceptor,
     multi: true
-  }],
+  },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ApiKeyHeaderInterceptor,
+      multi: true
+    }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
