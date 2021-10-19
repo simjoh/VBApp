@@ -19,6 +19,11 @@ export const ROUTES: Routes = [
         loadChildren: () => import('./competitor/competitor.module').then(m => m.CompetitorModule),
       },
       {
+        path: 'volunteer',
+        canActivate: [AuthenticatedGuard],
+        loadChildren: () => import('./volunteer/volunteer.module').then(m => m.VolunteerModule),
+      },
+      {
         path: '',
         redirectTo: '',
         pathMatch: 'full'

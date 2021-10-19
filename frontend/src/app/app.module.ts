@@ -20,6 +20,7 @@ import {KontrollerComponent} from "./admin/kontroller/kontroller.component";
 import {NgbdTableComplete} from "./admin/competitors-list/competitors-table-complete";
 import {NgbdSortableHeader} from "./admin/competitors-list/sortable.directive";
 import {KontrollerCombinerComponent} from "./admin/kontroller-combiner/kontroller-combiner.component";
+import {VolunteerModule} from "./volunteer/volunteer.module";
 @NgModule({
   declarations: [
     AppComponent,
@@ -41,6 +42,7 @@ import {KontrollerCombinerComponent} from "./admin/kontroller-combiner/kontrolle
     FormsModule,
     AdminModule,
     NgbModule,
+    VolunteerModule,
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
