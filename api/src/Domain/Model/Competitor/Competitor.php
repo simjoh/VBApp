@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Domain\Model\User;
+namespace App\Domain\Model\Competitor;
 
-use App\common\Domain\Id;
-
-class User
+class Competitor
 {
+
     private string $id;
     private string $givenname;
     private string $familyname;
     private string $username;
     private string $token;
+
 
     /**
      * @param $givenname
@@ -26,12 +26,13 @@ class User
         $this->token = $token;
     }
 
+
     /**
      * @return string
      */
-    public function getUsername(): string
+    public function getId(): string
     {
-        return $this->username;
+        return $this->id;
     }
 
     /**
@@ -45,17 +46,17 @@ class User
     /**
      * @return string
      */
-    public function getId(): string
+    public function getFamilyname(): string
     {
-        return $this->id;
+        return $this->familyname;
     }
 
     /**
      * @return string
      */
-    public function getFamilyname(): string
+    public function getUsername(): string
     {
-        return $this->familyname;
+        return $this->username;
     }
 
     /**
@@ -66,9 +67,12 @@ class User
         return $this->token;
     }
 
+    /**
+     * @param string $token
+     */
     public function setToken(string $token): void
     {
-         $this->token = $token;
+        $this->token = $token;
     }
 
 

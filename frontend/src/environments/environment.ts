@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   api_key: "notsecret_developer_key",
-  mock_login: true
+  mock_login: false
 };
 
 /*

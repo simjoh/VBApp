@@ -22,6 +22,11 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/php-di/phpdoc-reader" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/php-di/php-di" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/php-di/invoker" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/ramsey/uuid" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/ramsey/collection" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-php81" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/brick/math" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-ctype" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

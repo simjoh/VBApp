@@ -1,12 +1,13 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {map, mergeMap, take} from "rxjs/operators";
+import {map} from "rxjs/operators";
 
 import {BehaviorSubject, Observable} from "rxjs";
 import {AuthenticatedService} from "./authenticated.service";
 import {Router} from "@angular/router";
 import {LoginModel} from "../../login/login-model";
 import {environment} from "../../../environments/environment";
+import {Roles} from "./roles";
 
 @Injectable({
   providedIn: 'root'
@@ -34,26 +35,28 @@ export class AuthService {
               return response;
             })).toPromise().then((data) => {
           // where to go
-           const role = "ADMIN";
-          if (role !== role) {
-            this.router.navigate(['admin']);
-          } else {
-            this.router.navigate(['competitor']);
-          }
+            const role = "ADMIN";
+            this.redirect(role);
         });
       })
     ).toPromise();
+  }
+
+  private  redirect(role: string): void{
+    if (role === Roles.ADMIN || Roles.SUPERADMIN || Roles.USER) {
+      this.router.navigate(['admin']);
+    } else if (role === Roles.COMPETITOR){
+      this.router.navigate(['competitor']);
+    } else if (role === Roles.VOLONTEER) {
+      this.router.navigate(['volunteer']);
+    }
   }
 
   private mockLogin(){
     localStorage.setItem('loggedInUser', 'fake_token');
     this.authenticatedService.changeStatus(true);
     const role = "ADMIN";
-    if (role === role) {
-      this.router.navigate(['admin']);
-    } else {
-      this.router.navigate(['competitor']);
-    }
+      this.redirect(role)
   }
 
   private createPayload(loginmodel: LoginModel): LoginPayload{
@@ -64,7 +67,7 @@ export class AuthService {
   }
 
   private isMockedLoggin(): boolean{
-    return environment.mock_login
+    return environment.mock_login;
   }
 
   public logoutUser() {

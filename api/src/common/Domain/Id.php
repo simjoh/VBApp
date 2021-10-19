@@ -7,7 +7,7 @@ use App\common\Util;
 
 abstract class Id
 {
-   private $id;
+   public $id;
 
     /**
      * @param $id

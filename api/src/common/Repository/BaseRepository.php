@@ -17,7 +17,7 @@ abstract class BaseRepository extends Database
         $this->connection = $connection;
     }
 
-     abstract public function sqls();
+     abstract public function sqls($type);
 
      public function gets() :PDO{
          return $this::getConnection();

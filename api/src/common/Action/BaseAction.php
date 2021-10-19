@@ -7,8 +7,7 @@ use ReflectionClass;
 
 class BaseAction
 {
-    // behöver komma åt privata klassmedlemmar för att göra om till Json
-     function json_encode_private($object) {
+    function json_encode_private($object) {
         $public = [];
         $reflection = new ReflectionClass($object);
         foreach ($reflection->getProperties() as $property) {
