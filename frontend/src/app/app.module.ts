@@ -21,6 +21,7 @@ import {NgbdTableComplete} from "./admin/competitors-list/competitors-table-comp
 import {NgbdSortableHeader} from "./admin/competitors-list/sortable.directive";
 import {KontrollerCombinerComponent} from "./admin/kontroller-combiner/kontroller-combiner.component";
 import {VolunteerModule} from "./volunteer/volunteer.module";
+import {NotauthorizedInterceptor} from "./core/interceptors/notauthorized.interceptor";
 @NgModule({
   declarations: [
     AppComponent,
@@ -48,10 +49,12 @@ import {VolunteerModule} from "./volunteer/volunteer.module";
     AppRoutingModule,
 
   ],
-  providers: [ {
+  providers: [
+    {
     provide: HTTP_INTERCEPTORS,
     useClass: AuthInterceptor,
-    multi: true},	{
+    multi: true},
+    {
     provide: HTTP_INTERCEPTORS,
     useClass: PendingRequestInterceptor,
     multi: true
@@ -59,6 +62,11 @@ import {VolunteerModule} from "./volunteer/volunteer.module";
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ApiKeyHeaderInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: NotauthorizedInterceptor,
       multi: true
     }],
   bootstrap: [AppComponent]
