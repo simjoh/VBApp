@@ -34,7 +34,7 @@ return function (App $app) {
 //            });
 //        });
 //
-//        $app->group('cyklist', function(App $app) {
+//        $app->group('competitor', function(App $app) {
 //            $app->get('/billing', function ($request, $response, $args) {
 //                // Route for /billing
 //            });

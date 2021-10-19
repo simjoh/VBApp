@@ -2,19 +2,20 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {map} from "rxjs/operators";
 
-import {BehaviorSubject, Observable} from "rxjs";
+import {BehaviorSubject, Observable, ReplaySubject, Subject} from "rxjs";
 import {AuthenticatedService} from "./authenticated.service";
 import {Router} from "@angular/router";
 import {LoginModel} from "../../login/login-model";
 import {environment} from "../../../environments/environment";
 import {Roles} from "./roles";
+import {ActiveUser} from "./active-user";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private authSubjet = new BehaviorSubject<boolean>(false)
+  private authSubjet = new ReplaySubject<ActiveUser>();
   $auth$ = this.authSubjet.asObservable();
 
   constructor(private httpClient: HttpClient, private authenticatedService: AuthenticatedService,private router: Router) { }
@@ -36,10 +37,18 @@ export class AuthService {
             })).toPromise().then((data) => {
           // where to go
             const role = "ADMIN";
+            this.setActiveUser()
             this.redirect(role);
         });
       })
     ).toPromise();
+  }
+
+  private setActiveUser(): void {
+    const activeUser = {
+      name: 'Test user'
+    } as ActiveUser
+    this.authSubjet.next(activeUser)
   }
 
   private  redirect(role: string): void{
@@ -56,7 +65,7 @@ export class AuthService {
     localStorage.setItem('loggedInUser', 'fake_token');
     this.authenticatedService.changeStatus(true);
     const role = "ADMIN";
-      this.redirect(role)
+    this.redirect(role)
   }
 
   private createPayload(loginmodel: LoginModel): LoginPayload{
@@ -72,6 +81,7 @@ export class AuthService {
 
   public logoutUser() {
     localStorage.removeItem('loggedInUser');
+    this.authSubjet.next()
     this.authenticatedService.authenticatedSubject.next(false);
   }
 }

@@ -2,10 +2,23 @@
   <a class="navbar-brand" href="#">
     <img src="/assets/brand_brevet.png" width="200" height="50" class="d-inline-block align-top" alt="">
   </a>
-
   <ul class="nav navbar-nav navbar-right">
-    <li><a href="" (click)="logout()">Logout</a></li>
+    <li>
+      <div *ngIf="($activeUser | async) as user">
+        Inloggad som: {{user.namn}}
+      </div>
+      <div>
+        <a href="" (click)="logout()">Logout</a>
+      </div>
+    </li>
+    <li>
+      <img [src]="'https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg' " class="mr-2" style="width: 20px" alt="Germany">
+      <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg' " class="mr-2" style="width: 20px" alt="France">
+      <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/f/fe/Flag_of_Sweden_%28Pantone%29.png'" class="mr-2" style="width: 20px" alt="Sweden">
+      <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/a/ae/Flag_of_the_United_Kingdom.svg'" class="mr-2" style="width: 20px" alt="United kingdom">
+    </li>
   </ul>
+
 
 </nav>
 <nav class="nav">
@@ -13,7 +26,10 @@
   <!-- <li><a routerLink="/kontroller" routerLinkActive="active">Kontroller</a></li> -->
   <!-- <li><a routerLink="/kontroll-form" routerLinkActive="active">Kontroll Formulär</a></li> -->
   <li class="nav-item" ><a class="nav-link" routerLink="/brevet-kontroller-combiner" routerLinkActive="active">Kontroller</a></li>
-  <li class="nav-item" ><a class="nav-link" routerLink="/competitor" routerLinkActive="active">Karta</a></li>
+  <li class="nav-item" ><a class="nav-link" routerLink="/brevet-dashboard" routerLinkActive="active">Dashboard</a></li>
+  <li class="nav-item" ><a class="nav-link" routerLink="/brevet-user-admin" routerLinkActive="active">Administrera användare</a></li>
+  <li class="nav-item" ><a class="nav-link" routerLink="/brevet-maps" routerLinkActive="active">Karta</a></li>
+  <li class="nav-item" ><a class="nav-link" routerLink="/brevet-list" routerLinkActive="active">Lista</a></li>
 </nav>
 
 

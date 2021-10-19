@@ -4,18 +4,21 @@ import {AdminComponent} from "../admin/admin.component";
 import {AuthenticatedGuard} from "../core/auth/authenticated.guard";
 import {CompetitorComponent} from "./competitor.component";
 import {MapComponent} from "./map/map.component";
+import {ListComponent} from "./list/list.component";
+import {HasAccessToCompetitorFunctionsGuard} from "../core/auth/has-access-to-competitor-functions.guard";
 
 const routes: Routes = [{
   path: 'competitor',
   component: CompetitorComponent,
-  canActivate: [AuthenticatedGuard],
+  canActivate: [AuthenticatedGuard, HasAccessToCompetitorFunctionsGuard],
 },
   {
     path: '',
     redirectTo: '',
     pathMatch: 'full'
   },
-  // { path: 'brevet-maps', component: MapComponent },
+  { path: 'brevet-maps', component: MapComponent,  canActivate: [AuthenticatedGuard, HasAccessToCompetitorFunctionsGuard] },
+  { path: 'brevet-list', component: ListComponent,  canActivate: [AuthenticatedGuard, HasAccessToCompetitorFunctionsGuard] },
 ];
 
 @NgModule({

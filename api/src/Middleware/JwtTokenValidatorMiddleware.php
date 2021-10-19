@@ -3,6 +3,7 @@
 namespace App\Middleware;
 
 use MiladRahimi\Jwt\Cryptography\Algorithms\Hmac\HS256;
+use MiladRahimi\Jwt\Exceptions\ValidationException;
 use MiladRahimi\Jwt\Parser;
 use MiladRahimi\Jwt\Validator\DefaultValidator;
 use MiladRahimi\Jwt\Validator\Rules\NewerThan;
