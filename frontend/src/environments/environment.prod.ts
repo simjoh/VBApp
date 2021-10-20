@@ -1,5 +1,8 @@
 export const environment = {
   production: true,
   api_key: "prod",
-  mock_login: false
+  mock_backend: false,
+  backend_url: 'localhost/api/',
+  mock_login: false,
+  mockurl: ''
 };

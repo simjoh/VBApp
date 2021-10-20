@@ -7,8 +7,9 @@ import {AuthenticatedService} from "./authenticated.service";
 import {Router} from "@angular/router";
 import {LoginModel} from "../../login/login-model";
 import {environment} from "../../../environments/environment";
-import {Roles} from "./roles";
+import {Role} from "./roles";
 import {ActiveUser} from "./active-user";
+
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,7 @@ export class AuthService {
     }
     await loginModel$.pipe(
       map(model => {
-        this.httpClient.post<any>("/api/login", this.createPayload(model))
+        this.httpClient.post<any>(this.backendUrl() + "/login", this.createPayload(model))
           .pipe(
             map(response => {
               console.log(response);
@@ -36,7 +37,7 @@ export class AuthService {
               return response;
             })).toPromise().then((data) => {
           // where to go
-            const role = "ADMIN";
+            const role = data.role;
             this.setActiveUser()
             this.redirect(role);
         });
@@ -52,11 +53,12 @@ export class AuthService {
   }
 
   private  redirect(role: string): void{
-    if (role === Roles.ADMIN || Roles.SUPERADMIN || Roles.USER) {
+
+    if ((role === Role.ADMIN|| role === Role.SUPERADMIN ||  role === Role.USER)) {
       this.router.navigate(['admin']);
-    } else if (role === Roles.COMPETITOR){
+    } else if (role === Role.COMPETITOR){
       this.router.navigate(['competitor']);
-    } else if (role === Roles.VOLONTEER) {
+    } else if (role === Role.VOLONTEER) {
       this.router.navigate(['volunteer']);
     }
   }
@@ -83,6 +85,18 @@ export class AuthService {
     localStorage.removeItem('loggedInUser');
     this.authSubjet.next()
     this.authenticatedService.authenticatedSubject.next(false);
+  }
+
+  private backendUrl(): string{
+    if (!environment.production && environment.mock_backend){
+      if (environment.mockbackendurl != ''){
+        return environment.mockbackendurl;
+      } else {
+        return environment.backend_url;
+      }
+    } else {
+      return environment.backend_url;
+    }
   }
 }
 

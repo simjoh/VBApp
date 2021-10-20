@@ -16,6 +16,16 @@ https://github.com/ng-select/ng-select
 npm install --save @ng-select/ng-select
 
 
+## Starta frontend
+ ## Frontend utan mock av backend
+  - npm run start proxy mot backend http://localhost:4200
+ ## Starta frontend med nock av backend
+  - Data läggs in i /mocks/db.json
+  - Sätt  mock_backend: true i filen src/enviroment.ts
+  - npm run start:proxy:mock:server
+    - Inloggning är också mockad
+  - Gå till http://localhost:4200
+
 ## Angular generated information
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.8.
 
