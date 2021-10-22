@@ -9,8 +9,11 @@ export class MenuComponentService {
 
   $activeuser = this.authService.$auth$;
 
-
   logoutUser() {
     this.authService.logoutUser();
+  }
+
+  reload(){
+    this.authService.reload();
   }
 }

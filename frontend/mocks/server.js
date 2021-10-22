@@ -13,13 +13,13 @@ server.use((req, res, next) => {
     // If the method is a POST echo back the name from request body
    // const obj = JSON.parse(JSON.stringify(req.body));
     if (req.body['username'] === 'admin' && req.body['password'] === 'admin'){
-      res.json({ token:"fake_token", name: "Adam admin", role: "admin".toUpperCase()});
+      res.json({ token:"fake_token", givenname: "Adam", familyname: "admin" , role: "admin".toUpperCase()});
     } else if (req.body['username'] === 'competitor' && req.body['password'] === 'competitor'){
-      res.json({ token:"fake_token", name: "Kalle cyklist", role: "competitor".toUpperCase()});
+      res.json({ token:"fake_token", givenname: "Kalle", familyname: "cyklist" ,  role: "competitor".toUpperCase()});
     } else if (req.body['username'] === 'superadmin' && req.body['password'] === 'superadmin') {
-      res.json({ token:"fake_token", name: "Mona superuser", role: "SUPERADMIN".toUpperCase()});
+      res.json({ token:"fake_token", givenname: "Mona", familyname: "superuser" , role: "SUPERADMIN".toUpperCase()});
     } else if (req.body['username'] === 'volonteer' && req.body['password'] === 'volonteer'){
-      res.json({ token:"fake_token", name: "Anna volontär", role: "volonteer".toUpperCase()});
+      res.json({ token:"fake_token", givenname: "Anna", familyname: "volontär" , role: "volonteer".toUpperCase()});
     }
   }else{
     //Not a post request. Let db.json handle it

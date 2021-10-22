@@ -17,7 +17,16 @@ import {ActiveUser} from "./active-user";
 export class AuthService {
 
   private authSubjet = new ReplaySubject<ActiveUser>();
-  $auth$ = this.authSubjet.asObservable();
+  $auth$ = this.authSubjet.asObservable().pipe(
+    map((active) => {
+      if (active){
+        return active;
+      } else {
+        return JSON.parse(<string>localStorage.getItem("activeUser"));
+      }
+    })
+  ) as Observable<ActiveUser>;
+
 
   constructor(private httpClient: HttpClient, private authenticatedService: AuthenticatedService,private router: Router) { }
 
@@ -36,24 +45,25 @@ export class AuthService {
               this.authenticatedService.changeStatus(true);
               return response;
             })).toPromise().then((data) => {
-          // where to go
-            const role = data.role;
-            this.setActiveUser()
-            this.redirect(role);
+            this.setActiveUser(data)
+            this.redirect(data.role);
         });
       })
     ).toPromise();
   }
 
-  private setActiveUser(): void {
+  private setActiveUser(data: any): void {
+   let values: Array<string> = ["ADMIN"];
+
     const activeUser = {
-      name: 'Test user'
+      name: data.givenname + " " + data.familyname,
+      roles: values
     } as ActiveUser
+    localStorage.setItem('activeUser', JSON.stringify(activeUser));
     this.authSubjet.next(activeUser)
   }
 
-  private  redirect(role: string): void{
-
+  private redirect(role: string): void{
     if ((role === Role.ADMIN|| role === Role.SUPERADMIN ||  role === Role.USER)) {
       this.router.navigate(['admin']);
     } else if (role === Role.COMPETITOR){
@@ -83,8 +93,13 @@ export class AuthService {
 
   public logoutUser() {
     localStorage.removeItem('loggedInUser');
+    localStorage.removeItem('activeUser');
     this.authSubjet.next()
     this.authenticatedService.authenticatedSubject.next(false);
+  }
+
+  public reload(){
+    this.authSubjet.next();
   }
 
   private backendUrl(): string{

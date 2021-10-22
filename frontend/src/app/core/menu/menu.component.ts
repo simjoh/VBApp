@@ -1,5 +1,4 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import {AuthService} from "../auth/auth.service";
 import {MenuComponentService} from "./menu-component.service";
 import {map} from "rxjs/operators";
 import {Observable} from "rxjs";
@@ -11,29 +10,44 @@ import {Observable} from "rxjs";
   providers: [MenuComponentService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MenuComponent implements OnInit {
+export class MenuComponent implements OnInit{
 
   $activeUser = this.menucomponentService.$activeuser.pipe(
     map(user =>{
-        return {
-          namn: user.name,
-          land:'SE'
-        } as VyInformation
+      const vy = new VyInformation()
+      for (var val of user.roles) {
+        if (val === "COMPETITOR"){
+            vy.competitor = true
+        }
+        if (val === "ADMIN"){
+          vy.admin = true;
+        }
+        if (val === "SUPERUSER"){
+          vy.superuser = true;
+        }
+        if (val === "VOLONTEER"){
+          vy.volonteer = true;
+        }
+      }
+      vy.namn = user.name;
+      return vy
     })
   ) as Observable<VyInformation>
 
   constructor(private menucomponentService: MenuComponentService) { }
 
-  ngOnInit(): void {
-  }
-
   logout() {
     this.menucomponentService.logoutUser();
   }
+
+  ngOnInit(): void {
+   this.menucomponentService.reload();
+  }
 }
-
-
 export class VyInformation {
   namn: string;
-  land: unknown;
+  admin?: boolean;
+  volonteer?: boolean
+  competitor?: boolean;
+  superuser?: boolean;
 }

@@ -10,7 +10,7 @@ import {AuthenticatedService} from "./core/auth/authenticated.service";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'brevet-frontend';
+  title = 'Västerbottenbrevet';
 
   init$ = this.initiatedService.initierad$;
   $authenticated = this.authenticatedservice.authenticated$
