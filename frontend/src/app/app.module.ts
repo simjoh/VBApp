@@ -22,6 +22,10 @@ import {NgbdSortableHeader} from "./admin/competitors-list/sortable.directive";
 import {KontrollerCombinerComponent} from "./admin/kontroller-combiner/kontroller-combiner.component";
 import {VolunteerModule} from "./volunteer/volunteer.module";
 import {NotauthorizedInterceptor} from "./core/interceptors/notauthorized.interceptor";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {ButtonModule} from "primeng/button";
+import {InputTextModule} from "primeng/inputtext";
+import {CardModule} from "primeng/card";
 @NgModule({
   declarations: [
     AppComponent,
@@ -35,6 +39,8 @@ import {NotauthorizedInterceptor} from "./core/interceptors/notauthorized.interc
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
+    ButtonModule,
     CoreModule,
     SharedModule,
     LoginModule,
@@ -47,8 +53,10 @@ import {NotauthorizedInterceptor} from "./core/interceptors/notauthorized.interc
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
+    InputTextModule,
 
   ],
+  exports: [CardModule],
   providers: [
     {
     provide: HTTP_INTERCEPTORS,

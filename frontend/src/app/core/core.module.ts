@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MenuComponent } from './menu/menu.component';
 import {SharedModule} from "../shared/shared.module";
 import {RouterModule} from "@angular/router";
+import {CardModule} from "primeng/card";
 
 
 
