@@ -16,8 +16,8 @@ server.use((req, res, next) => {
       res.json({ token:"fake_token", givenname: "Adam", familyname: "admin" , role: "admin".toUpperCase()});
     } else if (req.body['username'] === 'competitor' && req.body['password'] === 'competitor'){
       res.json({ token:"fake_token", givenname: "Kalle", familyname: "cyklist" ,  role: "competitor".toUpperCase()});
-    } else if (req.body['username'] === 'superadmin' && req.body['password'] === 'superadmin') {
-      res.json({ token:"fake_token", givenname: "Mona", familyname: "superuser" , role: "SUPERADMIN".toUpperCase()});
+    } else if (req.body['username'] === 'superuser' && req.body['password'] === 'superuser') {
+      res.json({ token:"fake_token", givenname: "Mona", familyname: "superuser" , role: "superuser".toUpperCase()});
     } else if (req.body['username'] === 'volonteer' && req.body['password'] === 'volonteer'){
       res.json({ token:"fake_token", givenname: "Anna", familyname: "volontär" , role: "volonteer".toUpperCase()});
     }

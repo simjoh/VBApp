@@ -10,6 +10,9 @@ class Competitor
     private string $familyname;
     private string $username;
     private string $token;
+    private  $roles = array();
+
+
 
 
     /**
@@ -73,6 +76,22 @@ class Competitor
     public function setToken(string $token): void
     {
         $this->token = $token;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
+
+    /**
+     * @param array $roles
+     */
+    public function setRoles(array $roles): void
+    {
+        $this->roles = $roles;
     }
 
 

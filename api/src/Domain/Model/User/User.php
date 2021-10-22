@@ -11,6 +11,9 @@ class User
     private string $familyname;
     private string $username;
     private string $token;
+    private  $roles = array();
+
+
 
     /**
      * @param $givenname
@@ -70,6 +73,22 @@ class User
     {
          $this->token = $token;
     }
+    /**
+     * @return array
+     */
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
+
+    /**
+     * @param array $roles
+     */
+    public function setRoles(array $roles): void
+    {
+        $this->roles = $roles;
+    }
+
 
 
 }

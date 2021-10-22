@@ -53,7 +53,7 @@ export class AuthService {
   }
 
   private setActiveUser(data: any): void {
-   let values: Array<string> = ["ADMIN"];
+   let values: Array<string> = data.roles;
 
     const activeUser = {
       name: data.givenname + " " + data.familyname,
@@ -64,7 +64,7 @@ export class AuthService {
   }
 
   private redirect(role: string): void{
-    if ((role === Role.ADMIN|| role === Role.SUPERADMIN ||  role === Role.USER)) {
+    if ((role === Role.ADMIN|| role === Role.SUPERUSER ||  role === Role.USER)) {
       this.router.navigate(['admin']);
     } else if (role === Role.COMPETITOR){
       this.router.navigate(['competitor']);

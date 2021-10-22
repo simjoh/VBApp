@@ -10,12 +10,9 @@ use App\Domain\Authenticate\Service\AuthenticationService;
 use Exception;
 use MiladRahimi\Jwt\Cryptography\Algorithms\Hmac\HS256;
 use MiladRahimi\Jwt\Generator;
-use MiladRahimi\Jwt\Parser;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Ramsey\Uuid\Uuid;
-use ReflectionClass;
 use Slim\Psr7\Response;
 
 class LoginAction extends BaseAction
@@ -38,7 +35,7 @@ class LoginAction extends BaseAction
         $password = $formdata['password'] ?? false;
 
         if(!isset($username) || !isset($password)){
-           return (new Response())->withStatus(403);
+           return (new Response())->withStatus(401);
         }
 
         $user = $this->authenticationService->authenticate($username, $password);
@@ -51,7 +48,7 @@ class LoginAction extends BaseAction
            }
            $signer = new HS256($this->key);
            $generator = new Generator($signer);
-           $jwt = $generator->generate(['id' => $competitor->getId(), 'is-admin' => false, 'iat' > time(), 'exp' => time() + 60]);
+           $jwt = $generator->generate(['id' => $competitor->getId(), $this->getRoles($competitor->getRoles()), 'iat' => time(), 'exp' => time() + 100000]);
            $competitor->setToken($jwt);
            $response->getBody()->write($this->json_encode_private($competitor));
            return $response->withStatus(200);
@@ -59,12 +56,31 @@ class LoginAction extends BaseAction
 
            $signer = new HS256($this->key);
            $generator = new Generator($signer);
-           $jwt = $generator->generate(['id' => $user->getId(), ['is-admin' => true, 'is-developer' => false], 'iat' > time(), 'exp' => time() + 60]);
+           $jwt = $generator->generate(['id' => $user->getId(), $this->getRoles($user), 'iat' => time(), 'exp' => time() + 200]);
            $user->setToken($jwt);
            $response->getBody()->write($this->json_encode_private($user));
            return $response->withStatus(200);
        }
 
+    }
+
+    private function getRoles($roles): array{
+        $rolearray = array();
+        foreach ($roles as &$value) {
+            if($value == 'ADMIN'){
+                $rolearray['isAdmin'] = true;
+            }
+            if($value == 'SUPERUSER'){
+                $rolearray['isSuperuser'] = true;
+            }
+            if($value == 'COMPETITOR'){
+                $rolearray['isCompetitor'] = true;
+            }
+            if($value == 'VOLONTEER'){
+                $rolearray['isVolonteer'] = true;
+            }
+        }
+        return $rolearray;
     }
 
 

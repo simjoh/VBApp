@@ -38,7 +38,9 @@ class CompetitorRepository extends BaseRepository
             return null;
         }
 
-        return new Competitor($competitor['competitor_uid'],$competitor['user_name'], $competitor['given_name'],$competitor['family_name'], '');
+        $competitor = new Competitor($competitor['competitor_uid'],$competitor['user_name'], $competitor['given_name'],$competitor['family_name'], '');
+        $competitor->setRoles(array("COMPETITOR"));
+        return $competitor;
     }
 
 

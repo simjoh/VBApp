@@ -35,11 +35,13 @@ class JwtTokenValidatorMiddleware
         $signer = new HS256($this->key);
         $parser = new Parser($signer, $validator);
 
+
+
         try {
             $claims = $parser->parse($token);
-            echo $claims;
+            print_r($claims);
         } catch (ValidationException $e) {
-            return (new Response())->withStatus(403);
+            return (new Response())->withStatus(401);
         }
 
         return $handler->handle($request);
@@ -48,7 +50,7 @@ class JwtTokenValidatorMiddleware
     private function addRules(): DefaultValidator
     {
         $validator = new DefaultValidator();
-        $validator->addRule('exp', new NewerThan(time()), true);
+//        $validator->addRule('exp', new NewerThan(time()), true);
 
         return $validator;
     }

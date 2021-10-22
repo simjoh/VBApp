@@ -24,7 +24,7 @@ class UserRepository extends BaseRepository
     {
 
         $passwordsha =sha1($password);
-        $statement = $this->connection->prepare($this->sqls('login'));
+        $statement = $this->connection->prepare($this->sqls('login2'));
         $statement->bindParam(':user_name', $username, PDO::PARAM_STR);
         $statement->bindParam(':password', $passwordsha , PDO::PARAM_STR);
         $statement->execute();
@@ -34,15 +34,19 @@ class UserRepository extends BaseRepository
             return null;
         }
 
-       return new User($user['user_uid'], $user['user_name'],$user['given_name'], $user['family_name'], '');
+       $users = new User($user['user_uid'], $user['user_name'],$user['given_name'], $user['family_name'], '');
+        $users->setRoles(array($user['role_name']));
+       // print_r($user);
 
-
+        return $users;
     }
 
 
     public function sqls($type): string
     {
         $usersqls['login'] = 'select * from users where user_name = :user_name and password = :password';
+
+        $usersqls['login2'] = 'select * from users s left join roles r on r.role_id = s.role_id where user_name = :user_name and password = :password';
 
         return $usersqls[$type];
         // TODO: Implement sqls() method.
