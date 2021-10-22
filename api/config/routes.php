@@ -1,6 +1,7 @@
 <?php
 
 use App\Middleware\ApiKeyValidatorMiddleware;
+use App\Middleware\PermissionvalidatorMiddleWare;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
@@ -49,7 +50,7 @@ return function (App $app) {
         $app->put('/user/{id}', \App\Action\User\UserAction::class . ':updateUser');
         $app->post('/user/{id}', \App\Action\User\UserAction::class . ':newUser');
         $app->delete('/user/{id}', \App\Action\User\UserAction::class . ':deleteUser');
-    })->add(\App\Middleware\JwtTokenValidatorMiddleware::class);
+    })->add(\App\Middleware\JwtTokenValidatorMiddleware::class)->add(\App\Middleware\PermissionvalidatorMiddleWare::class);
 
 
 

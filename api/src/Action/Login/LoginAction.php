@@ -48,7 +48,7 @@ class LoginAction extends BaseAction
            }
            $signer = new HS256($this->key);
            $generator = new Generator($signer);
-           $jwt = $generator->generate(['id' => $competitor->getId(), $this->getRoles($competitor->getRoles()), 'iat' => time(), 'exp' => time() + 100000]);
+           $jwt = $generator->generate(['id' => $competitor->getId(), 'roles' => $this->getRoles($competitor->getRoles()), 'iat' => time(), 'exp' => time() + 10000000]);
            $competitor->setToken($jwt);
            $response->getBody()->write($this->json_encode_private($competitor));
            return $response->withStatus(200);
@@ -56,7 +56,8 @@ class LoginAction extends BaseAction
 
            $signer = new HS256($this->key);
            $generator = new Generator($signer);
-           $jwt = $generator->generate(['id' => $user->getId(), $this->getRoles($user), 'iat' => time(), 'exp' => time() + 200]);
+           // byt till roleid
+           $jwt = $generator->generate(['id' => $user->getId(), 'roles' => $this->getRoles($user->getRoles()), 'iat' => time(), 'exp' => time() + 200]);
            $user->setToken($jwt);
            $response->getBody()->write($this->json_encode_private($user));
            return $response->withStatus(200);
@@ -65,6 +66,7 @@ class LoginAction extends BaseAction
     }
 
     private function getRoles($roles): array{
+
         $rolearray = array();
         foreach ($roles as &$value) {
             if($value == 'ADMIN'){

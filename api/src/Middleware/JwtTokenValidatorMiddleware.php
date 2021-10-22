@@ -35,15 +35,11 @@ class JwtTokenValidatorMiddleware
         $signer = new HS256($this->key);
         $parser = new Parser($signer, $validator);
 
-
-
         try {
             $claims = $parser->parse($token);
-            print_r($claims);
         } catch (ValidationException $e) {
             return (new Response())->withStatus(401);
         }
-
         return $handler->handle($request);
     }
 

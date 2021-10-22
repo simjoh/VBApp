@@ -36,7 +36,7 @@ class UserRepository extends BaseRepository
 
        $users = new User($user['user_uid'], $user['user_name'],$user['given_name'], $user['family_name'], '');
         $users->setRoles(array($user['role_name']));
-       // print_r($user);
+
 
         return $users;
     }
@@ -45,7 +45,6 @@ class UserRepository extends BaseRepository
     public function sqls($type): string
     {
         $usersqls['login'] = 'select * from users where user_name = :user_name and password = :password';
-
         $usersqls['login2'] = 'select * from users s left join roles r on r.role_id = s.role_id where user_name = :user_name and password = :password';
 
         return $usersqls[$type];
