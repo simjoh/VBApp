@@ -15,6 +15,7 @@ return function (App $app) {
 
     $app->add(BasePathMiddleware::class);
 
+
 //    // Catch exceptions and errors
 //    $app->add(ErrorMiddleware::class);
 //

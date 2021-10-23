@@ -46,7 +46,7 @@ return function (App $app) {
 
 
         $app->get('/users', \App\Action\User\UserAction::class . ':allUsers');
-        $app->get('/user/{id}', \App\Action\User\UserAction::class . ':allUsers');
+        $app->get('/user/{id}', \App\Action\User\UserAction::class . ':getUserById');
         $app->put('/user/{id}', \App\Action\User\UserAction::class . ':updateUser');
         $app->post('/user/{id}', \App\Action\User\UserAction::class . ':newUser');
         $app->delete('/user/{id}', \App\Action\User\UserAction::class . ':deleteUser');

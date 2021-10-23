@@ -2,7 +2,7 @@
 
 namespace App\Domain\Model\User;
 
-use App\common\Domain\Id;
+use JsonSerializable;
 
 class User
 {
@@ -12,7 +12,6 @@ class User
     private string $username;
     private string $token;
     private  $roles = array();
-
 
 
     /**
@@ -90,5 +89,17 @@ class User
     }
 
 
-
+//    public function jsonSerialize()
+//    {
+//        return [
+//            'user' => [
+//                'id' => $this->id,
+//                'givenname' => $this->getGivenname(),
+//                'familyname' => $this->getFamilyname(),
+//                'token' => $this->getToken(),
+//                'username' => $this->getUsername(),
+//                'roles' => $this->getRoles(),
+//            ]
+//        ];
+//    }
 }

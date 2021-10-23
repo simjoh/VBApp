@@ -35,10 +35,9 @@ class PermissionvalidatorMiddleWare
         }
 
         // embryo till behörighet till operationer på data. Kolla mot permissions i db och mot uri:s
-        if($request->getMethod() == 'GET'  && !empty($claims['roles'])){
-            return (new Response())->withStatus(401);
+        if($request->getMethod() == 'GET'){
+          //  return (new Response())->withStatus(405);
         }
-
 //        if($request->getMethod() == 'PUT'){
 //            print_r($request->getUri());
 //        }

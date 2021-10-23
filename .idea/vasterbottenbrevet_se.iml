@@ -27,6 +27,13 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-php81" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/brick/math" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-ctype" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/phpstan/phpdoc-parser" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/doctrine/instantiator" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/doctrine/annotations" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/doctrine/lexer" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/psr/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/jms/serializer" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/jms/metadata" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

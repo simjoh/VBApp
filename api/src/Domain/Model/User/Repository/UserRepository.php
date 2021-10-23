@@ -29,15 +29,26 @@ class UserRepository extends BaseRepository
         $statement->bindParam(':password', $passwordsha , PDO::PARAM_STR);
         $statement->execute();
         $user = $statement->fetch();
-
         if(empty($user)){
             return null;
         }
-
-       $users = new User($user['user_uid'], $user['user_name'],$user['given_name'], $user['family_name'], '');
+        $users = new User($user['user_uid'], $user['user_name'],$user['given_name'], $user['family_name'], '');
         $users->setRoles(array($user['role_name']));
+        return $users;
+    }
 
-
+    public function getAllUSers(): ?array
+    {
+        $statement = $this->connection->prepare($this->sqls('allUsers'));
+        $statement->execute();
+        $user = $statement->fetchAll();
+        if(empty($user)){
+            return array();
+        }
+        $users = [];
+        foreach ($user as $row) {
+            array_push($users,new User($row['user_uid'], $row['user_name'],$row['given_name'], $row['family_name'], ''));
+        }
         return $users;
     }
 
@@ -46,8 +57,7 @@ class UserRepository extends BaseRepository
     {
         $usersqls['login'] = 'select * from users where user_name = :user_name and password = :password';
         $usersqls['login2'] = 'select * from users s left join roles r on r.role_id = s.role_id where user_name = :user_name and password = :password';
-
+        $usersqls['allUsers'] = 'select * from users s;';
         return $usersqls[$type];
-        // TODO: Implement sqls() method.
     }
 }

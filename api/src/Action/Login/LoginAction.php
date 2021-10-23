@@ -4,6 +4,7 @@ namespace App\Action\Login;
 
 
 use App\common\Action\BaseAction;
+use App\common\CleanJsonSerializer;
 use App\common\Util;
 use App\Domain\Authenticate\Service\AuthenticationService;
 
@@ -48,9 +49,10 @@ class LoginAction extends BaseAction
            }
            $signer = new HS256($this->key);
            $generator = new Generator($signer);
-           $jwt = $generator->generate(['id' => $competitor->getId(), 'roles' => $this->getRoles($competitor->getRoles()), 'iat' => time(), 'exp' => time() + 10000000]);
+           $jwt = $generator->generate(['id' => $competitor->getId(), 'roles' => $this->getRoles($competitor->getRoles()), 'iat' => time(), 'exp' => time() + 60000000]);
            $competitor->setToken($jwt);
-           $response->getBody()->write($this->json_encode_private($competitor));
+           $ser = new CleanJsonSerializer();
+           $response->getBody()->write($ser->serialize($competitor));
            return $response->withStatus(200);
        } else {
 
@@ -59,7 +61,8 @@ class LoginAction extends BaseAction
            // byt till roleid
            $jwt = $generator->generate(['id' => $user->getId(), 'roles' => $this->getRoles($user->getRoles()), 'iat' => time(), 'exp' => time() + 200]);
            $user->setToken($jwt);
-           $response->getBody()->write($this->json_encode_private($user));
+           $ser = new CleanJsonSerializer();
+           $response->getBody()->write($ser->serialize($user));
            return $response->withStatus(200);
        }
 
