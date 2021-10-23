@@ -2,7 +2,6 @@
 
 namespace App\Domain\Model\User;
 
-use JsonSerializable;
 
 class User
 {
@@ -14,18 +13,9 @@ class User
     private  $roles = array();
 
 
-    /**
-     * @param $givenname
-     * @param $familyname
-     * @param $token
-     */
-    public function __construct($id, $username ,$givenname, $familyname, $token)
+    public function __construct()
     {
-        $this->id = $id;
-        $this->givenname = $givenname;
-        $this->username = $username;
-        $this->familyname = $familyname;
-        $this->token = $token;
+
     }
 
     /**
@@ -86,6 +76,38 @@ class User
     public function setRoles(array $roles): void
     {
         $this->roles = $roles;
+    }
+
+    /**
+     * @param string $id
+     */
+    public function setId(string $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @param string $givenname
+     */
+    public function setGivenname(string $givenname): void
+    {
+        $this->givenname = $givenname;
+    }
+
+    /**
+     * @param string $familyname
+     */
+    public function setFamilyname(string $familyname): void
+    {
+        $this->familyname = $familyname;
+    }
+
+    /**
+     * @param string $username
+     */
+    public function setUsername(string $username): void
+    {
+        $this->username = $username;
     }
 
 

@@ -2,6 +2,8 @@
 
 namespace App\common\Action;
 
+use App\Domain\Model\User\User;
+use Karriere\JsonDecoder\JsonDecoder;
 use ReflectionClass;
 
 
@@ -19,6 +21,12 @@ class BaseAction
 
 
 
+    }
+
+    function getJsonDecoder(): JsonDecoder {
+        $jsonDecoder = new JsonDecoder();
+        $jsonDecoder->scanAndRegister(User::class);
+        return $jsonDecoder;
     }
 
 

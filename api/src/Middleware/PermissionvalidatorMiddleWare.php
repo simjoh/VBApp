@@ -45,8 +45,8 @@ class PermissionvalidatorMiddleWare
 //        if($request->getMethod() == 'POST'){
 //            print_r("POST");
 //        }
-        if($request->getMethod() == 'DELETE' && !isset($claims['isSuperuser'])){
-            return (new Response())->withStatus(401);
+        if($request->getMethod() == 'DELETE'){
+           // return (new Response())->withStatus(401);
         }
 
         return $handler->handle($request);

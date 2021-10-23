@@ -25,9 +25,10 @@ INSERT INTO roles_permissions (role_id, perm_mod, perm_id) VALUES
 
 
 -- Användare
-INSERT INTO users (user_uid, user_name ,given_name, family_name,role_id,password) VALUES ('82fbb2ec-d998-4b8a-861f-46f2b0fdbc4e','admin@admin','Admin','Administratör',1,sha1('admin'));
-INSERT INTO users (user_uid, user_name,given_name, family_name,role_id,password) VALUES ('ac6543a6-df1e-4c5b-95a1-565a00676603','volonta@volontar','Anders','Volontär',6,sha1('volontar'));
-INSERT INTO users (user_uid, user_name,given_name, family_name,role_id, password) VALUES ('e3b78c98-ffe5-4877-8491-258413c772e9','user@user','Jonas','Användare',2, sha1('user'));
+INSERT INTO `users` (`user_uid`, `user_name`, `given_name`, `family_name`, `role_id`, `password`) VALUES
+('82fbb2ec-d998-4b8a-861f-46f2b0fdbc4e', 'admin@admin', 'Admin', 'Administratör', 1, sha1('admin')),
+('ac6543a6-df1e-4c5b-95a1-565a00676603', 'volonta@volontar', 'Anders', 'Volontär', 6, sha1('volonteer')),
+('e3b78c98-ffe5-4877-8491-258413c772e9', 'user@user', 'Jonas', 'Användare', 2, sha1('user'));
 
 -- -- Cyklister
 INSERT INTO competitors(competitor_uid, user_name, given_name, family_name, role_id,password) VALUES ('2922a6e9-9e32-4832-9575-b3d2eb3011b9','100','Pelle','Cyklist',4,sha1('test'));

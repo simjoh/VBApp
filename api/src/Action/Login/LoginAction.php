@@ -49,21 +49,21 @@ class LoginAction extends BaseAction
            }
            $signer = new HS256($this->key);
            $generator = new Generator($signer);
-           $jwt = $generator->generate(['id' => $competitor->getId(), 'roles' => $this->getRoles($competitor->getRoles()), 'iat' => time(), 'exp' => time() + 60000000]);
+           $jwt = $generator->generate(['id' => $competitor->getId(), 'roles' => $this->getRoles($competitor->getRoles()), 'iat' => time(), 'exp' => time() + 2660000000]);
            $competitor->setToken($jwt);
            $ser = new CleanJsonSerializer();
            $response->getBody()->write($ser->serialize($competitor));
-           return $response->withStatus(200);
+           return $response->withStatus(200)->withHeader('Content-type','application/json');
        } else {
 
            $signer = new HS256($this->key);
            $generator = new Generator($signer);
            // byt till roleid
-           $jwt = $generator->generate(['id' => $user->getId(), 'roles' => $this->getRoles($user->getRoles()), 'iat' => time(), 'exp' => time() + 200]);
+           $jwt = $generator->generate(['id' => $user->getId(), 'roles' => $this->getRoles($user->getRoles()), 'iat' => time(), 'exp' => time() + 2660000000]);
            $user->setToken($jwt);
            $ser = new CleanJsonSerializer();
            $response->getBody()->write($ser->serialize($user));
-           return $response->withStatus(200);
+           return $response->withStatus(200)->withHeader('Content-type','application/json;charset=utf-8');
        }
 
     }

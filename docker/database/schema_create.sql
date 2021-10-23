@@ -1,8 +1,12 @@
+-- ALTER DATABASE vasterbottenbrevet_se CHARACTER SET='utf8'  COLLATE='utf8_bin';
+-- -- create database --
+-- CREATE DATABASE vasterbottenbrevet_se CHARACTER SET = 'utf8mb4';
+ALTER DATABASE vasterbottenbrevet_se CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 -- Api key
 CREATE TABLE IF NOT EXISTS api_keys (
     task_id INT AUTO_INCREMENT PRIMARY KEY,
     api_key varchar(255) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;;
 
 -- user and competiotors
 CREATE TABLE IF NOT EXISTS users (
@@ -13,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
     role_id int(11) NOT NULL,
     password char(128),
     PRIMARY KEY (user_uid)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;;
 
 
 CREATE TABLE IF NOT EXISTS competitors (
@@ -24,7 +28,7 @@ CREATE TABLE IF NOT EXISTS competitors (
     role_id int(11) NOT NULL,
     password char(128),
     PRIMARY KEY (competitor_uid)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;;
 
 
 -- Permissions

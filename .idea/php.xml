@@ -33,6 +33,7 @@
       <path value="$PROJECT_DIR$/api/vendor/psr/cache" />
       <path value="$PROJECT_DIR$/api/vendor/jms/serializer" />
       <path value="$PROJECT_DIR$/api/vendor/jms/metadata" />
+      <path value="$PROJECT_DIR$/api/vendor/karriere/json-decoder" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0">

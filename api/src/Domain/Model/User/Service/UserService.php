@@ -25,12 +25,42 @@ class UserService
 
     public function getAllUsers(): ?array {
         $allUsers = $this->repository->getAllUSers();
+
         if (isset($allUsers)) {
             return $allUsers;
         }
 
         return null;
     }
+
+    public function getUserById($id): ?User {
+        $allUsers = $this->repository->getUserById($id);
+        if (isset($allUsers)) {
+            return $allUsers;
+        }
+
+        return null;
+    }
+
+    public function updateUser($id, User $userParsed): ?User {
+        $user = $this->repository->updateUser($id, $userParsed);
+        if (isset($user)) {
+            return $user;
+        }
+
+        return null;
+    }
+
+    public function createUser(User $userParsed): void{
+       $this->repository->createUser($userParsed);
+    }
+
+    public function deleteUser($user_uid): void{
+
+        $this->repository->deleteUser($user_uid);
+    }
+
+
 
 
 

@@ -25,7 +25,7 @@ class CleanJsonSerializer
      */
     public function serialize($object)
     {
-        return json_encode($this->serializeInternal($object));
+        return json_encode($this->serializeInternal($object),JSON_UNESCAPED_UNICODE);
     }
 
     /**

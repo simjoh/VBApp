@@ -4,6 +4,7 @@ namespace App\Domain\Ping\Repository;
 
 use App\common\Repository\BaseRepository;
 use PDO;
+use PDOException;
 
 class PingRepository extends BaseRepository
 {
@@ -21,7 +22,7 @@ class PingRepository extends BaseRepository
     public function ping(): bool
     {
         try {
-            $this->connection->query($this->sqls());
+            $this->connection->query($this->sqls(""));
         } catch (PDOException $e) {
             $bool = False;
             return $bool;
@@ -31,7 +32,7 @@ class PingRepository extends BaseRepository
         return $bool;
     }
 
-    public function sqls():string
+    public function sqls($type):string
     {
         return "SELECT 1";
     }

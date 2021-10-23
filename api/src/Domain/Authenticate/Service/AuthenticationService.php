@@ -19,10 +19,11 @@ class AuthenticationService
 
     public function authenticate($username, $password): ?User
     {
-        $user = $this->repository->authenticate($username, $password);
 
-        if (isset($user)) {
-            return $user;
+        $usera = $this->repository->authenticate($username, $password);
+
+        if (isset($usera)) {
+            return $usera;
         }
 
         return null;
