@@ -77,7 +77,8 @@ CREATE TABLE event (
 -- Bana
 CREATE TABLE  track (
     track_uid char(36) NOT NULL,
-    title varchar(100) NOT NULL,
+    title varchar(100),
+    link varchar(100),
     event_uid char (36) NOT NULL,
     description varchar(500)  NOT NULL,
     distance DECIMAL(10,2) DEFAULT NULL,
@@ -89,27 +90,26 @@ CREATE TABLE  track (
 CREATE TABLE site (
     site_uid char(36) NOT NULL,
     place varchar(100) NOT NULL,
-    title varchar(100) NOT NULL,
     adress varchar(100) NOT NULL,
     description varchar(500)  NOT NULL,
-    location POINT NOT NULL,
+    location POINT ,
     PRIMARY KEY (site_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE control (
-    control_uid char(36) NOT NULL,
+CREATE TABLE checkpoint (
+    checkpoint_uid char(36) NOT NULL,
     site_uid char(36) NOT NULL,
     title varchar(100) NOT NULL,
     description varchar(500)  NOT NULL,
     distance DECIMAL(10,2) DEFAULT NULL,
     opens TIME,
     closing TIME,
-    PRIMARY KEY (control_uid),
+    PRIMARY KEY (checkpoint_uid),
     FOREIGN KEY (site_uid) REFERENCES site(site_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE  event_tracks (
+CREATE TABLE event_tracks (
     track_uid char(36) NOT NULL,
     event_uid char(36) NOT NULL,
     PRIMARY KEY (event_uid,track_uid),
@@ -118,17 +118,16 @@ CREATE TABLE  event_tracks (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE track_controls (
+CREATE TABLE track_checkpoint (
     track_uid char(36) NOT NULL,
-    control_uid char(36) NOT NULL,
-    PRIMARY KEY (control_uid,track_uid),
+    checkpoint_uid char(36) NOT NULL,
+    PRIMARY KEY (checkpoint_uid,track_uid),
     FOREIGN KEY (track_uid) REFERENCES track(track_uid),
-    FOREIGN KEY (control_uid) REFERENCES control(control_uid)
+    FOREIGN KEY (checkpoint_uid) REFERENCES checkpoint(checkpoint_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 -- Koppla cyklister till banor och kontroller
-
 CREATE TABLE competitor_connection_to_track (
     competitor_uid char(36) NOT NULL,
     track_uid char(36) NOT NULL,
