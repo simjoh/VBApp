@@ -8,12 +8,12 @@ INSERT INTO roles (`role_id`, `role_name`) VALUES(4,'COMPETITOR');
 INSERT INTO roles (`role_id`, `role_name`) VALUES( 5,'DEVELOPER');
 INSERT INTO roles (`role_id`, `role_name`) VALUES( 6,'VOLONTAR');
 
-INSERT INTO permissions (perm_mod, perm_id, perm_desc) VALUES
-('ADMIN', 1, 'Access users'),
-('ADMIN', 2, 'Create new users'),
-('ADMIN', 3, 'Update users'),
-('ADMIN', 4, 'Delete users'),
-('COMPETITOR', 5, 'See controls');
+INSERT INTO permissions (perm_id, perm_desc) VALUES
+( 1, 'Access users'),
+( 2, 'Create new users'),
+( 3, 'Update users'),
+( 4, 'Delete users'),
+(5, 'See controls');
 
 
 INSERT INTO roles_permissions (role_id, perm_mod, perm_id) VALUES
@@ -29,6 +29,19 @@ INSERT INTO `users` (`user_uid`, `user_name`, `given_name`, `family_name`, `role
 ('82fbb2ec-d998-4b8a-861f-46f2b0fdbc4e', 'admin@admin', 'Admin', 'Administratör', 1, sha1('admin')),
 ('ac6543a6-df1e-4c5b-95a1-565a00676603', 'volonta@volontar', 'Anders', 'Volontär', 6, sha1('volonteer')),
 ('e3b78c98-ffe5-4877-8491-258413c772e9', 'user@user', 'Jonas', 'Användare', 2, sha1('user'));
+
+-- Lägg till lite behörigheter
+--Admin + superuser
+INSERT INTO user_role(role_id, user_uid) VALUES (1,'82fbb2ec-d998-4b8a-861f-46f2b0fdbc4e');
+INSERT INTO user_role(role_id, user_uid) VALUES (3,'82fbb2ec-d998-4b8a-861f-46f2b0fdbc4e');
+-- Volontär
+INSERT INTO user_role(role_id, user_uid) VALUES (6,'ac6543a6-df1e-4c5b-95a1-565a00676603');
+-- Vanlig användare
+INSERT INTO user_role(role_id, user_uid) VALUES (2,'e3b78c98-ffe5-4877-8491-258413c772e9');
+-- Cyklist
+INSERT INTO user_role(role_id, user_uid) VALUES (2,'e3b78c98-ffe5-4877-8491-258413c772e9');
+
+
 
 -- -- Cyklister
 INSERT INTO competitors(competitor_uid, user_name, given_name, family_name, role_id,password) VALUES ('2922a6e9-9e32-4832-9575-b3d2eb3011b9','100','Pelle','Cyklist',4,sha1('test'));

@@ -5,6 +5,7 @@ use App\Middleware\PermissionvalidatorMiddleWare;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
+use Slim\Routing\RouteCollectorProxy;
 
 return function (App $app) {
 
@@ -23,26 +24,15 @@ return function (App $app) {
 
 
     // User route group
-    $app->group('/api', function() use ($app) {
+    $app->group('/api', function(RouteCollectorProxy $apps) use ($app) {
 
 
-//        $app->group('admin', function(App $app) {
-//            $app->get('/billing', function ($request, $response, $args) {
-//                // Route for /billing
-//            });
-//            $this->get('/invoice/{id:[0-9]+}', function ($request, $response, $args) {
-//                // Route for /invoice/{id:[0-9]+}
-//            });
-//        });
-//
-//        $app->group('competitor', function(App $app) {
-//            $app->get('/billing', function ($request, $response, $args) {
-//                // Route for /billing
-//            });
-//            $this->get('/invoice/{id:[0-9]+}', function ($request, $response, $args) {
-//                // Route for /invoice/{id:[0-9]+}
-//            });
-//        });
+        $app->get('/controls', \App\Action\Control\ControlAction::class . ':allControls');
+        $app->get('/control/{controlUID}', \App\Action\Control\ControlAction::class . ':controlFor');
+        $app->put('/control/{controlUID}', \App\Action\Control\ControlAction::class . ':updateControl');
+        $app->post('/control', \App\Action\Control\ControlAction::class . ':createControl');
+        $app->delete('/control/{controlUID}', \App\Action\Control\ControlAction::class . ':deleteControl');
+        $app->post('/control/upload', \App\Action\Control\ControlAction::class . ':upload');
 
 
         $app->get('/users', \App\Action\User\UserAction::class . ':allUsers');
@@ -51,8 +41,6 @@ return function (App $app) {
         $app->post('/user/', \App\Action\User\UserAction::class . ':createUser');
         $app->delete('/user/{id}', \App\Action\User\UserAction::class . ':deleteUser');
     })->add(\App\Middleware\JwtTokenValidatorMiddleware::class)->add(\App\Middleware\PermissionvalidatorMiddleWare::class);
-
-
 
     };
 
