@@ -79,6 +79,7 @@ CREATE TABLE  track (
     track_uid char(36) NOT NULL,
     title varchar(100),
     link varchar(100),
+    heightdifference INTEGER UNSIGNED,
     event_uid char (36) NOT NULL,
     description varchar(500)  NOT NULL,
     distance DECIMAL(10,2) DEFAULT NULL,
@@ -117,7 +118,6 @@ CREATE TABLE event_tracks (
     FOREIGN KEY (event_uid) REFERENCES event(event_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
 CREATE TABLE track_checkpoint (
     track_uid char(36) NOT NULL,
     checkpoint_uid char(36) NOT NULL,
@@ -126,15 +126,29 @@ CREATE TABLE track_checkpoint (
     FOREIGN KEY (checkpoint_uid) REFERENCES checkpoint(checkpoint_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
--- Koppla cyklister till banor och kontroller
-CREATE TABLE competitor_connection_to_track (
-    competitor_uid char(36) NOT NULL,
+CREATE TABLE participant (
+    participant_uid char(36) NOT NULL,
     track_uid char(36) NOT NULL,
+    competitor_uid char(36) NOT NULL,
     startnumber INTEGER UNSIGNED NOT NULL,
-    PRIMARY KEY (competitor_uid,track_uid),
+    finished BOOLEAN DEFAULT false,
+    acpkod INTEGER UNSIGNED,
+    club char (100),
+    time Time,
+    dns BOOLEAN DEFAULT false,
+    dnf BOOLEAN DEFAULT false,
+    PRIMARY KEY ( participant_uid, track_uid ,competitor_uid),
     FOREIGN KEY (track_uid) REFERENCES track(track_uid),
     FOREIGN KEY (competitor_uid) REFERENCES competitors(competitor_uid)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;;
 
+CREATE TABLE participant_checkpoint (
+    participant_uid char(36) NOT NULL,
+    checkpoint_uid char(36) NOT NULL,
+    passed BOOLEAN DEFAULT false,
+    passeded_date_time DATETIME,
+    PRIMARY KEY (participant_uid,checkpoint_uid),
+    FOREIGN KEY (checkpoint_uid) REFERENCES checkpoint(checkpoint_uid),
+    FOREIGN KEY (participant_uid) REFERENCES participant(participant_uid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
