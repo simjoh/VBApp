@@ -2,10 +2,14 @@
 
 namespace App\Domain\Model\User;
 
-class Role
+use JsonSerializable;
+
+class Role implements JsonSerializable
 {
 
-    public int $id = 1;
+
+
+    private int $id = 1;
 
     /**
      * @return string
@@ -21,5 +25,9 @@ class Role
     public function setTest(string $test): void
     {
         $this->test = $test;
+    }
+
+    public function jsonSerialize() {
+        return (object) get_object_vars($this);
     }
 }

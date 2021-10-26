@@ -1,9 +1,6 @@
 <?php
 
 use App\Middleware\ApiKeyValidatorMiddleware;
-use App\Middleware\PermissionvalidatorMiddleWare;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
 
@@ -25,6 +22,14 @@ return function (App $app) {
 
     // User route group
     $app->group('/api', function(RouteCollectorProxy $apps) use ($app) {
+
+
+        // place istället för site?
+        $app->get('/sites', \App\Action\Site\SitesAction::class . ':allSites');
+        $app->get('/site/{siteUID}', \App\Action\Control\ControlAction::class . ':siteFor');
+        $app->put('/site/{siteUID}', \App\Action\Control\ControlAction::class . ':updateSite');
+        $app->delete('/site/{siteUID}', \App\Action\Control\ControlAction::class . ':deleteSite');
+        $app->post('/site', \App\Action\Control\ControlAction::class . ':createSite');
 
 
         $app->get('/controls', \App\Action\Control\ControlAction::class . ':allControls');
