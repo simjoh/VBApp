@@ -1,38 +1,43 @@
 <?php
 
-namespace App\Action\Randonneur;
+namespace App\Action\Volonteer;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class RandonneurAction
+class VolonteerAction
 {
-
-
     public function __construct(ContainerInterface $c)
     {
 
     }
 
     public function getCheckpoint(ServerRequestInterface $request, ResponseInterface $response){
-        //skicka tillbacka ccheckpints med ny status
+        //Hämta den checkpoint för volontär
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    public function getRandonneurs(ServerRequestInterface $request, ResponseInterface $response){
+        //Hämta cyklister som har elle ska passera en viss kontroll
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+
     public function stamp(ServerRequestInterface $request, ResponseInterface $response){
-        //skicka tillbacka checkpoints med ny status
+        //Stämpla in via volontär
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
     public function markasDNF(ServerRequestInterface $request, ResponseInterface $response){
-        //skicka tillbacka checkpoints med ny status
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        //Markera dnf via volontär
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
     public function rollbackStamp(ServerRequestInterface $request, ResponseInterface $response){
-        //skicka tillbacka checkpoints med ny status
+        // Ångra stämpling via volontär
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
+
 
 }

@@ -17,18 +17,28 @@ return function (App $app) {
 
      //$app->get('/bla/bla/bla', \App\Action\HomeAction::class)->setName('home');
 
+    //lägg till ingång för att kunna generera resultat på vb.se
 
+    // Ingång för att kunna visa en cyklists passeringar under ett lopp
 
 
     // User route group
     $app->group('/api', function(RouteCollectorProxy $apps) use ($app) {
 
-        $app->get('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}', \App\Action\Randonneur\RandonneurAction::class . ':getCheckpoints');
+        // ingångar som används av en cyklist
+        $app->get('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}', \App\Action\Randonneur\RandonneurAction::class . ':getCheckpoint');
         $app->post('/randonneur/{uid}/track/{track_uid}/checkpoint/{checkpointUid}/stamp', \App\Action\Randonneur\RandonneurAction::class . ':stamp');
         $app->post('/randonneur/{uid}/track/{track_uid}/checkpoint/{checkpointUid}/markasdnf', \App\Action\Randonneur\RandonneurAction::class . ':markasDNF');
         $app->put('/randonneur/{uid}/track/{track_uid}/checkpoint/{checkpointUid}/rollback', \App\Action\Randonneur\RandonneurAction::class . ':rollbackStamp');
 
+        // ingångar som används av en volontär
+        $app->get('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}', \App\Action\Volonteer\VolonteerAction::class . ':getCheckpoint');
+        $app->get('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}/randonneurs', \App\Action\Volonteer\VolonteerAction::class . ':getRandonneurs');
+        $app->post('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}/randonneur/{uid}/stamp', \App\Action\Volonteer\VolonteerAction::class . ':stamp');
+        $app->post('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}/randonneur/{uid}/dnf', \App\Action\Volonteer\VolonteerAction::class . ':markasDNF');
+        $app->post('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}/randonneur/{uid}/rollback', \App\Action\Volonteer\VolonteerAction::class . ':rollbackStamp');
 
+        // Ingångar för administratörer
         // skapa banor
         $app->get('/tracks', \App\Action\Track\TrackAction::class . ':allTracks');
         $app->get('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':track');
@@ -56,6 +66,10 @@ return function (App $app) {
         $app->put('/user/{id}', \App\Action\User\UserAction::class . ':updateUser');
         $app->post('/user/', \App\Action\User\UserAction::class . ':createUser');
         $app->delete('/user/{id}', \App\Action\User\UserAction::class . ':deleteUser');
+
+        // Ingångar för statistik
+
+        // ingång för dashboard
     })->add(\App\Middleware\JwtTokenValidatorMiddleware::class)->add(\App\Middleware\PermissionvalidatorMiddleWare::class);
 
     };
