@@ -12,10 +12,10 @@ class SiteRepresentation implements JsonSerializable
     private string $site_uid;
     private string $place = "";
     private string $adress = "";
-    private string $location;
+    private string $location = "";
     private string $image = "";
     private string $description = "";
-    private ?Link $link = null;
+    private ?Link $link;
 
 
     /**

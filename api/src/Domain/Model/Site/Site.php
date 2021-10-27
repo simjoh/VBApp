@@ -2,9 +2,9 @@
 
 namespace App\Domain\Model\Site;
 
-use App\Domain\Model\User\Role;
+use JsonSerializable;
 
-class Site implements \JsonSerializable
+class Site implements JsonSerializable
 {
 
     private string $site_uid;

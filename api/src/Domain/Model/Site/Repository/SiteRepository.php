@@ -32,7 +32,7 @@ class SiteRepository extends BaseRepository
         }
         $sites = [];
         foreach ($data as $x =>  $row) {
-            $site = new Site($row["site_uid"], $row["place"], $row["adress"],$row['description'],$row["location"]);
+            $site = new Site($row["site_uid"], $row["place"], $row["adress"],$row['description'],is_null($row["location"]) ? "" : $row["location"]);
             array_push($sites,  $site);
         }
         return $sites;
