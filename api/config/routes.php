@@ -23,15 +23,26 @@ return function (App $app) {
     // User route group
     $app->group('/api', function(RouteCollectorProxy $apps) use ($app) {
 
+        $app->get('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}', \App\Action\Randonneur\RandonneurAction::class . ':getCheckpoints');
+        $app->post('/randonneur/{uid}/track/{track_uid}/checkpoint/{checkpointUid}/stamp', \App\Action\Randonneur\RandonneurAction::class . ':stamp');
+        $app->post('/randonneur/{uid}/track/{track_uid}/checkpoint/{checkpointUid}/markasdnf', \App\Action\Randonneur\RandonneurAction::class . ':markasDNF');
+        $app->put('/randonneur/{uid}/track/{track_uid}/checkpoint/{checkpointUid}/rollback', \App\Action\Randonneur\RandonneurAction::class . ':rollbackStamp');
 
-        // place istället för site?
+
+        // skapa banor
+        $app->get('/tracks', \App\Action\Track\TrackAction::class . ':allTracks');
+        $app->get('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':track');
+        $app->put('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':updateTrack');
+        $app->post('/track', \App\Action\Track\TrackAction::class . ':createTrack');
+
+        // Sites platser där en kotroll kommer att vara
         $app->get('/sites', \App\Action\Site\SitesAction::class . ':allSites');
         $app->get('/site/{siteUid}', \App\Action\Site\SitesAction::class . ':siteFor');
         $app->put('/site/{siteUid}', \App\Action\Site\SitesAction::class . ':updateSite');
         $app->delete('/site/{siteUid}', \App\Action\Site\SitesAction::class . ':deleteSite');
         $app->post('/site', \App\Action\Site\SitesAction::class . ':createSite');
 
-
+        // byt namn till checkpoints
         $app->get('/controls', \App\Action\Control\ControlAction::class . ':allControls');
         $app->get('/control/{controlUID}', \App\Action\Control\ControlAction::class . ':controlFor');
         $app->put('/control/{controlUID}', \App\Action\Control\ControlAction::class . ':updateControl');
@@ -39,7 +50,7 @@ return function (App $app) {
         $app->delete('/control/{controlUID}', \App\Action\Control\ControlAction::class . ':deleteControl');
         $app->post('/control/upload', \App\Action\Control\ControlAction::class . ':upload');
 
-
+        // användare i systemet
         $app->get('/users', \App\Action\User\UserAction::class . ':allUsers');
         $app->get('/user/{id}', \App\Action\User\UserAction::class . ':getUserById');
         $app->put('/user/{id}', \App\Action\User\UserAction::class . ':updateUser');

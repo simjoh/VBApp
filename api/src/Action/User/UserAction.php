@@ -4,11 +4,8 @@ namespace App\Action\User;
 
 use App\common\Action\BaseAction;
 use App\common\CleanJsonSerializer;
-use App\Domain\Authenticate\Service\AuthenticationService;
 use App\Domain\Model\User\Service\UserService;
 use App\Domain\Model\User\User;
-use Exception;
-use JMS\Serializer\SerializerBuilder;
 use Karriere\JsonDecoder\JsonDecoder;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;

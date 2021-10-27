@@ -2,21 +2,14 @@
 
 namespace App\Action\Site;
 
-use App\common\Rest\Link;
 use App\Domain\Model\Site\Rest\SiteRepresentation;
 use App\Domain\Model\Site\Rest\SiteRepresentationTransformer;
 use App\Domain\Model\Site\Service\SiteService;
-use App\Domain\Model\User\User;
-use InvalidArgumentException;
-use Karriere\JsonDecoder\Bindings\FieldBinding;
-use Karriere\JsonDecoder\ClassBindings;
 use Karriere\JsonDecoder\JsonDecoder;
-use Karriere\JsonDecoder\Transformer;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Routing\RouteContext;
-use stdClass;
 
 class SitesAction
 {
