@@ -3,17 +3,19 @@
 namespace App\Domain\Model\Site\Rest;
 
 use App\common\Rest\Link;
+use JsonSerializable;
 
-class SiteRepresentation implements \JsonSerializable
+class SiteRepresentation implements JsonSerializable
 {
 
 
     private string $site_uid;
-    private string $place;
-    private string $adress;
+    private string $place = "";
+    private string $adress = "";
     private string $location;
-    private string $image;
-    private Link $link;
+    private string $image = "";
+    private string $description = "";
+    private ?Link $link = null;
 
 
     /**
@@ -101,6 +103,22 @@ class SiteRepresentation implements \JsonSerializable
     public function setLink(Link $link): void
     {
         $this->link = $link;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
     }
 
 

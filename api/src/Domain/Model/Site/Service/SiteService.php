@@ -23,41 +23,44 @@ class SiteService
         return $this->toRepresentations($siteArray);
     }
 
-    public function siteFor($siteUid ): void {
-        $this->siterepository->siteFor($siteUid);
+    public function siteFor(string $siteUid): ?SiteRepresentation {
+      return   $this->toRepresentation($this->siterepository->siteFor($siteUid));
     }
 
-    public function updateSite($siteUid): void {
-        $this->siterepository->updateSite($siteUid);
+    public function updateSite(SiteRepresentation $siteRepresentation): void {
+        $this->siterepository->updateSite($this->toSite($siteRepresentation));
     }
 
     public function deleteSite($siteUid){
         $this->siterepository->deleteSite($siteUid);
     }
 
-    public function createSite(){
-        $this->siterepository->createSite();
+    public function createSite(SiteRepresentation $siteRepresentation){
+        $this->siterepository->createSite($this->toSite($siteRepresentation));
     }
 
 
     private function toRepresentations(array $SiteArray): array {
-
         $siteArray = array();
         foreach ($SiteArray as $x =>  $site) {
             array_push($siteArray, (object) $this->toRepresentation($site));
         }
         return $siteArray;
     }
-
     private function toRepresentation(Site $s): SiteRepresentation {
-        $siteRepresentation =  new SiteRepresentation();
+        $siteRepresentation = new SiteRepresentation();
         $siteRepresentation->setPlace($s->getPlace());
         $siteRepresentation->setSiteUid($s->getSiteUid());
         $siteRepresentation->setLocation($s->getLocation());
+        $siteRepresentation->setDescription($s->getDescription());
         // bygg på med lite länkar
         $link = new Link();
         $siteRepresentation->setLink($link);
         return $siteRepresentation;
+    }
+
+    private function toSite(SiteRepresentation $site){
+       return new Site($site->getSiteUid(), $site->getPlace(), $site->getAdress(), $site->getDescription() ,$site->getLocation());
     }
 
 

@@ -68,7 +68,7 @@ class UserAction extends BaseAction
         $this->userservice->createUser($user);
         $seriializer = new CleanJsonSerializer();
         $response->getBody()->write($seriializer->serialize($user));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
     public function deleteUser(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface

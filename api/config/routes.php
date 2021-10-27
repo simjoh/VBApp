@@ -26,10 +26,10 @@ return function (App $app) {
 
         // place istället för site?
         $app->get('/sites', \App\Action\Site\SitesAction::class . ':allSites');
-        $app->get('/site/{siteUID}', \App\Action\Control\ControlAction::class . ':siteFor');
-        $app->put('/site/{siteUID}', \App\Action\Control\ControlAction::class . ':updateSite');
-        $app->delete('/site/{siteUID}', \App\Action\Control\ControlAction::class . ':deleteSite');
-        $app->post('/site', \App\Action\Control\ControlAction::class . ':createSite');
+        $app->get('/site/{siteUid}', \App\Action\Site\SitesAction::class . ':siteFor');
+        $app->put('/site/{siteUid}', \App\Action\Site\SitesAction::class . ':updateSite');
+        $app->delete('/site/{siteUid}', \App\Action\Site\SitesAction::class . ':deleteSite');
+        $app->post('/site', \App\Action\Site\SitesAction::class . ':createSite');
 
 
         $app->get('/controls', \App\Action\Control\ControlAction::class . ':allControls');
