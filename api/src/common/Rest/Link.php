@@ -2,10 +2,12 @@
 
 namespace App\common\Rest;
 
-class Link implements \JsonSerializable
+use JsonSerializable;
+
+class Link implements JsonSerializable
 {
-    private string $rel = "Httpddddddddddd:";
-    private string $method;
+    private string $rel = "Htpddddddddddd:";
+    private string $method = "sssss";
     private string $url;
 
     public function jsonSerialize() {

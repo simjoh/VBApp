@@ -1,16 +1,26 @@
 <?php
 
-namespace App\Domain\Model\CheckPoint;
+namespace App\Domain\Model\CheckPoint\Rest;
 
-class Checkpoint
+use App\common\Rest\Link;
+use App\Domain\Model\Site\Rest\SiteRepresentation;
+use App\Domain\Model\Site\Site;
+use JsonSerializable;
+
+class CheckpointRepresentation implements JsonSerializable
 {
+
     private string $checkpoint_uid;
-    private string $site_uid;
+    private SiteRepresentation $site;
     private string $title;
     private string $description;
     private float $distance;
     private $opens;
-    private $closing;
+    private $closing = "ss";
+    private ?Link $link;
+
+
+
     /**
      * @return string
      */
@@ -28,19 +38,19 @@ class Checkpoint
     }
 
     /**
-     * @return string
+     * @return Site
      */
-    public function getSiteUid(): string
+    public function getSite(): SiteRepresentation
     {
-        return $this->site_uid;
+        return $this->site;
     }
 
     /**
-     * @param string $site_uid
+     * @param Site $site
      */
-    public function setSiteUid(string $site_uid): void
+    public function setSite(SiteRepresentation $site): void
     {
-        $this->site_uid = $site_uid;
+        $this->site = $site;
     }
 
     /**
@@ -108,24 +118,40 @@ class Checkpoint
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getClosing()
+    public function getClosing(): string
     {
         return $this->closing;
     }
 
     /**
-     * @param mixed $closing
+     * @param string $closing
      */
-    public function setClosing($closing): void
+    public function setClosing(string $closing): void
     {
         $this->closing = $closing;
     }
 
-    public function __construct()
+    /**
+     * @return Link|null
+     */
+    public function getLink(): ?Link
     {
+        return $this->link;
+    }
+
+    /**
+     * @param Link|null $link
+     */
+    public function setLink(?Link $link): void
+    {
+        $this->link = $link;
     }
 
 
+
+    public function jsonSerialize() {
+        return (object) get_object_vars($this);
+    }
 }

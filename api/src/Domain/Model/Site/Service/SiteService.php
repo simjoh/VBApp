@@ -6,8 +6,8 @@ use App\common\Rest\Link;
 use App\Domain\Model\Site\Repository\SiteRepository;
 use App\Domain\Model\Site\Rest\SiteRepresentation;
 use App\Domain\Model\Site\Site;
+use App\Domain\Ping\Service\PingService;
 use Psr\Container\ContainerInterface;
-use Ramsey\Uuid\Uuid;
 
 class SiteService
 {
