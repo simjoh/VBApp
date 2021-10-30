@@ -49,7 +49,7 @@ class CheckpointsService
         return $this->toRepresentation($checkpoint);
     }
 
-    public function deleteSite(?string $checkpoint_uid)
+    public function deleteCheckpoint(?string $checkpoint_uid)
     {
         $this->checkpointRepository->deleteCheckpoint($checkpoint_uid);
     }

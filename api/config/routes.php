@@ -39,11 +39,19 @@ return function (App $app) {
         $app->post('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}/randonneur/{uid}/rollback', \App\Action\Volonteer\VolonteerAction::class . ':rollbackStamp');
 
         // Ingångar för administratörer
-        // skapa banor
+        // skapa banor och läsa banor
         $app->get('/tracks', \App\Action\Track\TrackAction::class . ':allTracks');
         $app->get('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':track');
         $app->put('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':updateTrack');
         $app->post('/track', \App\Action\Track\TrackAction::class . ':createTrack');
+
+
+        // event
+        $app->get('/events', \App\Action\Event\EventAction::class . ':allEvents');
+        $app->get('/event/{eventUid}', \App\Action\Event\EventAction::class  . ':eventFor');
+        $app->put('/event/{eventUid}', \App\Action\Event\EventAction::class  . ':updateEvent');
+        $app->post('/event', \App\Action\Event\EventAction::class . ':createEvent');
+        $app->delete('/event/{eventUid}', \App\Action\Event\EventAction::class  . ':deleteEvent');
 
         // Sites platser där en kotroll kommer att vara
         $app->get('/sites', \App\Action\Site\SitesAction::class . ':allSites');

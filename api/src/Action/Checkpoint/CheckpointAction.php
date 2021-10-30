@@ -59,7 +59,7 @@ class CheckpointAction
     public function deleteCheckpoint(ServerRequestInterface $request, ResponseInterface $response){
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
-        $this->checkpointsService->deleteSite($route->getArgument('checkpointUID'));
+        $this->checkpointsService->deleteCheckpoint($route->getArgument('checkpointUID'));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
