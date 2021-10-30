@@ -75,7 +75,6 @@ class TrackService
 
     private function totrack(TrackRepresentation $trackrepresentation): Track
     {
-
         $track = new Track();
         $track->setDescription($trackrepresentation->getDescriptions());
         $track->setTitle($trackrepresentation->getTitle());
@@ -84,15 +83,17 @@ class TrackService
         $track->setDistance($trackrepresentation->getDistance());
         $track->setTrackUid($trackrepresentation->getTrackUid());
         $track->setEventUid($trackrepresentation->getEventUid());
-
-        $checkpoints = $trackrepresentation->getCheckpoints();
-        if(!empty($checkpoints)){
-            $checkpoints_uid = [];
-            foreach ($checkpoints as $chp => $checkpoint){
-                $checkpoints_uid[]  =  $checkpoint['checkpoint_uid'];
+        if($trackrepresentation->getCheckpoints() !== null){
+            $checkpoints = $trackrepresentation->getCheckpoints();
+            if(!empty($checkpoints)){
+                $checkpoints_uid = [];
+                foreach ($checkpoints as $chp => $checkpoint){
+                    $checkpoints_uid[]  =  $checkpoint['checkpoint_uid'];
+                }
+                $track->setCheckpoints($checkpoints_uid);
             }
-            $track->setCheckpoints($checkpoints_uid);
         }
+
        return $track;
     }
 

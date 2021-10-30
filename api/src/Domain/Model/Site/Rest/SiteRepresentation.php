@@ -7,8 +7,6 @@ use JsonSerializable;
 
 class SiteRepresentation implements JsonSerializable
 {
-
-
     private string $site_uid;
     private string $place = "";
     private string $adress = "";

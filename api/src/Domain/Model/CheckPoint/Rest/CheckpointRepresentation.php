@@ -2,6 +2,7 @@
 
 namespace App\Domain\Model\CheckPoint\Rest;
 
+
 use App\common\Rest\Link;
 use App\Domain\Model\Site\Rest\SiteRepresentation;
 use App\Domain\Model\Site\Site;
@@ -11,12 +12,12 @@ class CheckpointRepresentation implements JsonSerializable
 {
 
     private string $checkpoint_uid;
-    private SiteRepresentation $site;
-    private string $title;
-    private string $description;
-    private float $distance;
-    private $opens;
-    private $closing = "ss";
+    private ?SiteRepresentation $site;
+    private ?string $title = "";
+    private ?string $description = "";
+    private ?float $distance = 0;
+    private $opens = "";
+    private $closing = "";
     private ?Link $link;
 
 

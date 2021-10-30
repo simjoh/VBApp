@@ -75,7 +75,12 @@ class TrackRepresentation implements JsonSerializable
      */
     public function getCheckpoints(): array
     {
-        return $this->checkpoints;
+        if(empty($this->checkpoints)){
+            return array();
+        } else {
+            return $this->checkpoints;
+        }
+
     }
 
     /**

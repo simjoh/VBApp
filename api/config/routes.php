@@ -53,12 +53,12 @@ return function (App $app) {
         $app->post('/site', \App\Action\Site\SitesAction::class . ':createSite');
 
         // byt namn till checkpoints
-        $app->get('/checkpoints', \App\Action\Control\CheckpointAction::class . ':allCheckpoints');
-        $app->get('/checkpoint/{checkpointUID}', \App\Action\Control\CheckpointAction::class . ':checkpointFor');
-        $app->put('/checkpoint/{checkpointUID}', \App\Action\Control\CheckpointAction::class . ':updateCheckpoint');
-        $app->post('/checkpoint', \App\Action\Control\CheckpointAction::class . ':createControl');
-        $app->delete('/checkpoint/{checkpointUID}', \App\Action\Control\CheckpointAction::class . ':deleteCheckpoint');
-        $app->post('/checkpoint/upload', \App\Action\Control\CheckpointAction::class . ':upload');
+        $app->get('/checkpoints', \App\Action\Checkpoint\CheckpointAction::class . ':allCheckpoints');
+        $app->get('/checkpoint/{checkpointUID}', \App\Action\Checkpoint\CheckpointAction::class . ':checkpointFor');
+        $app->put('/checkpoint/{checkpointUID}', \App\Action\Checkpoint\CheckpointAction::class . ':updateCheckpoint');
+        $app->post('/checkpoint', \App\Action\Checkpoint\CheckpointAction::class . ':createCheckpoint');
+        $app->delete('/checkpoint/{checkpointUID}', \App\Action\Checkpoint\CheckpointAction::class . ':deleteCheckpoint');
+        $app->post('/checkpoint/upload', \App\Action\Checkpoint\CheckpointAction::class . ':upload');
 
         // användare i systemet
         $app->get('/users', \App\Action\User\UserAction::class . ':allUsers');
