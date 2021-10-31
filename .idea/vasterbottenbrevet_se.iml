@@ -41,6 +41,7 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/jms/metadata" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/karriere/json-decoder" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/opis/string" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/utils" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
