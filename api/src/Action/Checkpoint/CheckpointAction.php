@@ -15,6 +15,8 @@ use Slim\Routing\RouteContext;
 class CheckpointAction
 {
 
+
+
     public function __construct(ContainerInterface $c, CheckpointsService $checkpointsService)
     {
         $this->checkpointsService = $checkpointsService;
@@ -54,6 +56,7 @@ class CheckpointAction
     }
 
     public function upload(ServerRequestInterface $request, ResponseInterface $response){
+        $files = $request->getUploadedFiles();
         $response->getBody()->write((string)json_encode(['ladda upp bild' => true]));
     }
     public function deleteCheckpoint(ServerRequestInterface $request, ResponseInterface $response){

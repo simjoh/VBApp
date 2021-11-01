@@ -2,15 +2,10 @@
 
 namespace App\Action\Event;
 
-use App\Domain\Model\CheckPoint\Rest\CheckpointRepresentation;
-use App\Domain\Model\CheckPoint\Rest\CheckpointRepresentationTranformer;
 use App\Domain\Model\Event\Rest\EventRepresentation;
 use App\Domain\Model\Event\Rest\EventRepresentationTransformer;
 use App\Domain\Model\Event\Service\EventService;
 use Karriere\JsonDecoder\JsonDecoder;
-use Nette\Utils\DateTime;
-use Nette\Utils\Json;
-use Nette\Utils\Random;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
