@@ -1,9 +1,9 @@
 
 
 <div class="login-form" >
-  <brevet-logo [heigth]="200" [width]="200"></brevet-logo>
-  <form name="form" #form="ngForm"  *ngIf="loginModel$ | async as model" (ngSubmit)="login()" >
 
+  <form name="form" #form="ngForm"  *ngIf="loginModel$ | async as model" (ngSubmit)="login()" >
+    <brevet-logo [heigth]="180" [width]="180"></brevet-logo>
     <h2 class="text-center">Log in</h2>
     <div class="form-group">
       <input type="text" class="form-control" placeholder="Username"  name="usernam"  [(ngModel)]="model.username" required>

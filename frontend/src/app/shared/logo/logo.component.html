@@ -1,4 +1,3 @@
-<ng-container *ngIf="logoinfo | async as viewInormation">
-
-  <img [src]="viewInormation.logo" [attr.width]="viewInormation.width" [attr.height]="viewInormation.heigth"  class="ml-7" alt="">
+<ng-container class="brevet-logo"  *ngIf="logoinfo | async as viewInormation">
+  <img  [src]="viewInormation.logo" [attr.width]="viewInormation.width" [attr.height]="viewInormation.heigth"  class="ml-6" alt="">
 </ng-container>
