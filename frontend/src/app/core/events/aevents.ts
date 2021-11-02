@@ -1,9 +1,11 @@
 export enum EventType {
   Error,
+  Login
 }
 
 export const eventGroup = {
-  error: [EventType.Error]
+  error: [EventType.Error],
+  login: [EventType.Login]
 };
 
 export class EventInformation {

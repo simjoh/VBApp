@@ -2,6 +2,10 @@ import {Component, OnInit, ChangeDetectionStrategy, ViewChild, AfterViewInit} fr
 import {AuthService} from "../core/auth/auth.service";
 import {LoginComponentService} from "./login-component.service";
 import {NgForm} from "@angular/forms";
+import {EventsService} from "../core/events/events.service";
+import {EventType} from "../core/events/aevents";
+import {map, tap} from "rxjs/operators";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'brevet-login',
@@ -15,8 +19,19 @@ export class LoginComponent implements  OnInit{
   @ViewChild("form") form: NgForm
   loginModel$ = this.loginComponetService.loginModel$
 
-  constructor(private authServiceService: AuthService, private loginComponetService: LoginComponentService) {
+  constructor(private authServiceService: AuthService, private loginComponetService: LoginComponentService, private eventService: EventsService) {
   }
+
+  loginerror$ = this.eventService.händelser([EventType.Error], 200).pipe(
+    map((event) => {
+      return {
+        meddelande: event.data,
+      } as ViewInformation;
+    }),
+    tap((vyinfo) => {
+      console.log("ErrorInfo", vyinfo);
+    })
+  ) as Observable<ViewInformation>;
 
   login(){
     // @ts-ignore
@@ -33,6 +48,10 @@ export class LoginComponent implements  OnInit{
   }
 
 
+}
+
+export class ViewInformation {
+  meddelande: string;
 }
 
 

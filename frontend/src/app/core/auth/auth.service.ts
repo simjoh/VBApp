@@ -1,14 +1,16 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {map} from "rxjs/operators";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import {catchError, map} from "rxjs/operators";
 
-import {BehaviorSubject, Observable, ReplaySubject, Subject} from "rxjs";
+import {Observable, of, ReplaySubject} from "rxjs";
 import {AuthenticatedService} from "./authenticated.service";
-import {Router} from "@angular/router";
+import {Event, Router} from "@angular/router";
 import {LoginModel} from "../../login/login-model";
 import {environment} from "../../../environments/environment";
 import {Role} from "./roles";
 import {ActiveUser} from "./active-user";
+import {EventsService} from "../events/events.service";
+import {AEvent, EventType} from "../events/aevents";
 
 
 @Injectable({
@@ -28,7 +30,7 @@ export class AuthService {
   ) as Observable<ActiveUser>;
 
 
-  constructor(private httpClient: HttpClient, private authenticatedService: AuthenticatedService,private router: Router) { }
+  constructor(private httpClient: HttpClient, private authenticatedService: AuthenticatedService,private router: Router, private eventService: EventsService) { }
 
   async loginUser(loginModel$: Observable<LoginModel>)  {
 
@@ -37,16 +39,24 @@ export class AuthService {
     }
     await loginModel$.pipe(
       map(model => {
-        this.httpClient.post<any>(this.backendUrl() + "/login", this.createPayload(model))
+        this.httpClient.post<any>(this.backendUrl() + "login", this.createPayload(model))
           .pipe(
             map(response => {
               console.log(response);
               localStorage.setItem('loggedInUser', JSON.stringify(response.token));
               this.authenticatedService.changeStatus(true);
               return response;
-            })).toPromise().then((data) => {
-            this.setActiveUser(data)
-            this.redirect(data.role);
+            }),
+            catchError((error: HttpErrorResponse) => {
+              this.eventService.nyHändelse(EventType.Error, new AEvent(EventType.Error, "Unable to login"));
+              return of(null);
+            })
+            ).toPromise().then((data) => {
+              if (data){
+                this.setActiveUser(data)
+                this.redirect(data.role);
+              }
+          this.logoutUser();
         });
       })
     ).toPromise();
