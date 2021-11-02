@@ -21,7 +21,6 @@ return function (App $app) {
 
     // Ingång för att kunna visa en cyklists passeringar under ett lopp
 
-
     // User route group
     $app->group('/api', function(RouteCollectorProxy $apps) use ($app) {
 
@@ -44,7 +43,6 @@ return function (App $app) {
         $app->get('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':track');
         $app->put('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':updateTrack');
         $app->post('/track', \App\Action\Track\TrackAction::class . ':createTrack');
-
 
         // event
         $app->get('/events', \App\Action\Event\EventAction::class . ':allEvents');
@@ -76,7 +74,6 @@ return function (App $app) {
         $app->delete('/user/{id}', \App\Action\User\UserAction::class . ':deleteUser');
 
         // Ingångar för statistik
-
         // ingång för dashboard
 
         // Deltagare på olika banor och event
