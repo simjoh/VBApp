@@ -54,9 +54,11 @@ export class AuthService {
             ).toPromise().then((data) => {
               if (data){
                 this.setActiveUser(data)
-                this.redirect(data.role);
+                this.redirect(data.roles);
+              } else {
+                this.logoutUser();
               }
-          this.logoutUser();
+
         });
       })
     ).toPromise();
@@ -73,7 +75,11 @@ export class AuthService {
     this.authSubjet.next(activeUser)
   }
 
-  private redirect(role: string): void{
+  private redirect(roles: string): void{
+    let role = null;
+    if (roles.length === 1){
+      role = roles[0];
+    }
     if ((role === Role.ADMIN|| role === Role.SUPERUSER ||  role === Role.USER)) {
       this.router.navigate(['admin']);
     } else if (role === Role.COMPETITOR){

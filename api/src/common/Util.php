@@ -2,9 +2,6 @@
 
 namespace App\common;
 
-
- use App\common\Exceptions\BrevetException;
-
  final class Util
 {
 
@@ -23,5 +20,9 @@ namespace App\common;
      public static function bin2uuid($value) {
          $string = bin2hex($value);
          return preg_replace('/([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})/', '$1-$2-$3-$4-$5', $string);
+     }
+
+     function get_current_time() {
+         return date("H:i");
      }
 }

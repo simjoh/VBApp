@@ -19,7 +19,8 @@
     "ramsey/uuid": "^4.2",
     "selective/basepath": "^2.1",
     "slim/psr7": "^1.2",
-    "slim/slim": "^4.6"
+    "slim/slim": "^4.6",
+    "ext-mysqli": "*"
   },
   "autoload": {
     "psr-4": {

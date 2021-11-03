@@ -1,5 +1,6 @@
 <?php
 
+use App\common\PDO2;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\App;

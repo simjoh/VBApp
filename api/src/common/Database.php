@@ -2,6 +2,9 @@
 
 namespace App\common;
 
+use PDO;
+use Psr\Container\ContainerInterface;
+
 class Database
 {
 
