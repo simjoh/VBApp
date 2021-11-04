@@ -2,7 +2,9 @@
 
 namespace App\Domain\Model\Competitor;
 
-class Competitor
+use JsonSerializable;
+
+class Competitor implements JsonSerializable
 {
 
     private string $id;
@@ -10,6 +12,7 @@ class Competitor
     private string $familyname;
     private string $username;
     private string $token;
+    private ?int $startnumber;
     private  $roles = array();
 
 
@@ -92,6 +95,30 @@ class Competitor
     public function setRoles(array $roles): void
     {
         $this->roles = $roles;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStartnumber(): ?int
+    {
+        if(isset($this->startnumber)){
+            return $this->startnumber;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param int $startnumber
+     */
+    public function setStartnumber(int $startnumber): void
+    {
+        $this->startnumber = $startnumber;
+    }
+
+    public function jsonSerialize() {
+        return (object) get_object_vars($this);
     }
 
 

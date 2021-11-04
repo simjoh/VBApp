@@ -3,7 +3,9 @@
 namespace App\Domain\Model\User;
 
 
-class User
+use JsonSerializable;
+
+class User implements JsonSerializable
 {
     private string $id;
     private string $givenname;
@@ -110,18 +112,7 @@ class User
         $this->username = $username;
     }
 
-
-//    public function jsonSerialize()
-//    {
-//        return [
-//            'user' => [
-//                'id' => $this->id,
-//                'givenname' => $this->getGivenname(),
-//                'familyname' => $this->getFamilyname(),
-//                'token' => $this->getToken(),
-//                'username' => $this->getUsername(),
-//                'roles' => $this->getRoles(),
-//            ]
-//        ];
-//    }
+    public function jsonSerialize() {
+        return (object) get_object_vars($this);
+    }
 }
