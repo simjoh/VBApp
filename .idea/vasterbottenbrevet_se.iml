@@ -42,6 +42,10 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/karriere/json-decoder" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/opis/string" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/utils" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/slim/twig-view" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/twig/twig" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-mbstring" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/slim/php-view" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

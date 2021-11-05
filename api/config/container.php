@@ -1,11 +1,12 @@
 <?php
 
-use App\common\PDO2;
+
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\App;
 use Slim\Factory\AppFactory;
 use Slim\Middleware\ErrorMiddleware;
+use Slim\Views\PhpRenderer;
 
 return [
     'settings' => function () {
@@ -49,6 +50,10 @@ return [
         $dsn = "mysql:host=$host;dbname=$dbname;port=$port;charset=$charset";
 
         return new PDO($dsn, $username, $password);
+    },
+
+    PhpRenderer::class => function (ContainerInterface $container) {
+        return new PhpRenderer($container->get('settings')['view']['path']);
     },
 
 

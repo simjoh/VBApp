@@ -36,6 +36,10 @@
       <path value="$PROJECT_DIR$/api/vendor/karriere/json-decoder" />
       <path value="$PROJECT_DIR$/api/vendor/opis/string" />
       <path value="$PROJECT_DIR$/api/vendor/nette/utils" />
+      <path value="$PROJECT_DIR$/api/vendor/slim/twig-view" />
+      <path value="$PROJECT_DIR$/api/vendor/twig/twig" />
+      <path value="$PROJECT_DIR$/api/vendor/symfony/polyfill-mbstring" />
+      <path value="$PROJECT_DIR$/api/vendor/slim/php-view" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0">

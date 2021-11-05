@@ -19,7 +19,7 @@ class PingAction extends BaseAction
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $response->getBody()->write((string)json_encode(['Jag mår bra' => $this->pingservice->ping()]));
+        $response->getBody()->write((string)json_encode(['healthy' => $this->pingservice->ping()]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 

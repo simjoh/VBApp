@@ -2,12 +2,15 @@
 
 use App\Middleware\ApiKeyValidatorMiddleware;
 use Slim\App;
+use Slim\Psr7\Response;
 use Slim\Routing\RouteCollectorProxy;
+use Slim\Views\PhpRenderer;
+use Slim\Views\Twig;
 
 return function (App $app) {
 
     // validate api key for all requests
-    $app->add(ApiKeyValidatorMiddleware::class . ':validate');
+   $app->add(ApiKeyValidatorMiddleware::class . ':validate');
 
     // add more endpoints here
     $app->post('/login', \App\Action\Login\LoginAction::class)->setName('login');
@@ -18,11 +21,16 @@ return function (App $app) {
      //$app->get('/bla/bla/bla', \App\Action\HomeAction::class)->setName('home');
 
     //lägg till ingång för att kunna generera resultat på vb.se
+    $app->get('/results/year/{year}/event/{eventUid}', \App\Controller\ResultsController::class . ':getResultView')->setName('result');
+    $app->get('/resultList/year/{year}/event/{eventUid}', \App\Controller\ResultsController::class . ':getResultList');
 
     // Ingång för att kunna visa en cyklists passeringar under ett lopp
 
+
     // User route group
     $app->group('/api', function(RouteCollectorProxy $apps) use ($app) {
+
+
 
         // ingångar som används av en cyklist
         $app->get('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}', \App\Action\Randonneur\RandonneurAction::class . ':getCheckpoint');

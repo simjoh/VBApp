@@ -3,6 +3,7 @@
 namespace App\Middleware;
 
 
+use Nette\Utils\Strings;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Exception\HttpForbiddenException;
@@ -17,7 +18,10 @@ class ApiKeyValidatorMiddleware
     {
 
         $path = $request->getUri()->getPath();
-        // Ska inte ligga här
+
+        if($this->ignoreApiKey($path)){
+            return $handler->handle($request);
+        }
         $api_key = "notsecret_developer_key";
 
         $api_key_header = $request->getHeaderLine("API_KEY");
@@ -29,6 +33,20 @@ class ApiKeyValidatorMiddleware
 
       return $handler->handle($request);
 
+    }
+
+    private function ignoreApiKey(string $url): bool{
+        $pathToIgnore = $this->pathsToIgnore();
+        foreach ($pathToIgnore as $item){
+            if(Strings::contains($url, $item)){
+                return True;
+            }
+        }
+        return False;
+    }
+
+    private function pathsToIgnore(): array{
+        return array("/api/results/year/", "/api/resultList/year");
     }
 
 }

@@ -5,6 +5,8 @@ use Psr\Log\LoggerInterface;
 use Slim\App;
 use Slim\Middleware\ErrorMiddleware;
 use Selective\BasePath\BasePathMiddleware;
+use Slim\Views\Twig;
+use Slim\Views\TwigMiddleware;
 
 return function (App $app) {
     // Parse json, form data and xml
@@ -48,6 +50,11 @@ return function (App $app) {
 
         return $response->withStatus(500);
     };
+
+    $twig = Twig::create('../templates', ['cache' => false]);
+
+// Add Twig-View Middleware
+    $app->add(TwigMiddleware::create($app, $twig));
 
 // Add Error Middleware
     $errorMiddleware = $app->addErrorMiddleware(true, true, true);

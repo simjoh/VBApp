@@ -9,6 +9,7 @@
   "require": {
     "php": "^7.4 || ^8.0",
     "ext-json": "*",
+    "ext-mysqli": "*",
     "ext-pdo": "*",
     "jms/serializer": "^3.15",
     "karriere/json-decoder": "^4.0",
@@ -18,9 +19,10 @@
     "php-di/php-di": "^6.3",
     "ramsey/uuid": "^4.2",
     "selective/basepath": "^2.1",
+    "slim/php-view": "^3.1",
     "slim/psr7": "^1.2",
     "slim/slim": "^4.6",
-    "ext-mysqli": "*"
+    "slim/twig-view": "^3.2"
   },
   "autoload": {
     "psr-4": {
