@@ -2,6 +2,8 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {MenuComponentService} from "./menu-component.service";
 import {map} from "rxjs/operators";
 import {Observable} from "rxjs";
+import { MenuItem } from 'primeng/api';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 @Component({
   selector: 'brevet-menu',
@@ -12,12 +14,15 @@ import {Observable} from "rxjs";
 })
 export class MenuComponent implements OnInit{
 
+  isMenuCollapsed = false
+
   $activeUser = this.menucomponentService.$activeuser.pipe(
     map(user =>{
       const vy = new VyInformation()
       for (var val of user.roles) {
         if (val === "COMPETITOR"){
             vy.competitor = true
+            this.isMenuCollapsed = false;
         }
         if (val === "ADMIN"){
           vy.admin = true;
@@ -34,7 +39,14 @@ export class MenuComponent implements OnInit{
     })
   ) as Observable<VyInformation>
 
-  constructor(private menucomponentService: MenuComponentService) { }
+  constructor(private menucomponentService: MenuComponentService,  private deviceService: DeviceDetectorService) {
+    if(this.deviceService.isDesktop()){
+      this.isMenuCollapsed = false;
+    }
+    if (this.deviceService.isMobile()){
+      this.isMenuCollapsed = true;
+    }
+  }
 
   logout() {
     this.menucomponentService.logoutUser();

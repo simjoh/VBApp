@@ -10,7 +10,7 @@ class User implements JsonSerializable
     private string $id;
     private string $givenname;
     private string $familyname;
-    private string $username;
+    private string $username ="";
     private string $token;
     private  $roles = array();
 

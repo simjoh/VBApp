@@ -55,13 +55,12 @@ class UserRepository extends BaseRepository
             return array();
         }
         $users = [];
-        print_r($data);
         foreach ($data as $row) {
             $user = new User();
             $user->setId($row['user_uid']);
             $user->setGivenname($row['given_name']);
             $user->setFamilyname($row['family_name']);
-            $user->setFamilyname($row['user_name']);
+            $user->setUsername($row['user_name']);
             $user->setToken('');
 
             array_push($users, $user);

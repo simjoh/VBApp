@@ -2,3 +2,15 @@
 
 /* Importing Bootstrap SCSS file. */
 @import '~bootstrap/scss/bootstrap';
+
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.flex-container {
+  display: flex;
+}

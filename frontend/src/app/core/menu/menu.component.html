@@ -1,36 +1,49 @@
 <ng-container *ngIf="($activeUser | async) as user">
-<nav class="navbar navbar-light bg-light">
-  <a class="navbar-brand" href="#">
-    <img src="/assets/brand_brevet.png" width="200" height="50" class="d-inline-block align-top" alt="">
-  </a>
-  <ul class="nav navbar-nav navbar-right">
-    <li>
-      <div>
-        Inloggad som: {{user.namn}}
+
+  <nav class="navbar navbar-expand-lg navbar-light  bg-light">
+    <a class="navbar-brand" href="#">
+      <img src="/assets/brand_brevet.png" width="200" height="50" class="align-top" alt="">
+    </a>
+    <button class="navbar-toggler" type="button" (click)="isMenuCollapsed = !isMenuCollapsed">
+      &#9776;
+    </button>
+      <div class="justify-content-end " id="navbarCollapse">
+        <span class=" py-0 px-lg-1 px-md-1 px-sm-1">
+          Inloggad som: {{user.namn}}
+        </span>
+        <ul class="navbar-nav mb-auto mt-0 px-lg-1 px-md-1 px-sm-1">
+          <li class="nav-item"> Språk:
+          <img [src]="'https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg' " class="mr-2" style="width: 20px" alt="Germany">
+          <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg' " class="mr-2" style="width: 20px" alt="France">
+          <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/f/fe/Flag_of_Sweden_%28Pantone%29.png'" class="mr-2" style="width: 20px" alt="Sweden">
+          <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/a/ae/Flag_of_the_United_Kingdom.svg'" class="mr-2" style="width: 20px" alt="United kingdom">
+            <a href=""  (click)="logout()">Logout</a>
+          </li>
+        </ul>
       </div>
-      <div>
-        <a href="" (click)="logout()">Logout</a>
-      </div>
-    </li>
-    <li>
-      <img [src]="'https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg' " class="mr-2" style="width: 20px" alt="Germany">
-      <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg' " class="mr-2" style="width: 20px" alt="France">
-      <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/f/fe/Flag_of_Sweden_%28Pantone%29.png'" class="mr-2" style="width: 20px" alt="Sweden">
-      <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/a/ae/Flag_of_the_United_Kingdom.svg'" class="mr-2" style="width: 20px" alt="United kingdom">
-    </li>
+  </nav>
+
+  <div [ngbCollapse]="isMenuCollapsed" class="collapse navbar-collapse">
+  <ul  class="menu nav nav-tabs bg-light mb-4">
+    <li  *ngIf="user.admin || user.superuser" class="nav-item active ml-0"><a  class="nav-link" routerLink="/admin" routerLinkActive="active">Start</a></li>
+    <li  *ngIf="user.admin || user.superuser" class="nav-item active ml-0"><a  class="nav-link" routerLink="/competitors-list-component" routerLinkActive="active">Deltagare</a></li>
+    <!-- <li><a routerLink="/kontroller" routerLinkActive="active">Kontroller</a></li> -->
+    <!-- <li><a routerLink="/kontroll-form" routerLinkActive="active">Kontroll Formulär</a></li> -->
+    <li *ngIf="user.admin || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-kontroller-combiner" routerLinkActive="active">Kontroller</a></li>
+    <li *ngIf="user.admin || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-dashboard" routerLinkActive="active">Dashboard</a></li>
+    <li *ngIf="user.admin || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-user-admin" routerLinkActive="active">Administrera användare</a></li>
+    <li *ngIf="user.competitor || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-maps"  routerLinkActive="active">Karta</a></li>
+    <li *ngIf="user.competitor || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-list" routerLinkActive="active">Lista</a></li>
   </ul>
-</nav>
-<nav class="nav">
-  <li *ngIf="user.admin || user.superuser" class="nav-item"><a  class="nav-link" routerLink="/competitors-list-component" routerLinkActive="active">Deltagare</a></li>
-  <!-- <li><a routerLink="/kontroller" routerLinkActive="active">Kontroller</a></li> -->
-  <!-- <li><a routerLink="/kontroll-form" routerLinkActive="active">Kontroll Formulär</a></li> -->
-  <li *ngIf="user.admin || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-kontroller-combiner" routerLinkActive="active">Kontroller</a></li>
-  <li *ngIf="user.admin || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-dashboard" routerLinkActive="active">Dashboard</a></li>
-  <li *ngIf="user.admin || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-user-admin" routerLinkActive="active">Administrera användare</a></li>
-  <li *ngIf="user.competitor || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-maps"  routerLinkActive="active">Karta</a></li>
-  <li *ngIf="user.competitor || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-list" routerLinkActive="active">Lista</a></li>
-</nav>
+    </div>
+
+
+
+
 </ng-container>
+
+
+
 
 
 

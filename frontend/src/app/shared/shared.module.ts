@@ -4,6 +4,10 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CardModule} from "primeng/card";
 import {ButtonModule} from "primeng/button";
 import { LogoComponent } from './logo/logo.component';
+import {TabMenuModule} from 'primeng/tabmenu';
+import {MenubarModule} from 'primeng/menubar';
+import {NgbCollapseModule} from "@ng-bootstrap/ng-bootstrap";
+
 
 
 
@@ -13,10 +17,13 @@ import { LogoComponent } from './logo/logo.component';
   ],
   imports: [
     CommonModule,
+    NgbCollapseModule,
     CardModule,
     ButtonModule,
+    TabMenuModule,
+    MenubarModule,
     FormsModule, ReactiveFormsModule
-  ], exports: [CommonModule, FormsModule, ReactiveFormsModule, CardModule, ButtonModule, LogoComponent,DatePipe],
+  ], exports: [CommonModule,TabMenuModule,FormsModule, MenubarModule,ReactiveFormsModule, CardModule, ButtonModule, LogoComponent,DatePipe,NgbCollapseModule],
   providers: [DatePipe]
 })
 export class SharedModule { }

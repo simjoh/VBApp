@@ -4,6 +4,7 @@ import { MenuComponent } from './menu/menu.component';
 import {SharedModule} from "../shared/shared.module";
 import {RouterModule} from "@angular/router";
 import {CardModule} from "primeng/card";
+import {AppModule} from "../app.module";
 
 
 
@@ -11,11 +12,11 @@ import {CardModule} from "primeng/card";
   declarations: [
     MenuComponent
   ],
-  imports: [
-    RouterModule,
-    CommonModule,
-    SharedModule
-  ],
+    imports: [
+        RouterModule,
+        CommonModule,
+        SharedModule,
+    ],
   exports: [MenuComponent],
   providers: [
     {provide: Window, useValue: window},

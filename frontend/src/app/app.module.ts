@@ -26,6 +26,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {ButtonModule} from "primeng/button";
 import {InputTextModule} from "primeng/inputtext";
 import {CardModule} from "primeng/card";
+import {TokenHeaderInterceptor} from "./core/interceptors/token-header.interceptor";
 @NgModule({
   declarations: [
     AppComponent,
@@ -56,7 +57,7 @@ import {CardModule} from "primeng/card";
     InputTextModule,
 
   ],
-  exports: [CardModule],
+  exports: [CardModule,NgbModule],
   providers: [
     {
     provide: HTTP_INTERCEPTORS,
@@ -75,6 +76,11 @@ import {CardModule} from "primeng/card";
     {
       provide: HTTP_INTERCEPTORS,
       useClass: NotauthorizedInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenHeaderInterceptor,
       multi: true
     }],
   bootstrap: [AppComponent]

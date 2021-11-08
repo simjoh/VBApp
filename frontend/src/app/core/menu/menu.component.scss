@@ -1,0 +1,21 @@
+.menu {
+  .nav-item .nav-link.active {
+    color: #121313;
+    background: #f8b62a !important;
+  }
+  .nav-link {
+    color: #121313;
+  }
+
+  flex-wrap: wrap;
+}
+
+@media (min-width: 992px) {
+  .navbar-expand-lg {
+    flex-flow: row nowrap;
+    justify-content: space-between;
+  }
+}
+
+
+
