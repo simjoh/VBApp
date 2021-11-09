@@ -7,6 +7,7 @@ import { LogoComponent } from './logo/logo.component';
 import {TabMenuModule} from 'primeng/tabmenu';
 import {MenubarModule} from 'primeng/menubar';
 import {NgbCollapseModule} from "@ng-bootstrap/ng-bootstrap";
+import {ProgressSpinnerModule} from 'primeng/progressspinner';
 
 
 
@@ -18,12 +19,13 @@ import {NgbCollapseModule} from "@ng-bootstrap/ng-bootstrap";
   imports: [
     CommonModule,
     NgbCollapseModule,
+    ProgressSpinnerModule,
     CardModule,
     ButtonModule,
     TabMenuModule,
     MenubarModule,
     FormsModule, ReactiveFormsModule
-  ], exports: [CommonModule,TabMenuModule,FormsModule, MenubarModule,ReactiveFormsModule, CardModule, ButtonModule, LogoComponent,DatePipe,NgbCollapseModule],
+  ], exports: [CommonModule,TabMenuModule,FormsModule, MenubarModule,ReactiveFormsModule, CardModule, ButtonModule, LogoComponent,DatePipe,NgbCollapseModule, ProgressSpinnerModule],
   providers: [DatePipe]
 })
 export class SharedModule { }

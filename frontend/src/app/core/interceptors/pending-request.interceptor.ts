@@ -5,12 +5,15 @@ import {
   HttpEvent,
   HttpInterceptor
 } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import {finalize} from "rxjs/operators";
+import {asapScheduler, BehaviorSubject, Observable} from 'rxjs';
+import {finalize, observeOn} from "rxjs/operators";
 import {PendingRequestsService} from "../pending-requests.service";
 
 @Injectable()
 export class PendingRequestInterceptor implements HttpInterceptor {
+
+  countSubject = new BehaviorSubject(0);
+  count$ = this.countSubject.asObservable().pipe(observeOn(asapScheduler));
 
   constructor(private pendingRequestsService: PendingRequestsService) {
   }

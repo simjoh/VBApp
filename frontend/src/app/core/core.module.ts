@@ -5,19 +5,21 @@ import {SharedModule} from "../shared/shared.module";
 import {RouterModule} from "@angular/router";
 import {CardModule} from "primeng/card";
 import {AppModule} from "../app.module";
+import { LoaderComponent } from './loader/loader.component';
 
 
 
 @NgModule({
   declarations: [
-    MenuComponent
+    MenuComponent,
+    LoaderComponent
   ],
     imports: [
         RouterModule,
         CommonModule,
         SharedModule,
     ],
-  exports: [MenuComponent],
+  exports: [MenuComponent,LoaderComponent],
   providers: [
     {provide: Window, useValue: window},
   ],
