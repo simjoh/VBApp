@@ -1,0 +1,25 @@
+#loader {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  margin-left: -3rem;
+  z-index: 2000;
+}
+
+@keyframes p-progress-spinner-color {
+  100%,
+  0% {
+    stroke: #d62d20;
+  }
+  40% {
+    stroke: #0057e7;
+  }
+  66% {
+    stroke: #bbbbbb;
+  }
+  80%,
+  100% {
+    stroke: #ffa700;
+  }
+}
+
