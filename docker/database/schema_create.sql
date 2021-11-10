@@ -83,6 +83,7 @@ CREATE TABLE  track (
     event_uid char (36) NOT NULL,
     description varchar(500)  NOT NULL,
     distance DECIMAL(10,2) DEFAULT NULL,
+    start_date_time DATETIME DEFAULT NULL,
     FOREIGN KEY (event_uid) REFERENCES event(event_uid),
     PRIMARY KEY (track_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -93,6 +94,8 @@ CREATE TABLE site (
     place varchar(100) NOT NULL,
     adress varchar(100) NOT NULL,
     description varchar(500)  NOT NULL,
+    lat DECIMAL(10,8),
+    lng DECIMAL(11,8),
     location POINT ,
     PRIMARY KEY (site_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -133,10 +136,11 @@ CREATE TABLE participant (
     startnumber INTEGER UNSIGNED NOT NULL,
     finished BOOLEAN DEFAULT false,
     acpkod INTEGER UNSIGNED,
-    club char (100),
+    club_uid char (36),
     time Time,
     dns BOOLEAN DEFAULT false,
     dnf BOOLEAN DEFAULT false,
+    brevenr INTEGER UNSIGNED,
     PRIMARY KEY ( participant_uid, track_uid ,competitor_uid),
     FOREIGN KEY (track_uid) REFERENCES track(track_uid),
     FOREIGN KEY (competitor_uid) REFERENCES competitors(competitor_uid)
@@ -147,9 +151,18 @@ CREATE TABLE participant_checkpoint (
     checkpoint_uid char(36) NOT NULL,
     passed BOOLEAN DEFAULT false,
     passeded_date_time DATETIME,
+    lat DECIMAL(10,8),
+    lng DECIMAL(11,8),
     PRIMARY KEY (participant_uid,checkpoint_uid),
     FOREIGN KEY (checkpoint_uid) REFERENCES checkpoint(checkpoint_uid),
     FOREIGN KEY (participant_uid) REFERENCES participant(participant_uid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE club (
+    club_uid char(36) NOT NULL,
+    acp_kod INTEGER UNSIGNED,
+    title varchar (200),
+    PRIMARY KEY (club_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

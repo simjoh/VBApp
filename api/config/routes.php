@@ -92,6 +92,12 @@ return function (App $app) {
         $app->post('/participant/addparticipant', \App\Action\Participant\ParticipantAction::class . ':addParticipantOntrack');
         $app->post('/participants/{trackUid}/upload', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
         $app->delete('/participant/{uid}/deleteParticipant', \App\Action\Participant\ParticipantAction::class . ':deleteParticipant');
+        //Ingång för att lägga tillbrevenr i efterhand.
+
+        // lägg till ingångar för admin av klubbar
+
+
+
 
     })->add(\App\Middleware\JwtTokenValidatorMiddleware::class)->add(\App\Middleware\PermissionvalidatorMiddleWare::class);
 
