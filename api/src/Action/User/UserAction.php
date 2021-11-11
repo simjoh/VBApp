@@ -4,6 +4,10 @@ namespace App\Action\User;
 
 use App\common\Action\BaseAction;
 use App\common\CleanJsonSerializer;
+use App\Domain\Model\Site\Rest\SiteRepresentation;
+use App\Domain\Model\Site\Rest\SiteRepresentationTransformer;
+use App\Domain\Model\User\Rest\UserRepresentation;
+use App\Domain\Model\User\Rest\UserRepresentationTransformer;
 use App\Domain\Model\User\Service\UserService;
 use App\Domain\Model\User\User;
 use Karriere\JsonDecoder\JsonDecoder;
@@ -26,8 +30,9 @@ class UserAction extends BaseAction
     public function allUsers(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $allUsers = $this->userservice->getAllUsers();
-        $ser = new CleanJsonSerializer();
-        $response->getBody()->write($ser->serialize($allUsers));
+
+
+        $response->getBody()->write(json_encode($allUsers));
        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 
 
@@ -60,11 +65,10 @@ class UserAction extends BaseAction
     public function createUser(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $jsonDecoder = new JsonDecoder();
-        $jsonDecoder->scanAndRegister(User::class);
-        $user  =  $jsonDecoder->decode($request->getBody(), User::class);
-        $this->userservice->createUser($user);
-        $seriializer = new CleanJsonSerializer();
-        $response->getBody()->write($seriializer->serialize($user));
+        $jsonDecoder->register(new UserRepresentationTransformer());
+        $userrepresentation  =  $jsonDecoder->decode($request->getBody(), UserRepresentation::class);
+        $newUser = $this->userservice->createUser($userrepresentation);
+        $response->getBody()->write((string)json_encode($newUser));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 

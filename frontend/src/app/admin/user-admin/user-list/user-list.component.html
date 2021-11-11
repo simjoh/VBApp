@@ -1,5 +1,6 @@
 <ng-container *ngIf="$users | async as users">
+  <button (click)="add()">jdjs</button>
   <ng-container *ngFor="let user of users">
-    {{user.id}}
+    {{user.user_uid}} {{user.username}}
   </ng-container>
 </ng-container>

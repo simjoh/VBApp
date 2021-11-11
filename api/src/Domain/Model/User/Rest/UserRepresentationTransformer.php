@@ -2,7 +2,22 @@
 
 namespace App\Domain\Model\User\Rest;
 
-class UserRepresentationTransformer
+use App\common\Rest\Link;
+use App\Domain\Model\Site\Rest\SiteRepresentation;
+use Karriere\JsonDecoder\Bindings\FieldBinding;
+use Karriere\JsonDecoder\ClassBindings;
+use Karriere\JsonDecoder\Transformer;
+
+class UserRepresentationTransformer implements Transformer
 {
+
+    public function register(ClassBindings $classBindings)
+    {
+        $classBindings->register(new FieldBinding('link', 'link', Link::class));
+    }
+    public function transforms()
+    {
+        return UserRepresentation::class;
+    }
 
 }

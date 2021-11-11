@@ -2,11 +2,10 @@
 
 namespace App\Domain\Model\User\Service;
 
-use App\Domain\Model\Competitor\Competitor;
-use App\Domain\Model\Competitor\Repository\CompetitorRepository;
+use App\common\Rest\Link;
 use App\Domain\Model\User\Repository\UserRepository;
+use App\Domain\Model\User\Rest\UserRepresentation;
 use App\Domain\Model\User\User;
-use App\Domain\Ping\Repository\PingRepository;
 
 class UserService
 {
@@ -27,8 +26,10 @@ class UserService
         $allUsers = $this->repository->getAllUSers();
 
         if (isset($allUsers)) {
-            return $allUsers;
+            return $this->toRepresentations($allUsers);
+
         }
+
 
         return null;
     }
@@ -51,8 +52,9 @@ class UserService
         return null;
     }
 
-    public function createUser(User $userParsed): void{
-       $this->repository->createUser($userParsed);
+    public function createUser(UserRepresentation $userrepresentation): UserRepresentation {
+       $newUser = $this->repository->createUser($this->toSite($userrepresentation));
+       return $this->toRepresentation($newUser);
     }
 
     public function deleteUser($user_uid): void{
@@ -60,6 +62,33 @@ class UserService
         $this->repository->deleteUser($user_uid);
     }
 
+
+    private function toRepresentations(array $UserArray): array {
+        $userArray = array();
+        foreach ($UserArray as $x =>  $site) {
+            array_push($userArray, (object) $this->toRepresentation($site));
+        }
+        return $userArray;
+    }
+    private function toRepresentation(User $s): UserRepresentation {
+        $userRepresentation = new UserRepresentation();
+        $userRepresentation->setUserUid($s->getId());
+        $userRepresentation->setUsername($s->getUsername());
+        $userRepresentation->setGivenname($s->getGivenname());
+        $userRepresentation->setFamilyname($s->getFamilyname());
+        // bygg på med lite länkar
+        $link = new Link();
+        $userRepresentation->setLink($link);
+        return $userRepresentation;
+    }
+
+    private function toSite(UserRepresentation $site){
+        $user = new User();
+        $user->setGivenname($site->getGivenname());
+        $user->setFamilyname($site->getFamilyname());
+        $user->setUsername($site->getUsername());
+        return $user;
+    }
 
 
 

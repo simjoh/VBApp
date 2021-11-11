@@ -3,6 +3,7 @@
 namespace App\Domain\Model\User\Repository;
 
 use App\common\Repository\BaseRepository;
+use App\Domain\Model\User\Rest\UserRepresentation;
 use App\Domain\Model\User\User;
 use PDO;
 use PDOException;
@@ -106,7 +107,7 @@ class UserRepository extends BaseRepository
         }
     }
 
-    public function createUser(User $userTocreate): void {
+    public function createUser(User $userTocreate): User {
         try {
         $user_uid = Uuid::uuid4();
         $familyname = $userTocreate->getFamilyname();
@@ -127,6 +128,9 @@ class UserRepository extends BaseRepository
              {
                  echo "Error: " . $e->getMessage();
               }
+
+              $userTocreate->setId($user_uid);
+              return $userTocreate;
     }
 
     public function deleteUser($user_uid): void {

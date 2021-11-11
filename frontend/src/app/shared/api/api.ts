@@ -16,10 +16,10 @@ export interface Site{
 }
 
 export interface User {
-  id: string;
+  user_uid: string;
   givenname: string;
   familyname: string;
   username: string;
-  token?: string;
-  roles?: [];
+  token: string;
+  roles: string[];
 }
