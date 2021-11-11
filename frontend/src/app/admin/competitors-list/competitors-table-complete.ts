@@ -8,8 +8,8 @@ import {NgbdSortableHeader, SortEvent} from './sortable.directive';
 
 
 @Component(
-    {selector: 'ngbd-table-complete', 
-    templateUrl: './table-complete.html', 
+    {selector: 'ngbd-table-complete',
+    templateUrl: './table-complete.html',
     providers: [CompetitorService, DecimalPipe]})
 export class NgbdTableComplete {
   competitors$: Observable<Competitor[]>;
@@ -32,5 +32,9 @@ export class NgbdTableComplete {
 
     this.service.sortColumn = column;
     this.service.sortDirection = direction;
+  }
+
+  test() {
+    console.log("ssssssssssssssssssss")
   }
 }

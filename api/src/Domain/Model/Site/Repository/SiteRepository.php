@@ -4,8 +4,10 @@ namespace App\Domain\Model\Site\Repository;
 
 use App\common\Repository\BaseRepository;
 use App\Domain\Model\Site\Site;
+use Nette\Utils\Validators;
 use PDO;
 use PDOException;
+use PrestaShop\Decimal\DecimalNumber;
 use Ramsey\Uuid\Uuid;
 
 
@@ -32,7 +34,11 @@ class SiteRepository extends BaseRepository
         }
         $sites = [];
         foreach ($data as $x =>  $row) {
-            $site = new Site($row["site_uid"], $row["place"], $row["adress"],$row['description'],is_null($row["location"]) ? "" : $row["location"]);
+            // fixa lat long
+            $site = new Site($row["site_uid"], $row["place"],
+                $row["adress"],$row['description'],
+                is_null($row["location"]) ? "" : $row["location"],
+                is_null($row["lat"])? new DecimalNumber("0") : new DecimalNumber($row["lat"]), is_null($row["lng"])   ? new DecimalNumber("0")  : new DecimalNumber($row["lng"]));
             array_push($sites,  $site);
         }
         return $sites;
@@ -52,7 +58,9 @@ class SiteRepository extends BaseRepository
         $statement->bindParam(':site_uid', $siteUid);
         $statement->execute();
         $data = $statement->fetch();
-             return new Site($data["site_uid"],  $data["place"], $data["adress"],$data['description'],$data["location"]);
+             return new Site($data["site_uid"],  $data["place"], $data["adress"],$data['description'],$data["location"],
+                 isset($data["lat"]) ? new DecimalNumber("0") : new DecimalNumber($data["lat"]),
+                 isset($data["lng"]) ? new DecimalNumber("0")  : new DecimalNumber($data["lng"]));
          }
         catch(PDOException $e)
         {
@@ -95,6 +103,8 @@ class SiteRepository extends BaseRepository
             $stmt->bindParam(':description', $description);
             $null = null;
             $stmt->bindParam(':location', $null);
+            $stmt->bindParam(':lat', $null);
+            $stmt->bindParam(':lng', $null);
             $stmt->execute();
         }
         catch(PDOException $e)
@@ -121,7 +131,7 @@ class SiteRepository extends BaseRepository
         $sitesqls['getSiteByUid'] = 'select * from site s where s.site_uid = :site_uid;';
         $sitesqls['updateSite']  = "UPDATE site SET  place=:place, adress=:adress , description=:description  WHERE site_uid=:site_uid";
         $sitesqls['deleteSite'] = 'delete from site  where site_uid = :site_uid';
-        $sitesqls['createSite']  = "INSERT INTO site(site_uid, place, adress, description, location) VALUES (:site_uid, :place, :adress, :description ,:location)";
+        $sitesqls['createSite']  = "INSERT INTO site(site_uid, place, adress, description, location, lat, lng) VALUES (:site_uid, :place, :adress, :description ,:location, :lat, :lng)";
         return $sitesqls[$type];
 
     }

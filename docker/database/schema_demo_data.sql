@@ -48,7 +48,7 @@ INSERT INTO competitors(competitor_uid, user_name ,given_name, family_name,role_
 
 ----- Utkast bygga banor
 --Sites text Brännäset
-INSERT INTO site(site_uid, place,  adress, description, lat, lng , location) VALUES ('8a13602-83dc-447d-a85f-13b943e23a42','Umeå','Broparken 1','Startplats',null, null,'');
+INSERT INTO site(site_uid, place,  adress, description, lat, lng , location) VALUES ('8a13602-83dc-447d-a85f-13b943e23a42','Umeå','Broparken 1','Startplats',20.3128832, 63.7042688,'');
 INSERT INTO site(site_uid, place,  adress, description, lat, lng , location) VALUES ('47e2e397-872a-49f9-8f5b-069d09f5855c','Brännäset','Brännsäset 1','Kontroll vid havet',null, null,'');
 INSERT INTO site(site_uid, place,  adress, description, lat, lng , location) VALUES ('e53d8d51-c5e1-4d25-a8d3-afe0646c1f13','Rödtjarn','','',null, null,'');
 INSERT INTO site(site_uid, place,  adress, description, lat, lng , location) VALUES ('e8a2df8a-7c0c-48f3-be9e-432d97e418ef','Circle K','Normaling','Matkontroll med vc',null, null,'');

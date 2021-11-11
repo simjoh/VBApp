@@ -26,7 +26,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let competitor of competitors$ | async">
+    <tr (click)="test()"  *ngFor="let competitor of competitors$ | async">
       <th scope="row">{{ competitor.id }}</th>
       <td>
         <img [src]="'https://upload.wikimedia.org/wikipedia/commons/' + competitor.flag" class="mr-2" style="width: 20px">

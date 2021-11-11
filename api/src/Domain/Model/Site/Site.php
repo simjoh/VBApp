@@ -3,6 +3,7 @@
 namespace App\Domain\Model\Site;
 
 use JsonSerializable;
+use PrestaShop\Decimal\DecimalNumber;
 
 class Site implements JsonSerializable
 {
@@ -12,16 +13,21 @@ class Site implements JsonSerializable
     private string $adress;
     private string $location;
     private string $description;
+    private DecimalNumber $lat;
+    private DecimalNumber $lng;
 
 
 
-    public function __construct($site_uid, $place, $adress, $description , $location)
+    public function __construct(string $site_uid, $place, $adress, string $description , $location, DecimalNumber $lat, DecimalNumber $lng)
     {
+
         $this->site_uid = $site_uid;
         $this->place = $place;
         $this->adress = $adress;
         $this->location = $location;
         $this->description = $description;
+        $this->lat = $lat;
+        $this->lng = $lng;
     }
 
     /**
@@ -56,12 +62,6 @@ class Site implements JsonSerializable
         return $this->location;
     }
 
-
-    public function jsonSerialize() {
-        return (object) get_object_vars($this);
-    }
-
-
     /**
      * @return string
      */
@@ -77,4 +77,41 @@ class Site implements JsonSerializable
     {
         $this->description = $description;
     }
+
+    /**
+     * @return string
+     */
+    public function getLat(): DecimalNumber
+    {
+        return $this->lat;
+    }
+
+    /**
+     * @param string $lat
+     */
+    public function setLat(DecimalNumber $lat): void
+    {
+        $this->lat = $lat;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLng(): DecimalNumber
+    {
+        return $this->lng;
+    }
+
+    /**
+     * @param string $lng
+     */
+    public function setLng(DecimalNumber $lng): void
+    {
+        $this->lng = $lng;
+    }
+
+    public function jsonSerialize() {
+        return (object) get_object_vars($this);
+    }
+
 }

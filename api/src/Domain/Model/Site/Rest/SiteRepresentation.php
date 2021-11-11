@@ -13,6 +13,8 @@ class SiteRepresentation implements JsonSerializable
     private string $location = "";
     private string $image = "";
     private string $description = "";
+    private string $lat = "";
+    private string $lng = "";
     private ?Link $link;
 
 
@@ -117,6 +119,38 @@ class SiteRepresentation implements JsonSerializable
     public function setDescription(string $description): void
     {
         $this->description = $description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLat(): string
+    {
+        return $this->lat;
+    }
+
+    /**
+     * @param string $lat
+     */
+    public function setLat(string $lat): void
+    {
+        $this->lat = $lat;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLng(): string
+    {
+        return $this->lng;
+    }
+
+    /**
+     * @param string $lng
+     */
+    public function setLng(string $lng): void
+    {
+        $this->lng = $lng;
     }
 
 

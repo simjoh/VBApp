@@ -6,6 +6,7 @@ import {NgbdTableComplete} from "./competitors-list/competitors-table-complete";
 import {KontrollerCombinerComponent} from "./kontroller-combiner/kontroller-combiner.component";
 import {UserAdminComponent} from "./user-admin/user-admin.component";
 import {DashboardComponent} from "./dashboard/dashboard.component";
+import {SiteAdminComponent} from "./site-admin/site-admin.component";
 
 const routes: Routes = [{
   path: 'admin',
@@ -21,6 +22,7 @@ const routes: Routes = [{
   { path: 'brevet-user-admin', component: UserAdminComponent },
   { path: 'brevet-dashboard', component: DashboardComponent },
   { path: 'competitors-list-component', component: NgbdTableComplete },
+  { path: 'brevet-site-admin', component: SiteAdminComponent},
 ];
 
 @NgModule({

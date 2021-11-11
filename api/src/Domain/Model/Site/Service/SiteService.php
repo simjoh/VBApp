@@ -53,6 +53,8 @@ class SiteService
         $siteRepresentation->setSiteUid($s->getSiteUid());
         $siteRepresentation->setLocation($s->getLocation());
         $siteRepresentation->setDescription($s->getDescription());
+        $siteRepresentation->setLat($s->getLat());
+        $siteRepresentation->setLng($s->getLng());
         // bygg på med lite länkar
         $link = new Link();
         $siteRepresentation->setLink($link);

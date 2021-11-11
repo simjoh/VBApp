@@ -17,6 +17,7 @@
     "nette/utils": "^3.2",
     "opis/string": "^2.0",
     "php-di/php-di": "^6.3",
+    "prestashop/decimal": "^1.4",
     "ramsey/uuid": "^4.2",
     "selective/basepath": "^2.1",
     "slim/php-view": "^3.1",
