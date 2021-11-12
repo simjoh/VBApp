@@ -21,6 +21,7 @@ class SiteRepository extends BaseRepository
      */
     public function __construct(PDO $connection) {
         $this->connection = $connection;
+        $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
     public function allSites(): ?array {
@@ -58,9 +59,13 @@ class SiteRepository extends BaseRepository
         $statement->bindParam(':site_uid', $siteUid);
         $statement->execute();
         $data = $statement->fetch();
-             return new Site($data["site_uid"],  $data["place"], $data["adress"],$data['description'],$data["location"],
-                 isset($data["lat"]) ? new DecimalNumber("0") : new DecimalNumber($data["lat"]),
-                 isset($data["lng"]) ? new DecimalNumber("0")  : new DecimalNumber($data["lng"]));
+        print_r($data);
+        if(!empty($data)){
+            return new Site($data["site_uid"],  $data["place"], $data["adress"],$data['description'],$data["location"],
+                empty($data["lat"]) ? new DecimalNumber("0") : new DecimalNumber($data["lat"]),
+                empty($data["lng"]) ? new DecimalNumber("0")  : new DecimalNumber($data["lng"]));
+        }
+
          }
         catch(PDOException $e)
         {
@@ -70,7 +75,8 @@ class SiteRepository extends BaseRepository
         return null;
     }
 
-    public function updateSite(Site $site): void{
+    public function updateSite(Site $site): ?Site{
+
         $site_uid = $site->getSiteUid();
         $adress = $site->getAdress();
         $place = $site->getPlace();
@@ -83,10 +89,11 @@ class SiteRepository extends BaseRepository
             $statement->bindParam(':place', $place);
             $statement->execute();
         } catch (PDOException $e) {
-            print_r($e);
+
             echo 'Kunde inte uppdatera site: ' . $e->getMessage();
         }
 
+        return $site;
     }
 
     public function createSite(Site $siteToCreate): void{
@@ -115,7 +122,7 @@ class SiteRepository extends BaseRepository
 
     public function deleteSite(string $siterUid): void{
         try {
-            $stmt = $this->connection->prepare($this->sqls('deleteUser'));
+            $stmt = $this->connection->prepare($this->sqls('deleteSite'));
             $stmt->bindParam(':site_uid', $siterUid);
             $stmt->execute();
         }

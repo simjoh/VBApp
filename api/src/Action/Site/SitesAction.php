@@ -22,7 +22,10 @@ class SitesAction
     }
 
     public function allSites(ServerRequestInterface $request, ResponseInterface $response){
-        $sites = $this->siteservice->allSites();
+        $sites = $this->siteservice->allSites($request->getAttribute('currentuserUid'));
+        if(empty($sites)){
+            return  $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
         $response->getBody()->write(json_encode($sites));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
@@ -30,7 +33,10 @@ class SitesAction
     public function siteFor(ServerRequestInterface $request, ResponseInterface $response){
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
-        $site = $this->siteservice->siteFor($route->getArgument('siteUid'));
+        $site = $this->siteservice->siteFor($route->getArgument('siteUid'),$request->getAttribute('currentuserUid'));
+        if(!isset($site)){
+            return  $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
         $response->getBody()->write((string)json_encode($site));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
@@ -39,7 +45,8 @@ class SitesAction
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new SiteRepresentationTransformer());
         $siterepresentation = $jsonDecoder->decode($request->getBody(), SiteRepresentation::class);
-         $this->siteservice->updateSite($siterepresentation);
+        $siteUpdated = $this->siteservice->updateSite($siterepresentation, $request->getAttribute('currentuserUid'));
+        $response->getBody()->write(json_encode($siteUpdated));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -47,6 +54,7 @@ class SitesAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $this->siteservice->deleteSite($route->getArgument('siteUid'));
+
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 

@@ -18,7 +18,7 @@ class Site implements JsonSerializable
 
 
 
-    public function __construct(string $site_uid, $place, $adress, string $description , $location, DecimalNumber $lat, DecimalNumber $lng)
+    public function __construct(string $site_uid, string $place, $adress, string $description , $location, DecimalNumber $lat, DecimalNumber $lng)
     {
 
         $this->site_uid = $site_uid;
@@ -83,6 +83,7 @@ class Site implements JsonSerializable
      */
     public function getLat(): DecimalNumber
     {
+
         return $this->lat;
     }
 

@@ -22,7 +22,12 @@ class EventAction
     }
 
     public function allEvents(ServerRequestInterface $request, ResponseInterface $response){
-        $response->getBody()->write(json_encode($this->eventService->allEvents()));
+
+        $allEvents = $this->eventService->allEvents($request->getAttribute('currentuserUid'));
+        if(empty($allEvents)){
+            return  $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
+        $response->getBody()->write(json_encode($allEvents));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -30,7 +35,14 @@ class EventAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $event_uid = $route->getArgument('eventUid');
-        $response->getBody()->write(json_encode($this->eventService->eventFor($event_uid)));
+
+        $event = $this->eventService->eventFor($event_uid, $request->getAttribute('currentuserUid'));
+
+        if(!isset($event)){
+            return  $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
+
+        $response->getBody()->write(json_encode($event));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -42,7 +54,7 @@ class EventAction
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new EventRepresentationTransformer());
         $checkpoint = $jsonDecoder->decode($request->getBody()->getContents(), EventRepresentation::class);
-        $response->getBody()->write(json_encode($this->eventService->updateEvent($event_uid,$checkpoint)));
+        $response->getBody()->write(json_encode($this->eventService->updateEvent($event_uid,$checkpoint,$request->getAttribute('currentuserUid'))));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -50,7 +62,7 @@ class EventAction
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new EventRepresentationTransformer());
         $checkpoint = $jsonDecoder->decode($request->getBody()->getContents(), EventRepresentation::class);
-        $response->getBody()->write(json_encode($this->eventService->createEvent($checkpoint)));
+        $response->getBody()->write(json_encode($this->eventService->createEvent($checkpoint, $request->getAttribute('currentuserUid'))));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 

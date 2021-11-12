@@ -31,6 +31,9 @@ class UserAction extends BaseAction
     {
         $currentUserUIDInSystem = $request->getAttribute('currentuserUid');
         $allUsers = $this->userservice->getAllUsers($currentUserUIDInSystem);
+        if(empty($allUsers)){
+            return  $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
         $response->getBody()->write(json_encode($allUsers));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
@@ -40,6 +43,9 @@ class UserAction extends BaseAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $user = $this->userservice->getUserById($route->getArgument('id'), $request->getAttribute('currentuserUid'));
+        if(!isset($user)){
+            return  $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
         $response->getBody()->write((string)json_encode($user));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }

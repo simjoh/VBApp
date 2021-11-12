@@ -19,6 +19,7 @@ class EventRepository extends BaseRepository
      */
     public function __construct(PDO $connection) {
         $this->connection = $connection;
+        $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
     public function allEvents(): array
@@ -41,7 +42,7 @@ class EventRepository extends BaseRepository
         return array();
     }
 
-    public function eventFor(string $event_uid): Event
+    public function eventFor(string $event_uid): ?Event
     {
         try {
 
@@ -49,6 +50,7 @@ class EventRepository extends BaseRepository
             $statement->bindParam(':event_uid', $event_uid);
             $statement->execute();
             $event = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Event\Event::class, null);
+
             if($statement->rowCount() > 1){
                 // Fixa bätter felhantering
                 throw new Exception();
@@ -59,14 +61,15 @@ class EventRepository extends BaseRepository
         }
         catch(PDOException $e)
         {
-            echo "Error: " . $e->getMessage();
+           echo "Error: " . $e->getMessage();
         }
-        return new $event;
+
+        return null;
     }
 
     public function updateEvent(string $event_uid , Event $event): Event
     {
-        $event_uid = $event->getEventUid();
+
         $title = $event->getTitle();
         $description = $event->getDescription();
         $completed = $event->isCompleted();
@@ -74,16 +77,18 @@ class EventRepository extends BaseRepository
         $canceled = $event->isCanceled();
         $start_date = $event->getStartdate();
         $end_date = $event->getEnddate();
+        $eve_U = '62c332d2-72c8-407c-b71c-ca2541d72577';
         try {
             $statement = $this->connection->prepare($this->sqls('updateEvent'));
-            $statement->bindParam(':event_uid', $event_uid);
-            $statement->bindParam(':title', $title);
-            $statement->bindParam(':description', $description);
-            $statement->bindParam(':completed',$completed ,PDO::PARAM_BOOL);
-            $statement->bindParam(':active', $active,PDO::PARAM_BOOL);
-            $statement->bindParam(':canceled', $canceled, PDO::PARAM_BOOL);
-            $statement->bindParam(':end_date', $end_date);
-            $statement->bindParam(':start_date', $start_date);
+
+           $statement->bindValue(':event_uid', $eve_U);
+            $statement->bindValue(':title', $title);
+            $statement->bindValue(':description', $description);
+            $statement->bindValue(':completed',$completed ,PDO::PARAM_BOOL);
+            $statement->bindValue(':active', $active,PDO::PARAM_BOOL);
+            $statement->bindValue(':canceled', $canceled, PDO::PARAM_BOOL);
+            $statement->bindValue(':end_date', $end_date);
+            $statement->bindValue(':start_date', $start_date);
 
 
 
@@ -111,6 +116,7 @@ class EventRepository extends BaseRepository
         $end_date = $event->getEnddate();
         try {
             $statement = $this->connection->prepare($this->sqls('createEvent'));
+
             $statement->bindParam(':event_uid', $event_uid);
             $statement->bindParam(':title', $title);
             $statement->bindParam(':description', $description);
@@ -120,6 +126,8 @@ class EventRepository extends BaseRepository
             $statement->bindParam(':end_date', $end_date);
             $statement->bindParam(':start_date', $start_date);
             $status = $statement->execute();
+
+
             if($status){
                 return $event;
             }
@@ -145,8 +153,8 @@ class EventRepository extends BaseRepository
     {
         $eventqls['allEvents'] = 'select * from event e;';
         $eventqls['getEventByUid'] = 'select *  from event e where e.event_uid=:event_uid;';
-        $eventqls['deleteEvent'] = 'delete from event e where e.event_uid=:event_uid;';
-        $eventqls['updateEvent']  = "UPDATE event SET  title=:title ,description=:description , active=:active, completed=:completed, canceled=:canceled, active=:active , start_date=:start_date, end_date=:end_date WHERE event_uid=:event_uid";
+        $eventqls['deleteEvent'] = 'delete from event  where event_uid=:event_uid;';
+        $eventqls['updateEvent']  = "UPDATE event SET  title=:title , description=:description , active=:active, completed=:completed, canceled=:canceled, active=:active , start_date=:start_date, end_date=:end_date WHERE event_uid=:event_uid";
         $eventqls['createEvent']  = "INSERT INTO event(event_uid, title, start_date, end_date, active, canceled, completed,description) VALUES (:event_uid, :title,:start_date,:end_date,:active, :canceled, :completed, :description)";
         return $eventqls[$type];
     }

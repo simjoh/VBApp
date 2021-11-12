@@ -17,8 +17,8 @@ class PermissionRepository extends BaseRepository
     public function __construct(PDO $connection)
     {
         $this->connection = $connection;
+        $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
-
 
     public function getPermissionsFor(string $user_uid): ?array {
         try {

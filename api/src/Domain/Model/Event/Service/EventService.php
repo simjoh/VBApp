@@ -3,41 +3,54 @@
 namespace App\Domain\Model\Event\Service;
 
 
+use App\common\Rest\Link;
+use App\common\Service\ServiceAbstract;
 use App\Domain\Model\Event\Event;
 use App\Domain\Model\Event\Repository\EventRepository;
 use App\Domain\Model\Event\Rest\EventRepresentation;
+use App\Domain\Permission\PermissionRepository;
 use Psr\Container\ContainerInterface;
 
-class EventService
+class EventService extends ServiceAbstract
 {
 
-    public function __construct(ContainerInterface $c, EventRepository $eventRepository)
+    public function __construct(ContainerInterface $c, EventRepository $eventRepository, PermissionRepository $permissionRepository)
     {
         $this->eventRepository = $eventRepository;
+        $this->permissinrepository = $permissionRepository;
     }
 
-    public function allEvents(): array {
+    public function allEvents(string $currentUserUid): array {
         $events = $this->eventRepository->allEvents();
-        return $this->toRepresentations($events);
+        if(!isset($events)){
+            return array();
+        }
+        return $this->toRepresentations($events,$currentUserUid);
     }
 
-    public function eventFor(string $event_uid)
+    public function eventFor(string $event_uid, string $currentUserUid)
     {
         $event = $this->eventRepository->eventFor($event_uid);
-        return $this->toRepresentation($event);
+        if(!isset($event)){
+            return null;
+        }
+        $permissions = $this->getPermissions($currentUserUid);
+        return $this->toRepresentation($event,$permissions );
     }
 
-    public function updateEvent(string $event_uid, EventRepresentation $eventRepresentation): EventRepresentation
+    public function updateEvent(string $event_uid, EventRepresentation $eventRepresentation,string $currentUserUid): EventRepresentation
     {
+        $permissions = $this->getPermissions($currentUserUid);
         $event = $this->eventRepository->updateEvent($event_uid ,$this->toEvent($eventRepresentation));
-        return $this->toRepresentation($event);
+        return $this->toRepresentation($event,$permissions);
     }
 
-    public function createEvent(EventRepresentation $eventRepresentation)
+    public function createEvent(EventRepresentation $eventRepresentation,string $currentUserUid)
     {
+        $permissions = $this->getPermissions($currentUserUid);
         $event = $this->eventRepository->createEvent($this->toEvent($eventRepresentation));
-        return $this->toRepresentation($event);
 
+        return $this->toRepresentation($event,$permissions);
     }
 
     public function deleteEvent(string $event_uid)
@@ -45,8 +58,8 @@ class EventService
         $this->eventRepository->deleteEvent($event_uid);
     }
 
-
     private function toEvent(EventRepresentation $eventRepresentation): Event {
+
         $event = new Event();
         $event->setEventUid($eventRepresentation->getEventUid());
         $event->setDescription($eventRepresentation->getDescription());
@@ -56,19 +69,23 @@ class EventService
         $event->setCompleted($eventRepresentation->isCompleted());
         $event->setStartdate($eventRepresentation->getStartdate());
         $event->setEnddate($eventRepresentation->getEnddate());
+
         return $event;
     }
 
-    private function toRepresentations(array $eventsArray): array {
+    private function toRepresentations(array $eventsArray, string $currentUserUid): array {
+
+
+        $permissions = $this->getPermissions($currentUserUid);
 
         $events = array();
         foreach ($eventsArray as $x =>  $event) {
-            array_push($events, (object) $this->toRepresentation($event));
+            array_push($events, (object) $this->toRepresentation($event,$permissions));
         }
         return $events;
     }
 
-    private function toRepresentation(Event $event): EventRepresentation {
+    private function toRepresentation(Event $event,  array $permissions): EventRepresentation {
 
         $eventrepresentation = new EventRepresentation();
         $eventrepresentation->setDescription($event->getDescription() == null ? 0 : $event->getDescription());
@@ -79,10 +96,29 @@ class EventService
         $eventrepresentation->setCompleted($event->isCompleted());
         $eventrepresentation->setStartdate($event->getStartdate());
         $eventrepresentation->setEnddate($event->getEnddate());
+
+        $linkArray = array();
+        foreach ($permissions as $x =>  $site) {
+            if($site->hasWritePermission()){
+                array_push($linkArray, new Link("relation.event.update", 'PUT', '/api/user/' . $event->getEventUid()));
+                array_push($linkArray, new Link("relation.event.delete", 'DELETE', '/api/user/' . $event->getEventUid()));
+                break;
+            }
+            if($site->hasReadPermission()){
+                array_push($linkArray, new Link("self", 'GET', '/api/user/' . $event->getEventUid()));
+            };
+        }
+
+        $eventrepresentation->setLinks($linkArray);
+
+
         return $eventrepresentation;
     }
 
 
+    public function getPermissions($user_uid): array
+    {
+        return $this->permissinrepository->getPermissionsTodata("EVENT",$user_uid);
 
-
+    }
 }
