@@ -44,20 +44,25 @@ class PermissionvalidatorMiddleWare
         $permissions = $this->permissionrepository->getPermissionsFor($claims['id']);
 
         if(empty($permissions)){
-            return (new Response())->withStatus(404);
+            return (new Response())->withStatus(401);
         }
 
         if((Arrays::get($claims['roles'], 'isAdmin')) || (Arrays::get($claims['roles'], 'isSuperUser'))) {
-            $request = $request->withAttribute('myMagicArgument', $claims['id']);
+            $request = $request->withAttribute('currentuserUid', $claims['id']);
+            return $handler->handle($request);
+        };
+
+        if((Arrays::get($claims['roles'], 'isDevelper'))) {
+            $request = $request->withAttribute('currentuserUid', $claims['id']);
             return $handler->handle($request);
         };
 
         if((Arrays::get($claims['roles'], 'isCompetitor'))) {
             if(Strings::startsWith($request->getRequestTarget(), "/api/randonneur/") === True){
-                $request = $request->withAttribute('myMagicArgument', $claims['id']);
+                $request = $request->withAttribute('currentuserUid', $claims['id']);
                 return $handler->handle($request);
             } else {
-                return (new Response())->withStatus(404);
+                return (new Response())->withStatus(401);
             }
         }
 
@@ -66,7 +71,7 @@ class PermissionvalidatorMiddleWare
                 $request = $request->withAttribute('myMagicArgument', $claims['id']);
                 return $handler->handle($request);
             } else {
-                return (new Response())->withStatus(404);
+                return (new Response())->withStatus(401);
             }
         }
 

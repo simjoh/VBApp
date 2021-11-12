@@ -30,11 +30,19 @@ CREATE TABLE competitors (
     PRIMARY KEY (competitor_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;;
 
+-- READ UPDATE
+CREATE TABLE permission_type (
+  type_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  type_desc varchar(255) NOT NULL,
+  type varchar(20),
+  PRIMARY KEY (type_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Permissions
 CREATE TABLE permissions (
   perm_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   perm_desc varchar(255) NOT NULL,
+  type_id  INTEGER UNSIGNED  NOT NULL,
   PRIMARY KEY (perm_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

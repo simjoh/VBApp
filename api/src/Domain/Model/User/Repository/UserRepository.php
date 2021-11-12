@@ -77,9 +77,6 @@ class UserRepository extends BaseRepository
                 $user->setRoles($roleArray);
             }
 
-
-
-
             array_push($users, $user);
         }
         return $users;
@@ -111,7 +108,7 @@ class UserRepository extends BaseRepository
         return $user;
     }
 
-    public function updateUser($id ,User $userParsed): void
+    public function updateUser($id ,User $userParsed): User
     {
 
         $data = [
@@ -120,7 +117,6 @@ class UserRepository extends BaseRepository
             'username' => $userParsed->getUsername(),
             'user_uid' => $userParsed->getId(),
         ];
-
         try {
             $statement = $this->connection->prepare($this->sqls('updateUser'));
             $statement->execute($data);
@@ -128,6 +124,8 @@ class UserRepository extends BaseRepository
         } catch (PDOException $e) {
             echo 'Kunde inte uppdatera användare: ' . $e->getMessage();
         }
+
+        return $userParsed;
     }
 
     public function createUser(User $userTocreate): User {

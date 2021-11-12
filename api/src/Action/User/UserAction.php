@@ -29,22 +29,18 @@ class UserAction extends BaseAction
 
     public function allUsers(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $currentUserUIDInSystem = $request->getAttribute('myMagicArgument');
+        $currentUserUIDInSystem = $request->getAttribute('currentuserUid');
         $allUsers = $this->userservice->getAllUsers($currentUserUIDInSystem);
         $response->getBody()->write(json_encode($allUsers));
-       return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-
-
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
     public function getUserById(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
-        $user = $this->userservice->getUserById($route->getArgument('id'));
-
-        $seriializer = new CleanJsonSerializer();
-        $response->getBody()->write($seriializer->serialize($user));
+        $user = $this->userservice->getUserById($route->getArgument('id'), $request->getAttribute('currentuserUid'));
+        $response->getBody()->write((string)json_encode($user));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -53,20 +49,20 @@ class UserAction extends BaseAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $jsonDecoder = new JsonDecoder();
-        $jsonDecoder->scanAndRegister(User::class);
-        $userParsed = $jsonDecoder->decode($request->getBody(), User::class);
-        $userUpdated = $this->userservice->updateUser($route->getArgument('id'), $userParsed);
-        $seriializer = new CleanJsonSerializer();
-        $response->getBody()->write($seriializer->serialize($userUpdated));
+        $jsonDecoder->register(new UserRepresentationTransformer());
+        $userParsed = $jsonDecoder->decode($request->getBody(), UserRepresentation::class);
+        $userUpdated = $this->userservice->updateUser($route->getArgument('id'), $userParsed, $request->getAttribute('currentuserUid'));
+        $response->getBody()->write((string)json_encode($userUpdated));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
     public function createUser(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
+        $currentUserUIDInSystem = $request->getAttribute('currentuserUid');
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new UserRepresentationTransformer());
         $userrepresentation  =  $jsonDecoder->decode($request->getBody(), UserRepresentation::class);
-        $newUser = $this->userservice->createUser($userrepresentation);
+        $newUser = $this->userservice->createUser($userrepresentation, $currentUserUIDInSystem);
         $response->getBody()->write((string)json_encode($newUser));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
@@ -78,11 +74,4 @@ class UserAction extends BaseAction
         $this->userservice->deleteUser($route->getArgument('id'));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
-
-
-
-
-
-
-
 }

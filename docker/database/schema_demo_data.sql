@@ -8,16 +8,30 @@ INSERT INTO roles (`role_id`, `role_name`) VALUES(4,'COMPETITOR');
 INSERT INTO roles (`role_id`, `role_name`) VALUES( 5,'DEVELOPER');
 INSERT INTO roles (`role_id`, `role_name`) VALUES( 6,'VOLONTAR');
 
-INSERT INTO permissions (perm_id, perm_desc) VALUES
-( 1, 'READUSERS'),
-( 2, 'CREATEUSER'),
-( 3, 'DELETEUSER'),
-( 4, 'Delete users'),
-(5, 'READCONTROLS');
-(6, 'UPDATE');
-(7, 'CREATE');
-(8, 'DELETE');
-(9, 'READ');
+
+INSERT INTO `permission_type`(`type_id`, `type_desc`, `type`) VALUES (1,'Read permission','READ');
+INSERT INTO `permission_type`(`type_id`, `type_desc`, `type`) VALUES (2,'Write permission','WRITE');
+INSERT INTO `permission_type`(`type_id`, `type_desc`, `type`) VALUES (3,'Update permission','UPDATE');
+
+INSERT INTO permissions (perm_id, perm_desc,type_id) VALUES
+( 1, 'USER',1),
+( 2, 'USER',2),
+( 3, 'USER',3),
+( 4, 'Delete users',2),
+(5, 'READCONTROLS',1),
+(6, 'UPDATE',2),
+(7, 'CREATE',2),
+(8, 'DELETE',2),
+(9, 'READ',1),
+( 10, 'SITE',1),
+( 11, 'SITE',2),
+( 12, 'SITE',3),
+( 13, 'TRACK',1),
+( 14, 'TRACK',2),
+( 15, 'TRACK',3),
+( 16, 'EVENT',1),
+( 17, 'EVENT',2),
+( 18, 'EVENT',3);
 
 
 INSERT INTO roles_permissions (role_id, perm_mod, perm_id) VALUES
@@ -25,7 +39,17 @@ INSERT INTO roles_permissions (role_id, perm_mod, perm_id) VALUES
 (1, 'ADMIN', 2),
 (1, 'ADMIN', 3),
 (1, 'ADMIN', 4),
+(1, 'ADMIN', 10),
+(1, 'ADMIN', 11),
+(1, 'ADMIN', 12),
+(1, 'ADMIN', 13),
+(1, 'ADMIN', 14),
+(1, 'ADMIN', 15),
+(1, 'ADMIN', 16),
+(1, 'ADMIN', 17),
+(1, 'ADMIN', 18),
 (4, 'COMPETITORS', 5);
+
 
 
 -- Användare
