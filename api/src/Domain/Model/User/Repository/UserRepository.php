@@ -4,6 +4,7 @@ namespace App\Domain\Model\User\Repository;
 
 use App\common\Repository\BaseRepository;
 use App\Domain\Model\User\Rest\UserRepresentation;
+use App\Domain\Model\User\Role;
 use App\Domain\Model\User\User;
 use PDO;
 use PDOException;
@@ -31,7 +32,6 @@ class UserRepository extends BaseRepository
         $statement->bindParam(':password', $passwordsha, PDO::PARAM_STR);
         $statement->execute();
         $result = $statement->fetch();
-
         if (empty($result)) {
             return null;
         }
@@ -64,6 +64,22 @@ class UserRepository extends BaseRepository
             $user->setUsername($row['user_name']);
             $user->setToken('');
 
+            $user_roles_stmt = $this->connection->prepare($this->sqls('roles'));
+            $user_roles_stmt->bindParam(':user_uid', $row['user_uid']);
+            $user_roles_stmt->execute();
+            $roles = $user_roles_stmt->fetchAll();
+
+            $roleArray = [];
+            if(!empty($roles)){
+                foreach ($roles as $role) {
+                    array_push($roleArray, new Role($role["role_id"], $role['role_name']));
+                }
+                $user->setRoles($roleArray);
+            }
+
+
+
+
             array_push($users, $user);
         }
         return $users;
@@ -84,6 +100,13 @@ class UserRepository extends BaseRepository
         $user->setFamilyname($data['family_name']);
         $user->setFamilyname($data['user_name']);
         $user->setToken('');
+
+        $user_roles_stmt = $this->connection->prepare($this->sqls('roles'));
+        $user_roles_stmt->bindParam(':user_uid', $data['user_uid']);
+        $user_roles_stmt->execute();
+        $roles = $user_roles_stmt->fetchAll();
+
+        $user->setRoles($roles);
 
         return $user;
     }
@@ -155,6 +178,7 @@ class UserRepository extends BaseRepository
         $usersqls['updateUser']  = "UPDATE users SET given_name=:givenname, family_name=:familyname, username=:username WHERE user_uid=:user_uid";
         $usersqls['createUser']  = "INSERT INTO users(user_uid, user_name, given_name, family_name, role_id, password) VALUES (:user_uid, :user_name, :given_name, :family_name, :role_id, :password)";
         $usersqls['deleteUser'] = 'delete from users  where user_uid = :user_uid';
+        $usersqls['roles'] = 'select r.role_name , r.role_id from user_role ur inner join roles r on r.role_id = ur.role_id  where ur.user_uid = :user_uid';
         return $usersqls[$type];
     }
 }

@@ -23,3 +23,12 @@ export interface User {
   token: string;
   roles: string[];
 }
+
+export interface UserRepresentation {
+  user_uid: string;
+  givenname: string;
+  familyname: string;
+  username: string;
+  token: string;
+  roles: string[];
+}

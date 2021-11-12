@@ -2,12 +2,16 @@
 
 namespace App\Middleware;
 
+use App\Domain\Permission\PermissionRepository;
 use MiladRahimi\Jwt\Cryptography\Algorithms\Hmac\HS256;
 use MiladRahimi\Jwt\Exceptions\ValidationException;
 use MiladRahimi\Jwt\Parser;
+use Nette\Utils\Arrays;
+use Nette\Utils\Strings;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Interfaces\RouteCollectorInterface;
 use Slim\Psr7\Response;
 
 class PermissionvalidatorMiddleWare
@@ -15,9 +19,12 @@ class PermissionvalidatorMiddleWare
 
     private $key;
 
-    public function __construct(ContainerInterface $c)
+    public function __construct(ContainerInterface $c, RouteCollectorInterface $routeCollector ,PermissionRepository $permissionRepository)
     {
         $this->key = $c->get('settings')['secretkey'];
+        $this->cs = $c;
+        $this->permissionrepository = $permissionRepository;
+        $this->routeCollector = $routeCollector;
     }
 
 
@@ -34,22 +41,38 @@ class PermissionvalidatorMiddleWare
             return (new Response())->withStatus(401);
         }
 
-        // embryo till behörighet till operationer på data. Kolla mot permissions i db och mot uri:s
-        if($request->getMethod() == 'GET'){
-          //  return (new Response())->withStatus(405);
-        }
-//        if($request->getMethod() == 'PUT'){
-//            print_r($request->getUri());
-//        }
-//
-//        if($request->getMethod() == 'POST'){
-//            print_r("POST");
-//        }
-        if($request->getMethod() == 'DELETE'){
-           // return (new Response())->withStatus(401);
+        $permissions = $this->permissionrepository->getPermissionsFor($claims['id']);
+
+        if(empty($permissions)){
+            return (new Response())->withStatus(404);
         }
 
+        if((Arrays::get($claims['roles'], 'isAdmin')) || (Arrays::get($claims['roles'], 'isSuperUser'))) {
+            $request = $request->withAttribute('myMagicArgument', $claims['id']);
+            return $handler->handle($request);
+        };
+
+        if((Arrays::get($claims['roles'], 'isCompetitor'))) {
+            if(Strings::startsWith($request->getRequestTarget(), "/api/randonneur/") === True){
+                $request = $request->withAttribute('myMagicArgument', $claims['id']);
+                return $handler->handle($request);
+            } else {
+                return (new Response())->withStatus(404);
+            }
+        }
+
+        if((Arrays::get($claims['roles'], 'isVolonteer'))) {
+            if(Strings::startsWith($request->getRequestTarget(), "/api/volonteer/") === True){
+                $request = $request->withAttribute('myMagicArgument', $claims['id']);
+                return $handler->handle($request);
+            } else {
+                return (new Response())->withStatus(404);
+            }
+        }
+
+        // Skicka iväg detta för att kunna sätta rätt länkar osv
         return $handler->handle($request);
     }
 
 }
+

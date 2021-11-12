@@ -82,6 +82,8 @@ class LoginAction extends BaseAction
             }
             if($value == 'VOLONTEER'){
                 $rolearray['isVolonteer'] = true;
+            } else {
+                $rolearray['isVolonteer'] = false;
             }
         }
         return $rolearray;

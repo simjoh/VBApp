@@ -30,8 +30,6 @@ return function (App $app) {
     // User route group
     $app->group('/api', function(RouteCollectorProxy $apps) use ($app) {
 
-
-
         // ingångar som används av en cyklist
         $app->get('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}', \App\Action\Randonneur\RandonneurAction::class . ':getCheckpoint');
         $app->post('/randonneur/{uid}/track/{track_uid}/checkpoint/{checkpointUid}/stamp', \App\Action\Randonneur\RandonneurAction::class . ':stamp');
@@ -75,11 +73,11 @@ return function (App $app) {
         $app->post('/checkpoint/upload', \App\Action\Checkpoint\CheckpointAction::class . ':upload');
 
         // användare i systemet
-        $app->get('/users', \App\Action\User\UserAction::class . ':allUsers');
-        $app->get('/user/{id}', \App\Action\User\UserAction::class . ':getUserById');
-        $app->put('/user/{id}', \App\Action\User\UserAction::class . ':updateUser');
-        $app->post('/user/', \App\Action\User\UserAction::class . ':createUser');
-        $app->delete('/user/{id}', \App\Action\User\UserAction::class . ':deleteUser');
+        $app->get('/users', \App\Action\User\UserAction::class . ':allUsers')->setName("allUsers");
+        $app->get('/user/{id}', \App\Action\User\UserAction::class . ':getUserById')->setName("user");
+        $app->put('/user/{id}', \App\Action\User\UserAction::class . ':updateUser')->setName("updateUser");;
+        $app->post('/user/', \App\Action\User\UserAction::class . ':createUser')->setName('createUser');
+        $app->delete('/user/{id}', \App\Action\User\UserAction::class . ':deleteUser')->setName('deleteUser');
 
         // Ingångar för statistik
         // ingång för dashboard
@@ -95,6 +93,9 @@ return function (App $app) {
         //Ingång för att lägga tillbrevenr i efterhand.
 
         // lägg till ingångar för admin av klubbar
+
+
+        // roller i systemet endast läsa
 
 
 

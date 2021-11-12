@@ -25,7 +25,6 @@ class AuthenticationService
         if (isset($usera)) {
             return $usera;
         }
-
         return null;
     }
 

@@ -6,9 +6,21 @@ use JsonSerializable;
 
 class Link implements JsonSerializable
 {
-    private string $rel = "Htpddddddddddd:";
+    private string $rel = ":";
     private string $method = "sssss";
     private string $url;
+
+    /**
+     * @param string $rel
+     * @param string $method
+     * @param string $url
+     */
+    public function __construct(string $rel, string $method, string $url)
+    {
+        $this->rel = $rel;
+        $this->method = $method;
+        $this->url = $url;
+    }
 
     public function jsonSerialize() {
         return (object) get_object_vars($this);

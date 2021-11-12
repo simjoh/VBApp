@@ -29,9 +29,8 @@ class UserAction extends BaseAction
 
     public function allUsers(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $allUsers = $this->userservice->getAllUsers();
-
-
+        $currentUserUIDInSystem = $request->getAttribute('myMagicArgument');
+        $allUsers = $this->userservice->getAllUsers($currentUserUIDInSystem);
         $response->getBody()->write(json_encode($allUsers));
        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 

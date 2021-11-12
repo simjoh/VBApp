@@ -11,6 +11,25 @@ class UserRepresentation implements \JsonSerializable
     private string $givenname;
     private string $familyname;
     private string $username;
+    private  $roles = array();
+    private ?Link $link;
+    private $links = array();
+
+    /**
+     * @return array
+     */
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
+
+    /**
+     * @param array $roles
+     */
+    public function setRoles(array $roles): void
+    {
+        $this->roles = $roles;
+    }
 
     /**
      * @return string
@@ -92,12 +111,22 @@ class UserRepresentation implements \JsonSerializable
     {
         $this->link = $link;
     }
-    private string $token;
-    private ?Link $link;
 
+    /**
+     * @return array
+     */
+    public function getLinks(): array
+    {
+        return $this->links;
+    }
 
-
-
+    /**
+     * @param array $links
+     */
+    public function setLinks(array $links): void
+    {
+        $this->links = $links;
+    }
 
 
     public function jsonSerialize()

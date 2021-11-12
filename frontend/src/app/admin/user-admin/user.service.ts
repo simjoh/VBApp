@@ -10,14 +10,9 @@ import {HttpClient} from "@angular/common/http";
 })
 export class UserService {
 
-
   allUsers$ = this.getAllUSers() as Observable<User[]>;
 
-  $usercount = this.allUsers$.pipe(
-    map(users => {
-      return users.length
-    })
-  ) as Observable<Number>;
+
 
   private userInsertedSubject = new Subject<User>();
   userInsertedAction$ = this.userInsertedSubject.asObservable();
@@ -32,8 +27,14 @@ export class UserService {
         console.error(err);
         return throwError(err);
       }),
-    tap(jj => console.log("TEST",jj))
+    tap(jj => console.log("All user",jj))
     );
+
+  $usercount = this.usersWithAdd$.pipe(
+    map(users => {
+      return users.length
+    })
+  ) as Observable<Number>;
 
   constructor(private httpClient: HttpClient) {
   }
@@ -48,7 +49,7 @@ export class UserService {
       map((users: Array<User>) => {
         return users;
       }),
-      tap(users =>   console.log(users)),
+      tap(users =>   console.log("All users from backen" ,users)),
       shareReplay(1)
     );
   }
@@ -62,7 +63,7 @@ export class UserService {
     ) as Observable<User>
   }
 
-  async  addUser(user1: User){
+  async addUser(user1: User){
     return await this.httpClient.post<User>(environment.backend_url + "user/", user1).pipe(
       map((user: User) => {
         return user;
@@ -71,7 +72,7 @@ export class UserService {
     ).toPromise();
   }
 
-  public updateUser(useruid: string){
+  public updateUser(useruid: string, user: User){
     return this.httpClient.put<User>(environment.backend_url + "user", {} as User).pipe(
       map((user: User) => {
         return user;
@@ -88,7 +89,6 @@ export class UserService {
         })
       )
   }
-
 
   private createUserObject(){
     return {

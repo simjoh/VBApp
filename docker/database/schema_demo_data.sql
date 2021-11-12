@@ -9,11 +9,15 @@ INSERT INTO roles (`role_id`, `role_name`) VALUES( 5,'DEVELOPER');
 INSERT INTO roles (`role_id`, `role_name`) VALUES( 6,'VOLONTAR');
 
 INSERT INTO permissions (perm_id, perm_desc) VALUES
-( 1, 'Access users'),
-( 2, 'Create new users'),
-( 3, 'Update users'),
+( 1, 'READUSERS'),
+( 2, 'CREATEUSER'),
+( 3, 'DELETEUSER'),
 ( 4, 'Delete users'),
-(5, 'See controls');
+(5, 'READCONTROLS');
+(6, 'UPDATE');
+(7, 'CREATE');
+(8, 'DELETE');
+(9, 'READ');
 
 
 INSERT INTO roles_permissions (role_id, perm_mod, perm_id) VALUES

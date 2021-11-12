@@ -5,6 +5,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\App;
 use Slim\Factory\AppFactory;
+use Slim\Interfaces\RouteCollectorInterface;
 use Slim\Middleware\ErrorMiddleware;
 use Slim\Views\PhpRenderer;
 
@@ -17,6 +18,10 @@ return [
         AppFactory::setContainer($container);
 
         return AppFactory::create();
+    },
+
+    RouteCollectorInterface::class => function (ContainerInterface $container) {
+        return $container->get(App::class)->getRouteCollector();
     },
 
 

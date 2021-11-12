@@ -6,6 +6,8 @@ use App\common\Rest\Link;
 use App\Domain\Model\User\Repository\UserRepository;
 use App\Domain\Model\User\Rest\UserRepresentation;
 use App\Domain\Model\User\User;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class UserService
 {
@@ -22,7 +24,7 @@ class UserService
 
 
 
-    public function getAllUsers(): ?array {
+    public function getAllUsers(string $currentUseruid): ?array {
         $allUsers = $this->repository->getAllUSers();
 
         if (isset($allUsers)) {
@@ -76,9 +78,15 @@ class UserService
         $userRepresentation->setUsername($s->getUsername());
         $userRepresentation->setGivenname($s->getGivenname());
         $userRepresentation->setFamilyname($s->getFamilyname());
+        $userRepresentation->setRoles($s->getRoles());
         // bygg på med lite länkar
-        $link = new Link();
-        $userRepresentation->setLink($link);
+
+        // Kolla behörigheter senare
+        $linkArray = array();
+        array_push($linkArray, new Link("self", 'GET', '/api/user/' . $s->getId()));
+        array_push($linkArray, new Link("relation.user.update", 'PUT', '/api/user/' . $s->getId()));
+        array_push($linkArray, new Link("relation.user.delete", 'DELETE', '/api/user/' . $s->getId()));
+        $userRepresentation->setLinks($linkArray);
         return $userRepresentation;
     }
 
