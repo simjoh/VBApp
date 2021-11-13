@@ -14,8 +14,6 @@ use Slim\Routing\RouteContext;
 class EventAction
 {
 
-
-
     public function __construct(ContainerInterface $c, EventService $eventService)
     {
         $this->eventService = $eventService;
