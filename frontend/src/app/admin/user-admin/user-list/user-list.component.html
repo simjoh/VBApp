@@ -1,9 +1,74 @@
+
 <ng-container *ngIf="$users | async as users">
-  <button (click)="add()">jdjs</button>
-  <ng-container *ngFor="let user of users">
-     {{user.username}}
-    <ng-container *ngFor="let s of user.roles">
-        {{s.role_name}}
-    </ng-container>
-  </ng-container>
+<p-table #dt [value]="users" [(selection)]="selectedCustomers" dataKey="id" styleClass="p-datatable-customers" [rowHover]="true"
+         [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="loading"
+         [paginator]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         [filterDelay]="0" [globalFilterFields]="['givenname','familyname','username','status']">
+  <ng-template pTemplate="caption">
+    <div class="table-header">
+      <span class="p-input-icon-left  sm:inline-flex">
+          Användare
+          <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2 ml-2" (click)="openNew()"></button>
+      </span>
+      <span class="p-input-icon-left sm:inline-flex">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Sök" />
+      </span>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="givenname">
+        <div class="p-d-flex p-jc-between p-ai-center">
+          Förnamn
+          <p-sortIcon field="givenname"></p-sortIcon>
+        </div>
+      </th>
+      <th pSortableColumn="familyname">
+        <div class="p-d-flex p-jc-between p-ai-center">
+          Efternamn
+          <p-sortIcon field="familyname"></p-sortIcon>
+        </div>
+      </th>
+      <th pSortableColumn="username">
+        <div class="p-d-flex p-jc-between p-ai-center">
+          Användarnamn
+          <p-sortIcon field="username"></p-sortIcon>
+        </div>
+      </th>
+      <th>
+        <div class="p-d-flex p-jc-between pi-align-rightl">
+          Åtgärder
+        </div>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-customer>
+    <tr class="p-selectable-row">
+      <td>
+        <span class="p-column-title">Name</span>
+        {{customer.givenname}}
+      </td>
+      <td>
+        <span class="p-column-title">Country</span>
+        <span class="image-text">{{customer.familyname}}</span>
+      </td>
+      <td>
+        <span class="p-column-title">Username</span>
+        {{customer.username}}
+      </td>
+      <td>
+        <span class="p-column-title">Åtgärder</span>
+        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success sm-0 p-mr-1" (click)="editProduct(customer.user_uid)"></button>
+        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1" (click)="deleteProduct(customer.user_uid)"></button>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="8">No users found.</td>
+    </tr>
+  </ng-template>
+</p-table>
+  <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 </ng-container>

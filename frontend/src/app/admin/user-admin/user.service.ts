@@ -87,17 +87,17 @@ export class UserService {
         catchError(err => {
           return throwError(err);
         })
-      )
+      ).toPromise()
   }
 
   private createUserObject(){
     return {
       user_uid: "",
-      givenname: "Kalle",
-      familyname: "Cyklist",
-      username: "kalle@cyklist",
+      givenname: "Andreas",
+      familyname: "User",
+      username: "andrease@user",
       token: "",
-      roles: ["COMPETITOR"]
+      roles: ["ADMIN"]
     } as User;
   }
 

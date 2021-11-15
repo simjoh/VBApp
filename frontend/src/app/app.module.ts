@@ -27,6 +27,7 @@ import {ButtonModule} from "primeng/button";
 import {InputTextModule} from "primeng/inputtext";
 import {CardModule} from "primeng/card";
 import {TokenHeaderInterceptor} from "./core/interceptors/token-header.interceptor";
+import {FeedbackInterceptor} from "./core/interceptors/feedback.interceptor";
 @NgModule({
   declarations: [
     AppComponent,
@@ -81,6 +82,11 @@ import {TokenHeaderInterceptor} from "./core/interceptors/token-header.intercept
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenHeaderInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: FeedbackInterceptor,
       multi: true
     }],
   bootstrap: [AppComponent]

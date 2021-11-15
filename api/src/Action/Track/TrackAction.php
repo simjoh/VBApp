@@ -22,14 +22,16 @@ class TrackAction
     }
 
     public function allTracks(ServerRequestInterface $request, ResponseInterface $response){
-        $response->getBody()->write((string)json_encode( $this->trackService->allTracks()), JSON_UNESCAPED_SLASHES);
+      $currentuserUid = $request->getAttribute('currentuserUid');
+        $response->getBody()->write((string)json_encode( $this->trackService->allTracks($currentuserUid)), JSON_UNESCAPED_SLASHES);
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
     public function track(ServerRequestInterface $request, ResponseInterface $response){
+        $currentuserUid = $request->getAttribute('currentuserUid');
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
-        $response->getBody()->write((string)json_encode( $this->trackService->getTrackByTrackUid($route->getArgument('trackUid'))));
+        $response->getBody()->write((string)json_encode( $this->trackService->getTrackByTrackUid($route->getArgument('trackUid'),$currentuserUid)));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -38,7 +40,7 @@ class TrackAction
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new TrackRepresentationTransformer());
         $trackrepresentation = (object) $jsonDecoder->decode($request->getBody(), TrackRepresentation::class);
-        $updatedTrack = $this->trackService->updateTrack($trackrepresentation);
+        $updatedTrack = $this->trackService->updateTrack($trackrepresentation, $request->getAttribute('currentuserUid'));
         $response->getBody()->write((string)json_encode($updatedTrack),JSON_UNESCAPED_SLASHES);
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
@@ -47,7 +49,7 @@ class TrackAction
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new TrackRepresentationTransformer());
         $trackrepresentation = (object) $jsonDecoder->decode($request->getBody(), TrackRepresentation::class);
-        $created = $this->trackService->createTrack($trackrepresentation);
+        $created = $this->trackService->createTrack($trackrepresentation,  $request->getAttribute('currentuserUid'));
         $response->getBody()->write((string)json_encode($created),JSON_UNESCAPED_SLASHES);
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }

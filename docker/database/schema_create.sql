@@ -14,10 +14,10 @@ CREATE TABLE  users (
     user_name varchar(100)  NOT NULL,
     given_name varchar(100),
     family_name varchar(100),
-    role_id int(11) NOT NULL,
     password char(128),
     PRIMARY KEY (user_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 
 CREATE TABLE competitors (
@@ -92,6 +92,7 @@ CREATE TABLE  track (
     description varchar(500)  NOT NULL,
     distance DECIMAL(10,2) DEFAULT NULL,
     start_date_time DATETIME DEFAULT NULL,
+    active BOOLEAN DEFAULT true,
     FOREIGN KEY (event_uid) REFERENCES event(event_uid),
     PRIMARY KEY (track_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

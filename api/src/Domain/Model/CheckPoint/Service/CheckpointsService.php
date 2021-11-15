@@ -3,20 +3,23 @@
 namespace App\Domain\Model\CheckPoint\Service;
 
 
+use App\common\Service\ServiceAbstract;
 use App\Domain\Model\CheckPoint\Checkpoint;
 use App\Domain\Model\CheckPoint\Repository\CheckpointRepository;
 use App\Domain\Model\CheckPoint\Rest\CheckpointRepresentation;
 use App\Domain\Model\Site\Service\SiteService;
+use App\Domain\Permission\PermissionRepository;
 use Psr\Container\ContainerInterface;
 
-class CheckpointsService
+class CheckpointsService extends ServiceAbstract
 {
      private $checkpointRepository;
      private $siteservice;
-    public function __construct(ContainerInterface $c, CheckpointRepository $checkpointRepository, SiteService $siteService)
+    public function __construct(ContainerInterface $c, CheckpointRepository $checkpointRepository, SiteService $siteService, PermissionRepository $permissionRepository )
     {
         $this->checkpointRepository = $checkpointRepository;
         $this->siteservice = $siteService;
+        $this->permissionrepository = $permissionRepository;
     }
 
     public function allCheckpoints() : array{
@@ -24,7 +27,8 @@ class CheckpointsService
         return $this->toRepresentations($checkpoints);
     }
 
-    public function checkpointsFor(array $checkpoints_uid) : array{
+    public function checkpointsFor(array $checkpoints_uid, string $currentUserUid) : array{
+        $permissions = $this->getPermissions($currentUserUid);
         $checkpoints = $this->checkpointRepository->checkpointsFor($checkpoints_uid);
         return $this->toRepresentations($checkpoints);
     }
@@ -71,7 +75,7 @@ class CheckpointsService
         $checkpointRepresentation->setCheckpointUid($checkpoint->getCheckpointUid());
         $checkpointRepresentation->setDescription($checkpoint->getDescription());
         $checkpointRepresentation->setTitle($checkpoint->getTitle());
-        $checkpointRepresentation->setSite($this->siteservice->siteFor($checkpoint->getSiteUid()));
+        $checkpointRepresentation->setSite($this->siteservice->siteFor($checkpoint->getSiteUid(),'s'));
         return $checkpointRepresentation;
     }
 
@@ -93,6 +97,8 @@ class CheckpointsService
     }
 
 
-
-
+    public function getPermissions($user_uid): array
+    {
+        return $this->permissionrepository->getPermissionsTodata("CHECKPOINT",$user_uid);
+    }
 }

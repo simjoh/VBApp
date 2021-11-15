@@ -2,100 +2,66 @@
 
 namespace App\Domain\Model\Track\Service;
 
+use App\common\Service\ServiceAbstract;
 use App\Domain\Model\CheckPoint\Service\CheckpointsService;
 use App\Domain\Model\Track\Repository\TrackRepository;
+use App\Domain\Model\Track\Rest\TrackAssembly;
 use App\Domain\Model\Track\Rest\TrackRepresentation;
 use App\Domain\Model\Track\Track;
+use App\Domain\Permission\PermissionRepository;
 use Psr\Container\ContainerInterface;
 
-class TrackService
+class TrackService extends ServiceAbstract
 {
 
     private $trackRepository;
     private $checkpointService;
 
-    public function __construct(ContainerInterface $c , TrackRepository $trackRepository, CheckpointsService $checkpointService)
+    public function __construct(ContainerInterface $c ,
+                                TrackRepository $trackRepository,
+                                CheckpointsService $checkpointService,
+                                PermissionRepository $permissionRepository, TrackAssembly $trackAssembly)
     {
         $this->trackRepository = $trackRepository;
        $this->checkpointService = $checkpointService;
+        $this->permissionrepository = $permissionRepository;
+        $this->trackAssembly = $trackAssembly;
     }
 
-    public function allTracks(): array {
+    public function allTracks(string $currentuserUid): array {
+        $permissions = $this->getPermissions($currentuserUid);
         $trackArray = $this->trackRepository->allTracks();
         // hämta checkpoints
-       return $this->toRepresentations($trackArray);
+       return $this->trackAssembly->toRepresentations($trackArray, $currentuserUid, $permissions);
     }
 
-    public function getTrackByTrackUid(string $trackUid) : TrackRepresentation
+    public function getTrackByTrackUid(string $trackUid, string $currentuserUid) : TrackRepresentation
     {
+        $permissions = $this->getPermissions($currentuserUid);
         $track = $this->trackRepository->getTrackByUid($trackUid);
-        return $this->toRepresentation($track);
+        return $this->trackAssembly->toRepresentation($track, $permissions, $currentuserUid);
     }
 
-    public function updateTrack(TrackRepresentation $trackrepresentation): ?TrackRepresentation
+    public function updateTrack(TrackRepresentation $trackrepresentation,  string $currentuserUid): ?TrackRepresentation
     {
+        $permissions = $this->getPermissions($currentuserUid);
         if(!empty($trackrepresentation)){
-              $trackUpdated =    $this->trackRepository->updateTrack($this->totrack($trackrepresentation));
-              return $this->toRepresentation($trackUpdated);
+              $trackUpdated = $this->trackRepository->updateTrack($this->trackAssembly->totrack($trackrepresentation));
+              return $this->trackAssembly->toRepresentation($trackUpdated, $permissions, $currentuserUid);
         }
         return null;
 
     }
 
-    public function createTrack(TrackRepresentation $trackrepresentation): TrackRepresentation
+    public function createTrack(TrackRepresentation $trackrepresentation,string $currentuserUid): TrackRepresentation
     {
+        $permissions = $this->getPermissions($currentuserUid);
         $createdTrack = $this->trackRepository->createTrack($this->totrack($trackrepresentation));
-        return $this->toRepresentation($createdTrack);
+        return $this->trackAssembly->toRepresentation($createdTrack, $permissions, $currentuserUid);
     }
 
-    private function toRepresentations($trackArray): array
+    public function getPermissions($user_uid): array
     {
-        $trackarray = array();
-        foreach ($trackArray as $x =>  $track) {
-            array_push($trackarray, (object) $this->toRepresentation($track));
-        }
-        return $trackarray;
+        return $this->permissionrepository->getPermissionsTodata("TRACK",$user_uid);
     }
-
-    private function toRepresentation(Track $track): TrackRepresentation
-    {
-        $trackRepresentation =  new TrackRepresentation();
-        $trackRepresentation->setTrackUid($track->getTrackUid());
-        $trackRepresentation->setDescriptions($track->getDescription());
-        $trackRepresentation->setLinktotrack($track->getLink());
-        $trackRepresentation->setTitle($track->getTitle());
-        $trackRepresentation->setHeightdifference($track->getHeightdifference());
-        $trackRepresentation->setDistance($track->getDistance());
-        $trackRepresentation->setEventUid($track->getEventUid());
-        if(!empty($track->getCheckpoints())){
-            $trackRepresentation->setCheckpoints($this->checkpointService->checkpointsFor($track->getCheckpoints()));
-        }
-        return $trackRepresentation;
-    }
-
-    private function totrack(TrackRepresentation $trackrepresentation): Track
-    {
-        $track = new Track();
-        $track->setDescription($trackrepresentation->getDescriptions());
-        $track->setTitle($trackrepresentation->getTitle());
-        $track->setLink($trackrepresentation->getLinktotrack());
-        $track->setHeightdifference($trackrepresentation->getHeightdifference());
-        $track->setDistance($trackrepresentation->getDistance());
-        $track->setTrackUid($trackrepresentation->getTrackUid());
-        $track->setEventUid($trackrepresentation->getEventUid());
-        if($trackrepresentation->getCheckpoints() !== null){
-            $checkpoints = $trackrepresentation->getCheckpoints();
-            if(!empty($checkpoints)){
-                $checkpoints_uid = [];
-                foreach ($checkpoints as $chp => $checkpoint){
-                    $checkpoints_uid[]  =  $checkpoint['checkpoint_uid'];
-                }
-                $track->setCheckpoints($checkpoints_uid);
-            }
-        }
-
-       return $track;
-    }
-
-
 }

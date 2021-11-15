@@ -59,7 +59,6 @@ class SiteRepository extends BaseRepository
         $statement->bindParam(':site_uid', $siteUid);
         $statement->execute();
         $data = $statement->fetch();
-        print_r($data);
         if(!empty($data)){
             return new Site($data["site_uid"],  $data["place"], $data["adress"],$data['description'],$data["location"],
                 empty($data["lat"]) ? new DecimalNumber("0") : new DecimalNumber($data["lat"]),

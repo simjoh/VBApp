@@ -142,7 +142,6 @@ class UserRepository extends BaseRepository
         $stmt->bindParam(':family_name',$familyname );
         $stmt->bindParam(':user_name', $username);
         $stmt->bindParam(':given_name', $givenname);
-            $stmt->bindParam(':role_id', $roleid);
         $stmt->bindParam(':password', $password);
         $stmt->execute();
         }
@@ -171,11 +170,11 @@ class UserRepository extends BaseRepository
     public function sqls($type): string
     {
         $usersqls['login'] = 'select * from users where user_name = :user_name and password = :password';
-        $usersqls['login2'] = 'select * from users s left join roles r on r.role_id = s.role_id where user_name = :user_name and password = :password';
+        $usersqls['login2'] = 'select * from users s left join user_role r on r.user_uid = s.user_uid inner join roles ru on ru.role_id = r.role_id  where s.user_name = :user_name and password = :password';
         $usersqls['allUsers'] = 'select * from users s;';
         $usersqls['getUserById'] = 'select * from users s where s.user_uid = :user_uid;';
         $usersqls['updateUser']  = "UPDATE users SET given_name=:givenname, family_name=:familyname, username=:username WHERE user_uid=:user_uid";
-        $usersqls['createUser']  = "INSERT INTO users(user_uid, user_name, given_name, family_name, role_id, password) VALUES (:user_uid, :user_name, :given_name, :family_name, :role_id, :password)";
+        $usersqls['createUser']  = "INSERT INTO users(user_uid, user_name, given_name, family_name, password) VALUES (:user_uid, :user_name, :given_name, :family_name, :password)";
         $usersqls['deleteUser'] = 'delete from users  where user_uid = :user_uid';
         $usersqls['roles'] = 'select r.role_name , r.role_id from user_role ur inner join roles r on r.role_id = ur.role_id  where ur.user_uid = :user_uid';
         return $usersqls[$type];

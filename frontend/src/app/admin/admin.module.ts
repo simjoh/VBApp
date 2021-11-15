@@ -7,6 +7,8 @@ import {CoreModule} from "../core/core.module";
 import { UserAdminComponent } from './user-admin/user-admin.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { UserListComponent } from './user-admin/user-list/user-list.component';
+import {SharedModule} from "../shared/shared.module";
+import {InputTextModule} from "primeng/inputtext";
 
 
 @NgModule({
@@ -19,7 +21,10 @@ import { UserListComponent } from './user-admin/user-list/user-list.component';
   imports: [
     CommonModule,
     CoreModule,
-    AdminRoutingModule
+    SharedModule,
+    AdminRoutingModule,
+    SharedModule,
+    InputTextModule
   ]
 })
 export class AdminModule { }

@@ -31,7 +31,10 @@ INSERT INTO permissions (perm_id, perm_desc,type_id) VALUES
 ( 15, 'TRACK',3),
 ( 16, 'EVENT',1),
 ( 17, 'EVENT',2),
-( 18, 'EVENT',3);
+( 18, 'EVENT',3),
+( 19, 'CHECKPOINT',1),
+( 20, 'CHECKPOINT',2),
+( 21, 'CHECKPOINT',3);
 
 
 INSERT INTO roles_permissions (role_id, perm_mod, perm_id) VALUES
@@ -53,10 +56,10 @@ INSERT INTO roles_permissions (role_id, perm_mod, perm_id) VALUES
 
 
 -- Användare
-INSERT INTO `users` (`user_uid`, `user_name`, `given_name`, `family_name`, `role_id`, `password`) VALUES
-('82fbb2ec-d998-4b8a-861f-46f2b0fdbc4e', 'admin@admin', 'Admin', 'Administratör', 1, sha1('admin')),
-('ac6543a6-df1e-4c5b-95a1-565a00676603', 'volonta@volontar', 'Anders', 'Volontär', 6, sha1('volonteer')),
-('e3b78c98-ffe5-4877-8491-258413c772e9', 'user@user', 'Jonas', 'Användare', 2, sha1('user'));
+INSERT INTO `users` (`user_uid`, `user_name`, `given_name`, `family_name`, `password`) VALUES
+('82fbb2ec-d998-4b8a-861f-46f2b0fdbc4e', 'admin@admin', 'Admin', 'Administratör',  sha1('admin')),
+('ac6543a6-df1e-4c5b-95a1-565a00676603', 'volonta@volontar', 'Anders', 'Volontär',  sha1('volonteer')),
+('e3b78c98-ffe5-4877-8491-258413c772e9', 'user@user', 'Jonas', 'Användare',  sha1('user'));
 
 -- Lägg till lite behörigheter
 --Admin + superuser
@@ -88,10 +91,10 @@ INSERT INTO `event`(`event_uid`, `title`, `start_date`, `end_date`, `active`, `c
 
 -- Banor som ingår i ett event
 --BRM
-INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time) VALUES ('8a5a0649-6aee-4b64-803e-4f083f746d2d','BRM200K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','200 k ....',200.3,null);
-INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`, start_date_time) VALUES ('0c9648fd-1664-4526-aaa4-059a01fc079c','BRM300K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','300 k ....',300.3, null);
-INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time) VALUES ('8862bd72-f5af-45f5-a377-337f26cbd195','BRM400K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','400 k ....',400.3, null);
-INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time) VALUES ('06ba3113-d95b-48c9-b0f9-f25bda5dad31','BRM600K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','600 k ....',600.3, null);
+INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time, active) VALUES ('8a5a0649-6aee-4b64-803e-4f083f746d2d','BRM200K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','200 k ....',200.3,null, true);
+INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`, start_date_time, active) VALUES ('0c9648fd-1664-4526-aaa4-059a01fc079c','BRM300K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','300 k ....',300.3, null, true);
+INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time, active ) VALUES ('8862bd72-f5af-45f5-a377-337f26cbd195','BRM400K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','400 k ....',400.3, null, true);
+INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time, active) VALUES ('06ba3113-d95b-48c9-b0f9-f25bda5dad31','BRM600K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','600 k ....',600.3, null, true);
 -- Månskensbrev
 INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time) VALUES ('bf31d141-32c3-4cc9-b497-36d82b060221','Månskensbrevet','http://www.banan.strava.com','62c332d2-72c8-407c-b71c-ca2541d72577','Månstensbrevet k ....',86.3, null);
 

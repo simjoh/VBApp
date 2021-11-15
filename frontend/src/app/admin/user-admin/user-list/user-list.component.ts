@@ -1,25 +1,80 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import {UserAdminComponentService} from "../user-admin-component.service";
+import {Component, OnInit, ChangeDetectionStrategy, ViewChild} from '@angular/core';
 import {UserService} from "../user.service";
 import {User} from "../../../shared/api/api";
 import {Observable} from "rxjs";
+import { Table } from 'primeng/table';
+import {DialogService} from 'primeng/dynamicdialog';
+import {ConfirmationService, PrimeNGConfig} from 'primeng/api';
+import {CreateUserDialogComponent} from "../create-user-dialog/create-user-dialog.component";
 
 @Component({
   selector: 'brevet-user-list',
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers:[DialogService, ConfirmationService]
 })
 export class UserListComponent implements OnInit {
 
+
   $users = this.userService.usersWithAdd$ as Observable<User[]>;
 
-  constructor(private userService: UserService) { }
+  selectedCustomers: User[];
+
+
+  loading: boolean = false;
+
+  // activityValues: number[] = [0, 100];
+
+  // cols: any[];
+
+  @ViewChild('dt') table: Table;
+  constructor(private userService: UserService,private primengConfig: PrimeNGConfig, private dialogService: DialogService, private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
+    this.primengConfig.ripple = true;
   }
 
-  add() {
-    this.userService.newUser(null);
+
+  editProduct(product: any) {
+    console.log(product);
+  }
+
+  deleteProduct(product: any) {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete ' + product + '?',
+      header: 'Confirm',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        console.log(product)
+        this.userService.deleterUser(product);
+      },
+      reject: () => {
+        console.log("reject");
+    }
+    });
+  }
+
+  openNew() {
+    const ref = this.dialogService.open(CreateUserDialogComponent, {
+      data: {
+        id: '51gF3'
+      },
+      header: 'Lägg till användare',
+      width: '50%'
+    });
+
+    ref.onClose.subscribe((user: User) => {
+    console.log(user);
+      if (user) {
+        console.log(user);
+        this.userService.newUser(null);
+      }
+
+    });
+
+
+
+
   }
 }
