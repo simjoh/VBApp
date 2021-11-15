@@ -19,7 +19,6 @@ CREATE TABLE  users (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-
 CREATE TABLE competitors (
     competitor_uid char(36) NOT NULL,
     user_name varchar(100) NOT NULL,
@@ -28,7 +27,7 @@ CREATE TABLE competitors (
     role_id int(11) NOT NULL,
     password char(128),
     PRIMARY KEY (competitor_uid)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- READ UPDATE
 CREATE TABLE permission_type (

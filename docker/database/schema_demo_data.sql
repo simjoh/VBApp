@@ -132,12 +132,12 @@ INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `sta
 INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `startnumber`, `finished`, `acpkod`, `club_uid`, `time`, `dns`, `dnf`) VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81259','bf31d141-32c3-4cc9-b497-36d82b060221','2922a6e9-9e32-4832-9575-b3d2eb3011b9',1020,false,113072,'be80dc3b-3ff7-414f-ad7f-41db57e90221',null,false,false);
 
 -- Koppla till kontroll
---BRM200
+-- BRM200
 INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time` , lat, lng ) VALUES ('b3f68992-c5c7-4c31-bad5-78a93b53f28f','63e8f1de-22ad-416d-b181-4a1a004a2959',false,null,null, null);
 INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time` , lat, lng) VALUES ('162b49ea-1e8c-4047-8fd6-e4d96920a054','63e8f1de-22ad-416d-b181-4a1a004a2959',false,null,null, null);
 --BRM300
 INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`, lat, lng) VALUES ('e6957ddc-f9fd-444f-861f-f0f22cc363b1','6b86551e-e9b6-46f1-b411-3196e0f0f4e3',false,null,null, null);
----Månskensbrev
+--- Månskensbrev
 INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`, lat, lng) VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81259','63e8f1de-22ad-416d-b181-4a1a004a2959',false,null,null, null);
 INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`, lat, lng) VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81259','6b86551e-e9b6-46f1-b411-3196e0f0f4e3',false,null,null, null);
 INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`, lat, lng) VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81259','c0a8e4a4-a37a-4e9d-b59e-112519b4abc0',false,null,null, null);
