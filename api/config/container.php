@@ -54,6 +54,8 @@ return [
         $port = $settings['port'];
         $dsn = "mysql:host=$host;dbname=$dbname;port=$port;charset=$charset";
 
+
+
         return new PDO($dsn, $username, $password);
     },
 

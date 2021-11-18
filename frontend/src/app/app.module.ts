@@ -28,6 +28,9 @@ import {InputTextModule} from "primeng/inputtext";
 import {CardModule} from "primeng/card";
 import {TokenHeaderInterceptor} from "./core/interceptors/token-header.interceptor";
 import {FeedbackInterceptor} from "./core/interceptors/feedback.interceptor";
+import {DialogModule} from "primeng/dialog";
+import {DynamicDialogModule} from "primeng/dynamicdialog";
+import {TableModule} from "primeng/table";
 @NgModule({
   declarations: [
     AppComponent,
@@ -56,6 +59,7 @@ import {FeedbackInterceptor} from "./core/interceptors/feedback.interceptor";
     ReactiveFormsModule,
     AppRoutingModule,
     InputTextModule,
+
 
   ],
   exports: [CardModule,NgbModule],

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 import {DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { User } from 'src/app/shared/api/api';
 
@@ -10,13 +10,21 @@ import { User } from 'src/app/shared/api/api';
 })
 export class CreateUserDialogComponent implements OnInit {
 
-  constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig) { }
+  constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig) {
+
+
+    console.log(config);
+  }
 
   ngOnInit(): void {
   }
 
   addUser() {
     this.ref.close(this.createUserObject());
+  }
+
+  cancel(){
+
   }
 
 

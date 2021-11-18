@@ -70,15 +70,22 @@ class LoginAction extends BaseAction
     private function getRoles($roles): array{
 
         $rolearray = array();
+
         foreach ($roles as &$value) {
             if($value == 'ADMIN'){
                 $rolearray['isAdmin'] = true;
+            } else {
+                $rolearray['isAdmin'] = false;
             }
             if($value == 'SUPERUSER'){
                 $rolearray['isSuperuser'] = true;
+            } else {
+                $rolearray['isSuperuser'] = false;
             }
             if($value == 'COMPETITOR'){
                 $rolearray['isCompetitor'] = true;
+            } else {
+                $rolearray['isCompetitor'] = false;
             }
             if($value == 'VOLONTEER'){
                 $rolearray['isVolonteer'] = true;

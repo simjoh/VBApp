@@ -8,7 +8,9 @@ import { UserAdminComponent } from './user-admin/user-admin.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { UserListComponent } from './user-admin/user-list/user-list.component';
 import {SharedModule} from "../shared/shared.module";
-import {InputTextModule} from "primeng/inputtext";
+import {TableModule} from "primeng/table";
+import {CreateUserDialogComponent} from "./user-admin/create-user-dialog/create-user-dialog.component";
+import {CheckboxModule} from "primeng/checkbox";
 
 
 @NgModule({
@@ -16,15 +18,16 @@ import {InputTextModule} from "primeng/inputtext";
     AdminComponent,
     UserAdminComponent,
     DashboardComponent,
-    UserListComponent
+    UserListComponent,
+    CreateUserDialogComponent
   ],
   imports: [
     CommonModule,
     CoreModule,
-    SharedModule,
     AdminRoutingModule,
     SharedModule,
-    InputTextModule
-  ]
+    CheckboxModule
+  ],
+  exports: [SharedModule]
 })
 export class AdminModule { }

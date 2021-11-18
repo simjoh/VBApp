@@ -42,12 +42,12 @@ class PermissionvalidatorMiddleWare
         }
 
         $permissions = $this->permissionrepository->getPermissionsFor($claims['id']);
-
         if(empty($permissions)){
             return (new Response())->withStatus(401);
         }
 
-        if((Arrays::get($claims['roles'], 'isAdmin')) || (Arrays::get($claims['roles'], 'isSuperUser'))) {
+
+        if((Arrays::get($claims['roles'], 'isUser')) || (Arrays::get($claims['roles'], 'isAdmin')) || (Arrays::get($claims['roles'], 'isSuperuser'))) {
             $request = $request->withAttribute('currentuserUid', $claims['id']);
             return $handler->handle($request);
         };

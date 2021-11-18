@@ -16,7 +16,7 @@ export class ApiKeyHeaderInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     request = request.clone({
       setHeaders: {
-        'API_KEY': `${environment.api_key}`
+        'APIKEY': `${environment.api_key}`
       }
     });
     return next.handle(request);

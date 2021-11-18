@@ -16,23 +16,28 @@ import {ProgressBarModule} from "primeng/progressbar";
 import {ConfirmDialogModule} from "primeng/confirmdialog";
 import {RippleModule} from "primeng/ripple";
 import {RadioButtonModule} from "primeng/radiobutton";
-
-
-
-
+import {DialogModule} from "primeng/dialog";
+import {DynamicDialogModule} from "primeng/dynamicdialog";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {InputTextModule} from "primeng/inputtext";
+import {CreateUserDialogComponent} from "../admin/user-admin/create-user-dialog/create-user-dialog.component";
 
 @NgModule({
   declarations: [
     LogoComponent
   ],
+  entryComponents: [],
   imports: [
     CommonModule,
     NgbCollapseModule,
     ProgressSpinnerModule,
+    BrowserAnimationsModule,
     MultiSelectModule,
     SliderModule,
     DropdownModule,
     ConfirmDialogModule,
+    DialogModule,
+    DynamicDialogModule,
     ProgressBarModule,
     RippleModule,
     RadioButtonModule,
@@ -41,9 +46,11 @@ import {RadioButtonModule} from "primeng/radiobutton";
     ButtonModule,
     TabMenuModule,
     MenubarModule,
+    InputTextModule,
     FormsModule, ReactiveFormsModule
-  ], exports: [CommonModule,TabMenuModule,FormsModule, MenubarModule,ReactiveFormsModule, CardModule, ButtonModule,
-    LogoComponent,DatePipe,NgbCollapseModule, ProgressSpinnerModule,TableModule,MultiSelectModule,SliderModule, ProgressBarModule,DropdownModule, ConfirmDialogModule, RippleModule, RadioButtonModule],
+  ], exports: [CommonModule, InputTextModule,TabMenuModule, FormsModule, MenubarModule,ReactiveFormsModule, CardModule, ButtonModule,
+    LogoComponent,DatePipe,NgbCollapseModule, BrowserAnimationsModule,ProgressSpinnerModule,TableModule,MultiSelectModule,SliderModule,
+    ProgressBarModule,DropdownModule, ConfirmDialogModule, DynamicDialogModule ,RippleModule, DialogModule, RadioButtonModule],
   providers: [DatePipe]
 })
 export class SharedModule { }

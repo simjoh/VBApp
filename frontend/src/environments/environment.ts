@@ -8,6 +8,6 @@ export const environment = {
   mock_backend: false,
   backend_url: '/api/',
   mock_login: false,
-  mockbackendurl: '/fejk-fejk'
+  mockbackendurl: '/fejk-fejk',
 };
 

@@ -51,7 +51,12 @@ INSERT INTO roles_permissions (role_id, perm_mod, perm_id) VALUES
 (1, 'ADMIN', 16),
 (1, 'ADMIN', 17),
 (1, 'ADMIN', 18),
-(4, 'COMPETITORS', 5);
+(2, 'USER', 1),
+( 2, 'SITE',10),
+( 2, 'TRACK',13),
+( 2, 'EVENT',17),
+( 2, 'CHECKPOINT',1),
+(4, 'COMPETITORS', 19);
 
 
 

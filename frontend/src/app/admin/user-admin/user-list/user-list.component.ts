@@ -18,9 +18,7 @@ export class UserListComponent implements OnInit {
 
 
   $users = this.userService.usersWithAdd$ as Observable<User[]>;
-
   selectedCustomers: User[];
-
 
   loading: boolean = false;
 
@@ -61,7 +59,10 @@ export class UserListComponent implements OnInit {
         id: '51gF3'
       },
       header: 'Lägg till användare',
-      width: '50%'
+      width: '60%',
+      height: '62%',
+      modal: true,
+      showHeader: true,
     });
 
     ref.onClose.subscribe((user: User) => {
@@ -70,7 +71,6 @@ export class UserListComponent implements OnInit {
         console.log(user);
         this.userService.newUser(null);
       }
-
     });
 
 

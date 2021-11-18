@@ -2,7 +2,7 @@
 
   <nav class="navbar navbar-expand-lg navbar-light  bg-light">
     <a class="navbar-brand" href="#">
-      <img src="/assets/brand_brevet.png" width="200" height="75" class="align-top" alt="">
+      <img src="./assets/brand_brevet.png" width="200" height="75" class="align-top" alt="">
     </a>
     <button class="navbar-toggler" type="button" (click)="isMenuCollapsed = !isMenuCollapsed">
       &#9776;
@@ -25,16 +25,16 @@
 
   <div [ngbCollapse]="isMenuCollapsed" class="collapse navbar-collapse pb-lg-2  pb-lg-2">
   <ul  class="menu nav nav-tabs bg-light mb-4">
-    <li  *ngIf="user.admin || user.superuser" class="nav-item active ml-0"><a  class="nav-link" routerLink="/admin" routerLinkActive="active">Start</a></li>
-    <li  *ngIf="user.admin || user.superuser" class="nav-item active ml-0"><a  class="nav-link" routerLink="/competitors-list-component" routerLinkActive="active">Deltagare</a></li>
+    <li  *ngIf="user.admin || user.superuser || user.user" class="nav-item active ml-0"><a  class="nav-link" routerLink="/admin" routerLinkActive="active">Start</a></li>
+    <li  *ngIf="user.admin || user.superuser || user.user" class="nav-item active ml-0"><a  class="nav-link" routerLink="/competitors-list-component" routerLinkActive="active">Deltagare</a></li>
     <!-- <li><a routerLink="/kontroller" routerLinkActive="active">Kontroller</a></li> -->
     <!-- <li><a routerLink="/kontroll-form" routerLinkActive="active">Kontroll Formulär</a></li> -->
-    <li *ngIf="user.admin || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-kontroller-combiner" routerLinkActive="active">Kontroller</a></li>
-    <li *ngIf="user.admin || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-dashboard" routerLinkActive="active">Dashboard</a></li>
-    <li *ngIf="user.admin || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-user-admin" routerLinkActive="active">Administrera användare</a></li>
+    <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/brevet-kontroller-combiner" routerLinkActive="active">Kontroller</a></li>
+    <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/brevet-dashboard" routerLinkActive="active">Dashboard</a></li>
+    <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/brevet-user-admin" routerLinkActive="active">Administrera användare</a></li>
     <li *ngIf="user.competitor || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-maps"  routerLinkActive="active">Karta</a></li>
     <li *ngIf="user.competitor || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-list" routerLinkActive="active">Lista</a></li>
-    <li *ngIf="user.admin || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-site-admin" routerLinkActive="active">Siter</a></li>
+    <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/brevet-site-admin" routerLinkActive="active">Siter</a></li>
   </ul>
     </div>
 

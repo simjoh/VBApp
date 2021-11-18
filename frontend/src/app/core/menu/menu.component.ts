@@ -33,6 +33,10 @@ export class MenuComponent implements OnInit{
         if (val === "VOLONTEER"){
           vy.volonteer = true;
         }
+
+        if (val === "USER"){
+          vy.user = true;
+        }
       }
       vy.namn = user.name;
       return vy
@@ -62,4 +66,5 @@ export class VyInformation {
   volonteer?: boolean
   competitor?: boolean;
   superuser?: boolean;
+  user?: boolean;
 }

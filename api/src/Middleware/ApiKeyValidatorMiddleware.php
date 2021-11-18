@@ -6,7 +6,6 @@ namespace App\Middleware;
 use Nette\Utils\Strings;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Slim\Exception\HttpForbiddenException;
 use Slim\Psr7\Response;
 
 
@@ -24,7 +23,7 @@ class ApiKeyValidatorMiddleware
         }
         $api_key = "notsecret_developer_key";
 
-        $api_key_header = $request->getHeaderLine("API_KEY");
+        $api_key_header = $request->getHeaderLine("APIKEY");
         if ($api_key_header != $api_key) {
             $response = (new Response())->withStatus(403);
 
