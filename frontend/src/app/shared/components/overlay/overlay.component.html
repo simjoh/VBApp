@@ -1,0 +1,6 @@
+<p-overlayPanel [style]="{height: heigth + 'px'}" [showTransitionOptions]="'200ms'" [showCloseIcon]="false" #op>
+  <ng-template pTemplate>
+    <ng-content></ng-content>
+  </ng-template>
+</p-overlayPanel>
+<button pButton pRipple icon="{{icon}}" class="p-button-rounded p-button-info mr-2" (click)="op.toggle($event)"></button>

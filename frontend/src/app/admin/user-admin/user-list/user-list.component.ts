@@ -4,7 +4,7 @@ import {User} from "../../../shared/api/api";
 import {Observable} from "rxjs";
 import { Table } from 'primeng/table';
 import {DialogService} from 'primeng/dynamicdialog';
-import {ConfirmationService, PrimeNGConfig} from 'primeng/api';
+import {ConfirmationService, OverlayService, PrimeNGConfig} from 'primeng/api';
 import {CreateUserDialogComponent} from "../create-user-dialog/create-user-dialog.component";
 import {DeviceDetectorService} from "ngx-device-detector";
 
@@ -85,7 +85,6 @@ export class UserListComponent implements OnInit {
 
 
   }
-
   viewUser(user_uid: any) {
 
   }

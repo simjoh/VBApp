@@ -20,13 +20,15 @@ import {DialogModule} from "primeng/dialog";
 import {DynamicDialogModule} from "primeng/dynamicdialog";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {InputTextModule} from "primeng/inputtext";
-import {CreateUserDialogComponent} from "../admin/user-admin/create-user-dialog/create-user-dialog.component";
 import {TooltipModule} from "primeng/tooltip";
 import {MessageModule} from "primeng/message";
+import {OverlayPanelModule} from "primeng/overlaypanel";
+import { OverlayComponent } from './components/overlay/overlay.component';
 
 @NgModule({
   declarations: [
-    LogoComponent
+    LogoComponent,
+    OverlayComponent
   ],
   entryComponents: [],
   imports: [
@@ -51,10 +53,12 @@ import {MessageModule} from "primeng/message";
     MenubarModule,
     InputTextModule,
     MessageModule,
+    OverlayPanelModule,
     FormsModule, ReactiveFormsModule
-  ], exports: [CommonModule, InputTextModule,TabMenuModule, FormsModule, MenubarModule,ReactiveFormsModule, CardModule, TooltipModule ,ButtonModule,
-    LogoComponent,DatePipe,NgbCollapseModule, BrowserAnimationsModule,ProgressSpinnerModule,TableModule,MultiSelectModule,SliderModule,
-    ProgressBarModule,DropdownModule, MessageModule,ConfirmDialogModule, DynamicDialogModule ,RippleModule, DialogModule, RadioButtonModule],
+  ],
+  exports: [CommonModule, InputTextModule, TabMenuModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
+    LogoComponent, DatePipe, NgbCollapseModule, BrowserAnimationsModule, ProgressSpinnerModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
+    ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent],
   providers: [DatePipe]
 })
 export class SharedModule { }

@@ -14,3 +14,31 @@
 .flex-container {
   display: flex;
 }
+
+
+@media (min-width: 1024px) {
+  dl.dl-horizontal {
+    display: table;
+    flex-grow: inherit;
+    min-width: 400px;
+    dt, dd {
+      width: auto;
+      overflow: visible;
+    }
+
+    dt {
+      display: table-cell;
+      white-space: nowrap;
+    }
+    dd {
+      //display: table-cell;
+      //padding: 2% 5%;
+
+      &.line-break {
+        display: table-row;
+      }
+    }
+  }
+
+
+}

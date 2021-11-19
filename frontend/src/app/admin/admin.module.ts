@@ -11,6 +11,7 @@ import {SharedModule} from "../shared/shared.module";
 import {TableModule} from "primeng/table";
 import {CreateUserDialogComponent} from "./user-admin/create-user-dialog/create-user-dialog.component";
 import {CheckboxModule} from "primeng/checkbox";
+import {UserInfoPopoverComponent} from "./user-admin/user-info-popover/user-info-popover.component";
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import {CheckboxModule} from "primeng/checkbox";
     UserAdminComponent,
     DashboardComponent,
     UserListComponent,
-    CreateUserDialogComponent
+    CreateUserDialogComponent,
+    UserInfoPopoverComponent
   ],
   imports: [
     CommonModule,
