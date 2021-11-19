@@ -24,7 +24,7 @@ export class CreateUserDialogComponent implements OnInit {
   }
 
   cancel(){
-
+    this.ref.close(null);
   }
 
 

@@ -21,6 +21,8 @@ import {DynamicDialogModule} from "primeng/dynamicdialog";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {InputTextModule} from "primeng/inputtext";
 import {CreateUserDialogComponent} from "../admin/user-admin/create-user-dialog/create-user-dialog.component";
+import {TooltipModule} from "primeng/tooltip";
+import {MessageModule} from "primeng/message";
 
 @NgModule({
   declarations: [
@@ -44,13 +46,15 @@ import {CreateUserDialogComponent} from "../admin/user-admin/create-user-dialog/
     TableModule,
     CardModule,
     ButtonModule,
+    TooltipModule,
     TabMenuModule,
     MenubarModule,
     InputTextModule,
+    MessageModule,
     FormsModule, ReactiveFormsModule
-  ], exports: [CommonModule, InputTextModule,TabMenuModule, FormsModule, MenubarModule,ReactiveFormsModule, CardModule, ButtonModule,
+  ], exports: [CommonModule, InputTextModule,TabMenuModule, FormsModule, MenubarModule,ReactiveFormsModule, CardModule, TooltipModule ,ButtonModule,
     LogoComponent,DatePipe,NgbCollapseModule, BrowserAnimationsModule,ProgressSpinnerModule,TableModule,MultiSelectModule,SliderModule,
-    ProgressBarModule,DropdownModule, ConfirmDialogModule, DynamicDialogModule ,RippleModule, DialogModule, RadioButtonModule],
+    ProgressBarModule,DropdownModule, MessageModule,ConfirmDialogModule, DynamicDialogModule ,RippleModule, DialogModule, RadioButtonModule],
   providers: [DatePipe]
 })
 export class SharedModule { }

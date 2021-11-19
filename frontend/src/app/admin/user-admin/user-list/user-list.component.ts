@@ -6,6 +6,7 @@ import { Table } from 'primeng/table';
 import {DialogService} from 'primeng/dynamicdialog';
 import {ConfirmationService, PrimeNGConfig} from 'primeng/api';
 import {CreateUserDialogComponent} from "../create-user-dialog/create-user-dialog.component";
+import {DeviceDetectorService} from "ngx-device-detector";
 
 @Component({
   selector: 'brevet-user-list',
@@ -27,7 +28,11 @@ export class UserListComponent implements OnInit {
   // cols: any[];
 
   @ViewChild('dt') table: Table;
-  constructor(private userService: UserService,private primengConfig: PrimeNGConfig, private dialogService: DialogService, private confirmationService: ConfirmationService) { }
+  constructor(private userService: UserService,
+              private primengConfig: PrimeNGConfig,
+              private dialogService: DialogService,
+              private confirmationService: ConfirmationService,
+              private deviceDetector: DeviceDetectorService) { }
 
   ngOnInit(): void {
     this.primengConfig.ripple = true;
@@ -54,27 +59,34 @@ export class UserListComponent implements OnInit {
   }
 
   openNew() {
+
+    let width;
+    if ( this.deviceDetector.isDesktop()){
+      width = "30%";
+    } else {
+      width = "80%"
+    }
+
     const ref = this.dialogService.open(CreateUserDialogComponent, {
       data: {
         id: '51gF3'
       },
       header: 'Lägg till användare',
-      width: '60%',
-      height: '62%',
-      modal: true,
-      showHeader: true,
     });
 
     ref.onClose.subscribe((user: User) => {
-    console.log(user);
       if (user) {
         console.log(user);
-        this.userService.newUser(null);
+        this.userService.newUser(user);
       }
     });
 
 
 
+
+  }
+
+  viewUser(user_uid: any) {
 
   }
 }
