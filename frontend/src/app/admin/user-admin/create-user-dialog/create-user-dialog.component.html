@@ -1,18 +1,21 @@
+
+
+
+<form #contactForm="ngForm" (ngSubmit)="addUser(contactForm)" novalidate>
 <div class="p-dialog-content">
-<form>
   <div class="form-group">
     <h4>Användaruppgifter</h4>
     <div class="form-group">
-      <label class="col-form-label" for="fornamn">Förnamn</label>
-      <input pInputText pTooltip="Förnamn" [maxLength]="50" tooltipPosition="left"  type="text" class="form-control form-control" id="fornamn" placeholder="Förnamn" required>
+      <label class="col-form-label" for="givenname">Förnamn</label>
+      <input pInputText pTooltip="Förnamn"  tooltipPosition="left"  #givenname="ngModel" type="text" name="givenname" class="form-control form-control" id="givenname" [(ngModel)]="userForm.givenname" placeholder="Förnamn" required>
     </div>
     <div class="form-group">
-      <label class="col-form-label" for="efternamn">Efternamn</label>
-      <input pTooltip="Efternamn"  tooltipPosition="left" type="text" class="form-control form-control" id="efternamn" placeholder="Efternamn">
+      <label class="col-form-label" for="familyname">Efternamn</label>
+      <input pInputText pTooltip="Efternamn"  tooltipPosition="left" type="text" #familyname="ngModel" class="form-control" name="familyname" id="familyname" [(ngModel)]="userForm.familyname" placeholder="Efternamn" required>
     </div>
-    <div class="form-group">
-      <label class="col-form-label" for="anvandarnamn">Användarnamn</label>
-      <input  pTooltip="Användarnamn"  tooltipPosition="left" title="Användarnamn" class="form-control form-control" id="anvandarnamn" placeholder="Användarnamn email">
+    <div class="form-group p-field">
+      <label class="col-form-label" for="username">Användarnamn</label>
+      <input pInputText  pTooltip="Användarnamn"  tooltipPosition="left" #username="ngModel"  title="Användarnamn" class="form-control" name="username" id="username"  [(ngModel)]="userForm.username" placeholder="Användarnamn email" required>
     </div>
     <h4>Kontaktuppgifter</h4>
     <div class="form-row">
@@ -51,14 +54,14 @@
       </label>
     </div>
   </div>
-
-</form>
   </div>
   <div class="p-dialog-footer">
   <span class="p-buttonset">
-    <button pTooltip="Klicka för att spara" tooltipPosition="left" pButton pRipple label="Save" (click)="addUser()" icon="pi pi-check" class="p-button-sm"></button>
+    <button pTooltip="Klicka för att spara" type="submit"  [disabled]="!contactForm.valid" tooltipPosition="left" pButton pRipple label="Save"  icon="pi pi-check" class="p-button-sm"></button>
     <button pTooltip="Klicka för att avbryta" pButton pRipple label="Cancel" (click)="cancel()"  icon="pi pi-times" class="p-button-sm"></button>
 </span>
 </div>
+</form>
+
 
 

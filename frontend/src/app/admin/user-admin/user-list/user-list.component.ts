@@ -7,6 +7,7 @@ import {DialogService} from 'primeng/dynamicdialog';
 import {ConfirmationService, OverlayService, PrimeNGConfig} from 'primeng/api';
 import {CreateUserDialogComponent} from "../create-user-dialog/create-user-dialog.component";
 import {DeviceDetectorService} from "ngx-device-detector";
+import {map, tap} from "rxjs/operators";
 
 @Component({
   selector: 'brevet-user-list',
@@ -17,8 +18,13 @@ import {DeviceDetectorService} from "ngx-device-detector";
 })
 export class UserListComponent implements OnInit {
 
-
-  $users = this.userService.usersWithAdd$ as Observable<User[]>;
+  @ViewChild('dt',{ static: false }) table: Table;
+  $users = this.userService.usersWithAdd$.pipe(
+    map((s:Array<User>) => {
+      // this.table. = 0;
+      return s;
+    })
+  ) as Observable<User[]>;
   selectedCustomers: User[];
 
   loading: boolean = false;
@@ -27,7 +33,7 @@ export class UserListComponent implements OnInit {
 
   // cols: any[];
 
-  @ViewChild('dt') table: Table;
+
   constructor(private userService: UserService,
               private primengConfig: PrimeNGConfig,
               private dialogService: DialogService,

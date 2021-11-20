@@ -1,6 +1,8 @@
-import { Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation, ViewChild} from '@angular/core';
+import {FormGroup, NgForm} from '@angular/forms';
 import {DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { User } from 'src/app/shared/api/api';
+import {THIS_EXPR} from "@angular/compiler/src/output/output_ast";
 
 @Component({
   selector: 'brevet-create-user-dialog',
@@ -10,34 +12,36 @@ import { User } from 'src/app/shared/api/api';
 })
 export class CreateUserDialogComponent implements OnInit {
 
+
+  userForm: User;
+
+
   constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig) {
-
-
-    console.log(config);
   }
-
   ngOnInit(): void {
+    this.userForm = {
+      user_uid: "",
+      givenname: "",
+      familyname: "",
+      username: "",
+      token: "",
+      roles: []
+    } as User;
   }
 
-  addUser() {
-    this.ref.close(this.createUserObject());
+  addUser(contactForm: NgForm) {
+    if (contactForm.valid){
+      this.ref.close(this.getUserObject(contactForm));
+    } else {
+      contactForm.dirty
+    }
   }
 
   cancel(){
     this.ref.close(null);
   }
 
-
-  private createUserObject(): User{
-    return {
-      user_uid: "",
-      givenname: "Andreas",
-      familyname: "User",
-      username: "andrease@user",
-      token: "",
-      roles: ["ADMIN"]
-    } as User;
+  private getUserObject(form: NgForm): User {
+    return this.userForm
   }
-
-
 }

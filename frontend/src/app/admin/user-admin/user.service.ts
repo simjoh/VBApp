@@ -1,35 +1,56 @@
 import { Injectable } from '@angular/core';
-import {merge, Observable, of, Subject, throwError} from "rxjs";
+import {BehaviorSubject, combineLatest, forkJoin, merge, Observable, of, Subject, throwError} from "rxjs";
 import {User} from "../../shared/api/api";
 import {environment} from "../../../environments/environment";
-import {catchError, map, mergeScan, scan, shareReplay, tap} from "rxjs/operators";
+import {catchError, map, mergeMap, mergeScan, scan, shareReplay, startWith, takeUntil, tap} from "rxjs/operators";
 import {HttpClient} from "@angular/common/http";
+import {insertAfterLastOccurrence} from "@angular/cdk/schematics";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
 
+  removeSubject = new Subject<string>()
+  relaod$ = this.removeSubject.asObservable().pipe(
+    startWith(''),
+  );
+
+
   allUsers$ = this.getAllUSers() as Observable<User[]>;
 
-
-
-  private userInsertedSubject = new Subject<User>();
-  userInsertedAction$ = this.userInsertedSubject.asObservable();
+private userInsertedSubject = new Subject<User>();
+  userInsertedAction$ = this.userInsertedSubject.asObservable().pipe(
+    startWith(''),
+  );
 
   // Merge the streams
-  usersWithAdd$ = merge(
-    this.allUsers$,
-    this.userInsertedAction$
-  ).pipe(
-      scan((acc: any[], value) => [...acc, value]),
-      catchError(err => {
-        console.error(err);
-        return throwError(err);
-      }),
-    tap(jj => console.log("All user",jj))
-    );
+  // usersWithAdd$ = merge(
+  //   this.allUsers$,
+  //   this.userInsertedAction$
+  // ).pipe(
+  //     scan((acc: any[], value) => [...acc, value]),
+  //     catchError(err => {
+  //       console.error(err);
+  //       return throwError(err);
+  //     }),
+  //   tap(jj => console.log("All user",jj))
+  //   );
 
+  usersWithAdd$ = combineLatest([this.getAllUSers(), this.userInsertedAction$, this.relaod$]).pipe(
+    map(([all, insert, del]) =>  {
+         if(insert){
+          return  [...all, insert]
+         }
+         if(del){
+           var index = all.findIndex((elt) => elt.user_uid === del);
+           all.splice(index, 1);
+           const userArray = all;
+           return   this.deepCopyProperties(all);
+         }
+         return this.deepCopyProperties(all);
+    }),
+  );
   $usercount = this.usersWithAdd$.pipe(
     map(users => {
       return users.length
@@ -40,7 +61,7 @@ export class UserService {
   }
 
  async newUser(newUser: User) {
-     const user = await this.addUser(this.createUserObject())
+     const user = await this.addUser(newUser)
     this.userInsertedSubject.next(user);
   }
 
@@ -87,19 +108,14 @@ export class UserService {
         catchError(err => {
           return throwError(err);
         })
-      ).toPromise()
+      ).toPromise().then((s) => {
+        this.removeSubject.next(userUid);
+      })
   }
 
-  private createUserObject(){
-    return {
-      user_uid: "",
-      givenname: "Andreas",
-      familyname: "User",
-      username: "andrease@user",
-      token: "",
-      roles: ["ADMIN"]
-    } as User;
+    deepCopyProperties(obj: any): any {
+    // Konverterar till och från JSON, kopierar properties men tappar bort metoder
+    return obj === null || obj === undefined ? obj : JSON.parse(JSON.stringify(obj));
   }
-
 
 }
