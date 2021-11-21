@@ -176,7 +176,7 @@ class UserRepository extends BaseRepository
         $usersqls['updateUser']  = "UPDATE users SET given_name=:givenname, family_name=:familyname, username=:username WHERE user_uid=:user_uid";
         $usersqls['createUser']  = "INSERT INTO users(user_uid, user_name, given_name, family_name, password) VALUES (:user_uid, :user_name, :given_name, :family_name, :password)";
         $usersqls['deleteUser'] = 'delete from users  where user_uid = :user_uid';
-        $usersqls['roles'] = 'select r.role_name , r.role_id from user_role ur inner join roles r on r.role_id = ur.role_id  where ur.user_uid = :user_uid';
+        $usersqls['roles'] = 'select distinct(r.role_name) , r.role_id from user_role ur inner join roles r on r.role_id = ur.role_id  where ur.user_uid = :user_uid';
         return $usersqls[$type];
     }
 }
