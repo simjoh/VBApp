@@ -32,3 +32,9 @@ export interface UserRepresentation {
   token: string;
   roles: string[];
 }
+
+
+export interface Role {
+  id: number;
+  role_name: string;
+}

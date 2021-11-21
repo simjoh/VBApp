@@ -1,6 +1,4 @@
 
-
-
 <form #contactForm="ngForm" (ngSubmit)="addUser(contactForm)" novalidate>
 <div class="p-dialog-content">
   <div class="form-group">
@@ -15,7 +13,7 @@
     </div>
     <div class="form-group p-field">
       <label class="col-form-label" for="username">Användarnamn</label>
-      <input pInputText  pTooltip="Användarnamn"  tooltipPosition="left" #username="ngModel"  title="Användarnamn" class="form-control" name="username" id="username"  [(ngModel)]="userForm.username" placeholder="Användarnamn email" required>
+      <input pInputText  pTooltip="Användarnamn"  tooltipPosition="left" #username="ngModel"  title="Användarnamn" class="form-control" name="username" id="username"  [(ngModel)]="userForm.username" placeholder="Användarnamn" required>
     </div>
     <h4>Kontaktuppgifter</h4>
     <div class="form-row">
@@ -35,22 +33,28 @@
   <p>Behörigheter</p>
     <div class="form-check-inline">
       <label pTooltip="Superanvändare med alla behörigheter"  tooltipPosition="top" class="form-check-label">
-        <input pInputText    type="checkbox" class="form-check-input" value="">Superuser
+        <input pInputText [(ngModel)]="userForm.superuser" name="superuser" type="checkbox" class="form-check-input" value="">Superuser
       </label>
     </div>
     <div class="form-check-inline">
       <label pTooltip="Administratör med skriv och läsrättigheter"  tooltipPosition="top" class="form-check-label">
-        <input    type="checkbox" class="form-check-input" value="">Admin
+        <input  [(ngModel)]="userForm.admin" name="admin" type="checkbox" class="form-check-input" value="">Admin
       </label>
     </div>
     <div class="form-check-inline">
       <label pTooltip="Läsbehörighet och viss skrivbehörighet"  tooltipPosition="top" class="form-check-label">
-        <input   type="checkbox" class="form-check-input" value="" >User
+        <input  [(ngModel)]="userForm.user" name="user"  type="checkbox" class="form-check-input" value="" >User
       </label>
     </div>
     <div class="form-check-inline">
       <label pTooltip="Behörighet att checka in och se passeringar vid kontroller"  tooltipPosition="top" class="form-check-label">
-        <input type="checkbox"   class="form-check-input" value="" >Volontär
+        <input type="checkbox" [(ngModel)]="userForm.volonteer"  name="volonteer" class="form-check-input" value="" >Volontär
+      </label>
+    </div>
+
+    <div class="form-check-inline">
+      <label pTooltip="Specialbehörighet för utvecklare"  tooltipPosition="top" class="form-check-label">
+        <input type="checkbox" [(ngModel)]="userForm.developer"  name="developer" class="form-check-input" value="" >Utvecklare
       </label>
     </div>
   </div>

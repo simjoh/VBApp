@@ -6,7 +6,7 @@ INSERT INTO roles (`role_id`, `role_name`) VALUES(2, 'USER');
 INSERT INTO roles (`role_id`, `role_name`) VALUES(3, 'SUPERUSER');
 INSERT INTO roles (`role_id`, `role_name`) VALUES(4,'COMPETITOR');
 INSERT INTO roles (`role_id`, `role_name`) VALUES( 5,'DEVELOPER');
-INSERT INTO roles (`role_id`, `role_name`) VALUES( 6,'VOLONTAR');
+INSERT INTO roles (`role_id`, `role_name`) VALUES( 6,'VOLONTEER');
 
 
 INSERT INTO `permission_type`(`type_id`, `type_desc`, `type`) VALUES (1,'Read permission','READ');
@@ -63,7 +63,7 @@ INSERT INTO roles_permissions (role_id, perm_mod, perm_id) VALUES
 -- Användare
 INSERT INTO `users` (`user_uid`, `user_name`, `given_name`, `family_name`, `password`) VALUES
 ('82fbb2ec-d998-4b8a-861f-46f2b0fdbc4e', 'admin@admin', 'Admin', 'Administratör',  sha1('admin')),
-('ac6543a6-df1e-4c5b-95a1-565a00676603', 'volonta@volontar', 'Anders', 'Volontär',  sha1('volonteer')),
+('ac6543a6-df1e-4c5b-95a1-565a00676603', 'volonteer@volonteer', 'Anders', 'Volontär',  sha1('volonteer')),
 ('e3b78c98-ffe5-4877-8491-258413c772e9', 'user@user', 'Jonas', 'Användare',  sha1('user'));
 
 -- Lägg till lite behörigheter

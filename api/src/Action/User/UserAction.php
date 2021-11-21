@@ -64,6 +64,7 @@ class UserAction extends BaseAction
 
     public function createUser(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
+
         $currentUserUIDInSystem = $request->getAttribute('currentuserUid');
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new UserRepresentationTransformer());
