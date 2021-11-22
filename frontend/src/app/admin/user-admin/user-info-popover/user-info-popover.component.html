@@ -9,11 +9,13 @@
     <dt>Användarnamn</dt>
     <dd>{{user.username}}</dd>
     <dd class="line-break"></dd>
+    <ng-container *ngIf="user.userInfoRepresentation">
     <dt>Telefon:</dt>
-    <dd>070-xxxxxx</dd>
+    <dd>{{user.userInfoRepresentation.phone}}</dd>
     <dd class="line-break"></dd>
     <dt>Epost:</dt>
-    <dd>user@username</dd>
+    <dd>{{user.userInfoRepresentation.email}}</dd>
+    </ng-container>
     <dd class="line-break"></dd>
     <ng-container *ngIf="user.roles.length > 0">
       <dt>Roller:</dt>

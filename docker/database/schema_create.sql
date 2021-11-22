@@ -67,6 +67,32 @@ CREATE TABLE user_role (
   FOREIGN KEY (role_id) REFERENCES roles(role_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+----- Adress och kontaktuppgifter ----------------------------------------------
+-- För användare i systemet ----------------------------------------------------
+CREATE TABLE user_info (
+  uid varchar(36) NOT NULL,
+  user_uid varchar (50) NOT NULL,
+  email varchar (50) NOT NULL,
+  phone varchar (50) NOT NULL,
+  PRIMARY KEY (user_uid),
+  FOREIGN KEY (user_uid) REFERENCES users(user_uid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- CREATE TABLE postal_adress (
+--   uid INTEGER UNSIGNED NOT NULL,
+--   user_uid varchar(36) NOT NULL,
+--   FOREIGN KEY (user_uid) REFERENCES users(user_uid),
+--   FOREIGN KEY (role_id) REFERENCES roles(role_id)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+--
+-- CREATE TABLE contact_information (
+--   uid INTEGER UNSIGNED NOT NULL,
+--   user_uid varchar(36) NOT NULL,
+--   FOREIGN KEY (user_uid) REFERENCES users(user_uid),
+--   FOREIGN KEY (role_id) REFERENCES roles(role_id)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- Hanteringa av event banor och kontroller ------------------------------------
 --Event
 CREATE TABLE event (

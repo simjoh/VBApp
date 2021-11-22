@@ -1,7 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation, ViewChild} from '@angular/core';
 import {FormGroup, NgForm} from '@angular/forms';
 import {DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { User } from 'src/app/shared/api/api';
+import {User, UserInfoRepresentation} from 'src/app/shared/api/api';
 import {THIS_EXPR} from "@angular/compiler/src/output/output_ast";
 import {Roles} from "../../../shared/roles";
 import { Role } from 'src/app/core/auth/roles';
@@ -75,13 +75,19 @@ export class CreateUserDialogComponent implements OnInit {
       })
     }
 
+    let userinfo = {
+      phone: form.controls.phone.value,
+      email: form.controls.email.value
+    } as UserInfoRepresentation
+
     return {
       user_uid: "",
       givenname: form.controls.givenname.value,
       familyname: form.controls.familyname.value,
       username: form.controls.username.value,
       token: "",
-      roles: roles
+      roles: roles,
+      userInfoRepresentation: userinfo
     } as unknown as User;
 
 
@@ -102,15 +108,12 @@ export class CreateUserDialogComponent implements OnInit {
       volonteer: false,
       admin: false,
       developer: false,
+      phone: "",
+      email: "",
     } as UserFormModel;
 
   }
 }
-
-
-
-
-
 
 export class UserFormModel {
   user_uid;
@@ -122,4 +125,6 @@ export class UserFormModel {
   volonteer: false;
   admin: false;
   developer: false;
+  phone;
+  email;
 }

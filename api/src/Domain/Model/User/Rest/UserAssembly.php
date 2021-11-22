@@ -3,15 +3,20 @@
 namespace App\Domain\Model\User\Rest;
 
 use App\common\Rest\Link;
+use App\Domain\Model\User\Repository\UserInfoRepository;
 use App\Domain\Model\User\User;
 use App\Domain\Permission\PermissionRepository;
 
 class UserAssembly
 {
 
-    public function __construct(PermissionRepository $permissionRepository)
+    public function __construct(PermissionRepository $permissionRepository,
+                                UserInfoRepository $userInfoRepository, UserInfoAssembly $userInfoAssembly)
     {
         $this->permissinrepository = $permissionRepository;
+        $this->userinforepository = $userInfoRepository;
+        $this->userInfoAssembly = $userInfoAssembly;
+
     }
 
     public function toRepresentations(array $UserArray, string $currentUserUid): array {
@@ -31,6 +36,12 @@ class UserAssembly
         $userRepresentation->setGivenname($s->getGivenname());
         $userRepresentation->setFamilyname($s->getFamilyname());
         $userRepresentation->setRoles($s->getRoles());
+
+        $userinfo = $this->userinforepository->userinfoFor($s->getId());
+        if(isset($userinfo)){
+            $userRepresentation->setUserInfoRepresentation($this->userInfoAssembly->toRepresentation($userinfo));
+        }
+
         // bygg på med lite länkar
 
         $linkArray = array();
@@ -49,7 +60,7 @@ class UserAssembly
         return $userRepresentation;
     }
 
-    public function toUser(UserRepresentation $site){
+    public function toUser(UserRepresentation $site): User{
         $user = new User();
         $user->setGivenname($site->getGivenname());
         $user->setFamilyname($site->getFamilyname());

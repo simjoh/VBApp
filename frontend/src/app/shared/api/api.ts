@@ -22,6 +22,7 @@ export interface User {
   username: string;
   token: string;
   roles: string[];
+  userInfoRepresentation: UserInfoRepresentation;
 }
 
 export interface UserRepresentation {
@@ -33,6 +34,18 @@ export interface UserRepresentation {
   roles: string[];
 }
 
+export interface UserInfoRepresentation {
+  user_uid: string;
+  uid: string;
+  phone: string;
+  email: string;
+  link?: Link;
+}
+
+export interface Role {
+  id: number;
+  role_name: string;
+}
 
 export interface Role {
   id: number;

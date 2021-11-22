@@ -66,6 +66,8 @@ INSERT INTO `users` (`user_uid`, `user_name`, `given_name`, `family_name`, `pass
 ('ac6543a6-df1e-4c5b-95a1-565a00676603', 'volonteer@volonteer', 'Anders', 'Volontär',  sha1('volonteer')),
 ('e3b78c98-ffe5-4877-8491-258413c772e9', 'user@user', 'Jonas', 'Användare',  sha1('user'));
 
+INSERT INTO `user_info`(`uid`, `user_uid`, `email`, `phone`) VALUES ('5e125776-2005-43a7-b58a-a1fc960ce9f4','82fbb2ec-d998-4b8a-861f-46f2b0fdbc4e','admin@administrator.se','0703105900');
+
 -- Lägg till lite behörigheter
 --Admin + superuser
 INSERT INTO user_role(role_id, user_uid) VALUES (1,'82fbb2ec-d998-4b8a-861f-46f2b0fdbc4e');

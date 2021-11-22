@@ -14,6 +14,7 @@ class UserRepresentationTransformer implements Transformer
     public function register(ClassBindings $classBindings)
     {
         $classBindings->register(new FieldBinding('link', 'link', Link::class));
+        $classBindings->register(new FieldBinding('userInfoRepresentation', 'userInfoRepresentation', UserInfoRepresentation::class));
     }
     public function transforms()
     {

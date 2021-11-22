@@ -3,9 +3,11 @@
 namespace App\Domain\Model\User\Service;
 
 use App\common\Service\ServiceAbstract;
+use App\Domain\Model\User\Repository\UserInfoRepository;
 use App\Domain\Model\User\Repository\UserRepository;
 use App\Domain\Model\User\Repository\UserRoleRepository;
 use App\Domain\Model\User\Rest\UserAssembly;
+use App\Domain\Model\User\Rest\UserInfoAssembly;
 use App\Domain\Model\User\Rest\UserRepresentation;
 use App\Domain\Model\User\Role;
 use App\Domain\Model\User\User;
@@ -19,12 +21,18 @@ class UserService extends  ServiceAbstract
      */
     private UserRepository $repository;
 
-    public function __construct(UserRepository $repository, PermissionRepository $permissionRepository, UserAssembly $userAssembly, UserRoleRepository $userRoleRepository)
+    public function __construct(UserRepository $repository,
+                                PermissionRepository $permissionRepository,
+                                UserAssembly $userAssembly,
+                                UserRoleRepository $userRoleRepository,
+                                UserInfoRepository $userInfoRepository,UserInfoAssembly $userInfoAssembly)
     {
         $this->repository = $repository;
         $this->permissionrepository = $permissionRepository;
         $this->userAssembly = $userAssembly;
         $this->userRoleRepository = $userRoleRepository;
+        $this->userInfoRepository = $userInfoRepository;
+        $this->userInfoAssembly = $userInfoAssembly;
     }
     public function getAllUsers(string $currentUseruid): ?array {
         $allUsers = $this->repository->getAllUSers();
@@ -57,6 +65,13 @@ class UserService extends  ServiceAbstract
     public function createUser(UserRepresentation $userrepresentation, string $currentuser): UserRepresentation {
        $newUser = $this->repository->createUser($this->userAssembly->toUser($userrepresentation));
 
+       if(isset($newUser)){
+            $userinfo =  $this->userInfoAssembly->toUserinfo($userrepresentation->getUserInfoRepresentation(),$newUser->getId(),True);
+            if(isset($userinfo)){
+                $this->userInfoRepository->createUserInfo($userinfo, $newUser->getId());
+            }
+
+       }
 
         foreach ($userrepresentation->getRoles() as $row) {
             $role = new Role($row['id'],$row['role_name']);
