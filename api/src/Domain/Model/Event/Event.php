@@ -7,8 +7,8 @@ class Event
 {
     private string $event_uid;
     private ?string $title;
-    private  $startdate;
-    private  $enddate;
+    private  $start_date;
+    private  $end_date;
     private ?bool $active;
     private ?bool $canceled;
     private ?bool $completed;
@@ -51,7 +51,7 @@ class Event
      */
     public function getStartdate()
     {
-        return $this->startdate;
+        return $this->start_date;
     }
 
     /**
@@ -59,7 +59,7 @@ class Event
      */
     public function setStartdate($startdate): void
     {
-        $this->startdate = $startdate;
+        $this->start_date = $startdate;
     }
 
     /**
@@ -67,7 +67,7 @@ class Event
      */
     public function getEnddate()
     {
-        return $this->enddate;
+        return $this->end_date;
     }
 
     /**
@@ -75,7 +75,7 @@ class Event
      */
     public function setEnddate($enddate): void
     {
-        $this->enddate = $enddate;
+        $this->end_date = $enddate;
     }
 
     /**

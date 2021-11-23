@@ -26,6 +26,7 @@ class SiteAssembly
         $siteRepresentation = new SiteRepresentation();
         $siteRepresentation->setPlace($s->getPlace());
         $siteRepresentation->setSiteUid($s->getSiteUid());
+        $siteRepresentation->setAdress($s->getAdress());
         $siteRepresentation->setLocation($s->getLocation());
         $siteRepresentation->setDescription($s->getDescription());
 

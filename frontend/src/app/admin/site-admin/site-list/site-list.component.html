@@ -1,0 +1,69 @@
+
+<ng-container *ngIf="$sites | async as users">
+
+  <p-table #dt [value]="users" [(selection)]="selectedCustomers" dataKey="id" styleClass="p-datatable-customers" [rowHover]="true"
+           [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="loading"
+           [paginator]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+           [filterDelay]="0" [globalFilterFields]="['place','familyname','username','status']">
+    <ng-template pTemplate="caption">
+      <div class="table-header">
+      <span class="p-input-icon-left  sm:inline-flex">
+          Siter
+          <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2 ml-2" (click)="openNew()"></button>
+      </span>
+        <span class="p-input-icon-left sm:inline-flex">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Sök" />
+      </span>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="place">
+          <div class="p-d-flex p-jc-between p-ai-center">
+            Plats
+            <p-sortIcon field="place"></p-sortIcon>
+          </div>
+        </th>
+        <th pSortableColumn="adress">
+          <div class="p-d-flex p-jc-between p-ai-center">
+            Adress
+            <p-sortIcon field="adress"></p-sortIcon>
+          </div>
+        </th>
+        <th>
+          <div class="p-d-flex p-jc-between pi-align-rightl">
+            Åtgärder
+          </div>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-customer>
+      <tr class="p-selectable-row">
+        <td>
+          <span class="p-column-title">Place</span>
+          {{customer.place}}
+        </td>
+        <td>
+          <span class="p-column-title">Adress</span>
+          <span class="image-text">{{customer.adress}}</span>
+        </td>
+        <td>
+          <span class="p-column-title">Åtgärder</span>
+          <!--        <button pButton pRipple icon="pi pi-info" class="p-button-rounded p-button-info mr-2" (click)="viewUser(customer.user_uid)"></button>-->
+         <brevet-site-info-popover [site]="customer" ></brevet-site-info-popover>
+          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success sm-0 p-ml-1" (click)="editProduct(customer.user_uid)"></button>
+          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1" (click)="deleteProduct(customer.user_uid)"></button>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8">No users found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+
+
+</ng-container>

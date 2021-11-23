@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import {BehaviorSubject, combineLatest, forkJoin, merge, Observable, of, Subject, throwError} from "rxjs";
 import {User} from "../../shared/api/api";
 import {environment} from "../../../environments/environment";
-import {catchError, map, mergeMap, mergeScan, scan, shareReplay, startWith, takeUntil, tap} from "rxjs/operators";
+import {catchError, map, shareReplay, startWith, tap} from "rxjs/operators";
 import {HttpClient} from "@angular/common/http";
-import {insertAfterLastOccurrence} from "@angular/cdk/schematics";
 
 @Injectable({
   providedIn: 'root'

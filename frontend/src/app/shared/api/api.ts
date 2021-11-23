@@ -51,3 +51,16 @@ export interface Role {
   id: number;
   role_name: string;
 }
+
+
+export interface EventRepresentation {
+  event_uid: string;
+  title: string;
+  startdate: any;
+  enddate: any;
+  active: boolean;
+  canceled: boolean;
+  completed: boolean;
+  description: string;
+  links: [];
+}

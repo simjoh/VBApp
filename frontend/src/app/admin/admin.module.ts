@@ -8,10 +8,12 @@ import { UserAdminComponent } from './user-admin/user-admin.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { UserListComponent } from './user-admin/user-list/user-list.component';
 import {SharedModule} from "../shared/shared.module";
-import {TableModule} from "primeng/table";
 import {CreateUserDialogComponent} from "./user-admin/create-user-dialog/create-user-dialog.component";
 import {CheckboxModule} from "primeng/checkbox";
 import {UserInfoPopoverComponent} from "./user-admin/user-info-popover/user-info-popover.component";
+import {SiteListComponent} from "./site-admin/site-list/site-list.component";
+import {SiteAdminModule} from "./site-admin/site-admin.module";
+import {EventAdminModule} from "./event-admin/event-admin.module";
 
 
 @NgModule({
@@ -21,14 +23,16 @@ import {UserInfoPopoverComponent} from "./user-admin/user-info-popover/user-info
     DashboardComponent,
     UserListComponent,
     CreateUserDialogComponent,
-    UserInfoPopoverComponent
+    UserInfoPopoverComponent,
   ],
   imports: [
     CommonModule,
     CoreModule,
-    AdminRoutingModule,
     SharedModule,
-    CheckboxModule
+    SiteAdminModule,
+    CheckboxModule,
+    EventAdminModule,
+    AdminRoutingModule,
   ],
   exports: [SharedModule]
 })

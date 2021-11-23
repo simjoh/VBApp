@@ -24,12 +24,13 @@ import {TooltipModule} from "primeng/tooltip";
 import {MessageModule} from "primeng/message";
 import {OverlayPanelModule} from "primeng/overlaypanel";
 import { OverlayComponent } from './components/overlay/overlay.component';
+import {SiteListComponent} from "../admin/site-admin/site-list/site-list.component";
 
 @NgModule({
-  declarations: [
-    LogoComponent,
-    OverlayComponent
-  ],
+    declarations: [
+        LogoComponent,
+        OverlayComponent,
+    ],
   entryComponents: [],
   imports: [
     CommonModule,
@@ -56,9 +57,9 @@ import { OverlayComponent } from './components/overlay/overlay.component';
     OverlayPanelModule,
     FormsModule, ReactiveFormsModule
   ],
-  exports: [CommonModule, InputTextModule, TabMenuModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
-    LogoComponent, DatePipe, NgbCollapseModule, BrowserAnimationsModule, ProgressSpinnerModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
-    ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent],
+    exports: [CommonModule, InputTextModule, TabMenuModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
+        LogoComponent, DatePipe, NgbCollapseModule, BrowserAnimationsModule, ProgressSpinnerModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
+        ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent],
   providers: [DatePipe]
 })
 export class SharedModule { }

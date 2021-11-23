@@ -91,7 +91,4 @@ export class UserListComponent implements OnInit {
 
 
   }
-  viewUser(user_uid: any) {
-
-  }
 }

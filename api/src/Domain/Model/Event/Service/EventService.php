@@ -25,6 +25,7 @@ class EventService extends ServiceAbstract
         if(!isset($events)){
             return array();
         }
+
         return $this->eventAssembly->toRepresentations($events,$currentUserUid);
     }
 

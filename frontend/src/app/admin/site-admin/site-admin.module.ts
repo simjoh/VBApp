@@ -1,15 +1,22 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SiteAdminComponent } from './site-admin/site-admin.component';
+import { SiteListComponent } from './site-list/site-list.component';
+import { SiteAdminComponent } from './site-admin.component';
+import {SharedModule} from "../../shared/shared.module";
+import { SiteInfoPopoverComponent } from './site-info-popover/site-info-popover.component';
 
 
 
 @NgModule({
   declarations: [
-    SiteAdminComponent
+    SiteAdminComponent,
+    SiteListComponent,
+    SiteInfoPopoverComponent
   ],
   imports: [
-    CommonModule
-  ]
+    CommonModule,
+    SharedModule
+  ],
+  exports: [SiteListComponent]
 })
 export class SiteAdminModule { }
