@@ -1,30 +1,22 @@
 <brevet-overlay [heigth]="'250'" [showCloseIcon]="false" [icon]="'p-button-rounded p-button-info pi pi-info'">
-  <!--  <dl class="dl-horizontal">-->
-  <!--    <dt>Förnamn:</dt>-->
-  <!--    <dd>{{user.givenname}}</dd>-->
-  <!--    <dd class="line-break"></dd>-->
-  <!--    <dt>Efternamn:</dt>-->
-  <!--    <dd>{{user.familyname}}</dd>-->
-  <!--    <dd class="line-break"></dd>-->
-  <!--    <dt>Användarnamn</dt>-->
-  <!--    <dd>{{user.username}}</dd>-->
-  <!--    <dd class="line-break"></dd>-->
-  <!--    <ng-container *ngIf="user.userInfoRepresentation">-->
-  <!--      <dt>Telefon:</dt>-->
-  <!--      <dd>{{user.userInfoRepresentation.phone}}</dd>-->
-  <!--      <dd class="line-break"></dd>-->
-  <!--      <dt>Epost:</dt>-->
-  <!--      <dd>{{user.userInfoRepresentation.email}}</dd>-->
-  <!--    </ng-container>-->
-  <!--    <dd class="line-break"></dd>-->
-  <!--    <ng-container *ngIf="user.roles.length > 0">-->
-  <!--      <dt>Roller:</dt>-->
-  <!--      <div  *ngFor="let role of user.roles">-->
-  <!--        <dd>{{role.role_name}}</dd>-->
-  <!--      </div>-->
-  <!--    </ng-container>-->
-  <!--  </dl>-->
-
-  {{site}}
+    <dl class="dl-horizontal">
+      <dt>Plats:</dt>
+      <dd>{{site.place}}</dd>
+      <dd class="line-break"></dd>
+      <dt>Adress:</dt>
+      <dd>{{site.adress}}</dd>
+      <dd class="line-break"></dd>
+      <dt>Latitud:</dt>
+      <dd>{{site.lat  === '0' ? "": site.lat}}</dd>
+      <dd class="line-break"></dd>
+      <dt>Longitud:</dt>
+      <dd>{{site.lng === '0' ? "": site.lng}}</dd>
+      <dd class="line-break"></dd>
+      <dt>Info:</dt>
+      <dd>{{site.description}}</dd>
+      <dd class="line-break"></dd>
+      <dt>Bild just nu hårdkodad:</dt>
+      <dd><img width="50" height="50" class="p-shadow-4" src="assets/brevet.PNG" alt="Bamboo Watch"></dd>
+    </dl>
 </brevet-overlay>
 

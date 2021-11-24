@@ -58,7 +58,7 @@ export class SiteService {
     ).toPromise();
   }
 
-  public deleterUser(siteUid: string){
+  public deleteSite(siteUid: string){
     return this.httpClient.delete(environment.backend_url + "site/" + siteUid)
       .pipe(
         catchError(err => {

@@ -25,7 +25,7 @@ export class EventService {
   constructor(private httpClient: HttpClient) { }
 
 
-  async newSite(newSite: EventRepresentation) {
+  async newEvent(newSite: EventRepresentation) {
     const user = await this.addSite(newSite)
     this.userInsertedSubject.next(user);
   }
@@ -58,7 +58,7 @@ export class EventService {
     ).toPromise();
   }
 
-  public deleterUser(eventUid: string){
+  public deleterEvent(eventUid: string){
     return this.httpClient.delete(environment.backend_url + "event/" + eventUid)
       .pipe(
         catchError(err => {

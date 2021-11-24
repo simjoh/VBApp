@@ -4,6 +4,7 @@ import { SiteListComponent } from './site-list/site-list.component';
 import { SiteAdminComponent } from './site-admin.component';
 import {SharedModule} from "../../shared/shared.module";
 import { SiteInfoPopoverComponent } from './site-info-popover/site-info-popover.component';
+import { CreateSiteDialogComponent } from './create-site-dialog/create-site-dialog.component';
 
 
 
@@ -11,7 +12,8 @@ import { SiteInfoPopoverComponent } from './site-info-popover/site-info-popover.
   declarations: [
     SiteAdminComponent,
     SiteListComponent,
-    SiteInfoPopoverComponent
+    SiteInfoPopoverComponent,
+    CreateSiteDialogComponent
   ],
   imports: [
     CommonModule,

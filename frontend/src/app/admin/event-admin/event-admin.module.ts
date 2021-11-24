@@ -4,6 +4,7 @@ import {EventAdminComponent} from "./event-admin.component";
 import { EventListComponent } from './event-list/event-list.component';
 import {SharedModule} from "../../shared/shared.module";
 import { EventInfoPopoverComponent } from './event-info-popover/event-info-popover.component';
+import { CreateEventDialogComponent } from './create-event-dialog/create-event-dialog.component';
 
 
 
@@ -12,7 +13,8 @@ import { EventInfoPopoverComponent } from './event-info-popover/event-info-popov
   declarations: [
    EventAdminComponent,
    EventListComponent,
-   EventInfoPopoverComponent
+   EventInfoPopoverComponent,
+   CreateEventDialogComponent
   ],
   imports: [
     CommonModule,

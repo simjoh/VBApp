@@ -64,14 +64,14 @@
         </td>
         <td>
           <span class="p-column-title">Aktiv</span>
-          <span class="image-text">{{event.active}}</span>
+          <span class="image-text">{{event.active | yesNo}}</span>
         </td>
         <td>
           <span class="p-column-title">Åtgärder</span>
           <!--        <button pButton pRipple icon="pi pi-info" class="p-button-rounded p-button-info mr-2" (click)="viewUser(customer.user_uid)"></button>-->
           <brevet-event-info-popover [event]="event" ></brevet-event-info-popover>
-          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success sm-0 p-ml-1" (click)="editProduct(customer.event_uid)"></button>
-          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1" (click)="deleteProduct(customer.event_uid)"></button>
+          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success sm-0 p-ml-1" (click)="editProduct(event.event_uid)"></button>
+          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1" (click)="deleteProduct(event.event_uid)"></button>
         </td>
       </tr>
     </ng-template>
@@ -82,5 +82,5 @@
     </ng-template>
   </p-table>
 <!--  <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>-->
-
+  <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
 </ng-container>

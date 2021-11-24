@@ -1,6 +1,5 @@
 
 <ng-container *ngIf="$sites | async as users">
-
   <p-table #dt [value]="users" [(selection)]="selectedCustomers" dataKey="id" styleClass="p-datatable-customers" [rowHover]="true"
            [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="loading"
            [paginator]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
@@ -32,28 +31,36 @@
           </div>
         </th>
         <th>
+          <div class="p-d-flex p-jc-between p-ai-center">
+            Bild
+          </div>
+        </th>
+        <th>
           <div class="p-d-flex p-jc-between pi-align-rightl">
             Åtgärder
           </div>
         </th>
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-customer>
+    <ng-template pTemplate="body" let-site>
       <tr class="p-selectable-row">
         <td>
           <span class="p-column-title">Place</span>
-          {{customer.place}}
+          {{site.place}}
         </td>
         <td>
           <span class="p-column-title">Adress</span>
-          <span class="image-text">{{customer.adress}}</span>
+          <span class="image-text">{{site.adress}}</span>
+        </td>
+        <td>
+          <span class="p-column-title">Bild</span>
+          <img width="50" height="50" class="p-shadow-4" src="assets/brevet.PNG" alt="Bamboo Watch">
         </td>
         <td>
           <span class="p-column-title">Åtgärder</span>
-          <!--        <button pButton pRipple icon="pi pi-info" class="p-button-rounded p-button-info mr-2" (click)="viewUser(customer.user_uid)"></button>-->
-         <brevet-site-info-popover [site]="customer" ></brevet-site-info-popover>
-          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success sm-0 p-ml-1" (click)="editProduct(customer.user_uid)"></button>
-          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1" (click)="deleteProduct(customer.user_uid)"></button>
+         <brevet-site-info-popover [site]="site" ></brevet-site-info-popover>
+          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success sm-0 p-ml-1" (click)="editProduct(site.site_uid)"></button>
+          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1" (click)="deleteProduct(site.site_uid)"></button>
         </td>
       </tr>
     </ng-template>

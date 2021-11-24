@@ -1,10 +1,13 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {DialogService} from "primeng/dynamicdialog";
-import {ConfirmationService} from "primeng/api";
+import {ConfirmationService, PrimeNGConfig} from "primeng/api";
 import {SiteService} from "../site.service";
 import {map} from "rxjs/operators";
-import {Site, User} from "../../../shared/api/api";
+import {EventRepresentation, Site, User} from "../../../shared/api/api";
 import {Observable} from "rxjs";
+import {CreateEventDialogComponent} from "../../event-admin/create-event-dialog/create-event-dialog.component";
+import {DeviceDetectorService} from "ngx-device-detector";
+import {CreateSiteDialogComponent} from "../create-site-dialog/create-site-dialog.component";
 
 @Component({
   selector: 'brevet-site-list',
@@ -23,7 +26,10 @@ export class SiteListComponent implements OnInit {
     })
   ) as Observable<Site[]>;
 
-  constructor(private siteService: SiteService) { }
+  constructor(private siteService: SiteService, private primengConfig: PrimeNGConfig,
+              private dialogService: DialogService,
+              private confirmationService: ConfirmationService,
+              private deviceDetector: DeviceDetectorService) { }
 
 
 
@@ -31,14 +37,43 @@ export class SiteListComponent implements OnInit {
   }
 
   openNew() {
+    let width;
+    if ( this.deviceDetector.isDesktop()){
+      width = "30%";
+    } else {
+      width = "80%"
+    }
 
+    const ref = this.dialogService.open(CreateSiteDialogComponent, {
+      data: {
+        id: '51gF3'
+      },
+      header: 'Lägg till användare',
+    });
+
+    ref.onClose.subscribe((event: Site) => {
+      if (event) {
+        this.siteService.newSite(event);
+      }
+    });
   }
 
   editProduct(user_uid: any) {
 
   }
 
-  deleteProduct(user_uid: any) {
-
+  deleteProduct(site_uid: any) {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete ' + site_uid + '?',
+      header: 'Confirm',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        console.log(site_uid)
+        this.siteService.deleteSite(site_uid);
+      },
+      reject: () => {
+        console.log("reject");
+      }
+    });
   }
 }

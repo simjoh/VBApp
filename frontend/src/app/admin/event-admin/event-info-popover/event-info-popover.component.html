@@ -1,29 +1,22 @@
 <brevet-overlay [heigth]="'250'" [showCloseIcon]="false" [icon]="'p-button-rounded p-button-info pi pi-info'">
-<!--  <dl class="dl-horizontal">-->
-<!--    <dt>Förnamn:</dt>-->
-<!--    <dd>{{user.givenname}}</dd>-->
-<!--    <dd class="line-break"></dd>-->
-<!--    <dt>Efternamn:</dt>-->
-<!--    <dd>{{user.familyname}}</dd>-->
-<!--    <dd class="line-break"></dd>-->
-<!--    <dt>Användarnamn</dt>-->
-<!--    <dd>{{user.username}}</dd>-->
-<!--    <dd class="line-break"></dd>-->
-<!--    <ng-container *ngIf="user.userInfoRepresentation">-->
-<!--      <dt>Telefon:</dt>-->
-<!--      <dd>{{user.userInfoRepresentation.phone}}</dd>-->
-<!--      <dd class="line-break"></dd>-->
-<!--      <dt>Epost:</dt>-->
-<!--      <dd>{{user.userInfoRepresentation.email}}</dd>-->
-<!--    </ng-container>-->
-<!--    <dd class="line-break"></dd>-->
-<!--    <ng-container *ngIf="user.roles.length > 0">-->
-<!--      <dt>Roller:</dt>-->
-<!--      <div  *ngFor="let role of user.roles">-->
-<!--        <dd>{{role.role_name}}</dd>-->
-<!--      </div>-->
-<!--    </ng-container>-->
-<!--  </dl>-->
-
-  {{event.description}}
+  <dl class="dl-horizontal">
+    <dt>Titel:</dt>
+    <dd>{{event.title}}</dd>
+    <dd class="line-break"></dd>
+    <dt>Startdatum:</dt>
+    <dd>{{event.startdate}}</dd>
+    <dd class="line-break"></dd>
+    <dt>Slutdataum</dt>
+    <dd>{{event.enddate}}</dd>
+    <dd class="line-break"></dd>
+    <dt>Aktiv</dt>
+    <dd>{{event.active | yesNo}}</dd>
+    <dd class="line-break"></dd>
+    <dt>Inställd</dt>
+    <dd>{{event.canceled | yesNo}}</dd>
+    <dd class="line-break"></dd>
+    <dt>Slutförd</dt>
+    <dd>{{event.completed | yesNo}}</dd>
+    <dd class="line-break"></dd>
+  </dl>
 </brevet-overlay>

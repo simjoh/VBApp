@@ -91,10 +91,10 @@ INSERT INTO site(site_uid, place,  adress, description, lat, lng , location) VAL
 INSERT INTO site(site_uid, place,  adress, description, lat, lng , location) VALUES ('e53d8d51-c5e1-4d25-a8d3-afe0646c1f13','Rödtjarn','','',null, null,'');
 INSERT INTO site(site_uid, place,  adress, description, lat, lng , location) VALUES ('e8a2df8a-7c0c-48f3-be9e-432d97e418ef','Circle K','Normaling','Matkontroll med vc',null, null,'');
 -- Olika event som pågår över tid
-INSERT INTO `event`(`event_uid`, `title`, `start_date`, `end_date`, `active`, `canceled`, `completed`, `description`) VALUES ('f6bdbba8-960d-472b-8864-cda48a07eeac','Brm series 2022',STR_TO_DATE("01-05-22","%d-%m-%y"),STR_TO_DATE("01-09-22","%d-%m-%y"),false,false,false,'Ett event');
-INSERT INTO `event`(`event_uid`, `title`, `start_date`, `end_date`, `active`, `canceled`, `completed`, `description`) VALUES ('ae5c2acd-8042-480b-b937-f3f416d7aeaa','Västerbottenbrevet 2022',STR_TO_DATE("07-08-22","%d-%m-%y"),STR_TO_DATE("07-08-22","%d-%m-%y"),false,false,false,'Brevet 2022');
+INSERT INTO `event`(`event_uid`, `title`, `start_date`, `end_date`, `active`, `canceled`, `completed`, `description`) VALUES ('f6bdbba8-960d-472b-8864-cda48a07eeac','Brm series 2022',STR_TO_DATE("01-05-22","%d-%m-%y"),STR_TO_DATE("01-09-22","%d-%m-%y"),false,false,true,'Brm serien 2022');
+INSERT INTO `event`(`event_uid`, `title`, `start_date`, `end_date`, `active`, `canceled`, `completed`, `description`) VALUES ('ae5c2acd-8042-480b-b937-f3f416d7aeaa','Västerbottenbrevet 2022',STR_TO_DATE("07-08-22","%d-%m-%y"),STR_TO_DATE("07-08-22","%d-%m-%y"),false,false,true,'Brevet 2022');
 INSERT INTO `event`(`event_uid`, `title`, `start_date`, `end_date`, `active`, `canceled`, `completed`, `description`) VALUES ('2d1767dc-f768-419b-8cdd-01fdfdbc44e4','Västerbottenbrevet 2023',STR_TO_DATE("07-08-23","%d-%m-%y"),STR_TO_DATE("07-08-23","%d-%m-%y"),false,false,false,'Brevet 2023');
-INSERT INTO `event`(`event_uid`, `title`, `start_date`, `end_date`, `active`, `canceled`, `completed`, `description`) VALUES ('62c332d2-72c8-407c-b71c-ca2541d72577','Månskensbrevet',STR_TO_DATE("18-09-22","%d-%m-%y"),STR_TO_DATE("18-09-22","%d-%m-%y"),false,false,false,'Kvällscykling i fullmåne');
+INSERT INTO `event`(`event_uid`, `title`, `start_date`, `end_date`, `active`, `canceled`, `completed`, `description`) VALUES ('62c332d2-72c8-407c-b71c-ca2541d72577','Månskensbrevet 2022',STR_TO_DATE("18-09-22","%d-%m-%y"),STR_TO_DATE("18-09-22","%d-%m-%y"),false,false,true,'Kvällscykling i fullmåne');
 
 -- Banor som ingår i ett event
 --BRM

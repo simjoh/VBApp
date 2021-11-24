@@ -25,11 +25,13 @@ import {MessageModule} from "primeng/message";
 import {OverlayPanelModule} from "primeng/overlaypanel";
 import { OverlayComponent } from './components/overlay/overlay.component';
 import {SiteListComponent} from "../admin/site-admin/site-list/site-list.component";
+import { YesNoPipe } from './pipes/yes-no.pipe';
 
 @NgModule({
     declarations: [
         LogoComponent,
         OverlayComponent,
+        YesNoPipe,
     ],
   entryComponents: [],
   imports: [
@@ -59,7 +61,7 @@ import {SiteListComponent} from "../admin/site-admin/site-list/site-list.compone
   ],
     exports: [CommonModule, InputTextModule, TabMenuModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
         LogoComponent, DatePipe, NgbCollapseModule, BrowserAnimationsModule, ProgressSpinnerModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
-        ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent],
+        ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe],
   providers: [DatePipe]
 })
 export class SharedModule { }
