@@ -1,8 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation, ViewChild} from '@angular/core';
-import {FormGroup, NgForm} from '@angular/forms';
+import { NgForm} from '@angular/forms';
 import {DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import {User, UserInfoRepresentation} from 'src/app/shared/api/api';
-import {THIS_EXPR} from "@angular/compiler/src/output/output_ast";
 import {Roles} from "../../../shared/roles";
 import { Role } from 'src/app/core/auth/roles';
 

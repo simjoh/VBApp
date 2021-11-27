@@ -54,7 +54,7 @@ return function (App $app) {
         $app->get('/events', \App\Action\Event\EventAction::class . ':allEvents');
         $app->get('/event/{eventUid}', \App\Action\Event\EventAction::class  . ':eventFor');
         $app->put('/event/{eventUid}', \App\Action\Event\EventAction::class  . ':updateEvent');
-        $app->post('/event', \App\Action\Event\EventAction::class . ':createEvent');
+        $app->post('/event/', \App\Action\Event\EventAction::class . ':createEvent');
         $app->delete('/event/{eventUid}', \App\Action\Event\EventAction::class  . ':deleteEvent');
 
         // Sites platser där en kotroll kommer att vara

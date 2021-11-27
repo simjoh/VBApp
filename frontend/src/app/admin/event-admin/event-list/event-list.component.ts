@@ -19,7 +19,7 @@ import {CreateEventDialogComponent} from "../create-event-dialog/create-event-di
 export class EventListComponent implements OnInit {
 
 
-  events$ = this.eventService.allEvents$.pipe(
+  events$ = this.eventService.eventsWithAdd$.pipe(
     map((s:Array<EventRepresentation>) => {
       // this.table. = 0;
       return s;
@@ -39,7 +39,7 @@ export class EventListComponent implements OnInit {
 
     let width;
     if ( this.deviceDetector.isDesktop()){
-      width = "30%";
+      width = "60%";
     } else {
       width = "80%"
     }
@@ -48,7 +48,7 @@ export class EventListComponent implements OnInit {
       data: {
         id: '51gF3'
       },
-      header: 'Lägg till användare',
+      header: 'Lägg till event',
     });
 
     ref.onClose.subscribe((event: EventRepresentation) => {

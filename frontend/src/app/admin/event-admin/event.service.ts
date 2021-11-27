@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Observable, Subject, throwError} from "rxjs";
+import {combineLatest, Observable, Subject, throwError} from "rxjs";
 import {catchError, map, shareReplay, startWith, tap} from "rxjs/operators";
 import {EventRepresentation, Site} from "../../shared/api/api";
 import {HttpClient} from "@angular/common/http";
@@ -20,6 +20,22 @@ export class EventService {
   private userInsertedSubject = new Subject<EventRepresentation>();
   userInsertedAction$ = this.userInsertedSubject.asObservable().pipe(
     startWith(''),
+  );
+
+
+  eventsWithAdd$ = combineLatest([this.getAllEvents(), this.userInsertedAction$, this.relaod$]).pipe(
+    map(([all, insert, del]) =>  {
+      if(insert){
+        return  [...all, insert]
+      }
+      if(del){
+        var index = all.findIndex((elt) => elt.event_uid === del);
+        all.splice(index, 1);
+        const userArray = all;
+        return   this.deepCopyProperties(all);
+      }
+      return this.deepCopyProperties(all);
+    }),
   );
 
   constructor(private httpClient: HttpClient) { }
@@ -76,5 +92,10 @@ export class EventService {
       }),
       tap(event =>   console.log(event))
     ) as Observable<EventRepresentation>
+  }
+
+  deepCopyProperties(obj: any): any {
+    // Konverterar till och från JSON, kopierar properties men tappar bort metoder
+    return obj === null || obj === undefined ? obj : JSON.parse(JSON.stringify(obj));
   }
 }
