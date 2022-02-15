@@ -13,12 +13,15 @@ class Site implements JsonSerializable
     private string $adress;
     private string $location;
     private string $description;
+    private string $picture;
+
+
     private DecimalNumber $lat;
     private DecimalNumber $lng;
 
 
 
-    public function __construct(string $site_uid, string $place, $adress, string $description , $location, DecimalNumber $lat, DecimalNumber $lng)
+    public function __construct(string $site_uid, string $place, $adress, string $description , $location, DecimalNumber $lat, DecimalNumber $lng, string $picture)
     {
 
         $this->site_uid = $site_uid;
@@ -28,6 +31,7 @@ class Site implements JsonSerializable
         $this->description = $description;
         $this->lat = $lat;
         $this->lng = $lng;
+        $this->picture = $picture;
     }
 
     /**
@@ -109,6 +113,22 @@ class Site implements JsonSerializable
     public function setLng(DecimalNumber $lng): void
     {
         $this->lng = $lng;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPicture(): string
+    {
+        return $this->picture;
+    }
+
+    /**
+     * @param string $picture
+     */
+    public function setPicture(string $picture): void
+    {
+        $this->picture = $picture;
     }
 
     public function jsonSerialize() {

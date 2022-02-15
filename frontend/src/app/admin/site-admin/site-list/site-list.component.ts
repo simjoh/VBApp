@@ -19,7 +19,14 @@ import {CreateSiteDialogComponent} from "../create-site-dialog/create-site-dialo
 export class SiteListComponent implements OnInit {
 
 
-  $sites = this.siteService.allSites$.pipe(
+  // $sites = this.siteService.allSites$.pipe(
+  //   map((s:Array<Site>) => {
+  //     // this.table. = 0;
+  //     return s;
+  //   })
+  // ) as Observable<Site[]>;
+
+  $sites = this.siteService.siteWithAdd$.pipe(
     map((s:Array<Site>) => {
       // this.table. = 0;
       return s;
@@ -48,7 +55,7 @@ export class SiteListComponent implements OnInit {
       data: {
         id: '51gF3'
       },
-      header: 'Lägg till användare',
+      header: 'Lägg till Site',
     });
 
     ref.onClose.subscribe((event: Site) => {

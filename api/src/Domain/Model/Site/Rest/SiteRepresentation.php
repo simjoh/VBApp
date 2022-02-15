@@ -18,6 +18,8 @@ class SiteRepresentation implements JsonSerializable
     private ?array $link;
 
 
+
+
     /**
      * @return string
      */
@@ -151,6 +153,22 @@ class SiteRepresentation implements JsonSerializable
     public function setLng(string $lng): void
     {
         $this->lng = $lng;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPicture(): string
+    {
+        return $this->picture;
+    }
+
+    /**
+     * @param string $picture
+     */
+    public function setPicture(string $picture): void
+    {
+        $this->picture = $picture;
     }
 
 

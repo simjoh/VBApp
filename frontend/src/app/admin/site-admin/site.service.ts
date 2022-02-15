@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Observable, Subject, throwError} from "rxjs";
+import {combineLatest, Observable, Subject, throwError} from "rxjs";
 import {Site} from "../../shared/api/api";
 import {environment} from "../../../environments/environment";
 import {catchError, map, shareReplay, startWith, tap} from "rxjs/operators";
@@ -15,10 +15,10 @@ export class SiteService {
     startWith(''),
   );
 
-  allSites$ = this.getAllSites() as Observable<Site[]>;
+  // allSites$ = this.getAllSites() as Observable<Site[]>;
 
-  private userInsertedSubject = new Subject<Site>();
-  userInsertedAction$ = this.userInsertedSubject.asObservable().pipe(
+  private siteInsertedSubject = new Subject<Site>();
+  siteInsertedAction$ = this.siteInsertedSubject.asObservable().pipe(
     startWith(''),
   );
 
@@ -27,7 +27,7 @@ export class SiteService {
 
   async newSite(newSite: Site) {
     const user = await this.addSite(newSite)
-    this.userInsertedSubject.next(user);
+    this.siteInsertedSubject.next(user);
   }
 
   private getAllSites(): Observable<Site[]>{
@@ -40,6 +40,21 @@ export class SiteService {
     );
   }
 
+  siteWithAdd$ = combineLatest([this.getAllSites(), this.siteInsertedAction$, this.relaod$]).pipe(
+    map(([all, insert, del]) =>  {
+      if(insert){
+        return  [...all, insert]
+      }
+      if(del){
+        var index = all.findIndex((elt) => elt.site_uid === del);
+        all.splice(index, 1);
+        const userArray = all;
+        return   this.deepCopyProperties(all);
+      }
+      return this.deepCopyProperties(all);
+    }),
+  );
+
   public getSite(siteUid: string): Observable<Site> {
     return this.httpClient.get<Site>(environment.backend_url + "site/" + siteUid).pipe(
       map((site: Site) => {
@@ -50,7 +65,7 @@ export class SiteService {
   }
 
   async addSite(site: Site){
-    return await this.httpClient.post<Site>(environment.backend_url + "site/", site).pipe(
+    return await this.httpClient.post<Site>(environment.backend_url + "site", site).pipe(
       map((site: Site) => {
         return site;
       }),
@@ -76,5 +91,10 @@ export class SiteService {
       }),
       tap(site =>   console.log(site))
     ) as Observable<Site>
+  }
+
+  deepCopyProperties(obj: any): any {
+    // Konverterar till och från JSON, kopierar properties men tappar bort metoder
+    return obj === null || obj === undefined ? obj : JSON.parse(JSON.stringify(obj));
   }
 }

@@ -6,6 +6,7 @@ use App\common\Rest\Link;
 use App\Domain\Model\Site\Site;
 use App\Domain\Permission\PermissionRepository;
 use PrestaShop\Decimal\DecimalNumber;
+use Psr\Container\ContainerInterface;
 
 class SiteAssembly
 {
@@ -23,12 +24,16 @@ class SiteAssembly
         return $siteArray;
     }
     public function toRepresentation(Site $s, array $permissions): SiteRepresentation {
+
+
+
         $siteRepresentation = new SiteRepresentation();
         $siteRepresentation->setPlace($s->getPlace());
         $siteRepresentation->setSiteUid($s->getSiteUid());
         $siteRepresentation->setAdress($s->getAdress());
         $siteRepresentation->setLocation($s->getLocation());
         $siteRepresentation->setDescription($s->getDescription());
+        $siteRepresentation->setImage($s->getPicture()  == null ? "": "../../../../../../api/uploads/" . $s->getPicture());
 
         $siteRepresentation->setLat($s->getLat()  == null ? "": strval($s->getLat()));
         $siteRepresentation->setLng($s->getLng() == null ? "": strval($s->getLng()));
@@ -53,7 +58,7 @@ class SiteAssembly
         return new Site($site->getSiteUid(), $site->getPlace(),
             $site->getAdress(), $site->getDescription()
             ,$site->getLocation(), new DecimalNumber($site->getLat())
-            , new DecimalNumber($site->getLng()));
+            , new DecimalNumber($site->getLng()), $site->getImage());
     }
 
 

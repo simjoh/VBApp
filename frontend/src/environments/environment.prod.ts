@@ -5,4 +5,5 @@ export const environment = {
   backend_url: '/app2.0/api/',
   mock_login: false,
   mockbackendurl: '',
+  pictureurl: '../../../../../../api/uploads'
 };

@@ -42,7 +42,7 @@ export class EventService {
 
 
   async newEvent(newSite: EventRepresentation) {
-    const user = await this.addSite(newSite)
+    const user = await this.addSite(newSite);
     this.userInsertedSubject.next(user);
   }
 

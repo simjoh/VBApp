@@ -14,6 +14,9 @@ $settings = [];
 // Path settings
 $settings['root'] = dirname(__DIR__);
 
+
+$settings['upload_directory'] = __DIR__ . "/../uploads/";
+
 // Error Handling Middleware settings
 $settings['error'] = [
 

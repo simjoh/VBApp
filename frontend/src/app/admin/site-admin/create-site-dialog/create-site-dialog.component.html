@@ -1,1 +1,64 @@
-<p>create-site-dialog works!</p>
+{{siteform |json}}
+<form #eventFormName="ngForm" (ngSubmit)="addEvent(eventFormName)" novalidate>
+  <div class="p-dynamicdialog">
+    <div class="p-dialog-content">
+      <div class="form-group">
+        <label class="col-form-label" for="place">Plats</label>
+
+        <input pInputText pTooltip="Plats"  tooltipPosition="left"   #place="ngModel" type="text" name="place" class="form-control" id="place" [(ngModel)]="siteform.place" placeholder="Broparken" required>
+      </div>
+      <div class="form-group">
+        <label class="col-form-label" for="adress">Adress</label>
+        <input pInputText pTooltip="Adress"  tooltipPosition="left"   #adress="ngModel" type="text" name="adress" class="form-control" id="adress" [(ngModel)]="siteform.adress" placeholder="Brogatan 1" required>
+      </div>
+      <div class="form-group">
+        <div class="form-row">
+          <div class="col-6">
+            Latitud
+            <input pInputText pTooltip="Latitud"  tooltipPosition="left"   #title="ngModel" type="text" name="title" class="form-control" id="lat" [(ngModel)]="siteform.lat" placeholder="" required>
+          </div>
+          <div class="col-6">
+            Longitud
+            <input pInputText pTooltip="Longitud"  tooltipPosition="left"   #title="ngModel" type="text" name="title" class="form-control" id="long" [(ngModel)]="siteform.long" placeholder="" required>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-group">
+          Description
+          <textarea  pTooltip="Beskrivning för platsen" tooltipPosition="left" [(ngModel)]="siteform.description" name="description" placeholder="" class="col-12" rows="5"  pInputTextarea autoResize="autoResize"></textarea>
+        </div>
+        <div class="form-group">
+          Ladda upp bild
+<!--          <p-fileUpload showCancelButton="false" (onSelect)="onupload($event)" name="myfile[]" url="/api/site/upload"></p-fileUpload>-->
+
+          <p-fileUpload #primeFileUpload (onProgress)="progressReport($event)" name="myfile[]" customUpload="true" (uploadHandler)="myUploader($event)">
+            multiple="multiple" accept="image/*" maxFileSize="1000000">
+            <ng-template pTemplate="content">
+              <ul *ngIf="uploadedFiles.length">
+                <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
+              </ul>
+            </ng-template>
+          </p-fileUpload>
+
+
+        </div>
+        <div class="form-group">
+        </div>
+      </div>
+    </div>
+    <div class="p-dialog-footer">
+  <span class="p-buttonset">
+    <button pTooltip="Klicka för att spara" type="submit"  [disabled]="!eventFormName.valid" tooltipPosition="left" pButton pRipple label="Save"  icon="pi pi-check" class="p-button-sm"></button>
+    <button pTooltip="Klicka för att avbryta" pButton pRipple label="Cancel" (click)="cancel()"  icon="pi pi-times" class="p-button-sm"></button>
+</span>
+    </div>
+  </div>
+</form>
+
+
+
+
+
+
+

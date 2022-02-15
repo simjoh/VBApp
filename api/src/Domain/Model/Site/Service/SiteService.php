@@ -17,6 +17,7 @@ class SiteService extends ServiceAbstract
         $this->siterepository = $siterepository;
         $this->permissionrepository = $permissionRepository;
         $this->siteassembly = $siteAssembly;
+
     }
 
     public function allSites(string $currentuserUid): array {
@@ -45,7 +46,13 @@ class SiteService extends ServiceAbstract
     }
 
     public function createSite(SiteRepresentation $siteRepresentation){
-        $this->siterepository->createSite($this->siteassembly->toSite($siteRepresentation));
+
+        $site = $this->siterepository->createSite($this->siteassembly->toSite($siteRepresentation));
+
+        return $siteRepresentation;
+
+    //    $this->siteassembly->toRepresentation($siteRepresentation);
+
     }
 
     public function getPermissions($user_uid): array

@@ -9,6 +9,7 @@ use Karriere\JsonDecoder\JsonDecoder;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Psr7\UploadedFile;
 use Slim\Routing\RouteContext;
 
 class SitesAction
@@ -19,6 +20,7 @@ class SitesAction
     public function __construct(ContainerInterface $c, SiteService $siteService)
     {
             $this->siteservice = $siteService;
+        $this->settings = $c->get('settings');
     }
 
     public function allSites(ServerRequestInterface $request, ResponseInterface $response){
@@ -61,8 +63,34 @@ class SitesAction
     public function createSite(ServerRequestInterface $request, ResponseInterface $response){
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new SiteRepresentationTransformer());
+
         $siterepresentation  =  $jsonDecoder->decode($request->getBody(), SiteRepresentation::class);
-        $this->siteservice->createSite($siterepresentation);
+
+        $response->getBody()->write(json_encode($this->siteservice->createSite($siterepresentation)));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+    }
+
+    public function uploadSiteImage(ServerRequestInterface $request, ResponseInterface $response){
+
+        $uploadDir = $this->settings['upload_directory'];
+        $uploadedFiles = $request->getUploadedFiles();
+
+        foreach ($uploadedFiles as $uploadedFile) {
+//            if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+                $filename = $this->moveUploadedFile($uploadDir, $uploadedFile);
+                $response->getBody()->write($filename);
+//            }
+        }
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+    }
+
+    function moveUploadedFile($directory, UploadedFile $uploadedFile)
+    {
+        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+        $basename = $uploadedFile->getClientFilename(); // see http://php.net/manual/en/function.random-bytes.php
+        $filename = $basename;
+        $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+
+        return $filename;
     }
 }

@@ -9,5 +9,6 @@ export const environment = {
   backend_url: '/api/',
   mock_login: false,
   mockbackendurl: '/fejk-fejk',
+  pictureurl: '../../../../../../api/uploads'
 };
 

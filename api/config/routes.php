@@ -63,6 +63,7 @@ return function (App $app) {
         $app->put('/site/{siteUid}', \App\Action\Site\SitesAction::class . ':updateSite');
         $app->delete('/site/{siteUid}', \App\Action\Site\SitesAction::class . ':deleteSite');
         $app->post('/site', \App\Action\Site\SitesAction::class . ':createSite');
+        $app->post('/site/upload', \App\Action\Site\SitesAction::class . ':uploadSiteImage');
 
         // byt namn till checkpoints
         $app->get('/checkpoints', \App\Action\Checkpoint\CheckpointAction::class . ':allCheckpoints');

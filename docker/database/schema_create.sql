@@ -131,6 +131,7 @@ CREATE TABLE site (
     lat DECIMAL(10,8),
     lng DECIMAL(11,8),
     location POINT ,
+    picture varchar(100),
     PRIMARY KEY (site_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -209,6 +210,10 @@ inner join track tr on tr.track_uid = a.track_uid
 inner join participant_checkpoint  pach on pach.participant_uid = a.participant_uid
 inner join checkpoint cpo on cpo.checkpoint_uid = pach.checkpoint_uid
 inner join site sit on sit.site_uid = cpo.site_uid;
+
+
+
+
 
 
 

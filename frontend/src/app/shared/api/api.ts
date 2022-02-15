@@ -12,6 +12,7 @@ export interface Site{
   description?: string;
   lat?: string;
   lng?: string;
+  picture?: string;
   link?: Link;
 }
 

@@ -28,6 +28,7 @@ import {SiteListComponent} from "../admin/site-admin/site-list/site-list.compone
 import { YesNoPipe } from './pipes/yes-no.pipe';
 import {CalendarModule} from "primeng/calendar";
 import {InputTextareaModule} from "primeng/inputtextarea";
+import {FileUploadModule} from "primeng/fileupload";
 
 @NgModule({
     declarations: [
@@ -61,11 +62,12 @@ import {InputTextareaModule} from "primeng/inputtextarea";
     OverlayPanelModule,
     CalendarModule,
     InputTextareaModule,
+    FileUploadModule,
     FormsModule, ReactiveFormsModule
   ],
     exports: [CommonModule, InputTextModule, TabMenuModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
         LogoComponent, DatePipe, NgbCollapseModule, BrowserAnimationsModule, ProgressSpinnerModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
-        ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe,CalendarModule, InputTextareaModule],
+        ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe,CalendarModule, InputTextareaModule,FileUploadModule],
   providers: [DatePipe]
 })
 export class SharedModule { }
