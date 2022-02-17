@@ -84,7 +84,8 @@ return function (App $app) {
         // ingång för dashboard
 
         // Deltagare på olika banor och event
-        $app->get('/participants/event/{eventUid}/track/{trackUid}', \App\Action\Participant\ParticipantAction::class. ':participantOnEvent');
+        $app->get('/participants/event/{eventUid}', \App\Action\Participant\ParticipantAction::class. ':participantOnEvent');
+        $app->get('/participants/event/{eventUid}/track/{trackUid}', \App\Action\Participant\ParticipantAction::class. ':participantOnEventAndTrack');
         $app->get('/participants/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':participantsOnTrack');
         $app->get('/participant/{uid}/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':participantOnTrack');
         $app->put('/participant/{uid}/track/{trackUid}/update', \App\Action\Participant\ParticipantAction::class . ':updateParticipant');

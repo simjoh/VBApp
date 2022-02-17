@@ -2,8 +2,6 @@
 
 namespace App\Action\Randonneur;
 
-
-
 use App\Domain\Model\Randonneur\Service\RandonneurService;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
