@@ -25,6 +25,7 @@ class ApiKeyValidatorMiddleware
 
         $api_key_header = $request->getHeaderLine("APIKEY");
         if ($api_key_header != $api_key) {
+
             $response = (new Response())->withStatus(403);
 
             return $response;

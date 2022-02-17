@@ -28,6 +28,7 @@ class JwtTokenValidatorMiddleware
         $token = $request->getHeaderLine("TOKEN");
 
         if ($token == '') {
+
             return (new Response())->withStatus(403);
         }
 

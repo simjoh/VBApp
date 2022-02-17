@@ -139,7 +139,7 @@ class CheckpointRepository extends BaseRepository
             $sql = $this->sqls('getCheckpointsFor');
 
             $in  = str_repeat('?,', count($checkpoints_uids) - 1) . '?';
-            $sql = " SELECT * from checkpoint where checkpoint_uid  IN ($in)";
+            $sql = " SELECT * from checkpoint where checkpoint_uid  IN ($in) order by opens desc";
 
             $test = [];
             foreach ($checkpoints_uids as $s => $ro){
@@ -149,6 +149,33 @@ class CheckpointRepository extends BaseRepository
             $statement->execute($test);
             $checkpoint = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\CheckPoint\Checkpoint::class,  null);
             return $checkpoint;
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return array();
+    }
+
+    public function checkpointUidsForTrack(string $track_uid) : array{
+
+        try {
+            $statement = $this->connection->prepare($this->sqls('getCheckpointByTrackUid'));
+            $statement->bindParam(':track_uid', $track_uid);
+            $statement->execute();
+            $checkpoints = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            if (empty($checkpoints)) {
+
+                return array();
+            }
+            $checkpoint_uids = [];
+
+            foreach ($checkpoints as $s => $trc) {
+
+                array_push($checkpoint_uids,$trc["checkpoint_uid"]);
+            }
+
+            return $checkpoint_uids;
         }
         catch(PDOException $e)
         {
@@ -177,7 +204,7 @@ class CheckpointRepository extends BaseRepository
         $tracksqls['createCheckpoint']  = "INSERT INTO checkpoint(checkpoint_uid, site_uid, title, description, distance, opens, closing) VALUES (:checkpoint_uid, :site_uid,:title,:description,:distance, :opens,:closing)";
         $tracksqls['updateCheckpoint']  = "UPDATE checkpoint SET  title=:title , site_uid=:site_uid description=:description , distance=:distance, opens=:opens, closing=:closing  WHERE checkpoint_uid=:checkpoint_uid";
         $tracksqls['deleteCheckpoint'] = 'delete from checkpoint c where c.checkpoint_uid=:checkpoint_uid;';
-        $tracksqls['getCheckpointByTrackUid'] = 'select checkpoint_uid  from track_checkpoint where track_uid=:track_uid;';
+        $tracksqls['getCheckpointByTrackUid'] = 'select checkpoint_uid from track_checkpoint where track_uid=:track_uid;';
         return $tracksqls[$type];
         // TODO: Implement sqls() method.
     }

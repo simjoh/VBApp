@@ -39,6 +39,14 @@ class CheckpointsService extends ServiceAbstract
         return $this->toRepresentation($this->checkpointRepository->checkpointFor($checkpoint_uid));
     }
 
+    public function checkpointForTrack(?string $track_uid) : array
+    {
+
+        $checkpointUIDS = $this->checkpointRepository->checkpointUidsForTrack($track_uid);
+        $checkpoints = $this->checkpointRepository->checkpointsFor($checkpointUIDS);
+        return $this->toRepresentations($checkpoints);
+    }
+
     public function updateCheckpoint(?string $checkpoint_uid, CheckpointRepresentation $checkpointRepresentation): CheckpointRepresentation
     {
         $checkpoint = $this->toCheckpoint($checkpointRepresentation);

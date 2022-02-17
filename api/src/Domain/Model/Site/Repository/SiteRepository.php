@@ -55,6 +55,7 @@ class SiteRepository extends BaseRepository
 
     public function siteFor(string $siteUid): ?Site {
         try {
+
         $statement = $this->connection->prepare($this->sqls('getSiteByUid'));
         $statement->bindParam(':site_uid', $siteUid);
         $statement->execute();
@@ -62,7 +63,7 @@ class SiteRepository extends BaseRepository
         if(!empty($data)){
             return new Site($data["site_uid"],  $data["place"], $data["adress"],$data['description'],$data["location"],
                 empty($data["lat"]) ? new DecimalNumber("0") : new DecimalNumber($data["lat"]),
-                empty($data["lng"]) ? new DecimalNumber("0")  : new DecimalNumber($data["lng"]), $data['picture']);
+                empty($data["lng"]) ? new DecimalNumber("0")  : new DecimalNumber($data["lng"]), is_null($data["picture"]) ? "": $data["picture"]);
         }
 
          }
