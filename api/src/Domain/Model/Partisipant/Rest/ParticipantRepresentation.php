@@ -1,8 +1,11 @@
 <?php
 
-namespace App\Domain\Model\Partisipant;
+namespace App\Domain\Model\Partisipant\Rest;
 
-class Participant
+
+use JsonSerializable;
+
+class ParticipantRepresentation implements JsonSerializable
 {
 
     private string $participant_uid;
@@ -10,14 +13,13 @@ class Participant
     private ?string $competitor_uid;
     private string $startnumber;
     private bool $finished;
-    private string $acpkod;
+    private string $acpcode;
     private string $club_uid;
     private $time;
     private bool $dns;
     private bool $dnf;
     private ?string $brevenr;
-
-
+    private array $links = [];
     /**
      * @return string
      */
@@ -101,17 +103,17 @@ class Participant
     /**
      * @return string
      */
-    public function getAcpkod(): string
+    public function getAcpcode(): string
     {
-        return $this->acpkod;
+        return $this->acpcode;
     }
 
     /**
      * @param string $acpcode
      */
-    public function setAcpkod(string $acpkod): void
+    public function setAcpcode(string $acpcode): void
     {
-        $this->acpcode = $acpkod;
+        $this->acpcode = $acpcode;
     }
 
     /**
@@ -179,7 +181,7 @@ class Participant
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getBrevenr(): ?string
     {
@@ -187,12 +189,35 @@ class Participant
     }
 
     /**
-     * @param string $brevenr
+     * @param string|null $brevenr
      */
-    public function setBrevenr(string $brevenr): void
+    public function setBrevenr(?string $brevenr): void
     {
         $this->brevenr = $brevenr;
     }
 
+
+
+
+    /**
+     * @return array
+     */
+    public function getLinks(): array
+    {
+        return $this->links;
+    }
+
+    /**
+     * @param array $links
+     */
+    public function setLinks(array $links): void
+    {
+        $this->links = $links;
+    }
+
+    public function jsonSerialize()
+    {
+        return (object)get_object_vars($this);
+    }
 
 }

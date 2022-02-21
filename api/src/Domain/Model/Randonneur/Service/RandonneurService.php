@@ -27,7 +27,6 @@ class RandonneurService
             return $this->checkpointService->checkpointForTrack($participant->getTrackUid());
         }
 
-
         return null;
     }
 }

@@ -67,6 +67,26 @@ class EventRepository extends BaseRepository
         return null;
     }
 
+    public function tracksOnEvent(string $event_uid): ?array {
+        try {
+            $statement = $this->connection->prepare($this->sqls('tracksOnEvent'));
+            $statement->bindValue(':event_uid', $event_uid);
+            $statement->execute();
+            $track_uids = $statement->fetchAll();
+
+            if (empty($track_uids)) {
+                return array();
+            }
+
+            return $track_uids;
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return null;
+    }
+
     public function updateEvent(string $event_uid , Event $event): Event
     {
 
@@ -151,11 +171,13 @@ class EventRepository extends BaseRepository
     }
     public function sqls($type): string
     {
+        $eventqls['tracksOnEvent'] = 'select track_uid  from event_tracks e where e.event_uid=:event_uid;';
         $eventqls['allEvents'] = 'select * from event e;';
         $eventqls['getEventByUid'] = 'select *  from event e where e.event_uid=:event_uid;';
         $eventqls['deleteEvent'] = 'delete from event  where event_uid=:event_uid;';
         $eventqls['updateEvent']  = "UPDATE event SET  title=:title , description=:description , active=:active, completed=:completed, canceled=:canceled, active=:active , start_date=:start_date, end_date=:end_date WHERE event_uid=:event_uid";
         $eventqls['createEvent']  = "INSERT INTO event(event_uid, title, start_date, end_date, active, canceled, completed,description) VALUES (:event_uid, :title,:start_date,:end_date,:active, :canceled, :completed, :description)";
         return $eventqls[$type];
+
     }
 }

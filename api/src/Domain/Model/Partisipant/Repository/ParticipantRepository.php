@@ -2,6 +2,7 @@
 
 namespace App\Domain\Model\Partisipant\Repository;
 use App\common\Repository\BaseRepository;
+use App\Domain\Model\Event\Event;
 use App\Domain\Model\Partisipant\Participant;
 use Exception;
 use PDO;
@@ -42,9 +43,61 @@ class ParticipantRepository extends BaseRepository
         return array();
     }
 
+
+    public function getPArticipantsByTrackUids($track_uids): ?array {
+            try {
+                $in  = str_repeat('?,', count($track_uids) - 1) . '?';
+                $sql = "select *  from participant  where  track_uid IN ($in)";
+                $test = [];
+
+
+                foreach ($track_uids as $s => $ro){
+
+                    $test[] = $ro["track_uid"];
+                }
+
+                $statement = $this->connection->prepare($sql);
+                $statement->execute($test);
+                $checkpoint = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Partisipant\Participant::class, null);
+
+                return $checkpoint;
+            }
+            catch(PDOException $e)
+            {
+                echo "Error: " . $e->getMessage();
+            }
+            return array();
+
+    }
+
+    public function participantFor(string $participant_uid): ?Participant
+    {
+        try {
+
+            $statement = $this->connection->prepare($this->sqls('getEventByUid'));
+            $statement->bindParam(':participant_uid', $participant_uid);
+            $statement->execute();
+            $event = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Event\Event::class, null);
+
+            if($statement->rowCount() > 1){
+                // Fixa bätter felhantering
+                throw new Exception();
+            }
+            if(!empty($event)){
+                return $event[0];
+            }
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+
+        return null;
+    }
+
     public function participantsOnTrack(string $track_uid) {
         try {
-            $statement = $this->connection->prepare($this->sqls('allParticipants'));
+            $statement = $this->connection->prepare($this->sqls('allParticipantsOnTrack'));
             $statement->bindParam(':track_uid', $track_uid);
             $statement->execute();
             $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Partisipant\Participant::class, null);
@@ -263,11 +316,10 @@ class ParticipantRepository extends BaseRepository
 
         $participant_uid = $participant_uid;
         $brevenr = $brevenr;
-
         try {
             $stmt = $this->connection->prepare($this->sqls('updateBrevenr'));
             $stmt->bindParam(':participant_uid', $participant_uid);
-            $stmt->bindParam(':dns',$brevenr );
+            $stmt->bindParam(':brevenr',$brevenr );
             $status = $stmt->execute();
             if($status){
                 return true;
