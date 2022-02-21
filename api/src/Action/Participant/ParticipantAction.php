@@ -46,9 +46,9 @@ class participantAction
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('trackUid');
         $event_uid = $route->getArgument('eventUid');
+        $response->getBody()->write(json_encode($this->participantService->participantOnEventAndTrack($event_uid ,$track_uid, $request->getAttribute('currentuserUid'))));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
-
 
     public function updateParticipant(ServerRequestInterface $request, ResponseInterface $response){
         $jsonDecoder = new JsonDecoder();

@@ -2,12 +2,15 @@
 
 namespace App\Domain\Model\Partisipant\Service;
 
+use App\common\Exceptions\BrevetException;
 use App\Domain\Model\Event\Repository\EventRepository;
 use App\Domain\Model\Event\Service\EventService;
 use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
 use App\Domain\Model\Partisipant\Rest\ParticipantAssembly;
 use App\Domain\Model\Partisipant\Rest\ParticipantRepresentation;
 use App\Domain\Model\Track\Repository\TrackRepository;
+use Exception;
+use Nette\Utils\Arrays;
 use Psr\Container\ContainerInterface;
 
 class ParticipantService
@@ -40,6 +43,26 @@ class ParticipantService
             return array();
         }
         $participants = $this->participantRepository->getPArticipantsByTrackUids($track_uids);
+        if(count($participants) == 0){
+            return array();
+        }
+        return $this->participantassembly->toRepresentations($participants, $currentUserUid);
+    }
+
+    public function participantOnEventAndTrack(string $event_uid, $track_uid,  string $currentUserUid): array {
+
+        $track_uids = $this->eventrepository->tracksOnEvent($event_uid);
+
+        $tracks = [];
+        foreach ($track_uids as $s => $ro){
+            $tracks[] = $ro["track_uid"];
+        }
+
+        if (in_array($track_uid, $tracks)) {
+            $participants = $this->participantRepository->participantsOnTrack($tracks[array_search($track_uid, $tracks)]);
+        } else {
+           throw new  BrevetException('Finns inget uid som matchar', 1, null);
+        }
         if(count($participants) == 0){
             return array();
         }
