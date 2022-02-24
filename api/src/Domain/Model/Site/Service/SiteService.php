@@ -47,11 +47,8 @@ class SiteService extends ServiceAbstract
 
     public function createSite(SiteRepresentation $siteRepresentation){
 
-        $site = $this->siterepository->createSite($this->siteassembly->toSite($siteRepresentation));
+       return $this->siterepository->createSite($this->siteassembly->toSite($siteRepresentation));
 
-        return $siteRepresentation;
-
-    //    $this->siteassembly->toRepresentation($siteRepresentation);
 
     }
 

@@ -55,7 +55,7 @@ class TrackRepository extends BaseRepository
         return array();
     }
 
-    public function getTrackByUid(string $trackUid): Track
+    public function getTrackByUid(string $trackUid): ?Track
     {
         try {
             $statement = $this->connection->prepare($this->sqls('trackByUid'));
@@ -67,6 +67,11 @@ class TrackRepository extends BaseRepository
                 // Fixa bätter felhantering
                 throw new Exception();
             }
+
+            if(empty($tracks)){
+                return null;
+            }
+
             if(!empty($tracks)){
                 $checkpoints = $this->checkpoints($tracks[0]->getTrackUid());
                 $tracks[0]->setCheckpoints($checkpoints);

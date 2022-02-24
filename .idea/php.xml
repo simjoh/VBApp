@@ -41,6 +41,8 @@
       <path value="$PROJECT_DIR$/api/vendor/symfony/polyfill-mbstring" />
       <path value="$PROJECT_DIR$/api/vendor/slim/php-view" />
       <path value="$PROJECT_DIR$/api/vendor/prestashop/decimal" />
+      <path value="$PROJECT_DIR$/api/vendor/box/spout" />
+      <path value="$PROJECT_DIR$/api/vendor/league/csv" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0">

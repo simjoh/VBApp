@@ -2,27 +2,36 @@
 
 namespace App\Domain\Model\Partisipant\Service;
 
+use App\Domain\Model\Competitor\Repository\CompetitorInfoRepository;
+use App\Domain\Model\Competitor\Service\CompetitorService;
 use App\common\Exceptions\BrevetException;
 use App\Domain\Model\Event\Repository\EventRepository;
-use App\Domain\Model\Event\Service\EventService;
+use App\Domain\Model\Partisipant\Participant;
 use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
 use App\Domain\Model\Partisipant\Rest\ParticipantAssembly;
 use App\Domain\Model\Partisipant\Rest\ParticipantRepresentation;
 use App\Domain\Model\Track\Repository\TrackRepository;
-use Exception;
-use Nette\Utils\Arrays;
+use League\Csv\Reader;
+use League\Csv\Statement;
+use Nette\Utils\Strings;
 use Psr\Container\ContainerInterface;
 
 class ParticipantService
 {
 
     public function __construct(ContainerInterface $c ,
-                                TrackRepository $trackRepository, ParticipantRepository $participantRepository, ParticipantAssembly $participantAssembly, EventRepository $eventRepository)
+                                TrackRepository $trackRepository,
+                                ParticipantRepository $participantRepository,
+                                ParticipantAssembly $participantAssembly,
+                                EventRepository $eventRepository, CompetitorService $competitorService, CompetitorInfoRepository $competitorInfoRepository)
     {
         $this->trackRepository = $trackRepository;
         $this->participantRepository = $participantRepository;
         $this->participantassembly = $participantAssembly;
         $this->eventrepository = $eventRepository;
+        $this->settings = $c->get('settings');
+        $this->competitorService = $competitorService;
+        $this->competitorInfoRepository = $competitorInfoRepository;
     }
 
     public function participantsOnTrack(string $trackuid, string $currentUserUid): array {
@@ -119,7 +128,65 @@ class ParticipantService
         return $this->participantassembly->toRepresentation($participant, $currentUserUid);
     }
 
-    public function parseUplodesParticipant(){
+    public function parseUplodesParticipant(string $filename, string $uploaddir, string $trackUid,string $currentUserUid): ?array {
+
+        // vilken bana ska de registeraras på
+        $track = $this->trackRepository->getTrackByUid($trackUid);
+
+        if(!isset($track)){
+            throw new BrevetException("Finns ingen bana med det uidet" . $trackUid, 1, null);
+        }
+
+        // Lös in filen som laddades upp
+        $csv = Reader::createFromPath($this->settings['upload_directory']  . 'Deltagarlista-MSR2022.csv', 'r');
+        $csv->setDelimiter(";");
+        $stmt = Statement::create();
+
+        // Anropa denna sen
+       // $stmt = $this->getCsv($filename);
+        $records = $stmt->process($csv);
+
+        $createdParticipants = [];
+        foreach ($records as $record) {
+
+            // se om det finns en sådan deltagare först
+            $competitor = $this->competitorService->getCompetitorByNameAndBirthDate($record[2],$record[1], $record[12]);
+            if(!isset($competitor)){
+                // createOne
+               $competitor =  $this->competitorService->createCompetitor($record[2],$record[1] , "", $record[12]);
+                if(isset($competitor)){
+                 //  $compInfo = $this->competitorInfoRepository->getCompetitorInfoByCompetitorUid($competitor->getId());
+                   // if(!isset($compInfo)){
+                        $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParams($record[9], $record[10], $record[5], $record[6],$record[7], $record[8], $competitor->getId());
+                   // }
+                }
+            }
+
+            $existingParticipant = $this->participantRepository->participantForTrackAndCompetitor($trackUid, $competitor->getId());
+
+            if(!isset($existingParticipant)){
+
+
+            $participant = new Participant();
+            $participant->setCompetitorUid($competitor->getId());
+            $participant->setStartnumber($record[0]);
+            $participant->setFinished(false);
+            $participant->setTrackUid($track->getTrackUid());
+            $participant->setDnf(false);
+            $participant->setDns(false);
+            $participant->setTime(null);
+            $participant->setAcpkod("s");
+            $participant->setClubUid("sss");
+            $participant->setTrackUid($trackUid);
+            $participant->setRegisterDateTime($record[11]);
+
+            $this->participantRepository->createparticipant($participant);
+            $createdParticipants [] = $participant;
+            }
+        }
+
+
+      return $this->participantassembly->toRepresentations($createdParticipants, $currentUserUid);
 
     }
 
@@ -137,6 +204,14 @@ class ParticipantService
         return null;
 
     }
+
+
+    private function getCsv(string $filename){
+        $csv = Reader::createFromPath($this->settings['upload_directory']  . $filename, 'r');
+        $csv->setDelimiter(";");
+        return Statement::create();
+    }
+
 
 
 

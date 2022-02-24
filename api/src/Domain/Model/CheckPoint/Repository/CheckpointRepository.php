@@ -139,7 +139,7 @@ class CheckpointRepository extends BaseRepository
             $sql = $this->sqls('getCheckpointsFor');
 
             $in  = str_repeat('?,', count($checkpoints_uids) - 1) . '?';
-            $sql = " SELECT * from checkpoint where checkpoint_uid  IN ($in) order by opens desc";
+            $sql = " SELECT * from checkpoint where checkpoint_uid  IN ($in) order by opens asc";
 
             $test = [];
             foreach ($checkpoints_uids as $s => $ro){

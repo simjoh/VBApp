@@ -9,6 +9,7 @@ use Karriere\JsonDecoder\JsonDecoder;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Psr7\UploadedFile;
 use Slim\Routing\RouteContext;
 
 class participantAction
@@ -17,6 +18,7 @@ class participantAction
     public function __construct(ContainerInterface $c, ParticipantService $participantService)
     {
         $this->participantService = $participantService;
+        $this->settings = $c->get('settings');
     }
 
     public function participantOnEvent(ServerRequestInterface $request, ResponseInterface $response){
@@ -62,11 +64,42 @@ class participantAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
     public function uploadParticipants(ServerRequestInterface $request, ResponseInterface $response){
-        $csv = array_map('str_getcsv', file('data.csv'));
+
+        $uploadDir = $this->settings['upload_directory'];
+        $uploadedFiles = $request->getUploadedFiles();
+
+        foreach ($uploadedFiles as $uploadedFile) {
+//            if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+            $filename = $this->moveUploadedFile($uploadDir, $uploadedFile);
+
+//            }
+        }
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('trackUid');
+        $filename = "sss";
+        $track_uid = "bf31d141-32c3-4cc9-b497-36d82b060221";
+
+        $uploadedParticipants = $this->participantService->parseUplodesParticipant($filename, $uploadDir, $track_uid,$request->getAttribute('currentuserUid'));
+
+        $response->getBody()->write($filename);
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+
+
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
     public function deleteParticipant(ServerRequestInterface $request, ResponseInterface $response){
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+    function moveUploadedFile($directory, UploadedFile $uploadedFile)
+    {
+        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+        $basename = $uploadedFile->getClientFilename(); // see http://php.net/manual/en/function.random-bytes.php
+        $filename = $basename;
+        $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+
+        return $filename;
     }
 
 

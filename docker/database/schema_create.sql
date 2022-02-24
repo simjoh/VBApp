@@ -26,6 +26,7 @@ CREATE TABLE competitors (
     family_name varchar(100),
     role_id int(11) NOT NULL,
     password char(128),
+    birthdate date,
     PRIMARY KEY (competitor_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -76,6 +77,21 @@ CREATE TABLE user_info (
   phone varchar (50) NOT NULL,
   PRIMARY KEY (user_uid),
   FOREIGN KEY (user_uid) REFERENCES users(user_uid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE competitor_info (
+  uid varchar(36) NOT NULL,
+  competitor_uid varchar (50) NOT NULL,
+  email varchar (50) NOT NULL,
+  phone varchar (50) NOT NULL,
+  adress varchar (200),
+  postal_code varchar (50),
+  place varchar (100),
+  country varchar(100),
+  PRIMARY KEY (uid),
+  FOREIGN KEY (competitor_uid) REFERENCES competitors(competitor_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -141,8 +157,8 @@ CREATE TABLE checkpoint (
     title varchar(100) NOT NULL,
     description varchar(500)  NOT NULL,
     distance DECIMAL(10,2) DEFAULT NULL,
-    opens TIME,
-    closing TIME,
+    opens DATETIME DEFAULT NULL,
+    closing DATETIME DEFAULT NULL,
     PRIMARY KEY (checkpoint_uid),
     FOREIGN KEY (site_uid) REFERENCES site(site_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -175,11 +191,12 @@ CREATE TABLE participant (
     time Time,
     dns BOOLEAN DEFAULT false,
     dnf BOOLEAN DEFAULT false,
-    brevenr INTEGER UNSIGNED,
+    brevenr INTEGER UNSIGNED DEFAULT NULL,
+    register_date_time DATETIME DEFAULT NULL,
     PRIMARY KEY ( participant_uid, track_uid ,competitor_uid),
     FOREIGN KEY (track_uid) REFERENCES track(track_uid),
     FOREIGN KEY (competitor_uid) REFERENCES competitors(competitor_uid)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE participant_checkpoint (
     participant_uid char(36) NOT NULL,

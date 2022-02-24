@@ -10,12 +10,15 @@ class Participant
     private ?string $competitor_uid;
     private string $startnumber;
     private bool $finished;
-    private string $acpkod;
+    private ?string $acpkod;
     private string $club_uid;
     private $time;
     private bool $dns;
     private bool $dnf;
-    private ?string $brevenr;
+    private ?string $brevenr = null;
+    private  $register_date_time;
+
+
 
 
     /**
@@ -111,7 +114,7 @@ class Participant
      */
     public function setAcpkod(string $acpkod): void
     {
-        $this->acpcode = $acpkod;
+        $this->acpkod = $acpkod;
     }
 
     /**
@@ -192,6 +195,22 @@ class Participant
     public function setBrevenr(string $brevenr): void
     {
         $this->brevenr = $brevenr;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRegisterDateTime()
+    {
+        return $this->register_date_time;
+    }
+
+    /**
+     * @param mixed $register_date_time
+     */
+    public function setRegisterDateTime($register_date_time): void
+    {
+        $this->register_date_time = $register_date_time;
     }
 
 

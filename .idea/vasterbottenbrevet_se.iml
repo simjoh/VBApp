@@ -47,6 +47,8 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-mbstring" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/slim/php-view" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/prestashop/decimal" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/box/spout" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/league/csv" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

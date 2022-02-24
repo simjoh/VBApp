@@ -4,6 +4,7 @@ namespace App\Domain\Model\Partisipant\Repository;
 use App\common\Repository\BaseRepository;
 use App\Domain\Model\Event\Event;
 use App\Domain\Model\Partisipant\Participant;
+use Cassandra\Date;
 use Exception;
 use PDO;
 use PDOException;
@@ -74,10 +75,36 @@ class ParticipantRepository extends BaseRepository
     {
         try {
 
-            $statement = $this->connection->prepare($this->sqls('getEventByUid'));
+            $statement = $this->connection->prepare($this->sqls('participantByUID'));
             $statement->bindParam(':participant_uid', $participant_uid);
             $statement->execute();
             $event = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Event\Event::class, null);
+
+            if($statement->rowCount() > 1){
+                // Fixa bätter felhantering
+                throw new Exception();
+            }
+            if(!empty($event)){
+                return $event[0];
+            }
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+
+        return null;
+    }
+
+    public function participantForTrackAndCompetitor(string $track_uid, string $competitor_uid): ?Participant
+    {
+        try {
+
+            $statement = $this->connection->prepare($this->sqls('participantByTrackAndCompetitorUid'));
+            $statement->bindParam(':track_uid', $track_uid);
+            $statement->bindParam(':competitor_uid', $competitor_uid);
+            $statement->execute();
+            $event = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\Participant::class, null);
 
             if($statement->rowCount() > 1){
                 // Fixa bätter felhantering
@@ -241,29 +268,30 @@ class ParticipantRepository extends BaseRepository
             $participant_uid = Uuid::uuid4();
             $track_uid = $participanttoCreate->getTrackUid();
             $competitor_uid = $participanttoCreate->getCompetitorUid();
-            $startnumber = $participanttoCreate->getStartnumber();
+            $startnumber = intval($participanttoCreate->getStartnumber());
             $finished = $participanttoCreate->isFinished();
-            $acpkod = $participanttoCreate->getAcpcode();
+            $acpkod = intval($participanttoCreate->getAcpkod());
             $club_uid = $participanttoCreate->getClubUid();
             $dns = $participanttoCreate->isDns();
             $dnf = $participanttoCreate->isDnf();
-            $brevenr = $participanttoCreate->getBrevenr();
+            $brevenr2 = $participanttoCreate->getBrevenr() == null ? null : $participanttoCreate->getBrevenr();
+            $brevenr = intval($brevenr2);
             $time = $participanttoCreate->getTime();
-            $null = null;
-            $stmt = $this->connection->prepare($this->sqls('createSite'));
+          //  date("Y-m-d H:i:s");
+            $register_date_time = $participanttoCreate->getRegisterDateTime();
+            $stmt = $this->connection->prepare($this->sqls('createParticipant'));
             $stmt->bindParam(':participant_uid', $participant_uid);
             $stmt->bindParam(':track_uid',$track_uid );
             $stmt->bindParam(':competitor_uid',$competitor_uid);
             $stmt->bindParam(':startnumber', $startnumber);
-            $stmt->bindParam(':finished', $finished);
+            $stmt->bindParam(':finished', $finished,PDO::PARAM_BOOL);
             $stmt->bindParam(':acpcode', $acpkod);
             $stmt->bindParam(':club_uid', $club_uid);
-            $stmt->bindParam(':dns', $dns);
+            $stmt->bindParam(':dns', $dns,PDO::PARAM_BOOL);
             $stmt->bindParam(':time', $time);
-            $stmt->bindParam(':dnf', $dnf);
+            $stmt->bindParam(':dnf', $dnf,PDO::PARAM_BOOL);
             $stmt->bindParam(':brevenr', $brevenr);
-
-
+            $stmt->bindParam(':register_date_time', $register_date_time);
             $stmt->execute();
         }
         catch(PDOException $e)
@@ -271,20 +299,21 @@ class ParticipantRepository extends BaseRepository
             echo "Error: " . $e->getMessage();
         }
 
+        $participanttoCreate->setParticipantUid($participant_uid);
         return $participanttoCreate;
     }
 
     public function updateParticipant(Participant $participantToUpdate): ?Participant {
-        $participant_uid = $participantToUpdate->getParticipantUid();
+        $participant_uid = Uuid::uuid4();
         $track_uid = $participantToUpdate->getTrackUid();
         $competitor_uid = $participantToUpdate->getCompetitorUid();
-        $startnumber = $participantToUpdate->getStartnumber();
+        $startnumber = intval($participantToUpdate->getStartnumber());
         $finished = $participantToUpdate->isFinished();
-        $acpkod = $participantToUpdate->getAcpcode();
+        $acpkod = intval($participantToUpdate->getAcpkod());
         $club_uid = $participantToUpdate->getClubUid();
         $dns = $participantToUpdate->isDns();
         $dnf = $participantToUpdate->isDnf();
-        $brevenr = $participantToUpdate->getBrevenr();
+        $brevenr = intval($participantToUpdate->getBrevenr());
         $time = $participantToUpdate->getTime();
         try {
             $stmt = $this->connection->prepare($this->sqls('updateParticipant'));
@@ -299,6 +328,7 @@ class ParticipantRepository extends BaseRepository
             $stmt->bindParam(':time', $time);
             $stmt->bindParam(':dnf', $dnf);
             $stmt->bindParam(':brevenr', $brevenr);
+            $stmt->bindParam(':register_date_time', $brevenr);
 
             $status = $stmt->execute();
             if($status){
@@ -335,6 +365,7 @@ class ParticipantRepository extends BaseRepository
     public function sqls($type)
     {
         $eventqls['allParticipants'] = 'select * from participant e;';
+        $eventqls['participantByUID'] = 'select * from participant e where participant_uid=:participant_uid;';
         $eventqls['dns'] = 'select *  from participant e where e.track_uid=:track_uid and dns=:dns;';
         $eventqls['dnf'] = 'select *  from participant e where e.track_uid=:track_uid and dnf=:dnf;';
         $eventqls['allParticipantsOnTrack'] = 'select *  from participant e where e.track_uid=:track_uid;';
@@ -344,7 +375,8 @@ class ParticipantRepository extends BaseRepository
         $eventqls['deleteParticipant'] = 'delete from participant  where participant_uid=:participant_uid;';
         $eventqls['updateParticipant']  = "UPDATE participant SET  track_uid=:track_uid , competitor_uid=:competitor_uid , startnumber=:startnumber, finished=:finished, acpkod=:acpcode, club_uid=:club_uid , dns=:dns, dnf=:dnf WHERE participant_uid=:participant_uid";
         $eventqls['updateBrevenr']  = "UPDATE participant SET  brevenr=:brevenr WHERE participant_uid=:participant_uid";
-        $eventqls['createParticipant'] = 'INSERT INTO participant(participant_uid, track_uid, competitor_uid, startnumber, finished, acpkod, club_uid ,time,dns, dnf, brevenr) VALUES (:participant_uid, :track_uid,:competitor_uid,:startnumber,:finished, :canceled, :acpcode, :club_uid, :time, :dns, :dnf, :brevenr)';
+        $eventqls['createParticipant'] = 'INSERT INTO participant(participant_uid, track_uid, competitor_uid, startnumber, finished,  acpkod, club_uid , time ,dns, dnf, brevenr,register_date_time) VALUES (:participant_uid, :track_uid,:competitor_uid,:startnumber,:finished , :acpcode, :club_uid, :time, :dns, :dnf, :brevenr, :register_date_time)';
+        $eventqls['participantByTrackAndCompetitorUid'] = 'select *  from participant e where e.track_uid=:track_uid and competitor_uid=:competitor_uid;';
         return $eventqls[$type];
         // TODO: Implement sqls() method.
     }
