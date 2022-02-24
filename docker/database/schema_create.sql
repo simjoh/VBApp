@@ -212,7 +212,7 @@ CREATE TABLE participant_checkpoint (
 
 CREATE TABLE club (
     club_uid char(36) NOT NULL,
-    acp_kod INTEGER UNSIGNED,
+    acp_kod INTEGER UNSIGNED DEFAULT NULL,
     title varchar (200),
     PRIMARY KEY (club_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

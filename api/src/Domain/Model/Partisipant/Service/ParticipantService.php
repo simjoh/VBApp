@@ -2,6 +2,8 @@
 
 namespace App\Domain\Model\Partisipant\Service;
 
+use App\Domain\Model\Club\Club;
+use App\Domain\Model\Club\ClubRepository;
 use App\Domain\Model\Competitor\Repository\CompetitorInfoRepository;
 use App\Domain\Model\Competitor\Service\CompetitorService;
 use App\common\Exceptions\BrevetException;
@@ -23,7 +25,10 @@ class ParticipantService
                                 TrackRepository $trackRepository,
                                 ParticipantRepository $participantRepository,
                                 ParticipantAssembly $participantAssembly,
-                                EventRepository $eventRepository, CompetitorService $competitorService, CompetitorInfoRepository $competitorInfoRepository)
+                                EventRepository $eventRepository,
+                                CompetitorService $competitorService,
+                                CompetitorInfoRepository $competitorInfoRepository,
+                                ClubRepository $clubRepository)
     {
         $this->trackRepository = $trackRepository;
         $this->participantRepository = $participantRepository;
@@ -32,6 +37,7 @@ class ParticipantService
         $this->settings = $c->get('settings');
         $this->competitorService = $competitorService;
         $this->competitorInfoRepository = $competitorInfoRepository;
+        $this->clubrepository = $clubRepository;
     }
 
     public function participantsOnTrack(string $trackuid, string $currentUserUid): array {
@@ -176,7 +182,15 @@ class ParticipantService
             $participant->setDns(false);
             $participant->setTime(null);
             $participant->setAcpkod("s");
-            $participant->setClubUid("sss");
+            // kolla om klubben finns i databasen annars skapa vi en klubb
+            $existingClub = $this->clubrepository->getClubByTitle($record[4]);
+
+           if(!isset($existingClub)){
+            $clubUid = $this->clubrepository->createClub("",  $record[4]);
+            $participant->setClubUid($clubUid);
+           } else {
+               $participant->setClubUid($existingClub->getClubUid());
+           }
             $participant->setTrackUid($trackUid);
             $participant->setRegisterDateTime($record[11]);
 
