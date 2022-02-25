@@ -62,7 +62,7 @@ class ParticipantToPassCheckpointAssembly
                 }
                      array_push($linkArray, new Link("relation.volonteer.setdnf", 'PUT', 'api/volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/dnf'));
 
-                     array_push($linkArray, new Link("self", 'GET', '/volonteer/track/'. $participantToPassCheckpoint->getTrackUid().'/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid().'/randonneurs'));
+                     array_push($linkArray, new Link("self", 'GET', 'api/participant/' . $participantToPassCheckpoint->getParticipantUid()));
                // break;
         //    }
 //            if($site->hasReadPermission()){

@@ -76,7 +76,7 @@ class ParticipantRepository extends BaseRepository
             $statement = $this->connection->prepare($this->sqls('participantByUID'));
             $statement->bindParam(':participant_uid', $participant_uid);
             $statement->execute();
-            $event = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Event\Event::class, null);
+            $event = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\Participant::class, null);
 
             if($statement->rowCount() > 1){
                 // Fixa bätter felhantering
@@ -377,6 +377,8 @@ class ParticipantRepository extends BaseRepository
         return $event;
     }
 
+
+
     //görs i efterhand
     public function setDns(string $participant_uid): bool {
 
@@ -442,16 +444,41 @@ class ParticipantRepository extends BaseRepository
         return array();
     }
 
+    public function stampOnCheckpoint(string $participant_uid, string $checkpoint_uid) : bool
+    {
+        try {
+
+            $passed_date_timestamp = date('Y-m-d H:i:s');
+            $lat = null;
+            $lng = null;
+            $passed = true;
+            $stmt = $this->connection->prepare($this->sqls('updateCheckpoint'));
+            $stmt->bindParam(':participant_uid', $participant_uid);
+            $stmt->bindParam(':checkpoint_uid',$checkpoint_uid );
+            $stmt->bindParam(':passed',$passed, PDO::PARAM_BOOL);
+            $stmt->bindParam(':passed_date_time', $passed_date_timestamp);
+            $stmt->bindParam(':lat', $lat);
+            $stmt->bindParam(':lng', $lng);
+            $stmt->execute();
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return true;
+    }
+
     public function rollbackStamp(string $participant_uid, string $checkpoint_uid) : bool
     {
         try {
             $passed_date_timestamp = null;
             $lat = null;
             $lng = null;
+            $passed = false;
             $stmt = $this->connection->prepare($this->sqls('updateCheckpoint'));
             $stmt->bindParam(':participant_uid', $participant_uid);
             $stmt->bindParam(':checkpoint_uid',$checkpoint_uid );
-            $stmt->bindParam(':passed',$passed);
+            $stmt->bindParam(':passed',$passed, PDO::PARAM_BOOL);
             $stmt->bindParam(':passed_date_time', $passed_date_timestamp);
             $stmt->bindParam(':lat', $lat);
             $stmt->bindParam(':lng', $lng);
@@ -519,7 +546,7 @@ class ParticipantRepository extends BaseRepository
         $eventqls['participantByTrackAndCompetitorUid'] = 'select *  from participant e where e.track_uid=:track_uid and competitor_uid=:competitor_uid;';
         $eventqls['stampOnCheckpoint'] = 'INSERT INTO participant_checkpoint(participant_uid ,checkpoint_uid, passed, passeded_date_time, lat, lng) VALUES (:participant_uid ,:checkpoint_uid, :passed,:passed_date_time,:lat,:lng)';
         $eventqls['createParticipantCheckpoint'] = 'INSERT INTO participant_checkpoint(participant_uid ,checkpoint_uid, passed, passeded_date_time, lat, lng) VALUES (:participant_uid ,:checkpoint_uid, :passed,:passed_date_time,:lat,:lng)';
-        $eventqls['updateCheckpoint']  = "UPDATE participant_checkpoint SET  passed=:passed, passeded_date_time, lat, lng WHERE participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid";
+        $eventqls['updateCheckpoint']  = "UPDATE participant_checkpoint SET  passed=:passed, passeded_date_time=:passed_date_time, lat=:lat, lng=:lng WHERE participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid;";
         $eventqls['setDnf']  = "UPDATE participant SET  dnf=:dnf WHERE participant_uid=:participant_uid;";
         $eventqls['setDns']  = "UPDATE participant SET  dns=:dns WHERE participant_uid=:participant_uid;";
         $eventqls['participanCheckpointByParticipantUidAndCheckpointUid'] = 'select *  from participant_checkpoint e where e.participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid;';

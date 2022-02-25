@@ -37,17 +37,35 @@ class VolonteerAction
 
 
     public function stamp(ServerRequestInterface $request, ResponseInterface $response){
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('trackUid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $participant_uid = $route->getArgument('uid');
         //Stämpla in via volontär
+        $this->volonteerService->stampRandonneur($track_uid,$participant_uid,$checkpoint_uid);
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
     public function markasDNF(ServerRequestInterface $request, ResponseInterface $response){
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('trackUid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $participant_uid = $route->getArgument('uid');
         //Markera dnf via volontär
+        $this->volonteerService->markRandonneurDnf($track_uid,$participant_uid,$checkpoint_uid);
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
     public function rollbackStamp(ServerRequestInterface $request, ResponseInterface $response){
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('trackUid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $participant_uid = $route->getArgument('uid');
         // Ångra stämpling via volontär
+        $this->volonteerService->rollbackRandonneurStamp($track_uid,$participant_uid,$checkpoint_uid);
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 

@@ -28,7 +28,7 @@ class ParticipantAssembly
     }
 
 
-    public function toRepresentation(Participant $participant,  array $permissions): ParticipantRepresentation {
+    public function toRepresentation(Participant $participant,  array $permissions): ?ParticipantRepresentation {
 
 
         $participantrepresentation = new ParticipantRepresentation();

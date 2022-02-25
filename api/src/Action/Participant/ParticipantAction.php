@@ -21,6 +21,16 @@ class participantAction
         $this->settings = $c->get('settings');
     }
 
+    public function participants(ServerRequestInterface $request, ResponseInterface $response){
+
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participantUid = $route->getArgument('participantUid');
+        $part = $this->participantService->participantFor($participantUid,$request->getAttribute('currentuserUid'));
+        $response->getBody()->write(json_encode($part));
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
     public function participantOnEvent(ServerRequestInterface $request, ResponseInterface $response){
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();

@@ -37,7 +37,7 @@ class VolonteerRepository extends BaseRepository
 
     public function sqls($type)
     {
-        $volonteer['participantToPassCheckpoint'] = 'select * from v_partisipant_to_pass_checkpoint e where track_uid=:track_uid and checkpoint_uid=:checkpoint_uid and passed= 0;';
+        $volonteer['participantToPassCheckpoint'] = 'select * from v_partisipant_to_pass_checkpoint e where track_uid=:track_uid and checkpoint_uid=:checkpoint_uid and passed=1;';
         return $volonteer[$type];
         // TODO: Implement sqls() method.
     }

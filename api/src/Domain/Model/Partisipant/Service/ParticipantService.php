@@ -2,6 +2,7 @@
 
 namespace App\Domain\Model\Partisipant\Service;
 
+use App\common\Service\ServiceAbstract;
 use App\Domain\Model\Club\Club;
 use App\Domain\Model\Club\ClubRepository;
 use App\Domain\Model\Competitor\Repository\CompetitorInfoRepository;
@@ -13,12 +14,13 @@ use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
 use App\Domain\Model\Partisipant\Rest\ParticipantAssembly;
 use App\Domain\Model\Partisipant\Rest\ParticipantRepresentation;
 use App\Domain\Model\Track\Repository\TrackRepository;
+use App\Domain\Permission\PermissionRepository;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Nette\Utils\Strings;
 use Psr\Container\ContainerInterface;
 
-class ParticipantService
+class ParticipantService extends ServiceAbstract
 {
 
     public function __construct(ContainerInterface $c ,
@@ -28,7 +30,7 @@ class ParticipantService
                                 EventRepository $eventRepository,
                                 CompetitorService $competitorService,
                                 CompetitorInfoRepository $competitorInfoRepository,
-                                ClubRepository $clubRepository)
+                                ClubRepository $clubRepository, PermissionRepository $permissionRepository)
     {
         $this->trackRepository = $trackRepository;
         $this->participantRepository = $participantRepository;
@@ -38,6 +40,7 @@ class ParticipantService
         $this->competitorService = $competitorService;
         $this->competitorInfoRepository = $competitorInfoRepository;
         $this->clubrepository = $clubRepository;
+        $this->permissionrepoitory = $permissionRepository;
     }
 
     public function participantsOnTrack(string $trackuid, string $currentUserUid): array {
@@ -224,6 +227,18 @@ class ParticipantService
 
     }
 
+    public function participantFor(?string $participantUid, string $user_uid): ?ParticipantRepresentation
+    {
+        $permissions = $this->getPermissions($user_uid);
+        $participant = $this->participantRepository->participantFor($participantUid);
+
+        if(!isset($participant)){
+            return null;
+        }
+
+        return $this->participantassembly->toRepresentation($participant, $permissions);
+    }
+
 
     private function getCsv(string $filename){
         $csv = Reader::createFromPath($this->settings['upload_directory']  . $filename, 'r');
@@ -232,16 +247,8 @@ class ParticipantService
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+    public function getPermissions($user_uid): array
+    {
+        return $this->permissionrepoitory->getPermissionsTodata("PARTICIPANT",$user_uid);
+    }
 }
