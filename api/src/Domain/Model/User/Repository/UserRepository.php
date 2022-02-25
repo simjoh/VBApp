@@ -109,6 +109,34 @@ class UserRepository extends BaseRepository
         return $user;
     }
 
+    public function isVolonteer(int $roleId): bool {
+        $statement = $this->connection->prepare($this->sqls('isRole'));
+        $statement->bindParam(':role_id', $roleId, PDO::PARAM_INT);
+        $statement->execute();
+        $count = $statement->rowCount();
+        if($count == 1){
+            return true;
+        }
+        return false;
+    }
+
+
+    public function getUserRoles(string $user_uid): array {
+        $statement = $this->connection->prepare($this->sqls('userRoles'));
+        $statement->bindParam(':role_id', $user_uid, PDO::PARAM_INT);
+        $statement->execute();
+        $role_ids = $statement->fetchAll();
+        $count = $statement->rowCount();
+        $roleArray = [];
+        if($count > 0){
+            foreach ($role_ids as $role_id) {
+                array_push($roleArray, $role_id);
+            }
+            return $roleArray;
+        }
+        return array();
+    }
+
     public function updateUser($id ,User $userParsed): User
     {
 
@@ -177,6 +205,8 @@ class UserRepository extends BaseRepository
         $usersqls['createUser']  = "INSERT INTO users(user_uid, user_name, given_name, family_name, password) VALUES (:user_uid, :user_name, :given_name, :family_name, :password)";
         $usersqls['deleteUser'] = 'delete from users  where user_uid = :user_uid';
         $usersqls['roles'] = 'select distinct(r.role_name) , r.role_id from user_role ur inner join roles r on r.role_id = ur.role_id  where ur.user_uid = :user_uid';
+        $usersqls['isRole'] = 'select role_id from roles s where s.role_id = :role_id;';
+        $usersqls['userRoles'] = 'select role_id from user_role s where s.role_id = :role_id;';
         return $usersqls[$type];
     }
 }

@@ -105,7 +105,7 @@ class TrackRepository extends BaseRepository
             $statement->bindParam(':link', $link);
             $status =   $statement->execute();
         if($status){
-                $sql = "UPDATE track_checpoint SET checkpoint_uid=:checkpoint_uid WHERE track_uid=:track_uid";
+                $sql = "UPDATE track_checkpoint SET checkpoint_uid=:checkpoint_uid WHERE track_uid=:track_uid";
                 $query = $this->connection->prepare($sql);
                 foreach ($track->getCheckpoints() as $s => $ro){
                     $query->bindparam(':checkpoint_uid', $ro);
@@ -154,16 +154,22 @@ class TrackRepository extends BaseRepository
     }
 
 
-    private function checkpoints(string $track_uid): array
+
+
+    public function checkpoints(string $track_uid): array
     {
         $track_checkpoint_statement = $this->connection->prepare($this->sqls('getCheckpoints'));
         $track_checkpoint_statement->bindParam(':track_uid', $track_uid);
         $track_checkpoint_statement->execute();
-        $trackss = $track_checkpoint_statement->fetch();
+        $trackss = $track_checkpoint_statement->fetchAll();
+
         if (!empty($trackss) && $track_checkpoint_statement->rowCount() > 0) {
             $track_checkpoint_uids = [];
             foreach ($trackss as $s => $trc) {
-                $track_checkpoint_uids[] = $trc;
+                foreach ($trc as $s2 => $trc2){
+                    $track_checkpoint_uids[] = $trc2;
+                }
+
             }
             return $track_checkpoint_uids;
         }

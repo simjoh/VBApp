@@ -46,10 +46,7 @@ class SiteService extends ServiceAbstract
     }
 
     public function createSite(SiteRepresentation $siteRepresentation){
-
        return $this->siterepository->createSite($this->siteassembly->toSite($siteRepresentation));
-
-
     }
 
     public function getPermissions($user_uid): array

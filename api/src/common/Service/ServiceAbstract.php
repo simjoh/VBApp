@@ -7,4 +7,6 @@ abstract class ServiceAbstract
 
     abstract public function getPermissions($user_uid): array;
 
+
+
 }

@@ -86,7 +86,7 @@ class participantAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
 
 
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        //return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
     public function deleteParticipant(ServerRequestInterface $request, ResponseInterface $response){
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);

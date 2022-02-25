@@ -196,6 +196,13 @@ class CheckpointRepository extends BaseRepository
         }
     }
 
+
+
+    public function stamp(){
+
+
+    }
+
     public function sqls($type)
     {
         $tracksqls['allChecpoints'] = 'select * from checkpoint c;';

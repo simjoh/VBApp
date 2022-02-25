@@ -2,15 +2,19 @@
 
 namespace App\Action\Volonteer;
 
+
+
+use App\Domain\Model\Volonteer\Service\VolonteerService;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Routing\RouteContext;
 
 class VolonteerAction
 {
-    public function __construct(ContainerInterface $c)
+    public function __construct(ContainerInterface $c, VolonteerService $volonteerService)
     {
-
+        $this->volonteerService = $volonteerService;
     }
 
     public function getCheckpoint(ServerRequestInterface $request, ResponseInterface $response){
@@ -19,7 +23,15 @@ class VolonteerAction
     }
 
     public function getRandonneurs(ServerRequestInterface $request, ResponseInterface $response){
+
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('trackUid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
         //Hämta cyklister som har elle ska passera en viss kontroll
+
+        $response->getBody()->write(json_encode($this->volonteerService->getRandoneursForCheckpoint($track_uid, $checkpoint_uid,$request->getAttribute('currentuserUid'))));
+
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 

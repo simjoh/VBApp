@@ -194,7 +194,12 @@ class ParticipantService
             $participant->setTrackUid($trackUid);
             $participant->setRegisterDateTime($record[11]);
 
-            $this->participantRepository->createparticipant($participant);
+            $participantcreated = $this->participantRepository->createparticipant($participant);
+
+                if(isset($participantcreated)){
+
+                    $this->participantRepository->createTrackCheckpointsFor($participant,$this->trackRepository->checkpoints($trackUid));
+                }
             $createdParticipants [] = $participant;
             }
         }

@@ -30,16 +30,35 @@ class RandonneurAction
 
     public function stamp(ServerRequestInterface $request, ResponseInterface $response){
         //skicka tillbacka checkpoints med ny status
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('track_uid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $startnumber = $route->getArgument('startnumber');
+        $response->getBody()->write(json_encode($this->randonneurService->stampOnCheckpoint($track_uid,$checkpoint_uid, $startnumber ,$request->getAttribute('currentuserUid'))));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
     public function markasDNF(ServerRequestInterface $request, ResponseInterface $response){
         //skicka tillbacka checkpoints med ny status
+        //skicka tillbacka checkpoints med ny status
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('track_uid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $startnumber = $route->getArgument('startnumber');
+        $response->getBody()->write(json_encode($this->randonneurService->markAsDnf($track_uid,$checkpoint_uid, $startnumber ,$request->getAttribute('currentuserUid'))));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
     public function rollbackStamp(ServerRequestInterface $request, ResponseInterface $response){
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('track_uid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $startnumber = $route->getArgument('startnumber');
         //skicka tillbacka checkpoints med ny status
+        $response->getBody()->write(json_encode($this->randonneurService->rollbackStamp($track_uid,$checkpoint_uid, $startnumber ,$request->getAttribute('currentuserUid'))));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 

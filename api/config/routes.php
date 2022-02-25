@@ -32,9 +32,9 @@ return function (App $app) {
 
         // ingångar som används av en cyklist
         $app->get('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}', \App\Action\Randonneur\RandonneurAction::class . ':getCheckpoint');
-        $app->post('/randonneur/{uid}/track/{track_uid}/checkpoint/{checkpointUid}/stamp', \App\Action\Randonneur\RandonneurAction::class . ':stamp');
-        $app->post('/randonneur/{uid}/track/{track_uid}/checkpoint/{checkpointUid}/markasdnf', \App\Action\Randonneur\RandonneurAction::class . ':markasDNF');
-        $app->put('/randonneur/{uid}/track/{track_uid}/checkpoint/{checkpointUid}/rollback', \App\Action\Randonneur\RandonneurAction::class . ':rollbackStamp');
+        $app->post('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/stamp', \App\Action\Randonneur\RandonneurAction::class . ':stamp');
+        $app->post('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/markasdnf', \App\Action\Randonneur\RandonneurAction::class . ':markasDNF');
+        $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/rollback', \App\Action\Randonneur\RandonneurAction::class . ':rollbackStamp');
 
         // ingångar som används av en volontär
         $app->get('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}', \App\Action\Volonteer\VolonteerAction::class . ':getCheckpoint');
@@ -96,7 +96,7 @@ return function (App $app) {
         //Ingång för att lägga tillbrevenr i efterhand.
 
         // lägg till ingångar för admin av klubbar
-
+       // $app->get('/clubs', \App\Action\User\UserAction::class . ':allUsers')->setName("allUsers");
 
         // roller i systemet endast läsa
 
