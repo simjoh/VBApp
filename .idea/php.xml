@@ -43,6 +43,7 @@
       <path value="$PROJECT_DIR$/api/vendor/prestashop/decimal" />
       <path value="$PROJECT_DIR$/api/vendor/box/spout" />
       <path value="$PROJECT_DIR$/api/vendor/league/csv" />
+      <path value="$PROJECT_DIR$/api/vendor/equip/structure" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0">

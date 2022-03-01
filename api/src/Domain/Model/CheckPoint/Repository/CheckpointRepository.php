@@ -4,6 +4,7 @@ namespace App\Domain\Model\Checkpoint\Repository;
 
 use App\common\Repository\BaseRepository;
 use App\Domain\Model\CheckPoint\Checkpoint;
+use DateTime;
 use Exception;
 use PDO;
 use PDOException;
@@ -81,12 +82,19 @@ class CheckpointRepository extends BaseRepository
             $distance = $checkpoint->getDistance();
             $description = $checkpoint->getDescription();
             if(!empty($checkpoint->getOpens())){
-                $opens = strtotime("g:i a",$checkpoint->getOpens());
+                if($checkpoint->getOpens() != null && $checkpoint->getOpens() != '-'){
+                 //   $opens =  date('Y-m-d H:i:s',floatval(date('Y-m-d') . $checkpoint->getOpens()));
+                    $opens =  $checkpoint->getOpens();
+                }
             } else {
                 $closing = null;
             }
             if(!empty($checkpoint->getClosing())){
-                $closing = strtotime("g:i a",$checkpoint->getClosing());
+                if($checkpoint->getClosing() != null && $checkpoint->getClosing() != '-'){
+                    $closing =    $checkpoint->getClosing();
+                  //  $closing =   date('Y-m-d H:i:s',floatval($checkpoint->getClosing()));
+                }
+
             } else {
                 $closing = null;
             }
@@ -105,6 +113,7 @@ class CheckpointRepository extends BaseRepository
         {
             echo "Error: " . $e->getMessage();
         }
+        $checkpoint->setCheckpointUid($checkpoint_uid);
         return $checkpoint;
     }
 
@@ -196,6 +205,28 @@ class CheckpointRepository extends BaseRepository
         }
     }
 
+    public function existsBySiteUidAndDistance(string $getSiteUid,  $getDistance)
+    {
+        try {
+            $dist = $getDistance;
+            $statement = $this->connection->prepare($this->sqls('existsBySiteUidAndDistance'));
+            $statement->bindParam(':site_uid', $getSiteUid);
+            $statement->bindParam(':distance', $dist, PDO::PARAM_STR);
+            $statement->execute();
+            $checkpoints = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\CheckPoint\Checkpoint::class, null);
+            if (empty($checkpoints)) {
+                return array();
+            }
+            // Antar att det redan finns
+            return $checkpoints[0];
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return null;
+    }
+
 
 
     public function stamp(){
@@ -212,7 +243,10 @@ class CheckpointRepository extends BaseRepository
         $tracksqls['updateCheckpoint']  = "UPDATE checkpoint SET  title=:title , site_uid=:site_uid description=:description , distance=:distance, opens=:opens, closing=:closing  WHERE checkpoint_uid=:checkpoint_uid";
         $tracksqls['deleteCheckpoint'] = 'delete from checkpoint c where c.checkpoint_uid=:checkpoint_uid;';
         $tracksqls['getCheckpointByTrackUid'] = 'select checkpoint_uid from track_checkpoint where track_uid=:track_uid;';
+        $tracksqls['existsBySiteUidAndDistance'] = 'select * from checkpoint e where e.site_uid=:site_uid and e.distance=:distance;';
         return $tracksqls[$type];
         // TODO: Implement sqls() method.
     }
+
+
 }

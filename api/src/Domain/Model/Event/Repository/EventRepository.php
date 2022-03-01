@@ -149,12 +149,39 @@ class EventRepository extends BaseRepository
 
 
             if($status){
+                $event->setEventUid($event_uid);
                 return $event;
             }
         } catch (PDOException $e) {
             echo 'Kunde inte uppdatera site: ' . $e->getMessage();
         }
+        $event->setEventUid($event_uid);
         return $event;
+    }
+
+    public function existsByTitleAndStartDate(string $title,  $start_date): ?Event
+    {
+        $statement = $this->connection->prepare($this->sqls('existsByTitleAndStartDate'));
+        $statement->bindParam(':title', $title);
+         $statement->execute();
+        $event = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Event\Event::class, null);
+        if(!empty($event)){
+            return $event[0];
+        }
+
+        return null;
+     //   $statement->bindParam(':start_date', $start_date);
+    }
+
+
+    public function createTrackEvent($event_uid, array $track_uids){
+
+        $statement = $this->connection->prepare($this->sqls('createEventTrack'));
+        foreach ($track_uids as $value) {
+            $statement->bindParam(':event_uid', $event_uid);
+            $statement->bindParam(':track_uid', $value);
+            $statement->execute();
+        }
     }
 
     public function deleteEvent(string $event_uid)
@@ -177,7 +204,13 @@ class EventRepository extends BaseRepository
         $eventqls['deleteEvent'] = 'delete from event  where event_uid=:event_uid;';
         $eventqls['updateEvent']  = "UPDATE event SET  title=:title , description=:description , active=:active, completed=:completed, canceled=:canceled, active=:active , start_date=:start_date, end_date=:end_date WHERE event_uid=:event_uid";
         $eventqls['createEvent']  = "INSERT INTO event(event_uid, title, start_date, end_date, active, canceled, completed,description) VALUES (:event_uid, :title,:start_date,:end_date,:active, :canceled, :completed, :description)";
+        $eventqls['createEventTrack'] = 'INSERT INTO event_tracks(track_uid, event_uid) VALUES (:track_uid , :event_uid)';
+        $eventqls['existsByTitleAndStartDate'] = 'select *  from event e where e.title=:title;';
+
+
         return $eventqls[$type];
 
     }
+
+
 }

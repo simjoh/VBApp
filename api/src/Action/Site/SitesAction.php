@@ -81,6 +81,8 @@ class SitesAction
                 $response->getBody()->write($filename);
 //            }
         }
+
+
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 

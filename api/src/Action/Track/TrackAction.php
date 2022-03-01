@@ -9,6 +9,7 @@ use Karriere\JsonDecoder\JsonDecoder;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Psr7\UploadedFile;
 use Slim\Routing\RouteContext;
 
 class TrackAction
@@ -19,6 +20,7 @@ class TrackAction
     public function __construct(ContainerInterface $c, TrackService $trackService)
     {
         $this->trackService = $trackService;
+        $this->settings = $c->get('settings');
     }
 
     public function allTracks(ServerRequestInterface $request, ResponseInterface $response){
@@ -53,6 +55,37 @@ class TrackAction
         $response->getBody()->write((string)json_encode($created),JSON_UNESCAPED_SLASHES);
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
+
+    public function buildfromCsv(ServerRequestInterface $request, ResponseInterface $response){
+
+        $uploadDir = $this->settings['upload_directory'];
+        $uploadedFiles = $request->getUploadedFiles();
+
+        foreach ($uploadedFiles as $uploadedFile) {
+//            if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+            $filename = $this->moveUploadedFile($uploadDir, $uploadedFile);
+
+//            }
+        }
+
+        $filename = 'banor2022.csv';
+
+        $this->trackService->buildFromCsv($filename, $uploadDir, $request->getAttribute('currentuserUid'));
+
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+    }
+
+    function moveUploadedFile($directory, UploadedFile $uploadedFile)
+    {
+        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+        $basename = $uploadedFile->getClientFilename(); // see http://php.net/manual/en/function.random-bytes.php
+        $filename = $basename;
+        $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+
+        return $filename;
+    }
+
+
 
 
 }

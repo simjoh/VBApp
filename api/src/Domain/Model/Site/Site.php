@@ -8,14 +8,12 @@ use PrestaShop\Decimal\DecimalNumber;
 class Site implements JsonSerializable
 {
 
-    private string $site_uid;
+    private string $site_uid = "";
     private string $place;
     private string $adress;
-    private string $location;
+    private ?string $location = "";
     private string $description;
     private string $picture;
-
-
     private DecimalNumber $lat;
     private DecimalNumber $lng;
 
@@ -129,6 +127,14 @@ class Site implements JsonSerializable
     public function setPicture(string $picture): void
     {
         $this->picture = $picture;
+    }
+
+    /**
+     * @param string $site_uid
+     */
+    public function setSiteUid(string $site_uid): void
+    {
+        $this->site_uid = $site_uid;
     }
 
     public function jsonSerialize() {

@@ -119,11 +119,11 @@ INSERT INTO `event_tracks`(`track_uid`, `event_uid`) VALUES ('bf31d141-32c3-4cc9
 
 --Kontroller kopplade till en plats
 -- En kontroll brännäset
-INSERT INTO `checkpoint`(`checkpoint_uid`, `site_uid`, `title`, `description`, `distance`, `opens`, `closing`) VALUES ('63e8f1de-22ad-416d-b181-4a1a004a2959','47e2e397-872a-49f9-8f5b-069d09f5855c','Test 1','[value-4]',33, TIME("2021-06-15 09:00:00"),("2021-06-15 10:00:00"));
+INSERT INTO `checkpoint`(`checkpoint_uid`, `site_uid`, `title`, `description`, `distance`, `opens`, `closing`) VALUES ('63e8f1de-22ad-416d-b181-4a1a004a2959','47e2e397-872a-49f9-8f5b-069d09f5855c','Test 1','DEMO',33, TIME("2021-06-15 09:00:00"),("2021-06-15 10:00:00"));
 -- En kontroll rödtjärn
-INSERT INTO `checkpoint`(`checkpoint_uid`, `site_uid`, `title`, `description`, `distance`, `opens`, `closing`) VALUES ('6b86551e-e9b6-46f1-b411-3196e0f0f4e3','e53d8d51-c5e1-4d25-a8d3-afe0646c1f13','Test 2','[value-4]',60, TIME("2021-06-15 11:00:00"),TIME("2021-06-15 12:30:00"));
+INSERT INTO `checkpoint`(`checkpoint_uid`, `site_uid`, `title`, `description`, `distance`, `opens`, `closing`) VALUES ('6b86551e-e9b6-46f1-b411-3196e0f0f4e3','e53d8d51-c5e1-4d25-a8d3-afe0646c1f13','Test 2','DEMO',60, TIME("2021-06-15 11:00:00"),TIME("2021-06-15 12:30:00"));
 -- Mål broparken
-INSERT INTO `checkpoint`(`checkpoint_uid`, `site_uid`, `title`, `description`, `distance`, `opens`, `closing`) VALUES ('c0a8e4a4-a37a-4e9d-b59e-112519b4abc0','8a13602-83dc-447d-a85f-13b943e23a42','Test 3','[value-4]',86, TIME("2021-06-15 08:00:00"),TIME("2021-06-15 09:00:00"));
+INSERT INTO `checkpoint`(`checkpoint_uid`, `site_uid`, `title`, `description`, `distance`, `opens`, `closing`) VALUES ('c0a8e4a4-a37a-4e9d-b59e-112519b4abc0','8a13602-83dc-447d-a85f-13b943e23a42','Test 3','DEMO',86, TIME("2021-06-15 08:00:00"),TIME("2021-06-15 09:00:00"));
 
 
 -- Koppling bana till  kontroll/er

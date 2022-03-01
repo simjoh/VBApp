@@ -4,10 +4,10 @@ namespace App\Domain\Model\CheckPoint;
 
 class Checkpoint
 {
-    private string $checkpoint_uid;
+    private string $checkpoint_uid = "";
     private ?string $site_uid;
-    private ?string $title;
-    private ?string $description;
+    private ?string $title = "";
+    private ?string $description = "";
     private ?float $distance;
     private $opens;
     private $closing;

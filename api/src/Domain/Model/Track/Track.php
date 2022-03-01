@@ -11,7 +11,7 @@ class Track
    private ?string $heightdifference;
    private string $event_uid;
    private string $description;
-   private string $link;
+   private string $link = "";
    private string $distance;
    private array $checkpoints = [];
 

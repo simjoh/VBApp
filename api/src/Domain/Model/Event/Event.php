@@ -12,7 +12,30 @@ class Event
     private ?bool $active;
     private ?bool $canceled;
     private ?bool $completed;
-    private ?string $description;
+    private ?string $description = "";
+
+//    /**
+//     * @param string $event_uid
+//     * @param string|null $title
+//     * @param $start_date
+//     * @param $end_date
+//     * @param bool|null $active
+//     * @param bool|null $canceled
+//     * @param bool|null $completed
+//     * @param string|null $description
+//     */
+//    public function __construct(string $event_uid, ?string $title, $start_date, $end_date, ?bool $active, ?bool $canceled, ?bool $completed, ?string $description)
+//    {
+//        $this->event_uid = $event_uid;
+//        $this->title = $title;
+//        $this->start_date = $start_date;
+//        $this->end_date = $end_date;
+//        $this->active = $active;
+//        $this->canceled = $canceled;
+//        $this->completed = $completed;
+//        $this->description = $description;
+//    }
+
 
     /**
      * @return string

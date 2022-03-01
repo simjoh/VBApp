@@ -34,12 +34,13 @@ class SiteRepository extends BaseRepository
             return array();
         }
         $sites = [];
+
         foreach ($data as $x =>  $row) {
             // fixa lat long
             $site = new Site($row["site_uid"], $row["place"],
                 $row["adress"],$row['description'],
                 is_null($row["location"]) ? "" : $row["location"],
-                is_null($row["lat"])? new DecimalNumber("0") : new DecimalNumber($row["lat"]), is_null($row["lng"])   ? new DecimalNumber("0")  : new DecimalNumber($row["lng"]), is_null($row["picture"]) ? "": $row["picture"] );
+                is_null($row["lat"])? new DecimalNumber("0") : new DecimalNumber(strval($row["lat"])), is_null($row["lng"])   ? new DecimalNumber("0")  : new DecimalNumber($row["lng"]), is_null($row["picture"]) ? "": $row["picture"] );
             array_push($sites,  $site);
         }
         return $sites;
@@ -62,8 +63,8 @@ class SiteRepository extends BaseRepository
         $data = $statement->fetch();
         if(!empty($data)){
             return new Site($data["site_uid"],  $data["place"], $data["adress"],$data['description'],$data["location"],
-                empty($data["lat"]) ? new DecimalNumber("0") : new DecimalNumber($data["lat"]),
-                empty($data["lng"]) ? new DecimalNumber("0")  : new DecimalNumber($data["lng"]), is_null($data["picture"]) ? "": $data["picture"]);
+                empty($data["lat"]) ? new DecimalNumber("0") : new DecimalNumber(strval($data["lat"])),
+                empty($data["lng"]) ? new DecimalNumber("0")  : new DecimalNumber(strval($data["lng"])), is_null($data["picture"]) ? "": $data["picture"]);
         }
 
          }
@@ -96,14 +97,39 @@ class SiteRepository extends BaseRepository
         return $site;
     }
 
-    public function createSite(Site $siteToCreate): void{
+    public function existsByPlaceAndAdress(string $place, string $adress): ?Site
+    {
         try {
-            $site_uid = Uuid::uuid4();
+        $statement = $this->connection->prepare($this->sqls('existsByPlaceAndAdress'));
+        $statement->bindParam(':place', $place);
+        $statement->bindParam(':adress', $adress);
+            $statement->execute();
+        $data = $statement->fetch();
+        if(!empty($data)){
+            return new Site($data["site_uid"],  $data["place"], $data["adress"],$data['description'],$data["location"],
+                empty($data["lat"]) ? new DecimalNumber("0") : new DecimalNumber(strval($data["lat"])),
+                empty($data["lng"]) ? new DecimalNumber("0")  : new DecimalNumber(strval($data["lng"])), is_null($data["picture"]) ? "": $data["picture"]);
+        }
+        } catch (PDOException $e) {
+            echo 'Kunde inte läsa upp site: ' . $e->getMessage();
+        }
+        return null;
+    }
+
+    public function createSite(Site $siteToCreate): ?Site{
+        try {
+
+
+              $site_uid = Uuid::uuid4();
+
+
             $adress = $siteToCreate->getAdress();
             $place = $siteToCreate->getPlace();
-            $location = $siteToCreate->getLocation();
+           // $location = $siteToCreate->getLocation();
             $description = $siteToCreate->getDescription();
             $image = $siteToCreate->getPicture();
+            $lat = $siteToCreate->getLat();
+            $lng = $siteToCreate->getLng();
             $stmt = $this->connection->prepare($this->sqls('createSite'));
             $stmt->bindParam(':site_uid', $site_uid);
             $stmt->bindParam(':adress',$adress );
@@ -111,8 +137,8 @@ class SiteRepository extends BaseRepository
             $stmt->bindParam(':description', $description);
             $null = null;
             $stmt->bindParam(':location', $null);
-            $stmt->bindParam(':lat', $null);
-            $stmt->bindParam(':lng', $null);
+            $stmt->bindParam(':lat',$lat );
+            $stmt->bindParam(':lng', $lng);
             $stmt->bindParam(':picture', $image);
             $stmt->execute();
         }
@@ -120,6 +146,10 @@ class SiteRepository extends BaseRepository
         {
             echo "Error: " . $e->getMessage();
         }
+
+        $siteToCreate->setSiteUid($site_uid);
+
+     return $siteToCreate;
     }
 
     public function deleteSite(string $siterUid): void{
@@ -141,7 +171,10 @@ class SiteRepository extends BaseRepository
         $sitesqls['updateSite']  = "UPDATE site SET  place=:place, adress=:adress , description=:description , picture=:picture  WHERE site_uid=:site_uid";
         $sitesqls['deleteSite'] = 'delete from site  where site_uid = :site_uid';
         $sitesqls['createSite']  = "INSERT INTO site(site_uid, place, adress, description, location, lat, lng, picture) VALUES (:site_uid, :place, :adress, :description ,:location, :lat, :lng, :picture)";
+        $sitesqls['existsByPlaceAndAdress'] = 'select *  from site e where e.place=:place and e.adress=:adress;';
         return $sitesqls[$type];
 
     }
+
+
 }

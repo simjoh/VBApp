@@ -49,6 +49,7 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/prestashop/decimal" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/box/spout" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/league/csv" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/equip/structure" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

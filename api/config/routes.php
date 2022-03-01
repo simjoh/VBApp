@@ -50,6 +50,8 @@ return function (App $app) {
         $app->put('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':updateTrack');
         $app->post('/track', \App\Action\Track\TrackAction::class . ':createTrack');
 
+        $app->post('/buidlEventAndTrackFromCsv/upload', \App\Action\Track\TrackAction::class  . ':buildfromCsv');
+
         // event
         $app->get('/events', \App\Action\Event\EventAction::class . ':allEvents');
         $app->get('/event/{eventUid}', \App\Action\Event\EventAction::class  . ':eventFor');
@@ -100,6 +102,10 @@ return function (App $app) {
        // $app->get('/clubs', \App\Action\User\UserAction::class . ':allUsers')->setName("allUsers");
 
         // roller i systemet endast läsa
+
+
+
+
 
 
 

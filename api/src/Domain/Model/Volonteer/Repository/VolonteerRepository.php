@@ -20,7 +20,6 @@ class VolonteerRepository extends BaseRepository
             $statement->execute();
             $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Volonteer\ParticipantToPassCheckpoint::class, null);
            // $events = $statement->fetchAll();
-
             if (empty($events)) {
                 return array();
             }
@@ -37,7 +36,7 @@ class VolonteerRepository extends BaseRepository
 
     public function sqls($type)
     {
-        $volonteer['participantToPassCheckpoint'] = 'select * from v_partisipant_to_pass_checkpoint e where track_uid=:track_uid and checkpoint_uid=:checkpoint_uid and passed=1;';
+        $volonteer['participantToPassCheckpoint'] = 'select * from v_partisipant_to_pass_checkpoint e where track_uid=:track_uid and checkpoint_uid=:checkpoint_uid and passed=0;';
         return $volonteer[$type];
         // TODO: Implement sqls() method.
     }

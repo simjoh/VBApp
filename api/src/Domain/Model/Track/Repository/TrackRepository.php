@@ -128,6 +128,7 @@ class TrackRepository extends BaseRepository
         $description = $track->getDescription();
         $event_uid = $track->getEventUid();
         $heightdifference = $track->getHeightdifference();
+        $link = $track->getLink();
 
         try {
             $statement = $this->connection->prepare($this->sqls('createTrack'));
@@ -150,6 +151,7 @@ class TrackRepository extends BaseRepository
         } catch (PDOException $e) {
             echo 'Kunde inte uppdatera Track: ' . $e->getMessage();
         }
+        $track->setTrackUid($track_uid);
         return $track;
     }
 
@@ -174,6 +176,38 @@ class TrackRepository extends BaseRepository
             return $track_checkpoint_uids;
         }
         return array();
+    }
+
+    public function trackAndCheckpointsExists(string $getEventUid, string $getTitle, string $getDistance, array $getCheckpoints): ?Track
+    {
+        // inga checkpoints då förutsätts det som att de redan existerar
+        if(empty($getCheckpoints)){
+            return null;
+        }
+
+
+        try {
+            $in  = str_repeat('?,', count($getCheckpoints) - 1) . '?';
+            $sql = " SELECT * from track t inner join track_checkpoint tc on t.track_uid=tc.track_uid where  tc.checkpoint_uid  IN ($in);";
+
+            $test = [];
+            foreach ($getCheckpoints as $s => $ro){
+                $test[] = $ro;
+            }
+
+            $statement = $this->connection->prepare($sql);
+           $status = $statement->execute($test);
+           if($status){
+               return $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Track\Track::class,  null)[0];
+           }
+
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return null;
+
     }
 
 

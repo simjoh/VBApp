@@ -88,7 +88,9 @@ class participantAction
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('trackUid');
         $filename = "sss";
-        $track_uid = "bf31d141-32c3-4cc9-b497-36d82b060221";
+        $track_uid = "94ade664-3a59-4259-b8e9-09f7963edcad";
+
+        //edfe915c-8928-439c-9ef7-f548645e9918
 
         $uploadedParticipants = $this->participantService->parseUplodesParticipant($filename, $uploadDir, $track_uid,$request->getAttribute('currentuserUid'));
 
