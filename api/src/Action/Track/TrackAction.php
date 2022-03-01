@@ -37,6 +37,16 @@ class TrackAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    public function tracksForEvent(ServerRequestInterface $request, ResponseInterface $response){
+        $currentuserUid = $request->getAttribute('currentuserUid');
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $event_uid = $route->getArgument('eventUid');
+        $response->getBody()->write((string)json_encode( $this->trackService->tracksForEvent($currentuserUid, $event_uid)), JSON_UNESCAPED_SLASHES);
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+
     public function updateTrack(ServerRequestInterface $request, ResponseInterface $response){
 
         $jsonDecoder = new JsonDecoder();
@@ -57,21 +67,16 @@ class TrackAction
     }
 
     public function buildfromCsv(ServerRequestInterface $request, ResponseInterface $response){
-
         $uploadDir = $this->settings['upload_directory'];
         $uploadedFiles = $request->getUploadedFiles();
 
         foreach ($uploadedFiles as $uploadedFile) {
 //            if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
             $filename = $this->moveUploadedFile($uploadDir, $uploadedFile);
-
 //            }
         }
-
-        $filename = 'banor2022.csv';
-
+     //   $filename = 'banorExempel.csv';
         $this->trackService->buildFromCsv($filename, $uploadDir, $request->getAttribute('currentuserUid'));
-
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 

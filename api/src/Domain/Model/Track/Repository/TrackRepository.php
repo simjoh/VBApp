@@ -55,6 +55,29 @@ class TrackRepository extends BaseRepository
         return array();
     }
 
+
+    public function tracksOnEvent(?array $track_uids)
+    {
+        try {
+            $in  = str_repeat('?,', count($track_uids) - 1) . '?';
+            $sql = " SELECT * from track where track_uid  IN ($in);";
+
+            $test = [];
+            foreach ($track_uids as $s => $ro){
+                $test[] = $ro;
+            }
+            $statement = $this->connection->prepare($sql);
+            $statement->execute($test);
+            $tracks = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Track\Track::class,  null);
+            return $tracks;
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return array();
+    }
+
     public function getTrackByUid(string $trackUid): ?Track
     {
         try {

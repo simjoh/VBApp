@@ -9,6 +9,7 @@ use App\Domain\Model\Checkpoint\Repository\CheckpointRepository;
 use App\Domain\Model\CheckPoint\Service\CheckpointsService;
 use App\Domain\Model\Event\Event;
 use App\Domain\Model\Event\Repository\EventRepository;
+use App\Domain\Model\Event\Service\EventService;
 use App\Domain\Model\Site\Repository\SiteRepository;
 use App\Domain\Model\Site\Site;
 use App\Domain\Model\Track\Repository\TrackRepository;
@@ -40,7 +41,10 @@ class TrackService extends ServiceAbstract
                                 TrackRepository $trackRepository,
                                 CheckpointsService $checkpointService,
                                 PermissionRepository $permissionRepository,
-                                TrackAssembly $trackAssembly, SiteRepository $siteRepository, EventRepository $eventRepository, CheckpointRepository $checkpointRepository)
+                                TrackAssembly $trackAssembly,
+                                SiteRepository $siteRepository,
+                                EventRepository $eventRepository,
+                                CheckpointRepository $checkpointRepository)
     {
         $this->trackRepository = $trackRepository;
        $this->checkpointService = $checkpointService;
@@ -75,6 +79,17 @@ class TrackService extends ServiceAbstract
         }
         return null;
 
+    }
+
+    public function tracksForEvent(mixed $currentuserUid, string $event_uid): ?array
+    {
+        $permissions = $this->getPermissions($currentuserUid);
+       $track_uids = $this->eventRepository->tracksOnEvent($event_uid);
+       if(empty($track_uids)){
+           return array();
+       }
+          $tracks =$this->trackRepository->tracksOnEvent($track_uids);
+         return $this->trackAssembly->toRepresentations($tracks, $permissions, $currentuserUid);
     }
 
     public function createTrack(TrackRepresentation $trackrepresentation,string $currentuserUid): TrackRepresentation
@@ -266,6 +281,8 @@ class TrackService extends ServiceAbstract
         $this->eventRepository->createTrackEvent($event->getEventUid(), $track_uids);
 
     }
+
+
 
 
 }

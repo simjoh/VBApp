@@ -49,6 +49,7 @@ return function (App $app) {
         $app->get('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':track');
         $app->put('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':updateTrack');
         $app->post('/track', \App\Action\Track\TrackAction::class . ':createTrack');
+        $app->get('/tracks/event/{eventUid}', \App\Action\Track\TrackAction::class . ':tracksForEvent');
 
         $app->post('/buidlEventAndTrackFromCsv/upload', \App\Action\Track\TrackAction::class  . ':buildfromCsv');
 
@@ -94,7 +95,7 @@ return function (App $app) {
         $app->put('/participant/{uid}/track/{trackUid}/update', \App\Action\Participant\ParticipantAction::class . ':updateParticipant');
         $app->post('/participant/addparticipant', \App\Action\Participant\ParticipantAction::class . ':addParticipantOntrack');
      //   $app->post('/participants/{trackUid}/upload', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
-        $app->post('/participants/upload', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
+        $app->post('/participants/upload/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
         $app->delete('/participant/{uid}/deleteParticipant', \App\Action\Participant\ParticipantAction::class . ':deleteParticipant');
         //Ingång för att lägga tillbrevenr i efterhand.
 
