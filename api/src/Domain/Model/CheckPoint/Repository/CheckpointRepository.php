@@ -205,13 +205,15 @@ class CheckpointRepository extends BaseRepository
         }
     }
 
-    public function existsBySiteUidAndDistance(string $getSiteUid,  $getDistance)
+    public function existsBySiteUidAndDistance(string $getSiteUid,  $getDistance, $opens, $closing)
     {
         try {
             $dist = $getDistance;
             $statement = $this->connection->prepare($this->sqls('existsBySiteUidAndDistance'));
             $statement->bindParam(':site_uid', $getSiteUid);
             $statement->bindParam(':distance', $dist, PDO::PARAM_STR);
+            $statement->bindParam(':opens', $opens, PDO::PARAM_STR);
+            $statement->bindParam(':closing', $closing, PDO::PARAM_STR);
             $statement->execute();
             $checkpoints = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\CheckPoint\Checkpoint::class, null);
             if (empty($checkpoints)) {
@@ -243,7 +245,7 @@ class CheckpointRepository extends BaseRepository
         $tracksqls['updateCheckpoint']  = "UPDATE checkpoint SET  title=:title , site_uid=:site_uid description=:description , distance=:distance, opens=:opens, closing=:closing  WHERE checkpoint_uid=:checkpoint_uid";
         $tracksqls['deleteCheckpoint'] = 'delete from checkpoint c where c.checkpoint_uid=:checkpoint_uid;';
         $tracksqls['getCheckpointByTrackUid'] = 'select checkpoint_uid from track_checkpoint where track_uid=:track_uid;';
-        $tracksqls['existsBySiteUidAndDistance'] = 'select * from checkpoint e where e.site_uid=:site_uid and e.distance=:distance;';
+        $tracksqls['existsBySiteUidAndDistance'] = 'select * from checkpoint e where e.site_uid=:site_uid and e.distance=:distance and opens=:opens and closing=:closing;';
         return $tracksqls[$type];
         // TODO: Implement sqls() method.
     }

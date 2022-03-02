@@ -84,7 +84,7 @@ class EventRepository extends BaseRepository
         {
             echo "Error: " . $e->getMessage();
         }
-        return null;
+        return array();
     }
 
     public function updateEvent(string $event_uid , Event $event): Event

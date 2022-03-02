@@ -14,7 +14,7 @@ class Track
    private string $link = "";
    private string $distance;
    private array $checkpoints = [];
-
+   private  $start_date_time;
 
 
     /**
@@ -167,6 +167,22 @@ class Track
     public function setLink(string $link): void
     {
         $this->link = $link;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStartDateTime()
+    {
+        return $this->start_date_time;
+    }
+
+    /**
+     * @param mixed $start_date_time
+     */
+    public function setStartDateTime($start_date_time): void
+    {
+        $this->start_date_time = $start_date_time;
     }
 
 

@@ -81,15 +81,19 @@ class TrackService extends ServiceAbstract
 
     }
 
-    public function tracksForEvent(mixed $currentuserUid, string $event_uid): ?array
+    public function tracksForEvent(string $currentuserUid, string $event_uid): ?array
     {
         $permissions = $this->getPermissions($currentuserUid);
        $track_uids = $this->eventRepository->tracksOnEvent($event_uid);
        if(empty($track_uids)){
            return array();
        }
-          $tracks =$this->trackRepository->tracksOnEvent($track_uids);
-         return $this->trackAssembly->toRepresentations($tracks, $permissions, $currentuserUid);
+        $test = [];
+        foreach ($track_uids as $s => $ro){
+            $test[] = $ro[$s];
+        }
+          $tracks = $this->trackRepository->tracksOnEvent($test);
+         return $this->trackAssembly->toRepresentations($tracks,  $currentuserUid,$permissions);
     }
 
     public function createTrack(TrackRepresentation $trackrepresentation,string $currentuserUid): TrackRepresentation
@@ -124,43 +128,48 @@ class TrackService extends ServiceAbstract
 
 
         $eachEvent = new Dictionary();
-        // Vilka event har vi
+        $eachEvent2 = new Dictionary();
+
         foreach ($records  as $rowIndex => $record) {
-            if (!$eachEvent->hasValue($record[0])) {
-                $eachEvent = $eachEvent->withValue($record[0], array());
+            if (!$eachEvent2->hasValue($record[0])) {
+                $eachEvent2 = $eachEvent2->withValue($record[0], new Dictionary());
             }
         }
 
         $rader = [];
         foreach ($recordss  as $rowIndex => $record22) {
-            if ($eachEvent->hasValue($record22[0])) {
                 array_push($rader, $record22);
-            }
         }
 
-        // raderna grupperat på Event
+
         foreach ($recordsss  as $rowIndex => $record23) {
-            $dns = [];
-            if ($eachEvent->hasValue($record23[0])) {
+                $track = $eachEvent2->getValue($record23[0]);
+               $dns = [];
                 foreach ($rader  as $indx => $ee) {
-                    if($ee[0] == $record23[0]){
+                    if($ee[1] . $ee[2] . $ee[3]  == $record23[1] . $record23[2] . $record23[3]){
                         array_push($dns, $ee);
                     }
                 }
-                $eachEvent =   $eachEvent->withValue($record23[0], $dns);
-            }
+                $track = $track->withValue($record23[1] . $record23[2] . $record23[3], $dns);
+                $eachEvent2 = $eachEvent2->withValue($record23[0], $track);
         }
+
+
         // skapa banor osv
-        foreach ($eachEvent as $key => $value) {
+        foreach ($eachEvent2 as $key => $value) {
             $track = new TracksForEvents();
-            if($eachEvent->hasValue($key)){
-                $rad = $eachEvent->getValue($key);
-                   $track->event = $this->createEvent($rad);
-                   $track->sites =   $this->createSite($rad);
-                   $track->checkpoints = $this->createControl($rad, $track);
-                   $track->track = $this->buildTrackFromCsv($track,$rad);
-                   if($track->track == null){
-                       $this->createTracksOnEvent($track->track, $track->event);
+            if($eachEvent2->hasValue($key)){
+                $track_uids = [];
+                if(!empty($value)){
+                    $rad = $eachEvent2->getValue($key);
+                    $track->event = $this->createEvent($rad);
+                    $track->sites =   $this->createSite($rad);
+                    $track->checkpoints = $this->createControl($rad, $track);
+                    $track->track = $this->buildTrackFromCsv($track,$rad);
+                }
+                   if($track->track != null){
+                       array_push($track_uids, $track->track->getTrackUid());
+                       $this->createTracksOnEvent($track->track, $track->event, $track_uids);
                    }
             }
         }
@@ -168,118 +177,148 @@ class TrackService extends ServiceAbstract
 
 
 
-    private function createSite(array $record): ?array {
+    private function createSite( $record): ?array {
 
         $siteDict = new Dictionary();
         $sitereturn = [];
         foreach ($record as $key => $value) {
-                if(!$siteDict->hasValue($value[4] .  $value[5])){
-                    $siteDict = $siteDict->withValue($value[4] .  $value[5] , new Site("", $value[4],$value[5], $value[12], null,
-                        empty($value[7]) ? new DecimalNumber("0")  : new DecimalNumber(strval($value[7])),
-                        empty($value[8]) ? new DecimalNumber("0")  : new DecimalNumber(strval($value[8])),
+            foreach ($value as $key => $row) {
+
+                if(!$siteDict->hasValue($row[4] .  $row[5])){
+                    $siteDict = $siteDict->withValue($row[4] .  $row[5] , new Site("", $row[4],$row[5], $row[12], null,
+                        empty($row[7]) ? new DecimalNumber("0")  : new DecimalNumber(strval($row[7])),
+                        empty($row[8]) ? new DecimalNumber("0")  : new DecimalNumber(strval($row[8])),
                         "IMG.JPG"));
-                    $existingSite = $this->siteRepository->existsByPlaceAndAdress($value[4],$value[5]);
+                    $existingSite = $this->siteRepository->existsByPlaceAndAdress($row[4],$row[5]);
                     if($existingSite == null){
-                        array_push($sitereturn,$this->siteRepository->createSite($siteDict->getValue($value[4] .  $value[5])));
+                        array_push($sitereturn,$this->siteRepository->createSite($siteDict->getValue($row[4] .  $row[5])));
                     } else {
                         array_push($sitereturn, $existingSite);
                     }
                 }
+            }
         }
         return $sitereturn;
 
 
     }
 
-    private function createEvent(array $record): ?Event
+    private function createEvent($record): ?Event
     {
+
         $events = "";
         $event = new Event();
         foreach ($record as $key => $value) {
-            if($events == ""){
-                $event->setTitle($value[0]);
-                $event->setActive(false);
-                $event->setCanceled(false);
-                $event->setCompleted(false);
-                $event->setStartdate($value[2]);
-                $event->setEnddate($value[2]);
-            $existsing =  $this->eventRepository->existsByTitleAndStartDate($value[0],$value[2]);
-            if($existsing == null){
-                return $this->eventRepository->createEvent($event);
-            } else {
-                return $existsing;
+            foreach ($value as $key => $row){
+                if($events == ""){
+                    $event->setTitle($row[0]);
+                    $event->setActive(false);
+                    $event->setCanceled(false);
+                    $event->setCompleted(false);
+                    $event->setStartdate($row[2]);
+                    $event->setEnddate($row[2]);
+                    $existsing =  $this->eventRepository->existsByTitleAndStartDate($row[0],$row[2]);
+                    if($existsing == null){
+                        return $this->eventRepository->createEvent($event);
+                    } else {
+                        return $existsing;
+                    }
+                }
             }
 
-            }
         }
         return null;
 
     }
 
-    private function createControl(array $rad, TracksForEvents $track): array
+    private function createControl( $rad, TracksForEvents $track): array
     {
         $checkpoints = [];
         foreach ($rad as $key => $value){
-            $checkpoint = new Checkpoint();
-            $sites = $track->sites;
-            foreach ($sites  as $rowIndex => $record) {
-                $place = $value[4];
-                $adress = $value[5];
-                if($place == $record->getPlace() && $adress == $record->getAdress()){
-                    $checkpoint->setSiteUid($record->getSiteUid());
+            foreach ($value as $key => $row) {
+                $checkpoint = new Checkpoint();
+                $sites = $track->sites;
+                foreach ($sites as $rowIndex => $record) {
+                    $place = $row[4];
+                    $adress = $row[5];
+                    if ($place == $record->getPlace() && $adress == $record->getAdress()) {
+                        $checkpoint->setSiteUid($record->getSiteUid());
+                    }
+                }
+                $checkpoint->setOpens($row[10] != null ? $row[10] : null);
+                $checkpoint->setClosing($row[11] != null ? $row[11] : null);
+                $checkpoint->setDistance(floatval($row[9]));
+
+                $sss = $this->checkpointRepository->existsBySiteUidAndDistance($checkpoint->getSiteUid(), $checkpoint->getDistance(), $checkpoint->getOpens(), $checkpoint->getClosing());
+                if ($sss == null) {
+                    $this->checkpointRepository->createCheckpoint(null, $checkpoint);
+                    array_push($checkpoints, $checkpoint);
+                } else {
+                 //   array_push($checkpoints, $sss);
                 }
             }
-            $checkpoint->setOpens($value[10] != null ? $value[10] : null);
-            $checkpoint->setClosing($value[11] != null ? $value[11] : null);
-            $checkpoint->setDistance(floatval($value[9]));
-
-           $sss = $this->checkpointRepository->existsBySiteUidAndDistance($checkpoint->getSiteUid(), $checkpoint->getDistance());
-           if($sss == null){
-              $this->checkpointRepository->createCheckpoint(null, $checkpoint);
-               array_push($checkpoints, $checkpoint);
-           } else {
-               array_push($checkpoints, $sss);
-           }
-
 
         }
         return $checkpoints;
 
     }
 
-    private function buildTrackFromCsv(TracksForEvents $track, array $rad): Track
+    private function buildTrackFromCsv(TracksForEvents $trackin,  $rad): ?Track
     {
-        $trackToCreate = new Track();
-        $trackToCreate->setDescription("");
-        $trackToCreate->setTitle($rad[0][1]);
-        $trackToCreate->setLink("gggddd");
-        $trackToCreate->setHeightdifference(2000);
-        $trackToCreate->setDistance(200);
-        $trackToCreate->setEventUid($track->event->getEventUid());
-        if($track->checkpoints !== null){
-            $checkpoints = $track->checkpoints;
-            if(!empty($checkpoints)){
-                $checkpoints_uid = [];
-                foreach ($checkpoints as $chp => $checkpoint){
-                   array_push($checkpoints_uid, $checkpoint->getCheckpointUid());
-                }
-              $trackToCreate->setCheckpoints($checkpoints_uid);
+
+        $noMoreCheckpointiftrue = false;
+        foreach ($rad as $key => $value) {
+            $trackToCreate = new Track();
+            $trackToCreate->setDescription("");
+            $trackToCreate->setTitle($value[0][1]);
+            $trackToCreate->setLink("http://www.banan.on.strava");
+            $trackToCreate->setHeightdifference(2000);
+            $trackToCreate->setDistance(200);
+            $trackToCreate->setStartDateTime($value[0][10]);
+            $existintevent =  $this->eventRepository->eventFor($trackin->event->getEventUid());
+            if(isset($existintevent)){
+                $trackToCreate->setEventUid($trackin->event->getEventUid());
+            } else {
             }
+
+            if ($trackin->checkpoints !== null) {
+                $checkpoints = $trackin->checkpoints;
+                if (!empty($checkpoints)) {
+                    if($noMoreCheckpointiftrue == false){
+                        $noMoreCheckpointiftrue = true;
+                      $checkpoints_uid = [];
+                    foreach ($checkpoints as $chp => $checkpoint) {
+                        array_push($checkpoints_uid, $checkpoint->getCheckpointUid());
+                    }
+                    $trackToCreate->setCheckpoints($checkpoints_uid);
+                    }
+                }
+            }
+            $trackwithstartdate = $this->trackRepository->trackWithStartdateExists($trackToCreate->getEventUid(), $trackToCreate->getTitle(), $value[0][10]);;
+            if ($trackwithstartdate != null) {
+                return $trackwithstartdate;
+            }
+                $track = $this->trackRepository->trackAndCheckpointsExists($trackToCreate->getEventUid(), $trackToCreate->getTitle(), $trackToCreate->getDistance(), $trackToCreate->getCheckpoints());
+
+            if ($track) {
+                return $track;
+            }
+             $this->trackRepository->createTrack($trackToCreate);
+
+
         }
-        $track = $this->trackRepository->trackAndCheckpointsExists($trackToCreate->getEventUid(), $trackToCreate->getTitle(), $trackToCreate->getDistance(), $trackToCreate->getCheckpoints());
-        if($track){
-            return $track;
-        }
-       return $this->trackRepository->createTrack($trackToCreate);
+
+            return new Track();
 
     }
 
-    private function createTracksOnEvent(Track $track, Event $event)
+    private function createTracksOnEvent(Track $track, Event $event, array $track_uids)
     {
-        $track_uids = [];
-        array_push($track_uids, $track->getTrackUid());
-        $this->eventRepository->createTrackEvent($event->getEventUid(), $track_uids);
 
+        $tracksOnEvent = $this->eventRepository->tracksOnEvent($event->getEventUid());
+        if(empty($tracksOnEvent)){
+            $this->eventRepository->createTrackEvent($event->getEventUid(), $track_uids);
+        }
     }
 
 

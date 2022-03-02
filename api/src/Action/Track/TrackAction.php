@@ -75,7 +75,7 @@ class TrackAction
             $filename = $this->moveUploadedFile($uploadDir, $uploadedFile);
 //            }
         }
-     //   $filename = 'banorExempel.csv';
+        $filename = 'banorExempel.csv';
         $this->trackService->buildFromCsv($filename, $uploadDir, $request->getAttribute('currentuserUid'));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }

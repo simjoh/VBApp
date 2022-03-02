@@ -58,16 +58,19 @@ class TrackRepository extends BaseRepository
 
     public function tracksOnEvent(?array $track_uids)
     {
+
         try {
             $in  = str_repeat('?,', count($track_uids) - 1) . '?';
-            $sql = " SELECT * from track where track_uid  IN ($in);";
+            $sql = "SELECT * from track where track_uid  IN ($in);";
 
             $test = [];
             foreach ($track_uids as $s => $ro){
                 $test[] = $ro;
             }
+
             $statement = $this->connection->prepare($sql);
             $statement->execute($test);
+
             $tracks = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Track\Track::class,  null);
             return $tracks;
         }
@@ -152,6 +155,7 @@ class TrackRepository extends BaseRepository
         $event_uid = $track->getEventUid();
         $heightdifference = $track->getHeightdifference();
         $link = $track->getLink();
+        $start_date_time = $track->getStartDateTime();
 
         try {
             $statement = $this->connection->prepare($this->sqls('createTrack'));
@@ -162,6 +166,7 @@ class TrackRepository extends BaseRepository
             $statement->bindParam(':distance', $distance);
             $statement->bindParam(':track_uid', $track_uid);
             $statement->bindParam(':link', $link);
+            $statement->bindParam(':start_date_time', $start_date_time);
             $data =   $statement->execute();
             if($data && !empty($track->getCheckpoints())){
                 $query = $this->connection->prepare($this->sqls('createTrackCheckpoint'));
@@ -204,10 +209,9 @@ class TrackRepository extends BaseRepository
     public function trackAndCheckpointsExists(string $getEventUid, string $getTitle, string $getDistance, array $getCheckpoints): ?Track
     {
         // inga checkpoints då förutsätts det som att de redan existerar
-        if(empty($getCheckpoints)){
+        if(isset($getCheckpoints)){
             return null;
         }
-
 
         try {
             $in  = str_repeat('?,', count($getCheckpoints) - 1) . '?';
@@ -233,6 +237,34 @@ class TrackRepository extends BaseRepository
 
     }
 
+    public function trackWithStartdateExists(string $getEventUid, string $getTitle, string $startDateTime): ?Track
+    {
+
+        try {
+
+            $statement = $this->connection->prepare($this->sqls('trackWithStartdateExists'));
+            $statement->bindParam(':event_uid', $getEventUid);
+            $statement->bindParam(':title', $getTitle);
+            $statement->bindParam(':start_date_time', $startDateTime);
+            $statement->execute();
+            $tracks = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Track\Track::class, null);
+
+            if($statement->rowCount() > 1){
+                // Fixa bätter felhantering
+                throw new Exception();
+            }
+            if(empty($tracks)){
+                return null;
+            }
+
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+
+
+        return $tracks[0];
+    }
+
 
     public function sqls($type)
     {
@@ -241,8 +273,12 @@ class TrackRepository extends BaseRepository
         $tracksqls['getCheckpoints'] = 'select checkpoint_uid  from track_checkpoint where track_uid=:track_uid;';
         $tracksqls['updateTrack'] = "UPDATE track SET  title=:title, link=:link , heightdifference=:heightdifference, event_uid=:event_uid , description=:description, distance=:distance  WHERE track_uid=:track_uid";
         $tracksqls['updateTrackCheckpoint'] = 'UPDATE track_checkpoint SET checkpoint_uid=:checkpoint_uid where track_uid=:track_uid';
-        $tracksqls['createTrack']  = "INSERT INTO track(track_uid, title ,link, heightdifference , event_uid,description, distance) VALUES (:track_uid,:title ,:link, :heightdifference ,:event_uid, :description ,:distance)";
+        $tracksqls['createTrack']  = "INSERT INTO track(track_uid, title ,link, heightdifference , event_uid,description, distance, start_date_time) VALUES (:track_uid,:title ,:link, :heightdifference ,:event_uid, :description ,:distance, :start_date_time)";
         $tracksqls['createTrackCheckpoint']  = "INSERT INTO track_checkpoint(track_uid, checkpoint_uid) VALUES (:track_uid,:checkpoint_uid)";
+        $tracksqls['trackWithStartdateExists']  = "select * from track where event_uid=:event_uid and title=:title and start_date_time=:start_date_time;";
+
+
+
         return $tracksqls[$type];
     }
 
