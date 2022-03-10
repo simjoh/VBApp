@@ -9,7 +9,8 @@ class TracksForEvents
 
     public Event $event;
     public array $sites;
-    public array $checkpoints;
+    public array $checkpoints = array();
     public Track $track;
+    public array $tracks = array();
 
 }

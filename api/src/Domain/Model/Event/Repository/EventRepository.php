@@ -73,7 +73,27 @@ class EventRepository extends BaseRepository
             $statement->bindValue(':event_uid', $event_uid);
             $statement->execute();
             $track_uids = $statement->fetchAll();
+            if (empty($track_uids)) {
+                return array();
+            }
 
+            return $track_uids;
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return array();
+    }
+
+    public function trackAndEventOnEvent(string $event_uid, string $track_uid): ?array {
+        try {
+
+            $statement = $this->connection->prepare($this->sqls('trackAndEventOnEvent'));
+            $statement->bindValue(':event_uid', $event_uid);
+            $statement->bindValue(':track_uid', $track_uid);
+            $statement->execute();
+            $track_uids = $statement->fetchAll();
             if (empty($track_uids)) {
                 return array();
             }
@@ -174,14 +194,14 @@ class EventRepository extends BaseRepository
     }
 
 
-    public function createTrackEvent($event_uid, array $track_uids){
+    public function createTrackEvent($event_uid, $track_uids){
 
         $statement = $this->connection->prepare($this->sqls('createEventTrack'));
-        foreach ($track_uids as $value) {
+//        foreach ($track_uids as $value) {
             $statement->bindParam(':event_uid', $event_uid);
-            $statement->bindParam(':track_uid', $value);
+            $statement->bindParam(':track_uid', $track_uids);
             $statement->execute();
-        }
+//        }
     }
 
     public function deleteEvent(string $event_uid)
@@ -199,6 +219,7 @@ class EventRepository extends BaseRepository
     public function sqls($type): string
     {
         $eventqls['tracksOnEvent'] = 'select track_uid  from event_tracks e where e.event_uid=:event_uid;';
+        $eventqls['trackAndEventOnEvent'] = 'select track_uid  from event_tracks where track_uid=:track_uid and event_uid=:event_uid;';
         $eventqls['allEvents'] = 'select * from event e;';
         $eventqls['getEventByUid'] = 'select *  from event e where e.event_uid=:event_uid;';
         $eventqls['deleteEvent'] = 'delete from event  where event_uid=:event_uid;';

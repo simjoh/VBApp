@@ -100,12 +100,15 @@ class SiteRepository extends BaseRepository
     public function existsByPlaceAndAdress(string $place, string $adress): ?Site
     {
         try {
+
         $statement = $this->connection->prepare($this->sqls('existsByPlaceAndAdress'));
         $statement->bindParam(':place', $place);
         $statement->bindParam(':adress', $adress);
             $statement->execute();
         $data = $statement->fetch();
+
         if(!empty($data)){
+
             return new Site($data["site_uid"],  $data["place"], $data["adress"],$data['description'],$data["location"],
                 empty($data["lat"]) ? new DecimalNumber("0") : new DecimalNumber(strval($data["lat"])),
                 empty($data["lng"]) ? new DecimalNumber("0")  : new DecimalNumber(strval($data["lng"])), is_null($data["picture"]) ? "": $data["picture"]);

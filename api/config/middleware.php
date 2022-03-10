@@ -45,7 +45,7 @@ return function (App $app) {
 
         $response = $app->getResponseFactory()->createResponse();
         $response->getBody()->write(
-            json_encode($exception->getMessage() . $exception->getLine(), JSON_UNESCAPED_UNICODE)
+            json_encode($exception->getMessage() . $exception->getLine() . $exception->getFile(), JSON_UNESCAPED_UNICODE)
         );
 
         return $response->withStatus(500);

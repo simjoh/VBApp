@@ -177,6 +177,7 @@ class TrackRepository extends BaseRepository
                 }
             }
         } catch (PDOException $e) {
+            print_r($e->getLine());
             echo 'Kunde inte uppdatera Track: ' . $e->getMessage();
         }
         $track->setTrackUid($track_uid);
