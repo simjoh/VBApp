@@ -44,6 +44,29 @@ class CompetitorRepository extends BaseRepository
         return $competitor;
     }
 
+    public function authenticate2($usernamne, $password): ?Competitor
+    {
+
+        $passwordsha =sha1($password);
+        $statement = $this->connection->prepare($this->sqls('participant_credential'));
+        $statement->bindParam(':user_name', $usernamne, PDO::PARAM_STR);
+        $statement->bindParam(':password', $passwordsha , PDO::PARAM_STR);
+        $statement->execute();
+        $credok = $statement->fetch();
+
+        if(empty($credok)){
+            return null;
+        }
+
+        $stmt = $this->connection->prepare($this->sqls('competitor_by_uid'));
+        $stmt->bindParam(':competitor_uid', $credok['competitor_uid'], PDO::PARAM_STR);
+        $stmt->execute();
+        $competitor = $stmt->fetch();
+        $competitor = new Competitor($competitor['competitor_uid'],$competitor['user_name'], $competitor['given_name'],$competitor['family_name'], '');
+        $competitor->setRoles(array("COMPETITOR"));
+        return $competitor;
+    }
+
     public function getCompetitorByNameAndBirthDate(string $givenname, string $familyname, string $birthdate ) {
 
         try {
@@ -98,12 +121,33 @@ class CompetitorRepository extends BaseRepository
         return  new Competitor($uid,$userName,$givenName,$familyName,"");
     }
 
+    public function creatCompetitorCredential(string $competitor_uid ,string $participant_uid, string $user_name, string $password ){
+        try {
+        $uid = Uuid::uuid4();
+        $shapass = sha1($password);
+        $statement = $this->connection->prepare($this->sqls('createCompetitorCredential'));
+        $statement->bindParam(':uid', $uid);
+        $statement->bindParam(':competitor_uid', $competitor_uid);
+        $statement->bindParam(':participant_uid', $participant_uid);
+        $statement->bindParam(':user_name', $user_name);
+        $statement->bindParam(':password',$shapass );
+            $statement->execute();
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
 
     public function sqls($type)
     {
         $competitorsqls['login'] = 'select * from competitors where user_name = :user_name and password = :password';
+        $competitorsqls['competitor_by_uid'] = 'select * from competitors where competitor_uid = :competitor_uid';
+        $competitorsqls['participant_credential'] = 'select * from competitor_credential where user_name = :user_name and password = :password';
         $competitorsqls['getbynameandbirth'] = 'select * from competitors where given_name=:givenname and family_name=:familyname and birthdate=:birthdate;';
         $competitorsqls['createCompetitor']  = "INSERT INTO competitors(competitor_uid, user_name, given_name, family_name, role_id, password, birthdate) VALUES (:uid, :username, :givenname, :familyname, :role_id, :password , :birthdate)";
+        $competitorsqls['createCompetitorCredential']  = "INSERT INTO competitor_credential(credential_uid, competitor_uid, participant_uid, user_name, password) VALUES (:uid, :competitor_uid, :participant_uid, :user_name, :password)";
         return $competitorsqls[$type];
 
     }

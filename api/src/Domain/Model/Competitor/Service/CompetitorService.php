@@ -35,4 +35,9 @@ class CompetitorService
     public function createCompetitor(string $givenName, string $familyName, string $userName, string $birthdate): Competitor {
        return $this->repository->createCompetitor($givenName,$familyName,$userName,$birthdate);
     }
+
+    public function createCredentialFor(string $getId, string $getParticipantUid, string $int, string $int1)
+    {
+        $this->repository->creatCompetitorCredential($getId,$getParticipantUid,$int,   $int1);
+    }
 }

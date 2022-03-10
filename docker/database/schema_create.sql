@@ -30,6 +30,8 @@ CREATE TABLE competitors (
     PRIMARY KEY (competitor_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+
 -- READ UPDATE
 CREATE TABLE permission_type (
   type_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -217,6 +219,16 @@ CREATE TABLE club (
     PRIMARY KEY (club_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE competitor_credential (
+    credential_uid char(36) NOT NULL,
+    competitor_uid char(36) NOT NULL,
+    participant_uid char(36) NOT NULL,
+    user_name varchar(100) NOT NULL,
+    password char(128),
+    PRIMARY KEY (credential_uid, participant_uid, competitor_uid),
+    FOREIGN KEY (competitor_uid) REFERENCES competitors(competitor_uid),
+    FOREIGN KEY (participant_uid) REFERENCES participant(participant_uid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 ---Vyer  Några vyer som kan användas bla för att se vilka cyklister som ska passera en kontroll

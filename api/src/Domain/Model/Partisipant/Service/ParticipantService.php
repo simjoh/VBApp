@@ -147,7 +147,7 @@ class ParticipantService extends ServiceAbstract
         }
 
         // Lös in filen som laddades upp
-        $csv = Reader::createFromPath($this->settings['upload_directory']  . 'Deltagarlista-MSR2022.csv', 'r');
+        $csv = Reader::createFromPath($this->settings['upload_directory']  . 'Deltagarlista-MSR-2022-test.csv', 'r');
         $csv->setDelimiter(";");
         $stmt = Statement::create();
 
@@ -168,6 +168,8 @@ class ParticipantService extends ServiceAbstract
                    // if(!isset($compInfo)){
                         $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParams($record[9], $record[10], $record[5], $record[6],$record[7], $record[8], $competitor->getId());
                    // }
+
+
                 }
             }
 
@@ -205,6 +207,13 @@ class ParticipantService extends ServiceAbstract
                 }
             $createdParticipants [] = $participant;
             }
+
+            if(isset($participantcreated) && isset($competitor)){
+                // skapa upp inloggning för cyklisten
+
+                $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $record[13], $record[0]);
+            }
+
         }
 
 

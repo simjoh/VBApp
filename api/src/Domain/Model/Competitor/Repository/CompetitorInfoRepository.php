@@ -112,6 +112,8 @@ class CompetitorInfoRepository extends BaseRepository
     }
 
 
+
+
     public function sqls($type)
     {
         $competitorsqls['infobycompetitoruid'] = 'select * from competitor_info where competitor_uid = :competitor_uid;';
