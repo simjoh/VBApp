@@ -70,7 +70,8 @@ export class AuthService {
     const activeUser = {
       name: data.givenname + " " + data.familyname,
       roles: values,
-      startnumber: data.startnumber
+      startnumber: data.startnumber,
+      trackuid: data.trackuid
     } as ActiveUser
     localStorage.setItem('activeUser', JSON.stringify(activeUser));
     this.authSubjet.next(activeUser)

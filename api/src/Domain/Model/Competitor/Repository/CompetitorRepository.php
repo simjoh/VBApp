@@ -6,6 +6,7 @@ namespace App\Domain\Model\Competitor\Repository;
 use App\common\Repository\BaseRepository;
 
 use App\Domain\Model\Competitor\Competitor;
+use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
 use Exception;
 use PDO;
 use PDOException;
@@ -19,9 +20,10 @@ class CompetitorRepository extends BaseRepository
      *
      * @param PDO $connection The database connection
      */
-    public function __construct(PDO $connection)
+    public function __construct(PDO $connection,ParticipantRepository $participantRepository)
     {
         $this->connection = $connection;
+        $this->participantRepository = $participantRepository;
     }
 
 
@@ -58,12 +60,18 @@ class CompetitorRepository extends BaseRepository
             return null;
         }
 
+        $participant = $this->participantRepository->participantFor($credok['participant_uid']);
+
+
         $stmt = $this->connection->prepare($this->sqls('competitor_by_uid'));
         $stmt->bindParam(':competitor_uid', $credok['competitor_uid'], PDO::PARAM_STR);
         $stmt->execute();
         $competitor = $stmt->fetch();
         $competitor = new Competitor($competitor['competitor_uid'],$competitor['user_name'], $competitor['given_name'],$competitor['family_name'], '');
+        $competitor->setStartnumber($credok['user_name']);
+        $competitor->setTrackuid($participant->getTrackUid());
         $competitor->setRoles(array("COMPETITOR"));
+
         return $competitor;
     }
 

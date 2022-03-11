@@ -2,5 +2,6 @@ export class ActiveUser {
   name: string;
   id?: string;
   roles: [];
-  startnumber?: number
+  startnumber?: number;
+  trackuid?: string
 }

@@ -51,6 +51,7 @@ class LoginAction extends BaseAction
            $jwt = $generator->generate(['id' => $competitor->getId(), 'roles' => $this->getRoles($competitor->getRoles()), 'iat' => time(), 'exp' => time() + 2660000000]);
            $competitor->setToken($jwt);
            $ser = new CleanJsonSerializer();
+
            $response->getBody()->write($ser->serialize($competitor));
            return $response->withStatus(200)->withHeader('Content-type','application/json');
        } else {

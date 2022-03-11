@@ -13,6 +13,9 @@ class Competitor implements JsonSerializable
     private string $username;
     private string $token;
     private ?int $startnumber;
+    private ?string $trackuid;
+
+
     private  $roles = array();
 
 
@@ -116,6 +119,23 @@ class Competitor implements JsonSerializable
     {
         $this->startnumber = $startnumber;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getTrackuid(): ?string
+    {
+        return $this->trackuid;
+    }
+
+    /**
+     * @param string|null $trackuid
+     */
+    public function setTrackuid(?string $trackuid): void
+    {
+        $this->trackuid = $trackuid;
+    }
+
 
     public function jsonSerialize() {
         return (object) get_object_vars($this);
