@@ -358,7 +358,8 @@ class ParticipantRepository extends BaseRepository
     }
 
     public function updateParticipant(Participant $participantToUpdate): ?Participant {
-        $participant_uid = Uuid::uuid4();
+
+        $participant_uid = $participantToUpdate->getParticipantUid();
         $track_uid = $participantToUpdate->getTrackUid();
         $competitor_uid = $participantToUpdate->getCompetitorUid();
         $startnumber = intval($participantToUpdate->getStartnumber());
@@ -369,21 +370,21 @@ class ParticipantRepository extends BaseRepository
         $dnf = $participantToUpdate->isDnf();
         $brevenr = intval($participantToUpdate->getBrevenr());
         $time = $participantToUpdate->getTime();
+        $reg_date_time = $participantToUpdate->getRegisterDateTime();
         try {
             $stmt = $this->connection->prepare($this->sqls('updateParticipant'));
             $stmt->bindParam(':participant_uid', $participant_uid);
             $stmt->bindParam(':track_uid',$track_uid );
             $stmt->bindParam(':competitor_uid',$competitor_uid);
             $stmt->bindParam(':startnumber', $startnumber);
-            $stmt->bindParam(':finished', $finished);
+            $stmt->bindParam(':finished', $finished, PDO::PARAM_BOOL);
             $stmt->bindParam(':acpcode', $acpkod);
             $stmt->bindParam(':club_uid', $club_uid);
-            $stmt->bindParam(':dns', $dns);
-            $stmt->bindParam(':time', $time);
-            $stmt->bindParam(':dnf', $dnf);
+            $stmt->bindParam(':dns', $dns, PDO::PARAM_BOOL);
+            $stmt->bindParam(':times', $time, PDO::PARAM_STR);
+            $stmt->bindParam(':dnf', $dnf, PDO::PARAM_BOOL);
             $stmt->bindParam(':brevenr', $brevenr);
-            $stmt->bindParam(':register_date_time', $brevenr);
-
+            $stmt->bindParam(':register_date_time', $reg_date_time);
             $status = $stmt->execute();
             if($status){
                 return $participantToUpdate;
@@ -549,6 +550,30 @@ class ParticipantRepository extends BaseRepository
         return true;
     }
 
+    public function stampOnCheckpointWithTime(string $participant_uid, string $checkpoint_uid, string $datetime) : bool
+    {
+        try {
+
+            $passed_date_timestamp = $datetime;
+            $lat = null;
+            $lng = null;
+            $passed = true;
+            $stmt = $this->connection->prepare($this->sqls('updateCheckpoint'));
+            $stmt->bindParam(':participant_uid', $participant_uid);
+            $stmt->bindParam(':checkpoint_uid',$checkpoint_uid );
+            $stmt->bindParam(':passed',$passed, PDO::PARAM_BOOL);
+            $stmt->bindParam(':passed_date_time', $passed_date_timestamp);
+            $stmt->bindParam(':lat', $lat);
+            $stmt->bindParam(':lng', $lng);
+            $stmt->execute();
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return true;
+    }
+
     public function rollbackStamp(string $participant_uid, string $checkpoint_uid) : bool
     {
         try {
@@ -621,7 +646,7 @@ class ParticipantRepository extends BaseRepository
         $eventqls['participantonTrackWithStartnumber'] = 'select *  from participant e where e.track_uid=:track_uid and startnumber=:startnumber;';
         $eventqls['participantByTrackAndClub'] = 'select *  from participant e where e.track_uid=:track_uid and club_uid=:club_uid;';
         $eventqls['deleteParticipant'] = 'delete from participant  where participant_uid=:participant_uid;';
-        $eventqls['updateParticipant']  = "UPDATE participant SET  track_uid=:track_uid , competitor_uid=:competitor_uid , startnumber=:startnumber, finished=:finished, acpkod=:acpcode, club_uid=:club_uid , dns=:dns, dnf=:dnf WHERE participant_uid=:participant_uid";
+        $eventqls['updateParticipant']  = "UPDATE participant SET  track_uid=:track_uid , competitor_uid=:competitor_uid , startnumber=:startnumber, finished=:finished, acpkod=:acpcode, club_uid=:club_uid , dns=:dns, dnf=:dnf, register_date_time=:register_date_time , time=:times , brevenr=:brevenr WHERE participant_uid=:participant_uid";
         $eventqls['updateBrevenr']  = "UPDATE participant SET  brevenr=:brevenr WHERE participant_uid=:participant_uid";
         $eventqls['createParticipant'] = 'INSERT INTO participant(participant_uid, track_uid, competitor_uid, startnumber, finished,  acpkod, club_uid , time ,dns, dnf, brevenr,register_date_time) VALUES (:participant_uid, :track_uid,:competitor_uid,:startnumber,:finished , :acpcode, :club_uid, :time, :dns, :dnf, :brevenr, :register_date_time)';
         $eventqls['participantByTrackAndCompetitorUid'] = 'select *  from participant e where e.track_uid=:track_uid and competitor_uid=:competitor_uid;';

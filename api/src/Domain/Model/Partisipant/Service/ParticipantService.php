@@ -211,7 +211,7 @@ class ParticipantService extends ServiceAbstract
             if(isset($participantcreated) && isset($competitor)){
                 // skapa upp inloggning för cyklisten
 
-                $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $record[13], $record[0]);
+                $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $record[0], $record[13]);
             }
 
         }

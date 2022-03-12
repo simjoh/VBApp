@@ -48,6 +48,34 @@ class CheckpointsService extends ServiceAbstract
         return $this->toRepresentations($checkpoints);
     }
 
+
+    public function isStartCheckpoint(?string $track_uid, string $checkpoint_uid) : bool
+    {
+
+        $checkpointUIDS = $this->checkpointRepository->checkpointUidsForTrack($track_uid);
+
+        $checkpoints = $this->checkpointRepository->isStartCheckpoin($checkpointUIDS);
+
+        if($checkpoints == $checkpoint_uid){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    public function isEndCheckpoint(?string $track_uid, string $checkpoint_uid) : bool
+    {
+
+        $checkpointUIDS = $this->checkpointRepository->checkpointUidsForTrack($track_uid);
+        $checkpoints = $this->checkpointRepository->isEndCheckpoin($checkpointUIDS);
+        if($checkpoints == $checkpoint_uid){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function updateCheckpoint(?string $checkpoint_uid, CheckpointRepresentation $checkpointRepresentation): CheckpointRepresentation
     {
         $checkpoint = $this->toCheckpoint($checkpointRepresentation);

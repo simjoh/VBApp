@@ -166,6 +166,53 @@ class CheckpointRepository extends BaseRepository
         return array();
     }
 
+    public function isStartCheckpoin(array $checkpoints_uids) : ?string{
+        try {
+
+
+            $in  = str_repeat('?,', count($checkpoints_uids) - 1) . '?';
+            $sql = " SELECT  min(distance), checkpoint_uid from checkpoint where checkpoint_uid  IN ($in) group by distance";
+
+            $test = [];
+            foreach ($checkpoints_uids as $s => $ro){
+                $test[] = $ro;
+            }
+
+            $statement = $this->connection->prepare($sql);
+            $statement->execute($test);
+            $checkpoint = $statement->fetch();
+            return $checkpoint[1];
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return null;
+    }
+
+    public function isEndCheckpoin(array $checkpoints_uids) : ?string{
+        try {
+
+            $in  = str_repeat('?,', count($checkpoints_uids) - 1) . '?';
+            $sql = " SELECT  max(distance), checkpoint_uid from checkpoint where checkpoint_uid  IN ($in) group by checkpoint_uid order by distance desc ";
+
+            $test = [];
+            foreach ($checkpoints_uids as $s => $ro){
+                $test[] = $ro;
+            }
+            $statement = $this->connection->prepare($sql);
+            $statement->execute($test);
+            $checkpoint = $statement->fetch();
+
+            return $checkpoint[1];
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return null;
+    }
+
     public function checkpointUidsForTrack(string $track_uid) : array{
 
         try {

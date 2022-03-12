@@ -190,7 +190,7 @@ CREATE TABLE participant (
     finished BOOLEAN DEFAULT false,
     acpkod INTEGER UNSIGNED,
     club_uid char (36),
-    time Time,
+    time  char (36),
     dns BOOLEAN DEFAULT false,
     dnf BOOLEAN DEFAULT false,
     brevenr INTEGER UNSIGNED DEFAULT NULL,

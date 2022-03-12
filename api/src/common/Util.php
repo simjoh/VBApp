@@ -2,6 +2,8 @@
 
 namespace App\common;
 
+ use DateTime;
+
  final class Util
 {
 
@@ -24,5 +26,18 @@ namespace App\common;
 
      function get_current_time() {
          return date("H:i");
+     }
+
+
+      static function secToHR($seconds) {
+         $hours = floor($seconds / 3600);
+         $minutes = floor(($seconds / 60) % 60);
+         return "$hours:$minutes";
+     }
+
+      static function calculateSecondsBetween($date): int{
+         $datetime1 = new DateTime($date);
+         $datetime2 = new DateTime(date('Y-m-d H:i:s'));
+         return $datetime2->format('U') - $datetime1->format('U');
      }
 }
