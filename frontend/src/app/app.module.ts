@@ -28,10 +28,7 @@ import {InputTextModule} from "primeng/inputtext";
 import {CardModule} from "primeng/card";
 import {TokenHeaderInterceptor} from "./core/interceptors/token-header.interceptor";
 import {FeedbackInterceptor} from "./core/interceptors/feedback.interceptor";
-import {DialogModule} from "primeng/dialog";
-import {DynamicDialogModule} from "primeng/dynamicdialog";
-import {TableModule} from "primeng/table";
-import {SiteListComponent} from "./admin/site-admin/site-list/site-list.component";
+
 @NgModule({
   declarations: [
     AppComponent,

@@ -110,6 +110,12 @@ class VolonteerService extends ServiceAbstract
             throw new BrevetException("Cannot find participant",5, null);
         }
 
+        // kolla om start eller mål
+
+        // om start sätt starttid till starttid om incheckning sker före annars aktuell tid
+
+        //om mål sätt måltid till tiden för instämpling och beräkna tiden mella första och sista instämpling. Sätt totaltiden i participant och markera finished
+
         $this->participantrepository->stampOnCheckpoint($participant_uid, $checkpoint_uid);
     }
 }

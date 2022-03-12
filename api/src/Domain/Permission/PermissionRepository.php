@@ -91,6 +91,10 @@ class PermissionRepository extends BaseRepository
         return array();
     }
 
+    public function createPermission(){
+
+    }
+
     public function sqls($type)
     {
         $permissionssqls['permissionsfor'] = 'select p.perm_id, rp.perm_mod, p.perm_desc, pt.type from user_role ur inner join roles_permissions rp on rp.role_id = ur.role_id inner join permissions p on p.perm_id = rp.perm_id inner join permission_type pt on pt.type_id = p.type_id where ur.user_uid = :user_uid';

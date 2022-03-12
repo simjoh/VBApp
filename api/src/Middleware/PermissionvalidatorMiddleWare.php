@@ -30,6 +30,7 @@ class PermissionvalidatorMiddleWare
 
     public function __invoke(Request $request, RequestHandler $handler): Response {
 
+
         $token = $request->getHeaderLine("TOKEN");
 
         $signer = new HS256($this->key);
@@ -42,7 +43,7 @@ class PermissionvalidatorMiddleWare
         }
 
         $permissions = $this->permissionrepository->getPermissionsFor($claims['id']);
-        if(empty($permissions)){
+        if(empty($permissions) && !Arrays::get($claims['roles'], 'isCompetitor')){
             return (new Response())->withStatus(401);
         }
 
@@ -52,13 +53,13 @@ class PermissionvalidatorMiddleWare
             return $handler->handle($request);
         };
 
-        if((Arrays::get($claims['roles'], 'isDevelper'))) {
+        if((Arrays::get($claims['roles'], 'isDeveloper'))) {
             $request = $request->withAttribute('currentuserUid', $claims['id']);
             return $handler->handle($request);
         };
 
         if((Arrays::get($claims['roles'], 'isCompetitor'))) {
-            if(Strings::startsWith($request->getRequestTarget(), "/api/randonneur/") === True){
+            if(Strings::startsWith($request->getRequestTarget(), "/api/randonneur/") === True  ){
                 $request = $request->withAttribute('currentuserUid', $claims['id']);
                 return $handler->handle($request);
             } else {

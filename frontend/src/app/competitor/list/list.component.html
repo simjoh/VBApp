@@ -1,4 +1,14 @@
-<div class="alert alert-danger" role="alert">
-  Kontroller i listform Inte implementerad ännu
-</div>
+
+<ng-container *ngIf="$track | async as track">
+  <H2>{{track.title}}</H2>
+  
+</ng-container>
+
+<ng-container *ngIf="checkpoints$ | async as kontroller">
+<!--  {{kontroller[0].links |json}}-->
+ <ng-container *ngFor="let s of kontroller">
+    <brevet-checkpoint></brevet-checkpoint>
+ </ng-container>
+</ng-container>
+
 

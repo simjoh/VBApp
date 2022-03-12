@@ -34,13 +34,10 @@
     <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/brevet-user-admin" routerLinkActive="active">Användare</a></li>
     <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/brevet-site-admin" routerLinkActive="active">Siter</a></li>
     <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/brevet-event-admin" routerLinkActive="active">Events</a></li>
-    <li *ngIf="user.competitor || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-maps"  routerLinkActive="active">Karta</a></li>
-    <li *ngIf="user.competitor || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-list" routerLinkActive="active">Lista</a></li>
+<!--    <li *ngIf="user.competitor || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-maps"  routerLinkActive="active">Karta</a></li>-->
+    <li *ngIf="user.competitor || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-list" routerLinkActive="active">Kontroller</a></li>
   </ul>
     </div>
-
-
-
 
 </ng-container>
 

@@ -6,22 +6,21 @@ import { CompetitorComponent } from './competitor.component';
 import {CoreModule} from "../core/core.module";
 import {MapComponent} from "./map/map.component";
 import { ListComponent } from './list/list.component';
-import {CardModule} from "primeng/card";
-import {ButtonModule} from "primeng/button";
 import {SharedModule} from "../shared/shared.module";
+import {ListModule} from "./list/list.module";
 
 
 @NgModule({
   declarations: [
     CompetitorComponent,
-    MapComponent,
-    ListComponent
+    MapComponent
   ],
   imports: [
     SharedModule,
     CommonModule,
     CoreModule,
     CompetitorRoutingModule,
+    ListModule,
   ],
   exports: [MapComponent]
 })

@@ -1,16 +1,22 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import {CompetitorListComponentService} from "./competitor-list-component.service";
 
 @Component({
   selector: 'brevet-list',
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [CompetitorListComponentService]
 })
-export class ListComponent implements OnInit {
+export class ListComponent {
 
-  constructor() { }
 
-  ngOnInit(): void {
-  }
+  checkpoints$ = this.comp.$controls;
+
+  $track = this.comp.$track;
+
+  constructor(private comp: CompetitorListComponentService) { }
+
+
 
 }

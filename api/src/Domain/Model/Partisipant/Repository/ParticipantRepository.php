@@ -187,6 +187,62 @@ class ParticipantRepository extends BaseRepository
 
     }
 
+    public function hasStampOnCheckpoint(string $participant_uid, string $checkpoint_uid): bool {
+        try {
+            $statement = $this->connection->prepare($this->sqls('hasStampOnCheckpoint'));
+            $statement->bindParam(':participant_uid', $participant_uid);
+            $statement->bindParam(':checkpoint_uid', $checkpoint_uid);
+            $statement->execute();
+            $result = $statement->fetch();
+            if (empty($result)) {
+               return false;
+            }
+            return true;
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return true;
+    }
+
+    public function hasDnfOnCheckpoint(string $participant_uid, string $checkpoint_uid): bool {
+        try {
+            $statement = $this->connection->prepare($this->sqls('hasStampOnCheckpoint'));
+            $statement->bindParam(':participant_uid', $participant_uid);
+            $statement->bindParam(':checkpoint_uid', $checkpoint_uid);
+            $statement->execute();
+            $result = $statement->fetch();
+            if (empty($result)) {
+                return false;
+            }
+            return true;
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return true;
+    }
+
+    public function hasDnf(string $participant_uid): bool {
+        try {
+            $statement = $this->connection->prepare($this->sqls('hasDnf'));
+            $statement->bindParam(':participant_uid', $participant_uid);
+            $statement->execute();
+            $result = $statement->fetch();
+            if (empty($result)) {
+                return false;
+            }
+            return true;
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return true;
+    }
+
 
     public function participantsbyTrackAndClub(string $track_uid, $club_uid) {
         try {
@@ -378,6 +434,31 @@ class ParticipantRepository extends BaseRepository
     }
 
 
+    //görs i efterhand
+    public function isDnf(string $participant_uid): bool {
+
+        $participant_uid = $participant_uid;
+        try {
+            $dnf = true;
+            $stmt = $this->connection->prepare($this->sqls('isDnf'));
+            $stmt->bindParam(':participant_uid', $participant_uid);
+            $stmt->bindParam(':dnf', $dnf, PDO::PARAM_BOOL);
+            $status = $stmt->execute();
+            if($status){
+                return true;
+            }
+        } catch (PDOException $e) {
+            echo 'Kunde inte uppdatera site: ' . $e->getMessage();
+        }
+        return $event;
+    }
+
+
+
+
+
+
+
 
     //görs i efterhand
     public function setDns(string $participant_uid): bool {
@@ -550,6 +631,8 @@ class ParticipantRepository extends BaseRepository
         $eventqls['setDnf']  = "UPDATE participant SET  dnf=:dnf WHERE participant_uid=:participant_uid;";
         $eventqls['setDns']  = "UPDATE participant SET  dns=:dns WHERE participant_uid=:participant_uid;";
         $eventqls['participanCheckpointByParticipantUidAndCheckpointUid'] = 'select *  from participant_checkpoint e where e.participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid;';
+        $eventqls['hasStampOnCheckpoint'] = 'select passed from participant_checkpoint e where e.participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid and passed = true;';
+        $eventqls['hasDnf'] = 'select dnf from participant e where e.participant_uid=:participant_uid and dnf = true;';
         return $eventqls[$type];
         // TODO: Implement sqls() method.
     }

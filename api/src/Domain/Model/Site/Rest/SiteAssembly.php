@@ -31,7 +31,8 @@ class SiteAssembly
         $siteRepresentation->setPlace($s->getPlace());
         $siteRepresentation->setSiteUid($s->getSiteUid());
         $siteRepresentation->setAdress($s->getAdress());
-        $siteRepresentation->setLocation($s->getLocation());
+        if (!empty($user))
+        $siteRepresentation->setLocation(!empty($s->getLocation()) == true ? $s->getLocation() : "");
         $siteRepresentation->setDescription($s->getDescription());
         $siteRepresentation->setImage($s->getPicture()  == null ? "": "../../../../../../api/uploads/" . $s->getPicture());
 

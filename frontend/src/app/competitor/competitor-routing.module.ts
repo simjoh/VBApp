@@ -17,8 +17,8 @@ const routes: Routes = [{
     redirectTo: '',
     pathMatch: 'full'
   },
-  { path: 'brevet-maps', component: MapComponent,  canActivate: [AuthenticatedGuard, HasAccessToCompetitorFunctionsGuard] },
   { path: 'brevet-list', component: ListComponent,  canActivate: [AuthenticatedGuard, HasAccessToCompetitorFunctionsGuard] },
+  { path: 'brevet-maps', component: MapComponent,  canActivate: [AuthenticatedGuard, HasAccessToCompetitorFunctionsGuard] },
 ];
 
 @NgModule({

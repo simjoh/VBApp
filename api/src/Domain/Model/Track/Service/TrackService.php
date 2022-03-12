@@ -199,13 +199,12 @@ class TrackService extends ServiceAbstract
     private function createSite($record): ?array
     {
 
-
         $siteDict = new Dictionary();
         $sitereturn = [];
         foreach ($record as $key => $value) {
             if (!$siteDict->hasValue($value[5] . $value[6])) {
 
-                $siteDict = $siteDict->withValue($value[5] . $value[6], new Site("", $value[5], $value[6], $value[12], null,
+                $siteDict = $siteDict->withValue($value[5] . $value[6], new Site("", $value[5], $value[6], $value[13], null,
                     empty($value[8]) ? new DecimalNumber("0") : new DecimalNumber(strval($value[8])),
                     empty($value[9]) ? new DecimalNumber("0") : new DecimalNumber(strval($value[9])),
                     "IMG.JPG"));
@@ -327,17 +326,17 @@ class TrackService extends ServiceAbstract
 
     }
 
-    private function createTracksOnEvent($track, $event)
-    {
-        $track = '1e02e4f5-55e0-4211-9b17-23b28836463a';
-        $event = '36c89577-d041-49f8-82ba-b8eb1c6662ba';
-        $tracksOnEvent = $this->eventRepository->trackAndEventOnEvent($event, $track);
-
-
-        if(empty($tracksOnEvent)){
-            $this->eventRepository->createTrackEvent($event, $track);
-        }
-    }
+//    private function createTracksOnEvent($track, $event)
+//    {
+//        $track = '1e02e4f5-55e0-4211-9b17-23b28836463a';
+//        $event = '36c89577-d041-49f8-82ba-b8eb1c6662ba';
+//        $tracksOnEvent = $this->eventRepository->trackAndEventOnEvent($event, $track);
+//
+//
+//        if(empty($tracksOnEvent)){
+//            $this->eventRepository->createTrackEvent($event, $track);
+//        }
+//    }
 
 
 

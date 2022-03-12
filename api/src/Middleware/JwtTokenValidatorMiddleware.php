@@ -24,7 +24,6 @@ class JwtTokenValidatorMiddleware
 
     public function __invoke(Request $request, RequestHandler $handler): Response
     {
-
         $token = $request->getHeaderLine("TOKEN");
 
         if ($token == '') {

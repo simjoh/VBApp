@@ -43,6 +43,7 @@ class CheckpointsService extends ServiceAbstract
     {
 
         $checkpointUIDS = $this->checkpointRepository->checkpointUidsForTrack($track_uid);
+
         $checkpoints = $this->checkpointRepository->checkpointsFor($checkpointUIDS);
         return $this->toRepresentations($checkpoints);
     }
@@ -83,6 +84,9 @@ class CheckpointsService extends ServiceAbstract
         $checkpointRepresentation->setCheckpointUid($checkpoint->getCheckpointUid());
         $checkpointRepresentation->setDescription($checkpoint->getDescription());
         $checkpointRepresentation->setTitle($checkpoint->getTitle());
+        $checkpointRepresentation->setDistance($checkpoint->getDistance());
+        $checkpointRepresentation->setOpens($checkpoint->getOpens());
+        $checkpointRepresentation->setClosing($checkpoint->getClosing());
         $checkpointRepresentation->setSite($this->siteservice->siteFor($checkpoint->getSiteUid(),'s'));
         return $checkpointRepresentation;
     }

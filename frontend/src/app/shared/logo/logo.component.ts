@@ -2,7 +2,6 @@ import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
 import {LogoComponentService} from "./logo-component.service";
 import {map} from "rxjs/operators";
 import {DatePipe} from "@angular/common";
-import {newArray} from "@angular/compiler/src/util";
 
 @Component({
   selector: 'brevet-logo',

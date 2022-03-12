@@ -70,6 +70,7 @@ export class AuthService {
     const activeUser = {
       name: data.givenname + " " + data.familyname,
       roles: values,
+      id: data.id,
       startnumber: data.startnumber,
       trackuid: data.trackuid
     } as ActiveUser

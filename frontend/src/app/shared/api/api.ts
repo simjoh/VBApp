@@ -53,7 +53,6 @@ export interface Role {
   role_name: string;
 }
 
-
 export interface EventRepresentation {
   event_uid: string;
   title: string;
@@ -64,4 +63,32 @@ export interface EventRepresentation {
   completed: boolean;
   description: string;
   links: [];
+}
+
+export interface RandonneurCheckPointRepresentation {
+  checkpoint: CheckpointRepresentation;
+  links: [];
+}
+
+export interface  SiteRepresentation {
+  site_uid: string;
+  place: string;
+  adress: string;
+  location: any;
+  image: string;
+  description: string;
+  lat: string;
+  lng: string;
+  links: [];
+}
+
+export interface CheckpointRepresentation {
+  checkpoint_uid: string;
+  title: string;
+  site:  SiteRepresentation;
+  description: string;
+  distance: any;
+  opens: any;
+  closing: any;
+  link: Link;
 }
