@@ -184,6 +184,20 @@ class RandonneurService
             throw new BrevetException("Cannot find participant",5, null);
         }
 
+        $isEnd = $this->checkpointService->isEndCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
+
+        if($isEnd == true){
+            $this->participantRepository->rollbackStamp($participant->getParticipantUid(), $checkpoint_uid);
+//            $participant->setDnf(false);
+//            $participant->setDns(false);
+            $participant->setFinished(false);
+            $participant->setTime(null);
+            $this->participantRepository->updateParticipant($participant);
+            return true;
+        }
+
         return $this->participantRepository->rollbackStamp($participant->getParticipantUid(), $checkpoint_uid);
     }
+
+
 }
