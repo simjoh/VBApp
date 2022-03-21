@@ -1,6 +1,7 @@
 export interface Link {
   rel?: string;
   method?: string;
+  url?:string
 }
 
 export interface Site{

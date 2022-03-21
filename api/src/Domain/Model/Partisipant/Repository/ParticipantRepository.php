@@ -420,7 +420,27 @@ class ParticipantRepository extends BaseRepository
 
         $participant_uid = $participant_uid;
         try {
-            $dnf = true;
+            $dnf = 1;
+            $stmt = $this->connection->prepare($this->sqls('setDnf'));
+            $stmt->bindParam(':participant_uid', $participant_uid);
+            $stmt->bindParam(':dnf', $dnf, PDO::PARAM_BOOL);
+            $status = $stmt->execute();
+            if($status){
+                return true;
+            }
+        } catch (PDOException $e) {
+            echo 'Kunde inte uppdatera site: ' . $e->getMessage();
+        }
+        return $event;
+    }
+
+
+    //görs i efterhand
+    public function rollbackDnf(string $participant_uid): bool {
+
+        $participant_uid = $participant_uid;
+        try {
+            $dnf = 0;
             $stmt = $this->connection->prepare($this->sqls('setDnf'));
             $stmt->bindParam(':participant_uid', $participant_uid);
             $stmt->bindParam(':dnf', $dnf, PDO::PARAM_BOOL);
@@ -580,7 +600,7 @@ class ParticipantRepository extends BaseRepository
             $passed_date_timestamp = null;
             $lat = null;
             $lng = null;
-            $passed = false;
+            $passed = 0;
             $stmt = $this->connection->prepare($this->sqls('updateCheckpoint'));
             $stmt->bindParam(':participant_uid', $participant_uid);
             $stmt->bindParam(':checkpoint_uid',$checkpoint_uid );

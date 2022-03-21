@@ -28,6 +28,7 @@ import {InputTextModule} from "primeng/inputtext";
 import {CardModule} from "primeng/card";
 import {TokenHeaderInterceptor} from "./core/interceptors/token-header.interceptor";
 import {FeedbackInterceptor} from "./core/interceptors/feedback.interceptor";
+import {TrackInfoComponent} from "./competitor/track-info/track-info.component";
 
 @NgModule({
   declarations: [

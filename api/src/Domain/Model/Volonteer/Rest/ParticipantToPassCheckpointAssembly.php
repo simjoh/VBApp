@@ -50,6 +50,7 @@ class ParticipantToPassCheckpointAssembly
         $participantToPassCheckpointRepresentation->setFamilyName($participantToPassCheckpoint->getFamilyName());
         $participantToPassCheckpointRepresentation->setPassed($participantToPassCheckpoint->isPassed());
         $participantToPassCheckpointRepresentation->setPassededDateTime($participantToPassCheckpoint->getPassededDateTime() == null ? "" : $participantToPassCheckpoint->getPassededDateTime());
+        $participantToPassCheckpointRepresentation->setDnf(false);
 
         // bygg på med lite länkar
         $linkArray = array();

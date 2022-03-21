@@ -74,4 +74,20 @@ class RandonneurAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+
+    public function rollbackDNF(ServerRequestInterface $request, ResponseInterface $response){
+        //skicka tillbacka checkpoints med ny status
+        //skicka tillbacka checkpoints med ny status
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('track_uid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $startnumber = $route->getArgument('startnumber');
+        $response->getBody()->write(json_encode($this->randonneurService->rollbackDnf($track_uid,$checkpoint_uid, $startnumber ,$request->getAttribute('currentuserUid'))));
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+
+
+
 }

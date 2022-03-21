@@ -4,6 +4,7 @@ namespace App\Domain\Model\Randonneur\Rest;
 
 use App\Domain\Model\CheckPoint\Checkpoint;
 use App\Domain\Model\CheckPoint\Rest\CheckpointRepresentation;
+use App\Domain\Model\Track\Rest\TrackRepresentation;
 use JsonSerializable;
 
 class RandonneurCheckPointRepresentation implements JsonSerializable
@@ -27,6 +28,8 @@ class RandonneurCheckPointRepresentation implements JsonSerializable
     {
         $this->checkpoint = $checkpoint;
     }
+
+
 
     /**
      * @return array

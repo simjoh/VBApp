@@ -29,12 +29,21 @@ import { YesNoPipe } from './pipes/yes-no.pipe';
 import {CalendarModule} from "primeng/calendar";
 import {InputTextareaModule} from "primeng/inputtextarea";
 import {FileUploadModule} from "primeng/fileupload";
+import {ImageModule} from "primeng/image";
+import { DistanceBetweenPipe } from './pipes/distance-between.pipe';
+import { CloseOrOpenPipe } from './pipes/close-or-open.pipe';
+import { TagModule } from 'primeng/tag';
+import {PanelModule} from "primeng/panel";
+import { DistanceKmPipe } from './pipes/distance-km.pipe';
 
 @NgModule({
     declarations: [
         LogoComponent,
         OverlayComponent,
         YesNoPipe,
+        DistanceBetweenPipe,
+        CloseOrOpenPipe,
+        DistanceKmPipe,
     ],
   entryComponents: [],
   imports: [
@@ -57,17 +66,20 @@ import {FileUploadModule} from "primeng/fileupload";
     TooltipModule,
     TabMenuModule,
     MenubarModule,
+    ImageModule,
+    TagModule,
     InputTextModule,
     MessageModule,
     OverlayPanelModule,
     CalendarModule,
     InputTextareaModule,
     FileUploadModule,
+    PanelModule,
     FormsModule, ReactiveFormsModule
   ],
-    exports: [CommonModule, InputTextModule, TabMenuModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
-        LogoComponent, DatePipe, NgbCollapseModule, BrowserAnimationsModule, ProgressSpinnerModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
-        ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe,CalendarModule, InputTextareaModule,FileUploadModule],
+  exports: [CommonModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
+    LogoComponent, DatePipe, NgbCollapseModule, BrowserAnimationsModule, ProgressSpinnerModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
+    ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe],
   providers: [DatePipe]
 })
 export class SharedModule { }

@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import {ListComponent} from "./list.component";
 import {SharedModule} from "../../shared/shared.module";
 import { CheckpointComponent } from './checkpoint/checkpoint.component';
+import {CompetitorModule} from "../competitor.module";
+import {TrackInfoComponent} from "../track-info/track-info.component";
 
 
 
@@ -10,7 +12,8 @@ import { CheckpointComponent } from './checkpoint/checkpoint.component';
   declarations: [ListComponent, CheckpointComponent],
   imports: [
     CommonModule,
-    SharedModule
+    SharedModule,
+    CompetitorModule,
   ],
   exports:[]
 })

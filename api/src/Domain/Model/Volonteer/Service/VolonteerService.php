@@ -126,12 +126,12 @@ class VolonteerService extends ServiceAbstract
 
         // kolla att kontrollern har öppnat
         if(date('Y-m-d H:i:s') < $checkpoint->getOpens()){
-            throw new BrevetException("Kontrollen är inte öppen ännu. Öppnar " . date("Y-m-d H:i:s", strtotime($checkpoint->getOpens())) , 1, null);
+            throw new BrevetException("Checkpoint opens:  " . date("Y-m-d H:i:s", strtotime($checkpoint->getOpens())) , 1, null);
         }
-        // kolla att kontrollen har stängt
-        if(date('Y-m-d H:i:s') > $checkpoint->getClosing()){
-            throw new BrevetException("Kontrollen stängde " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())) , 1, null);
-        }
+//        // kolla att kontrollen har stängt
+//        if(date('Y-m-d H:i:s') > $checkpoint->getClosing()){
+//            throw new BrevetException("Kontrollen stängde " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())) , 1, null);
+//        }
 
         // kolla om start eller mål
         $isStart = $this->checkpointService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
@@ -139,8 +139,10 @@ class VolonteerService extends ServiceAbstract
         if($isStart == true){
             if(date('Y-m-d H:i:s') < $track->getStartDateTime()){
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime());
+            } else if(date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {
+                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime());
             } else {
-                $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid);
+                throw new BrevetException("Error on checkin");
             }
             return true;
         }
@@ -149,7 +151,7 @@ class VolonteerService extends ServiceAbstract
         if($isEnd == true){
             //om mål sätt måltid till tiden för instämpling och beräkna tiden mella första och sista instämpling. Sätt totaltiden i participant och markera finished
             if(date('Y-m-d H:i:s') < $track->getStartDateTime()){
-                throw new BrevetException("Kan inte gå i mål före loppets start Loppet startar" . date("Y-m-d H:i:s", strtotime($track->getStartDateTime())), 1, null);
+                throw new BrevetException("Can not finish before the start of the race " . date("Y-m-d H:i:s", strtotime($track->getStartDateTime())), 1, null);
             }
             $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid);
             $participant->setDnf(false);

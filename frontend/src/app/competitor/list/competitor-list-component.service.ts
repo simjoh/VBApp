@@ -1,48 +1,62 @@
 import { Injectable } from '@angular/core';
 import {CompetitorService} from "../competitor.service";
 import {AuthService} from "../../core/auth/auth.service";
-import {combineLatest, map, mergeMap, tap} from "rxjs/operators";
+import {map, mergeMap, shareReplay, tap, withLatestFrom} from "rxjs/operators";
 import {RandonneurCheckPointRepresentation} from "../../shared/api/api";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, combineLatest, forkJoin, ReplaySubject} from "rxjs";
 import {TrackService} from "../track.service";
 
 @Injectable()
 export class CompetitorListComponentService {
 
-  stampEnableSubject = new BehaviorSubject<boolean>(true);
-  stampEnable$ = this.stampEnableSubject.asObservable();
 
-  dnfEnableSubject = new BehaviorSubject<boolean>(true);
-  dnfEnable$ = this.dnfEnableSubject.asObservable()
+  reloadSubject = new BehaviorSubject(false);
+  reload$ = this.reloadSubject.asObservable();
 
-  rollbackEnableSubject = new BehaviorSubject<boolean>(true);
-  rollbackEnable$ = this.rollbackEnableSubject.asObservable();
 
-  $controls =  this.authService.$auth$.pipe(
-    mergeMap((auth) => {
+
+  $controls = combineLatest([this.authService.$auth$, this.reload$]).pipe(
+    mergeMap(([auth, sidor]) => {
       return this.competitorService.getCheckpoints(auth.startnumber, auth.trackuid, auth.id)
     }),
-    map((test: Array<RandonneurCheckPointRepresentation>) => {
-      return test;
-    })
-  );
-
-  $track =  this.authService.$auth$.pipe(
-    mergeMap((auth) => {
-      return this.trackService.getTrack(auth.trackuid)
-    }),
-    map((test: any) => {
-      return test;
-    })
+    shareReplay(1)
   );
 
 
 
-
+  // $controls =  this.authService.$auth$.pipe(
+  //   mergeMap((auth) => {
+  //     return this.competitorService.getCheckpoints(auth.startnumber, auth.trackuid, auth.id)
+  //   }),
+  //   map((test: Array<RandonneurCheckPointRepresentation>) => {
+  //     return test;
+  //   })
+  // );
 
 
   constructor(private competitorService: CompetitorService, private authService: AuthService, private trackService: TrackService) {
+  }
 
+  public reload(){
+    this.reloadSubject.next(true);
+  }
 
+  async  stamp($event: boolean, s: RandonneurCheckPointRepresentation){
+   await this.competitorService.stampOnCheckpoint(s);
+   this.reload();
+  }
+
+  async rollbackStamp($event: any, s: RandonneurCheckPointRepresentation){
+    await this.competitorService.rollbackStamp(s);
+    this.reload();
+  }
+
+  async setDnf($event: any, s: RandonneurCheckPointRepresentation){
+    if ($event === true){
+      await this.competitorService.markAsDNF(s);
+    } else {
+      await this.competitorService.rollbackDNF(s);
+    }
+    this.reload();
   }
 }

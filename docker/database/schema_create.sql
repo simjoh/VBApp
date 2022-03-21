@@ -233,7 +233,7 @@ CREATE TABLE competitor_credential (
 
 ---Vyer  Några vyer som kan användas bla för att se vilka cyklister som ska passera en kontroll
 --Cyklister vid en kontroll. Om man i where anger en site_uid tex för tex brännäset dyker de cyklister som inte passerat default upp
-create view v_partisipant_to_pass_checkpoint AS SELECT tr.track_uid, pach.participant_uid,sit.site_uid, cpo.checkpoint_uid, sit.adress, a.startnumber, cp.given_name, cp.family_name, pach.passed, pach.passeded_date_time FROM `participant` a
+create view v_partisipant_to_pass_checkpoint AS SELECT tr.track_uid, pach.participant_uid,sit.site_uid, cpo.checkpoint_uid, cpo.opens , sit.adress, a.startnumber, cp.given_name, cp.family_name, pach.passed, pach.passeded_date_time,  a.dnf FROM `participant` a
 inner join competitors cp on a.competitor_uid = cp.competitor_uid
 inner join track tr on tr.track_uid = a.track_uid
 inner join participant_checkpoint  pach on pach.participant_uid = a.participant_uid

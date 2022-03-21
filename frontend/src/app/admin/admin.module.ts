@@ -11,7 +11,6 @@ import {SharedModule} from "../shared/shared.module";
 import {CreateUserDialogComponent} from "./user-admin/create-user-dialog/create-user-dialog.component";
 import {CheckboxModule} from "primeng/checkbox";
 import {UserInfoPopoverComponent} from "./user-admin/user-info-popover/user-info-popover.component";
-import {SiteListComponent} from "./site-admin/site-list/site-list.component";
 import {SiteAdminModule} from "./site-admin/site-admin.module";
 import {EventAdminModule} from "./event-admin/event-admin.module";
 
@@ -34,6 +33,6 @@ import {EventAdminModule} from "./event-admin/event-admin.module";
     EventAdminModule,
     AdminRoutingModule,
   ],
-  exports: [SharedModule]
+    exports: [SharedModule, AdminComponent]
 })
 export class AdminModule { }

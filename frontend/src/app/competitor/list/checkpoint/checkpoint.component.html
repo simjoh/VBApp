@@ -1,1 +1,29 @@
-<p>checkpoint works!</p>
+
+<p-card  styleClass="p-card-shadow">
+  <ng-template pTemplate="header">
+    <p-image class="mt-8 ml-2" src="assets/midnigthsun.PNG" alt="Image" width="50" height="50" [preview]="true"></p-image>
+    <strong class="ml-1">{{checkpoints.checkpoint.site.adress}} {{checkpoints.checkpoint.site.place}}</strong>
+  </ng-template>
+  <div class="p-2 col-12 sm:col-12 lg:col-12">
+    <p-tag *ngIf="start" styleClass="mr-2" value="START"></p-tag>
+    <p-tag *ngIf="finsih" styleClass="mr-2" value="MÅL"></p-tag>
+    <p-tag *ngIf="checkedin$ | async" styleClass="mr-2" icon="pi pi-check" severity="success" value="CHECKED IN"></p-tag>
+    <p-tag *ngIf="isdnf$ | async" severity="danger" value="DNF"></p-tag>
+    <br>
+    <strong>Distans:</strong>({{distance}}) Km
+    <br>
+    <strong>Öppnar:</strong>{{checkpoints.checkpoint.opens}} <br>
+    <strong>Stänger:</strong>{{checkpoints.checkpoint.closing}}
+    <br>
+    <strong>Service:</strong> {{checkpoints.checkpoint.site.description}}
+  </div>
+  <ng-template pTemplate="footer">
+      <div  class="col-12 sm:col-12 lg:col-6"><button (click)="checkin()" [disabled]="isdnf$ | async" class="container-fluid" pButton pRipple label="{{checkinknapptext}}"></button></div>
+    <div  class="col-12 sm:col-12 lg:col-6"><button (click)="setdnf()" class="container-fluid  p-button-secondary" pButton pRipple label="{{dnfknapptext}}"></button></div>
+  </ng-template>
+</p-card>
+
+
+<p-confirmDialog [breakpoints]="{'960px': '75vw', '640px': '100vw'}" [style]="{width: '50vw'}">
+  Content
+</p-confirmDialog>

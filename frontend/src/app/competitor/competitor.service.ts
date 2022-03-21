@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Observable} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {EventRepresentation, RandonneurCheckPointRepresentation} from "../shared/api/api";
 import {environment} from "../../environments/environment";
 import {map, mergeMap, shareReplay, take, tap} from "rxjs/operators";
@@ -11,6 +11,8 @@ import {HttpMethod} from "../core/HttpMethod";
   providedIn: 'root'
 })
 export class CompetitorService {
+
+
 
   constructor(private httpClient: HttpClient, private linkService: LinkService) { }
 
@@ -28,10 +30,10 @@ export class CompetitorService {
     ) as Observable<Array<RandonneurCheckPointRepresentation>>;
   }
 
-   public stampOnCheckpoint(){
-    const link = this.linkService.findByRel([],HttpMethod.POST)
-    return this.httpClient.post<EventRepresentation>(environment.backend_url + "event/", event).pipe(
-      map((site: EventRepresentation) => {
+   public stampOnCheckpoint(s: RandonneurCheckPointRepresentation){
+    const link = this.linkService.findByRel(s.links,'relation.randonneur.stamp', HttpMethod.POST)
+    return this.httpClient.post<any>(link.url, null).pipe(
+      map((site: boolean) => {
         return site;
       }),
       tap(event =>   console.log("Stamped competitor on checkpoint", event))
@@ -39,30 +41,34 @@ export class CompetitorService {
   }
 
 
-  public rollbackStamp(){
-    return this.httpClient.put<EventRepresentation>(environment.backend_url + "event", {} as EventRepresentation).pipe(
-      map((event: EventRepresentation) => {
+  public rollbackStamp(s: RandonneurCheckPointRepresentation){
+    const link = this.linkService.findByRel(s.links,'relation.randonneur.rollback', HttpMethod.PUT)
+    return this.httpClient.put<any>( link.url, null).pipe(
+      map((event: boolean) => {
         return event;
       }),
       tap(event =>   console.log(event))
-    ) as Observable<EventRepresentation>
+    ).toPromise()
   }
 
-  public markAsDNF(){
-    return this.httpClient.put<EventRepresentation>(environment.backend_url + "event", {} as EventRepresentation).pipe(
-      map((event: EventRepresentation) => {
+  public markAsDNF(s: RandonneurCheckPointRepresentation){
+    const link = this.linkService.findByRel(s.links,'relation.randonneur.dnf', HttpMethod.PUT)
+
+    return this.httpClient.put<any>(link.url, null).pipe(
+      map((event: boolean) => {
         return event;
       }),
       tap(event =>   console.log(event))
-    ) as Observable<EventRepresentation>
+    ).toPromise()
   }
 
-  public rollbackDNF(){
-    return this.httpClient.put<EventRepresentation>(environment.backend_url + "event", {} as EventRepresentation).pipe(
-      map((event: EventRepresentation) => {
+  public rollbackDNF(s: RandonneurCheckPointRepresentation){
+    const link = this.linkService.findByRel(s.links,'relation.randonneur.dnf.rollback', HttpMethod.PUT)
+    return this.httpClient.put<any>(link.url,null).pipe(
+      map((event: boolean) => {
         return event;
       }),
       tap(event =>   console.log(event))
-    ) as Observable<EventRepresentation>
+    ).toPromise();
   }
 }

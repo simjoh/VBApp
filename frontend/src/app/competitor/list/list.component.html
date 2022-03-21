@@ -1,14 +1,14 @@
-
-<ng-container *ngIf="$track | async as track">
-  <H2>{{track.title}}</H2>
-
-</ng-container>
-
+<brevet-track-info></brevet-track-info>
 <ng-container *ngIf="checkpoints$ | async as kontroller">
-<!--  {{kontroller[0].links |json}}-->
- <ng-container *ngFor="let s of kontroller">
-    <brevet-checkpoint></brevet-checkpoint>
- </ng-container>
+  <ng-container *ngFor="let s of kontroller; index as i">
+    <brevet-checkpoint (checkedin)="checkin($event,s)" (dnf)="dnf($event,s)" [checkpoints]="s"
+                       [start]="i === 0"
+                       [finsih]="i + 1 === kontroller.length"
+                       [distance]="s.checkpoint.distance | distanceBetween: i === 0 ?  0 : kontroller[i -1].checkpoint.distance" >
+    </brevet-checkpoint>
+    <br>
+    <br>
+  </ng-container>
 </ng-container>
 
 
