@@ -35,6 +35,7 @@ import { CloseOrOpenPipe } from './pipes/close-or-open.pipe';
 import { TagModule } from 'primeng/tag';
 import {PanelModule} from "primeng/panel";
 import { DistanceKmPipe } from './pipes/distance-km.pipe';
+import { DatetimeBetweenPipe } from './pipes/datetime-between.pipe';
 
 @NgModule({
     declarations: [
@@ -44,6 +45,7 @@ import { DistanceKmPipe } from './pipes/distance-km.pipe';
         DistanceBetweenPipe,
         CloseOrOpenPipe,
         DistanceKmPipe,
+        DatetimeBetweenPipe,
     ],
   entryComponents: [],
   imports: [
@@ -79,7 +81,7 @@ import { DistanceKmPipe } from './pipes/distance-km.pipe';
   ],
   exports: [CommonModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
     LogoComponent, DatePipe, NgbCollapseModule, BrowserAnimationsModule, ProgressSpinnerModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
-    ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe],
+    ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe],
   providers: [DatePipe]
 })
 export class SharedModule { }

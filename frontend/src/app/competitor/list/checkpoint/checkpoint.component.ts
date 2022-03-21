@@ -5,6 +5,7 @@ import {BehaviorSubject} from "rxjs";
 import {LinkService} from "../../../core/link.service";
 import {map} from "rxjs/operators";
 import { ConfirmationService } from 'primeng/api';
+import {inputNames} from "@angular/cdk/schematics";
 
 @Component({
   selector: 'brevet-checkpoint',
@@ -47,6 +48,7 @@ export class CheckpointComponent implements OnInit {
   @Input() start: boolean
   @Input() finsih: boolean
   @Input() distance: any
+  @Input() distancetonext: any
 
   @Output() checkedin = new EventEmitter();
   @Output() dnf = new EventEmitter();
@@ -56,6 +58,8 @@ export class CheckpointComponent implements OnInit {
   ngOnInit(): void {
     this.chekedinSubject.next(this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp') === false)
     this.dnfSubject.next(this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.dnf') === false)
+
+    console.log(this.distancetonext)
   }
   checkin() {
 

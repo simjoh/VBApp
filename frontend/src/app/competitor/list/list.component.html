@@ -1,10 +1,11 @@
 <brevet-track-info></brevet-track-info>
+
 <ng-container *ngIf="checkpoints$ | async as kontroller">
   <ng-container *ngFor="let s of kontroller; index as i">
-    <brevet-checkpoint (checkedin)="checkin($event,s)" (dnf)="dnf($event,s)" [checkpoints]="s"
+    <brevet-checkpoint (checkedin)="checkin($event,s)" (dnf)="dnf($event,s)"  [checkpoints]="s"
                        [start]="i === 0"
                        [finsih]="i + 1 === kontroller.length"
-                       [distance]="s.checkpoint.distance | distanceBetween: i === 0 ?  0 : kontroller[i -1].checkpoint.distance" >
+                       [distance]="s.checkpoint.distance" [distancetonext]="s.checkpoint.distance | distanceBetween: i + 1 === kontroller.length ?  s.checkpoint.distance : kontroller[i  + 1].checkpoint.distance : true">
     </brevet-checkpoint>
     <br>
     <br>
