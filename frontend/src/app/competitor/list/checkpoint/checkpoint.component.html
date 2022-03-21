@@ -8,9 +8,9 @@
     <p-tag *ngIf="start" styleClass="mr-2" value="START"></p-tag>
     <p-tag *ngIf="finsih" styleClass="mr-2" value="MÅL"></p-tag>
     <p-tag *ngIf="checkedin$ | async" styleClass="mr-2" icon="pi pi-check" severity="success" value="CHECKED IN"></p-tag>
-    <p-tag *ngIf="isdnf$ | async" severity="danger" value="DNF"></p-tag>
-    <p-tag *ngIf="!checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing" severity="danger" value="STÄNGD"></p-tag>
-    <p-tag *ngIf="checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing" styleClass="mr-2" value="ÖPPEN"></p-tag>
+    <p-tag *ngIf="isdnf$ | async" severity="danger" styleClass="mr-2" value="DNF"></p-tag>
+    <p-tag styleClass="mr-2" *ngIf="!checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing" severity="danger" value="STÄNGD"></p-tag>
+    <p-tag styleClass="mr-2" *ngIf="checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing" styleClass="mr-2" value="ÖPPEN"></p-tag>
     <br>
     <strong>Distans: </strong>{{distance}} Km <br>
     <strong>Distans till nästa kontroll: </strong>{{distancetonext}} Km
