@@ -1,0 +1,12 @@
+
+<ng-container *ngIf="$checkpoints | async as checkpoints">
+<p-dropdown
+  pTooltip="Välj den kontroll som du är på"
+  tooltipPosition="left" styleClass="col-12"
+  [options]="checkpoints" [(ngModel)]="selectedcheckpoint"
+  (ngModelChange)="valdKontroll()"
+  placeholder="Välj kontroll"
+  [virtualScroll]="true"
+  [itemSize]="31" [filter]="false">
+  </p-dropdown>
+</ng-container>

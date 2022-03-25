@@ -39,6 +39,7 @@ import { DatetimeBetweenPipe } from './pipes/datetime-between.pipe';
 import {ListboxModule} from 'primeng/listbox';
 import {BadgeModule} from "primeng/badge";
 import {KnobModule} from "primeng/knob";
+import {ConfirmPopupModule} from 'primeng/confirmpopup';
 
 @NgModule({
     declarations: [
@@ -84,9 +85,10 @@ import {KnobModule} from "primeng/knob";
     KnobModule,
     BadgeModule,
     ListboxModule,
+    ConfirmPopupModule,
     FormsModule, ReactiveFormsModule
   ],
-  exports: [CommonModule,BadgeModule,KnobModule,ListboxModule,PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
+  exports: [CommonModule,ConfirmPopupModule,BadgeModule,KnobModule,ListboxModule,PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
     LogoComponent, DatePipe, NgbCollapseModule, BrowserAnimationsModule, ProgressSpinnerModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
     ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe],
   providers: [DatePipe]

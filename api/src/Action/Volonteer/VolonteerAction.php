@@ -78,5 +78,18 @@ class VolonteerAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    public function rollbackDNF(ServerRequestInterface $request, ResponseInterface $response){
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('trackUid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $participant_uid = $route->getArgument('uid');
+        // Ångra stämpling via volontär
+        $this->volonteerService->rollbackRandonneurDnf($track_uid,$participant_uid,$checkpoint_uid);
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+
+
 
 }

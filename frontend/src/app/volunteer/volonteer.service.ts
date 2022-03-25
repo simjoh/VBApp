@@ -7,6 +7,7 @@ import {environment} from "../../environments/environment";
 import {map, shareReplay, take, tap} from "rxjs/operators";
 import {TrackService} from "../competitor/track.service";
 import {EventService} from "../admin/event-admin/event.service";
+import {HttpMethod} from "../core/HttpMethod";
 
 @Injectable({
   providedIn: 'root'
@@ -43,6 +44,47 @@ export class VolonteerService {
       }),
       shareReplay(1)
     ) as Observable<Array<CheckpointRepresentation>>;
+  }
 
+
+  public checkinParticipant(product: any): Promise<boolean>{
+    const link = this.linkService.findByRel(product.link,'relation.volonteer.stamp', HttpMethod.PUT)
+    return this.httpClient.post<any>(link.url, null).pipe(
+      map((site: boolean) => {
+        return site;
+      }),
+      tap(event =>   console.log("Stamped competitor on checkpoint", event))
+    ).toPromise();
+
+  }
+
+  public rollbackParticipantCheckin(product: any){
+    const link = this.linkService.findByRel(product.link,'relation.volonteer.rollbackstamp', HttpMethod.PUT)
+    return this.httpClient.put<any>(link.url, null).pipe(
+      map((site: boolean) => {
+        return site;
+      }),
+      tap(event =>   console.log("rollback checkin on checkpoint", event))
+    ).toPromise();
+  }
+
+  rollbackDnf(product: any) {
+    const link = this.linkService.findByRel(product.link,'relation.volonteer.rollbackdnf', HttpMethod.PUT)
+    return this.httpClient.put<any>(link.url, null).pipe(
+      map((site: boolean) => {
+        return site;
+      }),
+      tap(event =>   console.log("Stamped competitor on checkpoint", event))
+    ).toPromise();
+  }
+
+  setDnf(product: any) {
+    const link = this.linkService.findByRel(product.link,'relation.volonteer.setdnf', HttpMethod.PUT)
+    return this.httpClient.post<any>(link.url, null).pipe(
+      map((site: boolean) => {
+        return site;
+      }),
+      tap(event =>   console.log("Stamped competitor on checkpoint", event))
+    ).toPromise();
   }
 }

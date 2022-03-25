@@ -44,6 +44,7 @@ return function (App $app) {
         $app->get('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}/randonneurs', \App\Action\Volonteer\VolonteerAction::class . ':getRandonneurs');
         $app->post('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}/randonneur/{uid}/stamp', \App\Action\Volonteer\VolonteerAction::class . ':stamp');
         $app->post('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}/randonneur/{uid}/dnf', \App\Action\Volonteer\VolonteerAction::class . ':markasDNF');
+        $app->put('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}/randonneur/{uid}/rollbackdnf', \App\Action\Volonteer\VolonteerAction::class . ':rollbackDNF');
         $app->put('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}/randonneur/{uid}/rollback', \App\Action\Volonteer\VolonteerAction::class . ':rollbackStamp');
 
         // Ingångar för administratörer

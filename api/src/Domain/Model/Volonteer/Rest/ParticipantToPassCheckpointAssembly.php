@@ -63,7 +63,7 @@ class ParticipantToPassCheckpointAssembly
                     array_push($linkArray, new Link("relation.volonteer.rollbackstamp", 'PUT', 'api/volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/rollback'));
                 }
 
-        if(!$participantToPassCheckpoint->isPassed()){
+        if(!$participantToPassCheckpoint->isDnf()){
             array_push($linkArray, new Link("relation.volonteer.setdnf", 'PUT', 'api/volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/dnf'));
         } else {
             array_push($linkArray, new Link("relation.volonteer.rollbackdnf", 'PUT', 'api/volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/rollbackdnf'));

@@ -84,12 +84,12 @@ class VolonteerService extends ServiceAbstract
         $isEnd = $this->checkpointService->isEndCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
 
         if($isEnd == true){
-            $this->participantRepository->rollbackStamp($participant->getParticipantUid(), $checkpoint_uid);
+            $this->participantrepository->rollbackStamp($participant->getParticipantUid(), $checkpoint_uid);
 //            $participant->setDnf(false);
 //            $participant->setDns(false);
             $participant->setFinished(false);
             $participant->setTime(null);
-            $this->participantRepository->updateParticipant($participant);
+            $this->participantrepository->updateParticipant($participant);
             return true;
         }
 
@@ -114,6 +114,23 @@ class VolonteerService extends ServiceAbstract
        return  $this->participantrepository->setDnf($participant_uid, $checkpoint_uid);
     }
 
+    public function rollbackRandonneurDnf(?string $track_uid, ?string $participant_uid, ?string $checkpoint_uid): bool
+    {
+        $track = $this->trackrepository->getTrackByUid($track_uid);
+
+        if(!isset($track)){
+            throw new BrevetException("Track not exists",5, null);
+        }
+
+        $participant = $this->participantrepository->participantFor($participant_uid);
+
+        if(!isset($participant)){
+            throw new BrevetException("Cannot find participant",5, null);
+        }
+
+        return  $this->participantrepository->rollbackDnf($participant_uid, $checkpoint_uid);
+    }
+
     public function stampRandonneur(?string $track_uid, ?string $participant_uid, ?string $checkpoint_uid): bool
     {
 
@@ -135,9 +152,9 @@ class VolonteerService extends ServiceAbstract
         }
 
         // kolla att kontrollern har öppnat
-        if(date('Y-m-d H:i:s') < $checkpoint->getOpens()){
-            throw new BrevetException("Checkpoint opens:  " . date("Y-m-d H:i:s", strtotime($checkpoint->getOpens())) , 1, null);
-        }
+//        if(date('Y-m-d H:i:s') < $checkpoint->getOpens()){
+//            throw new BrevetException("Checkpoint opens:  " . date("Y-m-d H:i:s", strtotime($checkpoint->getOpens())) , 1, null);
+//        }
 //        // kolla att kontrollen har stängt
 //        if(date('Y-m-d H:i:s') > $checkpoint->getClosing()){
 //            throw new BrevetException("Kontrollen stängde " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())) , 1, null);
@@ -148,9 +165,9 @@ class VolonteerService extends ServiceAbstract
 
         if($isStart == true){
             if(date('Y-m-d H:i:s') < $track->getStartDateTime()){
-                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime());
+                $this->participantrepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime());
             } else if(date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {
-                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime());
+                $this->participantrepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime());
             } else {
                 throw new BrevetException("Error on checkin");
             }
@@ -163,13 +180,13 @@ class VolonteerService extends ServiceAbstract
             if(date('Y-m-d H:i:s') < $track->getStartDateTime()){
                 throw new BrevetException("Can not finish before the start of the race " . date("Y-m-d H:i:s", strtotime($track->getStartDateTime())), 1, null);
             }
-            $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid);
+            $this->participantrepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid);
             $participant->setDnf(false);
             $participant->setDns(false);
             $participant->setFinished(true);
             // beräkna tiden från första incheckning till nu och sätt tiden
             $participant->setTime(Util::secToHR(Util::calculateSecondsBetween($track->getStartDateTime())));
-            $this->participantRepository->updateParticipant($participant);
+            $this->participantrepository->updateParticipant($participant);
             return true;
         }
 

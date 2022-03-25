@@ -118,6 +118,31 @@ export class VolonteerComponentService {
   valdkontroll(valdkontroll: string) {
    this.valtkontrollSubject.next(valdkontroll);
   }
+
+  async checkin(product: any) {
+    await this.volonteerService.checkinParticipant(product).then((status) => {
+    this.valdkontroll(product.checkpointUid);
+  });
+  }
+
+  async rollbackCheckin(product: any) {
+    await this.volonteerService.rollbackParticipantCheckin(product).then((status) => {
+      this.valdkontroll(product.checkpointUid);
+    });
+  }
+
+  async rollbackDnf(product: any) {
+    await this.volonteerService.rollbackDnf(product).then((status) => {
+      console.log("ROLLBACK");
+      this.valdkontroll(product.checkpointUid);
+    });
+  }
+
+  async setDnf(product: any) {
+    await this.volonteerService.setDnf(product).then((status) => {
+      this.valdkontroll(product.checkpointUid);
+    });
+  }
 }
 
 

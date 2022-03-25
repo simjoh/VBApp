@@ -1,0 +1,10 @@
+<ng-container *ngIf="$eventItems | async as events">
+<p-dropdown
+  styleClass="col-12" pTooltip="Välj ett event"
+  tooltipPosition="left" tooltip="Välj ett event"
+  [options]="events" [(ngModel)]="choosenEvent"
+  (ngModelChange)="valtEvent()" placeholder="Välj event"
+  [virtualScroll]="true" [itemSize]="31"
+  [filter]="false">
+</p-dropdown>
+</ng-container>
