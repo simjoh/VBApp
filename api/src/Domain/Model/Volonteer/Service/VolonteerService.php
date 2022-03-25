@@ -34,6 +34,16 @@ class VolonteerService extends ServiceAbstract
         $this->trackrepository = $trackRepository;
     }
 
+    public function getCheckpointsForTrack(string $track_uid,  string $currentUserUID): array{
+        $permissions = $this->getPermissions($currentUserUID);
+
+
+
+        return $this->checkpointService->checkpointForTrack($track_uid);
+
+
+    }
+
 
     public function getRandoneursForCheckpoint(string $track_uid, string $checkpoint_uid, string $currentUserUID): array{
         $permissions = $this->getPermissions($currentUserUID);

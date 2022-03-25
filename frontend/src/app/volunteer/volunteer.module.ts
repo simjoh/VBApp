@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { VolunteerRoutingModule } from './volunteer-routing.module';
 import { VolunteerComponent } from './volunteer/volunteer.component';
+import {SharedModule} from "../shared/shared.module";
 
 
 @NgModule({
@@ -11,7 +12,9 @@ import { VolunteerComponent } from './volunteer/volunteer.component';
   ],
   imports: [
     CommonModule,
+    SharedModule,
     VolunteerRoutingModule
+
   ]
 })
 export class VolunteerModule { }

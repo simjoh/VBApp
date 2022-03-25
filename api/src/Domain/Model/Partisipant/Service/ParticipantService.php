@@ -162,7 +162,7 @@ class ParticipantService extends ServiceAbstract
             $competitor = $this->competitorService->getCompetitorByNameAndBirthDate($record[2],$record[1], $record[12]);
             if(!isset($competitor)){
                 // createOne
-               $competitor =  $this->competitorService->createCompetitor($record[2],$record[1] , "", $record[12]);
+               $competitor =  $this->competitorService->createCompetitor($record[1],$record[2] , "", $record[12]);
                 if(isset($competitor)){
                  //  $compInfo = $this->competitorInfoRepository->getCompetitorInfoByCompetitorUid($competitor->getId());
                    // if(!isset($compInfo)){

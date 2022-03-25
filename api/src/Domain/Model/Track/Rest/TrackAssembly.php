@@ -41,9 +41,10 @@ class TrackAssembly
         $trackRepresentation->setDescriptions($track->getDescription());
         $trackRepresentation->setLinktotrack($track->getLink());
         $trackRepresentation->setTitle($track->getTitle());
-        $trackRepresentation->setHeightdifference($track->getHeightdifference());
+        $trackRepresentation->setHeightdifference("");
         $trackRepresentation->setDistance($track->getDistance());
         $trackRepresentation->setEventUid($track->getEventUid());
+        $trackRepresentation->setStartDateTime($track->getStartDateTime());
         if(!empty($track->getCheckpoints())){
             $trackRepresentation->setCheckpoints($this->checkpointService->checkpointsFor($track->getCheckpoints(),$curruentUserUid));
         }

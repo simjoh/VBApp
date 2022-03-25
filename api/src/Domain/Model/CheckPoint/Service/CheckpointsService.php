@@ -45,6 +45,7 @@ class CheckpointsService extends ServiceAbstract
         $checkpointUIDS = $this->checkpointRepository->checkpointUidsForTrack($track_uid);
 
         $checkpoints = $this->checkpointRepository->checkpointsFor($checkpointUIDS);
+
         return $this->toRepresentations($checkpoints);
     }
 

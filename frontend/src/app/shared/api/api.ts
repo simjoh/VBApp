@@ -17,6 +17,21 @@ export interface Site{
   link?: Link;
 }
 
+export interface Event {
+  event_uid: string;
+  title: string;
+  startdate: string;
+  enddate: string;
+  active: boolean;
+  canceled: boolean;
+  completed: boolean;
+  description: string;
+  links: [];
+}
+
+
+
+
 export interface User {
   user_uid: string;
   givenname: string;
@@ -93,3 +108,19 @@ export interface CheckpointRepresentation {
   closing: any;
   link: Link;
 }
+
+export interface ParticipantToPassCheckpointRepresentation {
+  trackUid: string;
+  participantUid: string
+  siteUid: string;
+  checkpointUid: string
+  adress: string;
+  startNumber: string
+  givenName: string;
+  familyName: string;
+  passed: boolean;
+  passededDateTime?: string;
+  dnf: boolean;
+  link: [];
+}
+

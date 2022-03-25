@@ -22,6 +22,15 @@ class VolonteerAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    public function getCheckpoints(ServerRequestInterface $request, ResponseInterface $response){
+        //Hämta den checkpoints för volontär
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('trackUid');
+        $response->getBody()->write(json_encode( $this->volonteerService->getCheckpointsForTrack($track_uid,$request->getAttribute('currentuserUid'))));
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
     public function getRandonneurs(ServerRequestInterface $request, ResponseInterface $response){
 
         $routeContext = RouteContext::fromRequest($request);

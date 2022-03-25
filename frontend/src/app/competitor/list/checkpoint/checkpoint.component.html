@@ -1,4 +1,3 @@
-
 <p-card  styleClass="p-card-shadow">
   <ng-template pTemplate="header">
     <p-image class="mt-8 ml-2" src="assets/midnigthsun.PNG" alt="Image" width="60" height="60" [preview]="true"></p-image>
@@ -10,7 +9,7 @@
     <p-tag *ngIf="checkedin$ | async" styleClass="mr-2" icon="pi pi-check" severity="success" value="CHECKED IN"></p-tag>
     <p-tag *ngIf="isdnf$ | async" severity="danger" styleClass="mr-2" value="DNF"></p-tag>
     <p-tag styleClass="mr-2" *ngIf="!checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing" severity="danger" value="STÄNGD"></p-tag>
-    <p-tag styleClass="mr-2" *ngIf="checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing" styleClass="mr-2" value="ÖPPEN"></p-tag>
+    <p-tag  *ngIf="checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing" styleClass="mr-2" value="ÖPPEN"></p-tag>
     <br>
     <strong>Distans: </strong>{{distance}} Km <br>
     <strong>Distans till nästa kontroll: </strong>{{distancetonext}} Km
@@ -33,9 +32,6 @@
     <div  class="col-12 sm:col-12 lg:col-12"> <button pButton (click)="setdnf()"  pRipple type="button" label="{{dnfknapptext}}" class="p-button-outlined p-button-danger container-fluid"></button></div>
   </ng-template>
 </p-card>
-
-
-
 
 
 <p-confirmDialog [breakpoints]="{'960px': '75vw', '640px': '100vw'}" [style]="{width: '50vw'}">

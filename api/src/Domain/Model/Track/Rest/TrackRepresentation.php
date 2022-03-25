@@ -16,6 +16,9 @@ class TrackRepresentation implements JsonSerializable
     private string $distance;
     private String $track_uid;
     private string $event_uid;
+    private string $start_date_time;
+
+
 
 
 
@@ -176,5 +179,21 @@ class TrackRepresentation implements JsonSerializable
     public function setDistance(string $distance): void
     {
         $this->distance = $distance;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStartDateTime(): string
+    {
+        return $this->start_date_time;
+    }
+
+    /**
+     * @param string $start_date_time
+     */
+    public function setStartDateTime(string $start_date_time): void
+    {
+        $this->start_date_time = $start_date_time;
     }
 }

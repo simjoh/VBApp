@@ -13,6 +13,9 @@ class ParticipantToPassCheckpoint
     private string $given_name;
     private string $family_name;
     private bool $passed;
+    private bool $dnf;
+
+
     private $passeded_date_time = null;
 
     /**
@@ -165,6 +168,22 @@ class ParticipantToPassCheckpoint
     public function getPassededDateTime()
     {
         return $this->passeded_date_time;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDnf(): bool
+    {
+        return $this->dnf;
+    }
+
+    /**
+     * @param bool $dnf
+     */
+    public function setDnf(bool $dnf): void
+    {
+        $this->dnf = $dnf;
     }
 
     /**

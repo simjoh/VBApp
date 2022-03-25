@@ -49,8 +49,9 @@ class ParticipantToPassCheckpointAssembly
         $participantToPassCheckpointRepresentation->setGivenName($participantToPassCheckpoint->getGivenName());
         $participantToPassCheckpointRepresentation->setFamilyName($participantToPassCheckpoint->getFamilyName());
         $participantToPassCheckpointRepresentation->setPassed($participantToPassCheckpoint->isPassed());
+        $participantToPassCheckpointRepresentation->setStartNumber($participantToPassCheckpoint->getStartnumber());
         $participantToPassCheckpointRepresentation->setPassededDateTime($participantToPassCheckpoint->getPassededDateTime() == null ? "" : $participantToPassCheckpoint->getPassededDateTime());
-        $participantToPassCheckpointRepresentation->setDnf(false);
+        $participantToPassCheckpointRepresentation->setDnf($participantToPassCheckpoint->isDnf());
 
         // bygg på med lite länkar
         $linkArray = array();
@@ -61,9 +62,14 @@ class ParticipantToPassCheckpointAssembly
                 } else {
                     array_push($linkArray, new Link("relation.volonteer.rollbackstamp", 'PUT', 'api/volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/rollback'));
                 }
-                     array_push($linkArray, new Link("relation.volonteer.setdnf", 'PUT', 'api/volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/dnf'));
 
-                     array_push($linkArray, new Link("self", 'GET', 'api/participant/' . $participantToPassCheckpoint->getParticipantUid()));
+        if(!$participantToPassCheckpoint->isPassed()){
+            array_push($linkArray, new Link("relation.volonteer.setdnf", 'PUT', 'api/volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/dnf'));
+        } else {
+            array_push($linkArray, new Link("relation.volonteer.rollbackdnf", 'PUT', 'api/volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/rollbackdnf'));
+        }
+
+        array_push($linkArray, new Link("self", 'GET', 'api/participant/' . $participantToPassCheckpoint->getParticipantUid()));
                // break;
         //    }
 //            if($site->hasReadPermission()){

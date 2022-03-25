@@ -42,6 +42,7 @@ class TrackAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $event_uid = $route->getArgument('eventUid');
+
         $response->getBody()->write((string)json_encode( $this->trackService->tracksForEvent($currentuserUid, $event_uid)), JSON_UNESCAPED_SLASHES);
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }

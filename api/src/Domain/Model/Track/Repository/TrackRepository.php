@@ -81,6 +81,23 @@ class TrackRepository extends BaseRepository
         return array();
     }
 
+    public function tracksbyEvent(string $event_uid)
+    {
+
+        try {
+            $statement = $this->connection->prepare($this->sqls('tracksByEvent'));
+            $statement->bindParam(':event_uid', $event_uid);
+            $statement->execute();
+            $tracks = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Track\Track::class,  null);
+            return $tracks;
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return array();
+    }
+
     public function getTrackByUid(string $trackUid): ?Track
     {
         try {
@@ -271,6 +288,7 @@ class TrackRepository extends BaseRepository
     {
         $tracksqls['allTracks'] = 'select * from track t;';
         $tracksqls['trackByUid'] = 'select * from track where track_uid=:track_uid;';
+        $tracksqls['tracksByEvent'] = 'select * from track where event_uid=:event_uid;';
         $tracksqls['getCheckpoints'] = 'select checkpoint_uid  from track_checkpoint where track_uid=:track_uid;';
         $tracksqls['updateTrack'] = "UPDATE track SET  title=:title, link=:link , heightdifference=:heightdifference, event_uid=:event_uid , description=:description, distance=:distance  WHERE track_uid=:track_uid";
         $tracksqls['updateTrackCheckpoint'] = 'UPDATE track_checkpoint SET checkpoint_uid=:checkpoint_uid where track_uid=:track_uid';

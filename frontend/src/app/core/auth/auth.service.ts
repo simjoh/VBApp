@@ -42,7 +42,6 @@ export class AuthService {
         this.httpClient.post<any>(this.backendUrl() + "login", this.createPayload(model))
           .pipe(
             map(response => {
-              console.log(response);
               localStorage.setItem('loggedInUser', JSON.stringify(response.token));
               this.authenticatedService.changeStatus(true);
               return response;
