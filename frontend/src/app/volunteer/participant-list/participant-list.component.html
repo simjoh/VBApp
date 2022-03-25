@@ -1,8 +1,15 @@
 
   <div class="col-12">
-    <p-table  *ngIf="randonneurs | async as randonneurs" sortMode="multiple" responsiveLayout="stack" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [rowsPerPageOptions]="[10,25,50,75,100,125]" [value]="randonneurs.randonnerurs" styleClass="p-datatable-sm p-datatable-gridlines" >
+    <p-table   #dt1  [globalFilterFields]="['startNumber', 'familyName', 'givenName', 'passed']"  *ngIf="randonneurs | async as randonneurs" sortMode="multiple" responsiveLayout="stack" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [rowsPerPageOptions]="[10,25,50,75,100,125]" [value]="randonneurs.randonnerurs" styleClass="p-datatable-sm p-datatable-gridlines" >
       <ng-template pTemplate="caption">
-        <div  class="col-12 sm:col-12"><strong  pTooltip="Vald kontroll" tooltipPosition="top">{{randonneurs.choosenControl}}</strong></div>
+        <div  class="col-12 sm:col-12" ><strong  pTooltip="Vald kontroll" tooltipPosition="top">{{randonneurs.choosenControl}}</strong>
+
+          <div class="p-input-icon-left ml-auto float-lg-right">
+            <i class="pi pi-search"></i>
+            <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Sök deltagare" />
+          </div>
+        </div>
+
         <div class="sm:col-12">
           <p-badge class="lg:hidden" pTooltip="Antal som passerat vald kontroll: {{randonneurs.choosenControl}}" tooltipPosition="top" [value]="randonneurs.statistics.countpassed" severity="success" styleClass="ml-2"></p-badge>
           <p-badge class="lg:hidden" pTooltip="Antal som brutit" tooltipPosition="top" [value]="randonneurs.statistics.dnf" severity="danger" styleClass="ml-2"></p-badge>
@@ -19,8 +26,16 @@
           <th class="w-2" pSortableColumn="startNumber">Startnumber <p-sortIcon field="startNumber"></p-sortIcon></th>
           <th class="w-3" pSortableColumn="givenName">Given Name <p-sortIcon field="givenName"></p-sortIcon></th>
           <th class="w-3" pSortableColumn="familyName">Family Name <p-sortIcon field="familyName"></p-sortIcon></th>
-          <th class="lg:w-2">Checka in</th>
-          <th class="lg:w-2">DNF</th>
+          <th  class="lg:w-2">
+            <p-columnFilter type="boolean" field="passed"></p-columnFilter>
+          </th>
+          <th class="lg:w-2">
+            <span>
+
+            <p-columnFilter [placeholder]="DNF"  type="boolean" field="dnf"></p-columnFilter>
+            </span>
+
+            </th>
         </tr>
       </ng-template>
       <ng-template *ngIf="randonneurs.randonnerurs.length > 0"   pTemplate="body" let-product>

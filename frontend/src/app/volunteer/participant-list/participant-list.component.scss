@@ -1,0 +1,26 @@
+
+.passed {
+  font-weight: 700;
+  background-color: #66BB6A !important;
+}
+
+.dnf {
+  font-weight: 700;
+  background-color: #FF5252 !important;
+}
+
+.dns {
+  font-weight: 700;
+  color: #66BB6A;
+}
+
+:host ::ng-deep .row-accessories {
+  background-color: rgba(0,0,0,.15) !important;
+}
+
+
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%
+}
