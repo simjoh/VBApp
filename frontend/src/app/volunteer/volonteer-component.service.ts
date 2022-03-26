@@ -133,7 +133,6 @@ export class VolonteerComponentService {
 
   async rollbackDnf(product: any) {
     await this.volonteerService.rollbackDnf(product).then((status) => {
-      console.log("ROLLBACK");
       this.valdkontroll(product.checkpointUid);
     });
   }

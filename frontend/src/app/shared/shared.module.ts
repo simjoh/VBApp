@@ -40,6 +40,8 @@ import {ListboxModule} from 'primeng/listbox';
 import {BadgeModule} from "primeng/badge";
 import {KnobModule} from "primeng/knob";
 import {ConfirmPopupModule} from 'primeng/confirmpopup';
+import {ToastModule} from 'primeng/toast';
+import { ToastComponent } from './components/toast/toast.component';
 
 @NgModule({
     declarations: [
@@ -50,6 +52,7 @@ import {ConfirmPopupModule} from 'primeng/confirmpopup';
         CloseOrOpenPipe,
         DistanceKmPipe,
         DatetimeBetweenPipe,
+        ToastComponent,
     ],
   entryComponents: [],
   imports: [
@@ -86,11 +89,12 @@ import {ConfirmPopupModule} from 'primeng/confirmpopup';
     BadgeModule,
     ListboxModule,
     ConfirmPopupModule,
+    ToastModule,
     FormsModule, ReactiveFormsModule
   ],
-  exports: [CommonModule,ConfirmPopupModule,BadgeModule,KnobModule,ListboxModule,PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
+  exports: [CommonModule, ToastModule, ConfirmPopupModule, BadgeModule, KnobModule, ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
     LogoComponent, DatePipe, NgbCollapseModule, BrowserAnimationsModule, ProgressSpinnerModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
-    ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe],
+    ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent],
   providers: [DatePipe]
 })
 export class SharedModule { }

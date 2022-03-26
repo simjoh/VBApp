@@ -6,6 +6,7 @@ import {map, mergeMap, shareReplay, take, tap} from "rxjs/operators";
 import {HttpClient} from "@angular/common/http";
 import {LinkService} from "../core/link.service";
 import {HttpMethod} from "../core/HttpMethod";
+import {MessageService} from "primeng/api";
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class CompetitorService {
 
 
 
-  constructor(private httpClient: HttpClient, private linkService: LinkService) { }
+  constructor(private httpClient: HttpClient, private linkService: LinkService, private messageService: MessageService) { }
 
   public getCheckpoints(startnumber: number, trackuid: string, id: string): Observable<Array<RandonneurCheckPointRepresentation>>{
     const path = "randonneur/" + id + "/track/" + trackuid + "/startnumber/" + startnumber;
@@ -36,7 +37,9 @@ export class CompetitorService {
       map((site: boolean) => {
         return site;
       }),
-      tap(event =>   console.log("Stamped competitor on checkpoint", event))
+      tap(event =>  {
+        this.addMessage('Checkin ok on checkpoint ' + s.checkpoint.site.adress,'success','Success');
+      })
     ).toPromise();
   }
 
@@ -47,7 +50,9 @@ export class CompetitorService {
       map((event: boolean) => {
         return event;
       }),
-      tap(event =>   console.log(event))
+      tap(event =>   {
+        this.addMessage('Rollback checkin succeed','success','Success');
+      })
     ).toPromise()
   }
 
@@ -58,7 +63,9 @@ export class CompetitorService {
       map((event: boolean) => {
         return event;
       }),
-      tap(event =>   console.log(event))
+      tap(event =>   {
+        this.addMessage('Success set DNF','success','Success');
+      })
     ).toPromise()
   }
 
@@ -68,7 +75,13 @@ export class CompetitorService {
       map((event: boolean) => {
         return event;
       }),
-      tap(event =>   console.log(event))
+      tap(event =>  {
+        this.addMessage('Success rollback DNF','success','Success');
+      })
     ).toPromise();
+  }
+
+  private addMessage(message: string, servity: string, summary: string){
+    this.messageService.add({key: 'tc', severity:servity, summary: summary, detail: message});
   }
 }

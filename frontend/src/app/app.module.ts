@@ -29,6 +29,7 @@ import {CardModule} from "primeng/card";
 import {TokenHeaderInterceptor} from "./core/interceptors/token-header.interceptor";
 import {FeedbackInterceptor} from "./core/interceptors/feedback.interceptor";
 import {TrackInfoComponent} from "./competitor/track-info/track-info.component";
+import {MessageService} from "primeng/api";
 
 @NgModule({
   declarations: [
@@ -62,7 +63,7 @@ import {TrackInfoComponent} from "./competitor/track-info/track-info.component";
 
   ],
   exports: [CardModule,NgbModule],
-  providers: [
+  providers: [MessageService,
     {
     provide: HTTP_INTERCEPTORS,
     useClass: AuthInterceptor,

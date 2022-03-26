@@ -5,9 +5,8 @@ import {Observable} from "rxjs";
 import {CheckpointRepresentation, ParticipantToPassCheckpointRepresentation, RandonneurCheckPointRepresentation} from "../shared/api/api";
 import {environment} from "../../environments/environment";
 import {map, shareReplay, take, tap} from "rxjs/operators";
-import {TrackService} from "../competitor/track.service";
-import {EventService} from "../admin/event-admin/event.service";
 import {HttpMethod} from "../core/HttpMethod";
+import {MessageService} from "primeng/api";
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +14,7 @@ import {HttpMethod} from "../core/HttpMethod";
 export class VolonteerService {
 
   constructor(private httpClient: HttpClient,
-              private linkService: LinkService) { }
+              private linkService: LinkService, private messageService: MessageService) { }
 
 
   public getCheckpoints( trackuid: string, checkpoint_uid: string): Observable<Array<ParticipantToPassCheckpointRepresentation>>{
@@ -53,7 +52,9 @@ export class VolonteerService {
       map((site: boolean) => {
         return site;
       }),
-      tap(event =>   console.log("Stamped competitor on checkpoint", event))
+      tap(event =>  {
+        this.addMessage('Checkin ok on checkpoint ' + product.adress,'success','Success')
+      })
     ).toPromise();
 
   }
@@ -64,7 +65,9 @@ export class VolonteerService {
       map((site: boolean) => {
         return site;
       }),
-      tap(event =>   console.log("rollback checkin on checkpoint", event))
+      tap(event =>   {
+        this.addMessage('Rollback checkin succeed','success','Success');
+      })
     ).toPromise();
   }
 
@@ -74,7 +77,9 @@ export class VolonteerService {
       map((site: boolean) => {
         return site;
       }),
-      tap(event =>   console.log("Stamped competitor on checkpoint", event))
+      tap(event =>   {
+        this.addMessage('Rollback DNF succeed','success','Success');
+      })
     ).toPromise();
   }
 
@@ -84,7 +89,14 @@ export class VolonteerService {
       map((site: boolean) => {
         return site;
       }),
-      tap(event =>   console.log("Stamped competitor on checkpoint", event))
+      tap(event =>  {
+        this.addMessage('Set participant DNF succeed','success','Success');
+      })
     ).toPromise();
+  }
+
+
+  private addMessage(message: string, servity: string, summary: string){
+    this.messageService.add({key: 'tc', severity:servity, summary: summary, detail: message});
   }
 }
