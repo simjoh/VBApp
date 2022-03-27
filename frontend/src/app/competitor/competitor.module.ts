@@ -21,6 +21,6 @@ import {ListModule} from "./list/list.module";
     CoreModule,
     CompetitorRoutingModule,
   ],
-  exports: [MapComponent,     TrackInfoComponent]
+  exports: [MapComponent, TrackInfoComponent]
 })
 export class CompetitorModule { }

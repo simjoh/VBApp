@@ -15,6 +15,8 @@ import {TrackInfoComponent} from "../track-info/track-info.component";
     SharedModule,
     CompetitorModule,
   ],
-  exports:[]
+    exports: [
+        ListComponent
+    ]
 })
 export class ListModule { }

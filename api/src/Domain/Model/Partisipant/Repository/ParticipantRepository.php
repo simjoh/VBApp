@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Domain\Model\Partisipant\Repository;
+use App\common\Exceptions\BrevetException;
 use App\common\Repository\BaseRepository;
 use App\Domain\Model\Partisipant\Participant;
 use Exception;
@@ -80,7 +81,7 @@ class ParticipantRepository extends BaseRepository
 
             if($statement->rowCount() > 1){
                 // Fixa bätter felhantering
-                throw new Exception();
+                throw new BrevetException("Error fetching participant", 1, null);
             }
             if(!empty($event)){
                 return $event[0];
@@ -88,7 +89,8 @@ class ParticipantRepository extends BaseRepository
         }
         catch(PDOException $e)
         {
-            echo "Error: " . $e->getMessage();
+            throw new BrevetException("Error fetching participant", 1, null);
+          //  echo "Error: " . $e->getMessage();
         }
 
         return null;
@@ -106,7 +108,7 @@ class ParticipantRepository extends BaseRepository
 
             if($statement->rowCount() > 1){
                 // Fixa bätter felhantering
-                throw new Exception();
+                throw new BrevetException("Error fetching participants", 1, null);
             }
             if(!empty($event)){
                 return $event[0];
@@ -114,7 +116,8 @@ class ParticipantRepository extends BaseRepository
         }
         catch(PDOException $e)
         {
-            echo "Error: " . $e->getMessage();
+            throw new BrevetException("Error fetching participant", 1, null);
+           // echo "Error: " . $e->getMessage();
         }
 
         return null;
@@ -135,9 +138,11 @@ class ParticipantRepository extends BaseRepository
         }
         catch(PDOException $e)
         {
-            echo "Error: " . $e->getMessage();
+            throw new BrevetException("Error fetching participants", 1, null);
+          //  echo "Error: " . $e->getMessage();
         }
-        return array();
+
+
 
     }
 
@@ -158,9 +163,9 @@ class ParticipantRepository extends BaseRepository
         }
         catch(PDOException $e)
         {
-            echo "Error: " . $e->getMessage();
+            throw new BrevetException("Error set dns for participant", 1, null);
+
         }
-        return array();
 
     }
 
@@ -181,9 +186,9 @@ class ParticipantRepository extends BaseRepository
         }
         catch(PDOException $e)
         {
-            echo "Error: " . $e->getMessage();
+            throw new BrevetException("Error set dnf for participant", 1, null);
         }
-        return array();
+
 
     }
 

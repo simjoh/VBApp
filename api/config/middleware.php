@@ -43,9 +43,13 @@ return function (App $app) {
 //
 //        $payload = ['error' => $exception->getMessage()];
 
+        $error = new \App\common\Exceptions\BrevetExceptionrepresentation();
+        $error->setMessage($exception->getMessage());
+        $error->setCode($exception->getCode());
+
         $response = $app->getResponseFactory()->createResponse();
         $response->getBody()->write(
-            json_encode($exception->getMessage(), JSON_UNESCAPED_UNICODE)
+            json_encode($error, JSON_UNESCAPED_UNICODE)
         );
 
         return $response->withStatus(500);

@@ -18,7 +18,7 @@ export class FeedbackInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError(err => {
         if (err instanceof HttpErrorResponse) {
-          this.messageService.add({key: 'tc', severity:'error', summary: 'Error', detail: err.message});
+          this.messageService.add({key: 'tc', severity:'error', summary: 'Error', detail: this.felmeddelandeFor(err)});
         }
         return observableThrowError(err);
       })) as Observable<any>;

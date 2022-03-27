@@ -18,7 +18,7 @@ const routes: Routes = [{
     pathMatch: 'full'
   },
   { path: 'brevet-list', component: ListComponent,  canActivate: [AuthenticatedGuard, HasAccessToCompetitorFunctionsGuard] },
-  { path: 'brevet-maps', component: MapComponent,  canActivate: [AuthenticatedGuard, HasAccessToCompetitorFunctionsGuard] },
+  // { path: 'brevet-maps', component: MapComponent,  canActivate: [AuthenticatedGuard, HasAccessToCompetitorFunctionsGuard] },
 ];
 
 @NgModule({
