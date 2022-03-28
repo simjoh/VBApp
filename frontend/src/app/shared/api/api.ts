@@ -124,3 +124,15 @@ export interface ParticipantToPassCheckpointRepresentation {
   link: [];
 }
 
+export interface TrackRepresentation {
+  title: string;
+  descriptions: string;
+  checkpoints: [];
+  linktotrack: string;
+  heightdifference: string;
+  distance: string;
+  track_uid: string;
+  event_uid: string;
+  start_date_time: string;
+}
+

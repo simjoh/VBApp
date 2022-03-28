@@ -115,7 +115,7 @@ class TrackService extends ServiceAbstract
     public function buildFromCsv(?string $filename, string $uploadDir, string $getAttribute)
     {
         // Lös in filen som laddades upp
-        $csv = Reader::createFromPath($this->settings['upload_directory'] . 'banor2022.csv', 'r');
+        $csv = Reader::createFromPath($this->settings['upload_directory'] . $filename, 'r');
         $csv->setDelimiter(";");
         $csv->skipEmptyRecords();
         $csv->skipInputBOM();

@@ -42,6 +42,7 @@ import {KnobModule} from "primeng/knob";
 import {ConfirmPopupModule} from 'primeng/confirmpopup';
 import {ToastModule} from 'primeng/toast';
 import { ToastComponent } from './components/toast/toast.component';
+import {BrowserModule} from "@angular/platform-browser";
 
 @NgModule({
     declarations: [
@@ -90,9 +91,10 @@ import { ToastComponent } from './components/toast/toast.component';
     ListboxModule,
     ConfirmPopupModule,
     ToastModule,
+    BrowserModule,
     FormsModule, ReactiveFormsModule
   ],
-  exports: [CommonModule, ToastModule, ConfirmPopupModule, BadgeModule, KnobModule, ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
+  exports: [CommonModule, BrowserModule,ToastModule, ConfirmPopupModule, BadgeModule, KnobModule, ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
     LogoComponent, DatePipe, NgbCollapseModule, BrowserAnimationsModule, ProgressSpinnerModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
     ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent],
   providers: [DatePipe]

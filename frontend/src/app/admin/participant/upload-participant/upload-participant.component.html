@@ -1,0 +1,7 @@
+<h3 class="mt-4">Här kan du ladda upp deltagare med en csv fil</h3>
+<p-fileUpload
+  chooseLabel="Välj csv"
+  uploadLabel="Ladda upp csv"
+  [disabled]="trackuid$ | async" name="myfile[]"
+  [customUpload]="true" (uploadHandler)="myUploader($event)">
+</p-fileUpload>

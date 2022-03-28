@@ -13,6 +13,7 @@ import {CheckboxModule} from "primeng/checkbox";
 import {UserInfoPopoverComponent} from "./user-admin/user-info-popover/user-info-popover.component";
 import {SiteAdminModule} from "./site-admin/site-admin.module";
 import {EventAdminModule} from "./event-admin/event-admin.module";
+import { AdminStartComponent } from './admin-start/admin-start.component';
 
 
 @NgModule({
@@ -23,6 +24,7 @@ import {EventAdminModule} from "./event-admin/event-admin.module";
     UserListComponent,
     CreateUserDialogComponent,
     UserInfoPopoverComponent,
+    AdminStartComponent,
   ],
   imports: [
     CommonModule,
@@ -33,6 +35,6 @@ import {EventAdminModule} from "./event-admin/event-admin.module";
     EventAdminModule,
     AdminRoutingModule,
   ],
-    exports: [SharedModule, AdminComponent]
+    exports: [AdminComponent]
 })
 export class AdminModule { }

@@ -87,7 +87,7 @@ class participantAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('trackUid');
-        $filename = "sss";
+
        //$track_uid = "c8578cc8-249d-49cc-9a5e-3dd515999534";
 
         //edfe915c-8928-439c-9ef7-f548645e9918

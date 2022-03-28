@@ -55,7 +55,7 @@ return function (App $app) {
         $app->post('/track', \App\Action\Track\TrackAction::class . ':createTrack');
         $app->get('/tracks/event/{eventUid}', \App\Action\Track\TrackAction::class . ':tracksForEvent');
 
-        $app->post('/buidlEventAndTrackFromCsv/upload', \App\Action\Track\TrackAction::class  . ':buildfromCsv');
+        $app->post('/buildlEventAndTrackFromCsv/upload', \App\Action\Track\TrackAction::class  . ':buildfromCsv');
 
         // event
         $app->get('/events', \App\Action\Event\EventAction::class . ':allEvents');

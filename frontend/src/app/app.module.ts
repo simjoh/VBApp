@@ -43,7 +43,6 @@ import {MessageService} from "primeng/api";
     KontrollerCombinerComponent,
   ],
   imports: [
-    BrowserModule,
     BrowserAnimationsModule,
     ButtonModule,
     CoreModule,
@@ -62,7 +61,7 @@ import {MessageService} from "primeng/api";
 
 
   ],
-  exports: [CardModule,NgbModule],
+  exports: [CardModule,NgbModule, SharedModule],
   providers: [MessageService,
     {
     provide: HTTP_INTERCEPTORS,

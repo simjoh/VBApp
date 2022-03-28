@@ -5,6 +5,7 @@ namespace App\Action\Track;
 use App\Domain\Model\Track\Rest\TrackRepresentation;
 use App\Domain\Model\Track\Rest\TrackRepresentationTransformer;
 use App\Domain\Model\Track\Service\TrackService;
+use Exception;
 use Karriere\JsonDecoder\JsonDecoder;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -72,11 +73,13 @@ class TrackAction
         $uploadedFiles = $request->getUploadedFiles();
 
         foreach ($uploadedFiles as $uploadedFile) {
-//            if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+         //   if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
             $filename = $this->moveUploadedFile($uploadDir, $uploadedFile);
-//            }
+        //    }
         }
-        $filename = 'banorExempel.csv';
+
+//        throw new Exception();
+      //  $filename = 'banorExempel.csv';
         $this->trackService->buildFromCsv($filename, $uploadDir, $request->getAttribute('currentuserUid'));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
