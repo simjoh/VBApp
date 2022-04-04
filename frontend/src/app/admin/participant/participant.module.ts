@@ -8,17 +8,26 @@ import {TabMenuModule} from "primeng/tabmenu";
 import {FileUploadModule} from "primeng/fileupload";
 import {SharedModule} from "../../shared/shared.module";
 import {CommonModule} from "@angular/common";
+import {InputTextModule} from "primeng/inputtext";
+import {AppModule} from "../../app.module";
+import {FormsModule} from "@angular/forms";
+import { TrackSelectorComponent } from './track-selector/track-selector.component';
+import {DropdownModule} from "primeng/dropdown";
 
 @NgModule({
   declarations: [
     ParticipantComponent,
-    UploadParticipantComponent
+    UploadParticipantComponent,
+    TrackSelectorComponent
   ],
   imports: [
     ParticipantRoutingModule,
     TabMenuModule,
     FileUploadModule,
-    CommonModule
+    CommonModule,
+    InputTextModule,
+    FormsModule,
+    DropdownModule,
   ],
   exports: []
 })

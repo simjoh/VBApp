@@ -1,0 +1,11 @@
+<ng-container *ngIf="$tracks | async as tracks">
+  <p-dropdown
+    pTooltip="Välj en bana som din kontroll finns utefter"
+    tooltipPosition="left" styleClass="col-12"
+    [options]="tracks" [(ngModel)]="choosentrack"
+    (ngModelChange)="valdBana()"
+    placeholder="Välj bana"
+    [virtualScroll]="true" [itemSize]="31"
+    [filter]="false">
+  </p-dropdown>
+  </ng-container>

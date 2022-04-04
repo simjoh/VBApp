@@ -1,7 +1,10 @@
 <h3 class="mt-4">Här kan du ladda upp deltagare med en csv fil</h3>
+<!--<input type="text" (ngModelChange)="updateTtrack()" pInputText [(ngModel)]="trackuid"/>-->
+
+<brevet-track-selector (open)="updateTtrack($event)"></brevet-track-selector>
 <p-fileUpload
   chooseLabel="Välj csv"
   uploadLabel="Ladda upp csv"
-  [disabled]="trackuid$ | async" name="myfile[]"
+  name="myfile[]"
   [customUpload]="true" (uploadHandler)="myUploader($event)">
 </p-fileUpload>

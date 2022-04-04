@@ -14,7 +14,7 @@ class Track
    private string $link = "";
    private string $distance;
    private array $checkpoints = [];
-   private  $start_date_time;
+   private  $start_date_time = "";
 
 
     /**

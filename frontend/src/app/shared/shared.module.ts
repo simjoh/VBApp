@@ -92,7 +92,7 @@ import {BrowserModule} from "@angular/platform-browser";
     ConfirmPopupModule,
     ToastModule,
     BrowserModule,
-    FormsModule, ReactiveFormsModule
+    FormsModule, ReactiveFormsModule,
   ],
   exports: [CommonModule, BrowserModule,ToastModule, ConfirmPopupModule, BadgeModule, KnobModule, ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
     LogoComponent, DatePipe, NgbCollapseModule, BrowserAnimationsModule, ProgressSpinnerModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,

@@ -145,9 +145,9 @@ class ParticipantService extends ServiceAbstract
         if(!isset($track)){
             throw new BrevetException("Finns ingen bana med det uidet" . $trackUid, 1, null);
         }
-
         // Lös in filen som laddades upp
-        $csv = Reader::createFromPath($this->settings['upload_directory']  . 'Deltagarlista-MSR-2022-test.csv', 'r');
+      //  $csv = Reader::createFromPath($this->settings['upload_directory']  . 'Deltagarlista-MSR-2022-test.csv', 'r');
+        $csv = Reader::createFromPath($this->settings['upload_directory']  .  $filename, 'r');
         $csv->setDelimiter(";");
         $stmt = Statement::create();
 
@@ -159,9 +159,11 @@ class ParticipantService extends ServiceAbstract
         foreach ($records as $record) {
 
             // se om det finns en sådan deltagare först
-            $competitor = $this->competitorService->getCompetitorByNameAndBirthDate($record[2],$record[1], $record[12]);
+            $competitor = $this->competitorService->getCompetitorByNameAndBirthDate($record[1],$record[2], $record[12]);
+
             if(!isset($competitor)){
                 // createOne
+
                $competitor =  $this->competitorService->createCompetitor($record[1],$record[2] , "", $record[12]);
                 if(isset($competitor)){
                  //  $compInfo = $this->competitorInfoRepository->getCompetitorInfoByCompetitorUid($competitor->getId());
