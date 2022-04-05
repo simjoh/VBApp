@@ -15,6 +15,9 @@ class Participant
     private $time;
     private bool $dns;
     private bool $dnf;
+    private bool $started;
+
+
     private ?string $brevenr = null;
     private  $register_date_time;
 
@@ -211,6 +214,22 @@ class Participant
     public function setRegisterDateTime($register_date_time): void
     {
         $this->register_date_time = $register_date_time;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isStarted(): bool
+    {
+        return $this->started;
+    }
+
+    /**
+     * @param bool $started
+     */
+    public function setStarted(bool $started): void
+    {
+        $this->started = $started;
     }
 
 

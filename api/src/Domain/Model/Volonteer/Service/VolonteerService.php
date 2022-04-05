@@ -93,6 +93,12 @@ class VolonteerService extends ServiceAbstract
             return true;
         }
 
+        $isStart = $this->checkpointService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
+        if($isStart == true){
+            $participant->setStarted(0);
+            $this->participantrepository->updateParticipant($participant);
+        }
+
         $this->participantrepository->rollbackStamp($participant_uid, $checkpoint_uid);
         return true;
     }
@@ -152,6 +158,8 @@ class VolonteerService extends ServiceAbstract
             throw new BrevetException("Cannot find participant",5, null);
         }
 
+
+
         // kolla att kontrollern har öppnat
 //        if(date('Y-m-d H:i:s') < $checkpoint->getOpens()){
 //            throw new BrevetException("Checkpoint opens:  " . date("Y-m-d H:i:s", strtotime($checkpoint->getOpens())) , 5, null);
@@ -166,14 +174,18 @@ class VolonteerService extends ServiceAbstract
 
         if($isStart == true){
             if(date('Y-m-d H:i:s') < $track->getStartDateTime()){
-                $this->participantrepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime());
+                $this->participantrepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1);
             } else if(date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {
-                $this->participantrepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime());
+                $this->participantrepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1);
             } else {
                 throw new BrevetException("Error on checkin", 1, null);
             }
+            $participant->setStarted(1);
+            $this->participantrepository->updateParticipant($participant);
             return true;
         }
+
+
 
         $isEnd = $this->checkpointService->isEndCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
         if($isEnd == true){
@@ -189,6 +201,10 @@ class VolonteerService extends ServiceAbstract
             $participant->setTime(Util::secToHR(Util::calculateSecondsBetween($track->getStartDateTime())));
             $this->participantrepository->updateParticipant($participant);
             return true;
+        }
+
+        if($participant->isStarted() == false){
+            throw new BrevetException("Du måste checka in på startkontrollen innan du kan checka in på denna", 0, null);
         }
 
         $this->participantrepository->stampOnCheckpoint($participant_uid, $checkpoint_uid);

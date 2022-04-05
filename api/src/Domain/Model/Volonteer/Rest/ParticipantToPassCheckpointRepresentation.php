@@ -16,6 +16,7 @@ class ParticipantToPassCheckpointRepresentation  implements JsonSerializable
     private string $givenName;
     private string $familyName;
     private bool $passed;
+    private bool $started;
     private ?string $passededDateTime = "";
     private bool $dnf;
     private ?array $link;
@@ -214,6 +215,22 @@ class ParticipantToPassCheckpointRepresentation  implements JsonSerializable
     public function setLink(?array $link): void
     {
         $this->link = $link;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isStarted(): bool
+    {
+        return $this->started;
+    }
+
+    /**
+     * @param bool $started
+     */
+    public function setStarted(bool $started): void
+    {
+        $this->started = $started;
     }
 
     public function jsonSerialize()

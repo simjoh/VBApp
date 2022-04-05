@@ -376,6 +376,7 @@ class ParticipantRepository extends BaseRepository
         $brevenr = intval($participantToUpdate->getBrevenr());
         $time = $participantToUpdate->getTime();
         $reg_date_time = $participantToUpdate->getRegisterDateTime();
+        $started = $participantToUpdate->isStarted();
         try {
             $stmt = $this->connection->prepare($this->sqls('updateParticipant'));
             $stmt->bindParam(':participant_uid', $participant_uid);
@@ -390,6 +391,9 @@ class ParticipantRepository extends BaseRepository
             $stmt->bindParam(':dnf', $dnf, PDO::PARAM_BOOL);
             $stmt->bindParam(':brevenr', $brevenr);
             $stmt->bindParam(':register_date_time', $reg_date_time);
+            $stmt->bindParam(':started', $started, PDO::PARAM_BOOL);
+
+
             $status = $stmt->execute();
             if($status){
                 return $participantToUpdate;
@@ -575,7 +579,7 @@ class ParticipantRepository extends BaseRepository
         return true;
     }
 
-    public function stampOnCheckpointWithTime(string $participant_uid, string $checkpoint_uid, string $datetime) : bool
+    public function stampOnCheckpointWithTime(string $participant_uid, string $checkpoint_uid, string $datetime, bool $started) : bool
     {
         try {
 
@@ -671,13 +675,13 @@ class ParticipantRepository extends BaseRepository
         $eventqls['participantonTrackWithStartnumber'] = 'select *  from participant e where e.track_uid=:track_uid and startnumber=:startnumber;';
         $eventqls['participantByTrackAndClub'] = 'select *  from participant e where e.track_uid=:track_uid and club_uid=:club_uid;';
         $eventqls['deleteParticipant'] = 'delete from participant  where participant_uid=:participant_uid;';
-        $eventqls['updateParticipant']  = "UPDATE participant SET  track_uid=:track_uid , competitor_uid=:competitor_uid , startnumber=:startnumber, finished=:finished, acpkod=:acpcode, club_uid=:club_uid , dns=:dns, dnf=:dnf, register_date_time=:register_date_time , time=:times , brevenr=:brevenr WHERE participant_uid=:participant_uid";
+        $eventqls['updateParticipant']  = "UPDATE participant SET  track_uid=:track_uid , competitor_uid=:competitor_uid , startnumber=:startnumber, finished=:finished, acpkod=:acpcode, club_uid=:club_uid , dns=:dns, dnf=:dnf , started=:started, register_date_time=:register_date_time , time=:times , brevenr=:brevenr WHERE participant_uid=:participant_uid";
         $eventqls['updateBrevenr']  = "UPDATE participant SET  brevenr=:brevenr WHERE participant_uid=:participant_uid";
         $eventqls['createParticipant'] = 'INSERT INTO participant(participant_uid, track_uid, competitor_uid, startnumber, finished,  acpkod, club_uid , time ,dns, dnf, brevenr,register_date_time) VALUES (:participant_uid, :track_uid,:competitor_uid,:startnumber,:finished , :acpcode, :club_uid, :time, :dns, :dnf, :brevenr, :register_date_time)';
         $eventqls['participantByTrackAndCompetitorUid'] = 'select *  from participant e where e.track_uid=:track_uid and competitor_uid=:competitor_uid;';
         $eventqls['stampOnCheckpoint'] = 'INSERT INTO participant_checkpoint(participant_uid ,checkpoint_uid, passed, passeded_date_time, lat, lng) VALUES (:participant_uid ,:checkpoint_uid, :passed,:passed_date_time,:lat,:lng)';
         $eventqls['createParticipantCheckpoint'] = 'INSERT INTO participant_checkpoint(participant_uid ,checkpoint_uid, passed, passeded_date_time, lat, lng) VALUES (:participant_uid ,:checkpoint_uid, :passed,:passed_date_time,:lat,:lng)';
-        $eventqls['updateCheckpoint']  = "UPDATE participant_checkpoint SET  passed=:passed, passeded_date_time=:passed_date_time, lat=:lat, lng=:lng WHERE participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid;";
+        $eventqls['updateCheckpoint']  = "UPDATE participant_checkpoint SET  passed=:passed, passeded_date_time=:passed_date_time, lat=:lat, lng=:lng  WHERE participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid;";
         $eventqls['setDnf']  = "UPDATE participant SET  dnf=:dnf WHERE participant_uid=:participant_uid;";
         $eventqls['setDns']  = "UPDATE participant SET  dns=:dns WHERE participant_uid=:participant_uid;";
         $eventqls['participanCheckpointByParticipantUidAndCheckpointUid'] = 'select *  from participant_checkpoint e where e.participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid;';

@@ -1,14 +1,11 @@
--- ALTER DATABASE vasterbottenbrevet_se CHARACTER SET='utf8'  COLLATE='utf8_bin';
--- -- create database --
--- CREATE DATABASE vasterbottenbrevet_se CHARACTER SET = 'utf8mb4';
+
 ALTER DATABASE vasterbottenbrevet_se CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
--- Api key
+
 CREATE TABLE IF NOT EXISTS api_keys (
     task_id INT AUTO_INCREMENT PRIMARY KEY,
     api_key varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;;
 
--- user and competiotors
 CREATE TABLE  users (
     user_uid char(36) NOT NULL,
     user_name varchar(100)  NOT NULL,
@@ -32,7 +29,7 @@ CREATE TABLE competitors (
 
 
 
--- READ UPDATE
+
 CREATE TABLE permission_type (
   type_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   type_desc varchar(255) NOT NULL,
@@ -40,7 +37,7 @@ CREATE TABLE permission_type (
   PRIMARY KEY (type_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Permissions
+
 CREATE TABLE permissions (
   perm_id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   perm_desc varchar(255) NOT NULL,
@@ -70,8 +67,7 @@ CREATE TABLE user_role (
   FOREIGN KEY (role_id) REFERENCES roles(role_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
------ Adress och kontaktuppgifter ----------------------------------------------
--- För användare i systemet ----------------------------------------------------
+
 CREATE TABLE user_info (
   uid varchar(36) NOT NULL,
   user_uid varchar (50) NOT NULL,
@@ -97,22 +93,6 @@ CREATE TABLE competitor_info (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- CREATE TABLE postal_adress (
---   uid INTEGER UNSIGNED NOT NULL,
---   user_uid varchar(36) NOT NULL,
---   FOREIGN KEY (user_uid) REFERENCES users(user_uid),
---   FOREIGN KEY (role_id) REFERENCES roles(role_id)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
---
--- CREATE TABLE contact_information (
---   uid INTEGER UNSIGNED NOT NULL,
---   user_uid varchar(36) NOT NULL,
---   FOREIGN KEY (user_uid) REFERENCES users(user_uid),
---   FOREIGN KEY (role_id) REFERENCES roles(role_id)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Hanteringa av event banor och kontroller ------------------------------------
---Event
 CREATE TABLE event (
     event_uid char(36) NOT NULL,
     title varchar(100) NOT NULL,
@@ -125,7 +105,7 @@ CREATE TABLE event (
     PRIMARY KEY (event_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Bana
+
 CREATE TABLE  track (
     track_uid char(36) NOT NULL,
     title varchar(100),
@@ -140,7 +120,7 @@ CREATE TABLE  track (
     PRIMARY KEY (track_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Site plats för en konntroll
+
 CREATE TABLE site (
     site_uid char(36) NOT NULL,
     place varchar(100) NOT NULL,
@@ -193,6 +173,7 @@ CREATE TABLE participant (
     time  char (36),
     dns BOOLEAN DEFAULT false,
     dnf BOOLEAN DEFAULT false,
+    started BOOLEAN DEFAULT false,
     brevenr INTEGER UNSIGNED DEFAULT NULL,
     register_date_time DATETIME DEFAULT NULL,
     PRIMARY KEY ( participant_uid, track_uid ,competitor_uid),
@@ -231,9 +212,8 @@ CREATE TABLE competitor_credential (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
----Vyer  Några vyer som kan användas bla för att se vilka cyklister som ska passera en kontroll
---Cyklister vid en kontroll. Om man i where anger en site_uid tex för tex brännäset dyker de cyklister som inte passerat default upp
-create view v_partisipant_to_pass_checkpoint AS SELECT tr.track_uid, pach.participant_uid,sit.site_uid, cpo.checkpoint_uid, cpo.opens , sit.adress, a.startnumber, cp.given_name, cp.family_name, pach.passed, pach.passeded_date_time,  a.dnf FROM `participant` a
+
+create view v_partisipant_to_pass_checkpoint AS SELECT tr.track_uid, pach.participant_uid,sit.site_uid, cpo.checkpoint_uid, cpo.opens , sit.adress, a.startnumber, cp.given_name, cp.family_name, pach.passed, pach.passeded_date_time, a.started , a.dnf FROM `participant` a
 inner join competitors cp on a.competitor_uid = cp.competitor_uid
 inner join track tr on tr.track_uid = a.track_uid
 inner join participant_checkpoint  pach on pach.participant_uid = a.participant_uid

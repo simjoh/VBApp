@@ -13,6 +13,9 @@ class ParticipantToPassCheckpoint
     private string $given_name;
     private string $family_name;
     private bool $passed;
+    private bool $started;
+
+
     private bool $dnf;
 
 
@@ -192,5 +195,21 @@ class ParticipantToPassCheckpoint
     public function setPassededDateTime($passeded_date_time): void
     {
         $this->passeded_date_time = $passeded_date_time;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isStarted(): bool
+    {
+        return $this->started;
+    }
+
+    /**
+     * @param bool $started
+     */
+    public function setStarted(bool $started): void
+    {
+        $this->started = $started;
     }
 }

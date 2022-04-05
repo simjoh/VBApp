@@ -209,7 +209,7 @@ class TrackService extends ServiceAbstract
                 $siteDict = $siteDict->withValue($value[5] . $value[6], new Site("", $value[5], $value[6], $value[13], null,
                     empty($value[8]) ? new DecimalNumber("0") : new DecimalNumber(strval($value[8])),
                     empty($value[9]) ? new DecimalNumber("0") : new DecimalNumber(strval($value[9])),
-                    "IMG.JPG"));
+                    empty($value[15]) ? "": $value[15]));
 
                 $existingSite = $this->siteRepository->existsByPlaceAndAdress($value[5], $value[6]);
 

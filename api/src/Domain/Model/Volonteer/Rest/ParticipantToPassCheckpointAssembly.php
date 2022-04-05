@@ -52,6 +52,7 @@ class ParticipantToPassCheckpointAssembly
         $participantToPassCheckpointRepresentation->setStartNumber($participantToPassCheckpoint->getStartnumber());
         $participantToPassCheckpointRepresentation->setPassededDateTime($participantToPassCheckpoint->getPassededDateTime() == null ? "" : $participantToPassCheckpoint->getPassededDateTime());
         $participantToPassCheckpointRepresentation->setDnf($participantToPassCheckpoint->isDnf());
+        $participantToPassCheckpointRepresentation->setStarted($participantToPassCheckpoint->isStarted());
 
         // bygg på med lite länkar
         $linkArray = array();

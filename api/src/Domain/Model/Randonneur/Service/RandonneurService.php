@@ -95,12 +95,14 @@ class RandonneurService
 
         if($isStart == true){
             if(date('Y-m-d H:i:s') < $track->getStartDateTime()){
-                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime());
+                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1);
             } else if(date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {
-                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime());
+                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1);
             } else {
                 throw new BrevetException("Error on checkin");
             }
+            $participant->setStarted(1);
+            $this->participantRepository->updateParticipant($participant);
             return true;
         }
 
@@ -227,6 +229,12 @@ class RandonneurService
             $participant->setTime(null);
             $this->participantRepository->updateParticipant($participant);
             return true;
+        }
+
+        $isStart = $this->checkpointService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
+        if($isStart == true){
+            $participant->setStarted(0);
+            $this->participantRepository->updateParticipant($participant);
         }
 
         return $this->participantRepository->rollbackStamp($participant->getParticipantUid(), $checkpoint_uid);
