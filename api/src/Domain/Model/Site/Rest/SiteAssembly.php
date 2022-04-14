@@ -11,9 +11,10 @@ use Psr\Container\ContainerInterface;
 class SiteAssembly
 {
 
-    public function __construct(PermissionRepository $permissionRepository)
+    public function __construct(ContainerInterface $c ,PermissionRepository $permissionRepository)
     {
         $this->permissinrepository = $permissionRepository;
+        $this->settings = $c->get('settings');
     }
 
     public function toRepresentations(array $SiteArray, array $permissions): array {
@@ -42,13 +43,13 @@ class SiteAssembly
         $linkArray = array();
         foreach ($permissions as $x =>  $site) {
             if($site->hasWritePermission()){
-                array_push($linkArray, new Link("relation.site.update", 'PUT', '/api/user/' . $s->getSiteUid()));
-                array_push($linkArray, new Link("relation.site.delete", 'DELETE', '/api/user/' . $s->getSiteUid()));
-                array_push($linkArray, new Link("self", 'GET', '/api/user/' . $s->getSiteUid()));
+                array_push($linkArray, new Link("relation.site.update", 'PUT', $this->settings['path'] . 'user/' . $s->getSiteUid()));
+                array_push($linkArray, new Link("relation.site.delete", 'DELETE', $this->settings['path'] .'user/' . $s->getSiteUid()));
+                array_push($linkArray, new Link("self", 'GET', $this->settings['path'] .' user/' . $s->getSiteUid()));
                 break;
             }
             if($site->hasReadPermission()){
-                array_push($linkArray, new Link("self", 'GET', '/api/user/' . $s->getSiteUid()));
+                array_push($linkArray, new Link("self", 'GET', $this->settings['path'] .'user/' . $s->getSiteUid()));
             };
         }
         $siteRepresentation->setLink($linkArray);

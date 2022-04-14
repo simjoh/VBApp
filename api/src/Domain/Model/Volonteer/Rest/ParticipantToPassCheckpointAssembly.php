@@ -8,16 +8,18 @@ use App\Domain\Model\CheckPoint\Service\CheckpointsService;
 use App\Domain\Model\User\Repository\UserRepository;
 use App\Domain\Model\Volonteer\ParticipantToPassCheckpoint;
 use App\Domain\Permission\PermissionRepository;
+use Psr\Container\ContainerInterface;
 
 
 class ParticipantToPassCheckpointAssembly
 {
 
-    public function __construct(PermissionRepository $permissionRepository,CheckpointsService $checkpointService, UserRepository $userRepository)
+    public function __construct(ContainerInterface $c ,PermissionRepository $permissionRepository,CheckpointsService $checkpointService, UserRepository $userRepository)
     {
         $this->permissionrepository = $permissionRepository;
         $this->checkpointService = $checkpointService;
         $this->userrepository = $userRepository;
+        $this->settings = $c->get('settings');
     }
 
 
@@ -59,18 +61,18 @@ class ParticipantToPassCheckpointAssembly
       //  foreach ($permissions as $x =>  $site) {
          //   if($site->hasWritePermission()){
                 if(!$participantToPassCheckpoint->isPassed()){
-                    array_push($linkArray, new Link("relation.volonteer.stamp", 'PUT', 'api/volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/stamp'));
+                    array_push($linkArray, new Link("relation.volonteer.stamp", 'PUT', $this->settings['path'] .'volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/stamp'));
                 } else {
-                    array_push($linkArray, new Link("relation.volonteer.rollbackstamp", 'PUT', 'api/volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/rollback'));
+                    array_push($linkArray, new Link("relation.volonteer.rollbackstamp", 'PUT', $this->settings['path'] . 'volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/rollback'));
                 }
 
         if(!$participantToPassCheckpoint->isDnf()){
-            array_push($linkArray, new Link("relation.volonteer.setdnf", 'PUT', 'api/volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/dnf'));
+            array_push($linkArray, new Link("relation.volonteer.setdnf", 'PUT', $this->settings['path'] . 'volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/dnf'));
         } else {
-            array_push($linkArray, new Link("relation.volonteer.rollbackdnf", 'PUT', 'api/volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/rollbackdnf'));
+            array_push($linkArray, new Link("relation.volonteer.rollbackdnf", 'PUT', $this->settings['path'] . 'volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/rollbackdnf'));
         }
 
-        array_push($linkArray, new Link("self", 'GET', 'api/participant/' . $participantToPassCheckpoint->getParticipantUid()));
+        array_push($linkArray, new Link("self", 'GET', $this->settings['path'] . 'participant/' . $participantToPassCheckpoint->getParticipantUid()));
                // break;
         //    }
 //            if($site->hasReadPermission()){

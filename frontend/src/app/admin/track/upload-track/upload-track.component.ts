@@ -1,6 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy, ViewChild} from '@angular/core';
 import {FileUpload} from "primeng/fileupload";
 import {UploadService} from "../../../core/upload.service";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'brevet-upload-track',
@@ -23,7 +24,7 @@ export class UploadTrackComponent implements OnInit {
   myUploader($event: any) {
     console.log("onUpload() START");
     for(let file of $event.files) {
-      let progress = this.uploadService.upload("/api/buildlEventAndTrackFromCsv/upload" , new Set($event.files));
+      let progress = this.uploadService.upload( environment.backend_url + "buildlEventAndTrackFromCsv/upload" , new Set($event.files));
       console.log("FILE TO BE UPLOADED: ", file);
       this.primeFileUpload.onProgress.emit(100 / 100 * 100);
       this.uploadedFiles.push(file);

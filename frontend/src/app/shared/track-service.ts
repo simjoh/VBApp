@@ -32,7 +32,7 @@ export class TrackService {
   }
 
   public getAllTracks(){
-    const path = '/tracks';
+    const path = 'tracks';
     return this.httpClient.get<Array<TrackRepresentation>>(environment.backend_url + path).pipe(
       take(1),
       map((tracks: Array<TrackRepresentation>) => {

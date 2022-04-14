@@ -61,7 +61,7 @@ class PermissionvalidatorMiddleWare
         };
 
         if((Arrays::get($claims['roles'], 'isCompetitor'))) {
-            if(Strings::startsWith($request->getRequestTarget(), "/api/randonneur/") === True  ){
+            if(Strings::startsWith($request->getRequestTarget(), $this->settings['path'] ."randonneur/") === True  ){
                 $request = $request->withAttribute('currentuserUid', $claims['id']);
                 return $handler->handle($request);
             } else {

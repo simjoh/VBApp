@@ -39,6 +39,7 @@ class LoginAction extends BaseAction
            return (new Response())->withStatus(401);
         }
 
+
         $user = $this->authenticationService->authenticate($username, $password);
 
        if($user == null || !isset($user)){

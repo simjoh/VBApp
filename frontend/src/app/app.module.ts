@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import {APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -30,6 +30,7 @@ import {TokenHeaderInterceptor} from "./core/interceptors/token-header.intercept
 import {FeedbackInterceptor} from "./core/interceptors/feedback.interceptor";
 import {TrackInfoComponent} from "./competitor/track-info/track-info.component";
 import {MessageService} from "primeng/api";
+import { EnvService } from './core/env.service';
 
 @NgModule({
   declarations: [
@@ -90,6 +91,11 @@ import {MessageService} from "primeng/api";
     {
       provide: HTTP_INTERCEPTORS,
       useClass: FeedbackInterceptor,
+      multi: true
+    },{
+      provide: APP_INITIALIZER,
+      useFactory: (envService: EnvService) => () => envService.init(),
+      deps: [EnvService],
       multi: true
     }],
   bootstrap: [AppComponent]

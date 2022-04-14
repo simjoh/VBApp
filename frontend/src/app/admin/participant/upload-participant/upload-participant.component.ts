@@ -3,6 +3,7 @@ import {FileUpload} from "primeng/fileupload";
 import {UploadService} from "../../../core/upload.service";
 import {ParticipantComponentService} from "../participant-component.service";
 import {map, tap} from "rxjs/operators";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'brevet-upload-participant',
@@ -37,7 +38,7 @@ export class UploadParticipantComponent implements OnInit {
   myUploader($event: any) {
     console.log($event.files);
     for(let file of $event.files) {
-        let progress = this.uploadService.upload("/api/participants/upload/track/" + this.trackuid , new Set($event.files));
+        let progress = this.uploadService.upload(environment.backend_url + "participants/upload/track/" + this.trackuid , new Set($event.files));
         console.log("FILE TO BE UPLOADED: ", file);
         this.primeFileUpload.onProgress.emit(100 / 100 * 100);
         this.uploadedFiles.push(file);

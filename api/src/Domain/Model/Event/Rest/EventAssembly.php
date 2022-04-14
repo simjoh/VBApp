@@ -5,14 +5,16 @@ namespace App\Domain\Model\Event\Rest;
 use App\common\Rest\Link;
 use App\Domain\Model\Event\Event;
 use App\Domain\Permission\PermissionRepository;
+use Psr\Container\ContainerInterface;
 
 
 class EventAssembly
 {
 
-    public function __construct(PermissionRepository $permissionRepository)
+    public function __construct(PermissionRepository $permissionRepository, ContainerInterface $c)
     {
         $this->permissinrepository = $permissionRepository;
+        $this->settings = $c->get('settings');
     }
 
     public function toRepresentations(array $eventsArray, string $currentUserUid): array {
@@ -41,12 +43,12 @@ class EventAssembly
         $linkArray = array();
         foreach ($permissions as $x =>  $site) {
             if($site->hasWritePermission()){
-                array_push($linkArray, new Link("relation.event.update", 'PUT', '/api/user/' . $event->getEventUid()));
-                array_push($linkArray, new Link("relation.event.delete", 'DELETE', '/api/user/' . $event->getEventUid()));
+                array_push($linkArray, new Link("relation.event.update", 'PUT', $this->settings['path'] .'user/' . $event->getEventUid()));
+                array_push($linkArray, new Link("relation.event.delete", 'DELETE', $this->settings['path'] .'user/' . $event->getEventUid()));
                 break;
             }
             if($site->hasReadPermission()){
-                array_push($linkArray, new Link("self", 'GET', '/api/user/' . $event->getEventUid()));
+                array_push($linkArray, new Link("self", 'GET', $this->settings['path'] . 'user/' . $event->getEventUid()));
             };
         }
 

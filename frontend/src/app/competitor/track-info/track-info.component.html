@@ -1,9 +1,7 @@
 <ng-container *ngIf="$track | async as track">
-  <h4>Event</h4>
   <H5>{{track.title}}</H5>
   {{track.distance | distanceKm}}
   <a target="_blank" href="{{track.linktotrack}}">Banan på Strava</a>
   <br>
   <br>
-  <H5>Kontroller</H5>
 </ng-container>

@@ -7,13 +7,15 @@ use App\Domain\Model\Event\Event;
 use App\Domain\Model\Event\Rest\EventRepresentation;
 use App\Domain\Model\Partisipant\Participant;
 use App\Domain\Permission\PermissionRepository;
+use Psr\Container\ContainerInterface;
 
 class ParticipantAssembly
 {
 
-    public function __construct(PermissionRepository $permissionRepository)
+    public function __construct(ContainerInterface $c, PermissionRepository $permissionRepository)
     {
         $this->permissinrepository = $permissionRepository;
+        $this->settings = $c->get('settings');
     }
 
 
@@ -47,12 +49,12 @@ class ParticipantAssembly
         $linkArray = array();
         foreach ($permissions as $x =>  $site) {
             if($site->hasWritePermission()){
-                array_push($linkArray, new Link("relation.participant.update", 'PUT', '/api/participant/' . $participant->getParticipantUid()));
-                array_push($linkArray, new Link("relation.participant.delete", 'DELETE', '/api/participant/' . $participant->getParticipantUid));
+                array_push($linkArray, new Link("relation.participant.update", 'PUT', $this->settings['path'] . 'participant/' . $participant->getParticipantUid()));
+                array_push($linkArray, new Link("relation.participant.delete", 'DELETE', $this->settings['path'] . 'participant/' . $participant->getParticipantUid));
                 break;
             }
             if($site->hasReadPermission()){
-                array_push($linkArray, new Link("self", 'GET', '/api/user/' . $participant->getParticipantUid()));
+                array_push($linkArray, new Link("self", 'GET', $this->settings['path'] .'user/' . $participant->getParticipantUid()));
             };
         }
 
