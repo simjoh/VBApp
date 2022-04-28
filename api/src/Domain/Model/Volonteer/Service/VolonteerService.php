@@ -13,6 +13,7 @@ use App\Domain\Model\User\Repository\UserRepository;
 use App\Domain\Model\Volonteer\Repository\VolonteerRepository;
 use App\Domain\Model\Volonteer\Rest\ParticipantToPassCheckpointAssembly;
 use App\Domain\Permission\PermissionRepository;
+use Psr\Container\ContainerInterface;
 
 class VolonteerService extends ServiceAbstract
 {
@@ -23,7 +24,7 @@ class VolonteerService extends ServiceAbstract
                                 PermissionRepository $permissionRepository,
                                 UserRepository $userRepository,
                                 ParticipantRepository $participantRepository,
-                                CheckpointsService $checkpointsService, TrackRepository $trackRepository)
+                                CheckpointsService $checkpointsService, TrackRepository $trackRepository, ContainerInterface $c )
     {
         $this->volonteerRepository = $volonteerRepository;
         $this->participantToPassCheckpointAssembly = $participantToPassCheckpointAssembly;
@@ -32,6 +33,7 @@ class VolonteerService extends ServiceAbstract
         $this->participantrepository = $participantRepository;
         $this->checkpointService = $checkpointsService;
         $this->trackrepository = $trackRepository;
+        $this->settings = $c->get('settings');
     }
 
     public function getCheckpointsForTrack(string $track_uid,  string $currentUserUID): array{
@@ -159,15 +161,16 @@ class VolonteerService extends ServiceAbstract
         }
 
 
-
-        // kolla att kontrollern har öppnat
-//        if(date('Y-m-d H:i:s') < $checkpoint->getOpens()){
-//            throw new BrevetException("Checkpoint opens:  " . date("Y-m-d H:i:s", strtotime($checkpoint->getOpens())) , 5, null);
-//        }
-//        // kolla att kontrollen har stängt
-//        if(date('Y-m-d H:i:s') > $checkpoint->getClosing()){
-//            throw new BrevetException("Kontrollen stängde " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())) , 5, null);
-//        }
+        if($this->settings['demo'] == 'false') {
+            //  kolla att kontrollern har öppnat
+            if (date('Y-m-d H:i:s') < $checkpoint->getOpens()) {
+                throw new BrevetException("Checkpoint not open. Opening date time:  " . date("Y-m-d H:i:s", strtotime($checkpoint->getOpens())), 6, null);
+            }
+            // kolla att kontrollen har stängt
+            if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
+                throw new BrevetException("Checkpoint is closed. Closing date time: " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())), 6, null);
+            }
+        }
 
         // kolla om start eller mål
         $isStart = $this->checkpointService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
@@ -190,8 +193,12 @@ class VolonteerService extends ServiceAbstract
         $isEnd = $this->checkpointService->isEndCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
         if($isEnd == true){
             //om mål sätt måltid till tiden för instämpling och beräkna tiden mella första och sista instämpling. Sätt totaltiden i participant och markera finished
-            if(date('Y-m-d H:i:s') < $track->getStartDateTime()){
-                throw new BrevetException("Can not finish before the start of the race " . date("Y-m-d H:i:s", strtotime($track->getStartDateTime())), 5, null);
+            if($this->settings['demo'] == 'false') {
+                if($track->getStartDateTime() != '-') {
+                    if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
+                        throw new BrevetException("Can not finish before the start of the race " . date("Y-m-d H:i:s", strtotime($track->getStartDateTime())), 6, null);
+                    }
+                }
             }
             $this->participantrepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid);
             $participant->setDnf(false);

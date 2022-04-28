@@ -60,6 +60,6 @@ $settings['secretkey'] = "12345678901234567890123456789012";
 
 $settings['path'] = "/api/";
 
-
+$settings['demo'] = "true";
 
 return $settings;

@@ -18,7 +18,12 @@ export class FeedbackInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError(err => {
         if (err instanceof HttpErrorResponse) {
-          this.messageService.add({key: 'tc', severity:'error', summary: 'Error', detail: this.felmeddelandeFor(err)});
+          if (Number(err.error.code) >= 6 ){
+            this.messageService.add({key: 'tc', severity:'warn', summary: 'Error', detail: this.felmeddelandeFor(err)});
+          } else {
+            this.messageService.add({key: 'tc', severity:'error', summary: 'Error', detail: this.felmeddelandeFor(err)});
+          }
+
         }
         return observableThrowError(err);
       })) as Observable<any>;
@@ -26,6 +31,12 @@ export class FeedbackInterceptor implements HttpInterceptor {
 
 
   private felmeddelandeFor(response: HttpErrorResponse) {
+
+    if (Number(response.error.code) >= 6 ){
+      return response.error.message
+    }
+
+
     switch (response.status) {
       case 502:
         return 'Service unavailable';
