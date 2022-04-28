@@ -23,6 +23,7 @@ class PermissionvalidatorMiddleWare
     {
         $this->key = $c->get('settings')['secretkey'];
         $this->cs = $c;
+        $this->path = $c->get('settings')['path'];
         $this->permissionrepository = $permissionRepository;
         $this->routeCollector = $routeCollector;
     }
@@ -61,7 +62,7 @@ class PermissionvalidatorMiddleWare
         };
 
         if((Arrays::get($claims['roles'], 'isCompetitor'))) {
-            if(Strings::startsWith($request->getRequestTarget(), $this->settings['path'] ."randonneur/") === True  ){
+            if(Strings::startsWith($request->getRequestTarget(), $this->path ."randonneur/") === True  ){
                 $request = $request->withAttribute('currentuserUid', $claims['id']);
                 return $handler->handle($request);
             } else {

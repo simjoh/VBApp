@@ -35,7 +35,7 @@ class SiteAssembly
         if (!empty($user))
         $siteRepresentation->setLocation(!empty($s->getLocation()) == true ? $s->getLocation() : "");
         $siteRepresentation->setDescription($s->getDescription());
-        $siteRepresentation->setImage($s->getPicture()  == null ? "": "../../../../../../api/uploads/" . $s->getPicture());
+        $siteRepresentation->setImage($s->getPicture()  == null ? "": $this->settings['path'] . "uploads/" . $s->getPicture());
 
         $siteRepresentation->setLat($s->getLat()  == null ? "": strval($s->getLat()));
         $siteRepresentation->setLng($s->getLng() == null ? "": strval($s->getLng()));
