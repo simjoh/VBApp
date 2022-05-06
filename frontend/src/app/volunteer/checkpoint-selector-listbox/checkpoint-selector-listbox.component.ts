@@ -17,7 +17,7 @@ export class CheckpointSelectorListboxComponent implements OnInit {
     map((events) => {
       const items: SelectItem[] = [];
       events.map((event) => {
-        items.push( { label: event.site.adress + " " + event.site.place,value: event.checkpoint_uid})
+        items.push( { label: event.site.adress + " - " + event.site.place,value: event.checkpoint_uid})
       });
       return items;
     })

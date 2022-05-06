@@ -3,8 +3,8 @@
 <div class="login-form" >
 
   <form name="form" #form="ngForm"  *ngIf="loginModel$ | async as model" (ngSubmit)="login()" >
-    <brevet-logo [heigth]="180" [width]="180"></brevet-logo>
-    <h2 class="text-center">Log in</h2>
+    <brevet-logo  [heigth]="320" [width]="320"></brevet-logo>
+<br>
     <div *ngIf="loginerror$ | async as error">
         {{error.meddelande.data}}
     </div>
@@ -15,7 +15,7 @@
       <input type="password" class="form-control" placeholder="Password" name="password" [(ngModel)]="model.password" required>
     </div>
     <div class="form-group">
-      <button type="submit" [disabled]="!form.valid" class="btn btn-primary btn-block">Log in</button>
+      <button type="submit" [disabled]="!form.valid" class="btn btn-primary btn-block">Log In</button>
     </div>
   </form>
 </div>

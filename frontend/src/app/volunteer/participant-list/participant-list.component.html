@@ -18,25 +18,25 @@
       </ng-template>
       <ng-template pTemplate="header" >
         <tr>
-          <th colspan="1"><strong>Antal som passerat:</strong>   <p-badge  pTooltip="Antal som passerat vald kontroll: {{randonneurs.choosenControl}}" tooltipPosition="top" [value]="randonneurs.statistics.countpassed" severity="success" styleClass="ml-2"></p-badge></th>
-          <th colspan="2"> <strong>Antal DNF:</strong> <p-badge pTooltip="Antal som brutit" tooltipPosition="top" [value]="randonneurs.statistics.dnf" severity="danger" styleClass="ml-2"></p-badge></th>
+          <th colspan="1"><strong>Passerat:</strong>   <p-badge  pTooltip="Antal som passerat vald kontroll: {{randonneurs.choosenControl}}" tooltipPosition="top" [value]="randonneurs.statistics.countpassed" severity="success" styleClass="ml-2"></p-badge></th>
+          <th colspan="2"> <strong>DNF:</strong> <p-badge pTooltip="Antal som brutit" tooltipPosition="top" [value]="randonneurs.statistics.dnf" severity="danger" styleClass="ml-2"></p-badge></th>
           <th class="justify-content-center" colspan="2"> <p-knob pTooltip="Andel av startande som inte brutit och har har passerat: {{randonneurs.choosenControl}}" tooltipPosition="top"  [(ngModel)]="randonneurs.statistics.percentageoff" size="50" valueTemplate="{value}%"></p-knob></th>
         <th></th>
         </tr>
         <tr  class="sticky-top">
-          <th class="w-2" pSortableColumn="startNumber">STARTNUMBER <p-sortIcon field="startNumber"></p-sortIcon></th>
-          <th class="w-2" pSortableColumn="givenName">GIVENNAME <p-sortIcon field="givenName"></p-sortIcon></th>
-          <th class="w-2" pSortableColumn="familyName">FAMILYNAME<p-sortIcon field="familyName"></p-sortIcon></th>
-          <th class="lg:w-2" pSortableColumn="passededDateTime">Checkin Time <p-sortIcon field="passededDateTime"></p-sortIcon>
+          <th class="w-2" pSortableColumn="startNumber">Startnummer<p-sortIcon field="startNumber"></p-sortIcon></th>
+          <th class="w-2" pSortableColumn="givenName">Förnamn<p-sortIcon field="givenName"></p-sortIcon></th>
+          <th class="w-2" pSortableColumn="familyName">Efternamn<p-sortIcon field="familyName"></p-sortIcon></th>
+          <th class="lg:w-2" pSortableColumn="passededDateTime">Tid<p-sortIcon field="passededDateTime"></p-sortIcon>
 
           </th>
-          <th class="lg:w-2" pSortableColumn="passed">PASSED <p-sortIcon field="passed"></p-sortIcon>
+          <th class="lg:w-2" pSortableColumn="passed">Passerat<p-sortIcon field="passed"></p-sortIcon>
 
             <p-columnFilter pTooltip="Filtrera på passerade" tooltipPosition="top"  type="boolean" field="passed"></p-columnFilter>
           </th>
 
 
-          <th class="lg:w-2"  pSortableColumn="dnf">DNF <p-sortIcon field="dnf"></p-sortIcon>
+          <th class="lg:w-2"  pSortableColumn="dnf">DNF<p-sortIcon field="dnf"></p-sortIcon>
             <span>
 
             <p-columnFilter  pTooltip="Filtrera på DNF" tooltipPosition="top"  type="boolean" field="dnf"></p-columnFilter>
@@ -51,8 +51,8 @@
           <td>{{product.givenName}}</td>
           <td>{{product.familyName}}</td>
           <td>{{product.passededDateTime}}</td>
-          <td><button pTooltip="Checka in startnr: {{product.startNumber}} " tooltipPosition="top" pButton [disabled]="product.dnf"  (click)="checkin(product, $event)" type="button" label="{{product.passed === true ? 'Ångra checkin': 'Checkin'}}" class="p-button-secondary  container-fluid"></button></td>
-          <td><button pTooltip="Markera att deltagaren avser att bryta" tooltipPosition="top" pButton  (click)="setdnf(product, $event)" pRipple type="button" label="{{product.dnf === true ? 'Ångra DNF': 'DNF'}}" class="p-button-outlined p-button-danger container-fluid"></button></td>
+          <td><button pTooltip="Checka in startnr: {{product.startNumber}} " tooltipPosition="top" pButton [disabled]="product.dnf"  (click)="checkin(product, $event)" type="button" label="{{product.passed === true ? 'Ångra': 'Checkin'}}" class="p-button-secondary  container-fluid"></button></td>
+          <td><button pTooltip="Markera att deltagaren avser att bryta" tooltipPosition="top" pButton  (click)="setdnf(product, $event)" pRipple type="button" label="{{product.dnf === true ? 'Ångra': 'DNF'}}" class="p-button-outlined p-button-danger container-fluid"></button></td>
 
         </tr>
       </ng-template>

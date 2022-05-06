@@ -31,6 +31,7 @@ import {FeedbackInterceptor} from "./core/interceptors/feedback.interceptor";
 import {TrackInfoComponent} from "./competitor/track-info/track-info.component";
 import {MessageService} from "primeng/api";
 import { EnvService } from './core/env.service';
+import {HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -63,7 +64,7 @@ import { EnvService } from './core/env.service';
 
   ],
   exports: [CardModule,NgbModule, SharedModule],
-  providers: [MessageService,
+  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy},MessageService,
     {
     provide: HTTP_INTERCEPTORS,
     useClass: AuthInterceptor,

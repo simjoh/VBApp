@@ -27,7 +27,7 @@ export class ParticipantListComponent implements OnInit {
       if (val === false){
         text = 'Checka in'
       } else {
-        text = 'Ångra checka in'
+        text = 'Ångra'
       }
       return text;
     })
@@ -38,7 +38,7 @@ export class ParticipantListComponent implements OnInit {
     map((val) => {
       let text = "";
       if (val === false){
-        text = 'Ångra DNF'
+        text = 'Ångra'
       } else {
         text = 'DNF'
       }
@@ -68,68 +68,76 @@ export class ParticipantListComponent implements OnInit {
   async checkin(product: any,event: Event) {
 
     if (!this.linkservice.exists(product.link, 'relation.volonteer.stamp')) {
-     await this.confirmationService.confirm({
-        target: event.target,
-        message: 'Är du säker på att du vill ångra incheckning av ' + product.startNumber +
-          '   ' + product.givenName + ' ' + product.familyName,
-        icon: 'pi pi-exclamation-triangle',
-        accept: () => {
-          this.volonteerComponentService.rollbackCheckin(product);
-          this.chekedinSubject.next(false);
-        },
-        reject: () => {
-          //reject action
-        }
-      });
+      this.volonteerComponentService.rollbackCheckin(product);
+      this.chekedinSubject.next(false);
+     // await this.confirmationService.confirm({
+     //    target: event.target,
+     //    message: 'Är du säker på att du vill ångra incheckning av ' + product.startNumber +
+     //      '   ' + product.givenName + ' ' + product.familyName,
+     //    icon: 'pi pi-exclamation-triangle',
+     //    accept: () => {
+     //      this.volonteerComponentService.rollbackCheckin(product);
+     //      this.chekedinSubject.next(false);
+     //    },
+     //    reject: () => {
+     //      //reject action
+     //    }
+     //  });
 
-    } else [
-      await this.confirmationService.confirm({
-        target: event.target,
-        message: 'Är du säker på att du vill checka in ' + product.startNumber + ' ' +
-          ' ' + product.givenName + ' ' + product.familyName,
-        icon: 'pi pi-exclamation-triangle',
-        accept: () => {
-          this.volonteerComponentService.checkin(product);
-          this.chekedinSubject.next(true);
-        },
-        reject: () => {
-          //reject action
-        }
-      })
-    ]
+    } else {
+      this.volonteerComponentService.checkin(product);
+      this.chekedinSubject.next(true);
+      //   await this.confirmationService.confirm({
+      //     target: event.target,
+      //     message: 'Är du säker på att du vill checka in ' + product.startNumber + ' ' +
+      //       ' ' + product.givenName + ' ' + product.familyName,
+      //     icon: 'pi pi-exclamation-triangle',
+      //     accept: () => {
+      //       this.volonteerComponentService.checkin(product);
+      //       this.chekedinSubject.next(true);
+      //     },
+      //     reject: () => {
+      //       //reject action
+      //     }
+      //   })
+    }
   }
 
   async setdnf(product: any, event: Event) {
     if (!this.linkservice.exists(product.link, 'relation.volonteer.setdnf')) {
-      await this.confirmationService.confirm({
-        target: event.target,
-        message: 'Är du säker på att du vill ångra DNF för ' + product.startNumber +
-          '   ' + product.givenName + ' ' + product.familyName,
-        icon: 'pi pi-exclamation-triangle',
-        accept: () => {
-          this.volonteerComponentService.rollbackDnf(product);
-          this.chekedinSubject.next(true);
-        },
-        reject: () => {
-          //reject action
-        }
-      });
+      this.volonteerComponentService.rollbackDnf(product);
+      this.chekedinSubject.next(true);
+      // await this.confirmationService.confirm({
+      //   target: event.target,
+      //   message: 'Är du säker på att du vill ångra DNF för ' + product.startNumber +
+      //     '   ' + product.givenName + ' ' + product.familyName,
+      //   icon: 'pi pi-exclamation-triangle',
+      //   accept: () => {
+      //     this.volonteerComponentService.rollbackDnf(product);
+      //     this.chekedinSubject.next(true);
+      //   },
+      //   reject: () => {
+      //     //reject action
+      //   }
+      // });
 
-    } else [
-      await this.confirmationService.confirm({
-        target: event.target,
-        message: 'Är du säker på att du vill markera DNF för ' + product.startNumber + ' ' +
-          ' ' + product.givenName + ' ' + product.familyName,
-        icon: 'pi pi-exclamation-triangle',
-        accept: () => {
-          this.volonteerComponentService.setDnf(product);
-          this.dnfSubject.next(false);
-        },
-        reject: () => {
-          //reject action
-        }
-      })
-    ]
+    } else {
+      this.volonteerComponentService.setDnf(product);
+      this.dnfSubject.next(false);
+      // await this.confirmationService.confirm({
+      //   target: event.target,
+      //   message: 'Är du säker på att du vill markera DNF för ' + product.startNumber + ' ' +
+      //     ' ' + product.givenName + ' ' + product.familyName,
+      //   icon: 'pi pi-exclamation-triangle',
+      //   accept: () => {
+      //     this.volonteerComponentService.setDnf(product);
+      //     this.dnfSubject.next(false);
+      //   },
+      //   reject: () => {
+      //     //reject action
+      //   }
+      // })
+    }
   }
 
 }

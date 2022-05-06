@@ -24,9 +24,9 @@ export class CheckpointComponent implements OnInit {
   checkedin$ = this.chekedinSubject.asObservable().pipe(
     map((val) => {
       if (val === false){
-        this.checkinknapptext = 'Checka in'
+        this.checkinknapptext = 'Checkin'
       } else {
-        this.checkinknapptext = 'Ångra checka in'
+        this.checkinknapptext = 'Undo checkin'
       }
       return val;
     })
@@ -36,7 +36,7 @@ export class CheckpointComponent implements OnInit {
   isdnf$ = this.dnfSubject.asObservable().pipe(
     map((val) => {
       if (val === true){
-        this.dnfknapptext = 'Ångra DNF'
+        this.dnfknapptext = 'Undo DNF'
       } else {
         this.dnfknapptext = 'DNF'
       }

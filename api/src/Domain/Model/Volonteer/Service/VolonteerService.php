@@ -211,7 +211,7 @@ class VolonteerService extends ServiceAbstract
         }
 
         if($participant->isStarted() == false){
-            throw new BrevetException("Du måste checka in på startkontrollen innan du kan checka in på denna", 0, null);
+            throw new BrevetException("You have to checkin on startcheckpoint before this", 6, null);
         }
 
         $this->participantrepository->stampOnCheckpoint($participant_uid, $checkpoint_uid);

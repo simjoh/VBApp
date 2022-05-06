@@ -53,7 +53,7 @@ export class VolonteerService {
         return site;
       }),
       tap(event =>  {
-        this.addMessage('Checkin ok on checkpoint ' + product.adress,'success','Success')
+        this.addMessage('Checkin ok på checkpoint ' + product.adress,'success','Success')
       })
     ).toPromise();
 
@@ -66,7 +66,7 @@ export class VolonteerService {
         return site;
       }),
       tap(event =>   {
-        this.addMessage('Rollback checkin succeed','success','Success');
+        this.addMessage('Ångrat checkin','success','Success');
       })
     ).toPromise();
   }
@@ -78,7 +78,7 @@ export class VolonteerService {
         return site;
       }),
       tap(event =>   {
-        this.addMessage('Rollback DNF succeed','success','Success');
+        this.addMessage('Ångrat deltgare DNF','success','Success');
       })
     ).toPromise();
   }
@@ -90,7 +90,7 @@ export class VolonteerService {
         return site;
       }),
       tap(event =>  {
-        this.addMessage('Set participant DNF succeed','success','Success');
+        this.addMessage('Deltagare DNF','success','Success');
       })
     ).toPromise();
   }
