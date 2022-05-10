@@ -113,11 +113,14 @@ class CheckpointsService extends ServiceAbstract
         $checkpointRepresentation->setCheckpointUid($checkpoint->getCheckpointUid());
         $checkpointRepresentation->setDescription($checkpoint->getDescription());
         $checkpointRepresentation->setTitle($checkpoint->getTitle());
+
+
         $checkpointRepresentation->setDistance($checkpoint->getDistance());
         $checkpointRepresentation->setOpens($checkpoint->getOpens());
         if($checkpoint->getClosing() !== null){
             $checkpointRepresentation->setClosing($checkpoint->getClosing());
         }
+
         $checkpointRepresentation->setSite($this->siteservice->siteFor($checkpoint->getSiteUid(),'s'));
         return $checkpointRepresentation;
     }

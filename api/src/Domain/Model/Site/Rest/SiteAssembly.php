@@ -31,7 +31,10 @@ class SiteAssembly
         $siteRepresentation = new SiteRepresentation();
         $siteRepresentation->setPlace($s->getPlace());
         $siteRepresentation->setSiteUid($s->getSiteUid());
-        $siteRepresentation->setAdress($s->getAdress());
+
+            $siteRepresentation->setAdress($s->getAdress());
+
+
         if (!empty($user))
         $siteRepresentation->setLocation(!empty($s->getLocation()) == true ? $s->getLocation() : "");
         $siteRepresentation->setDescription($s->getDescription());
