@@ -36,6 +36,7 @@ class LoginAction extends BaseAction
         $password = $formdata['password'] ?? false;
 
         if(!isset($username) || !isset($password)){
+
            return (new Response())->withStatus(401);
         }
 
@@ -59,6 +60,7 @@ class LoginAction extends BaseAction
 
            $signer = new HS256($this->key);
            $generator = new Generator($signer);
+
            // byt till roleid
            $jwt = $generator->generate(['id' => $user->getId(), 'roles' => $this->getRoles($user->getRoles()), 'iat' => time(), 'exp' => time() + 86400000]);
            $user->setToken($jwt);

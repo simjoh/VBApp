@@ -61,13 +61,25 @@ class RandonneurService
 
         $track = $this->trackrepository->getTrackByUid($track_uid);
 
+
         if(!isset($track)){
             throw new BrevetException("Track not exists",5, null);
         }
         $checkpoint = $this->checkpointService->checkpointFor($checkpoint_uid);
 
+
+
         if(!isset($checkpoint)){
             throw new BrevetException("Checkpoint not exists",5, null);
+        }
+
+        $today = date('Y-m-d');
+        $startdate = date('Y-m-d', strtotime($track->getStartDateTime()));
+        // Man ska bara kunna göra incheckning om det är samma da eller senare
+        if($this->settings['demo'] == 'false') {
+            if ($today < $startdate) {
+                throw new BrevetException("You cannot checkin before startdate :  " . $startdate, 6, null);
+            }
         }
 
 
@@ -78,13 +90,19 @@ class RandonneurService
             throw new BrevetException("Cannot find participant",5, null);
         }
 
+        $isStart = $this->checkpointService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
+
         if($participant->isDns()){
             throw new BrevetException("You have not started in a race ",6, null);
         }
         if($this->settings['demo'] == 'false') {
-            // kolla att kontrollern har öppnat
+
+            // är det start behöver vi inte göra kontroller då sätts starttiden till loppets starttid
+            if($isStart == false){
+                // kolla att kontrollern har öppnat
             if (date('Y-m-d H:i:s') < $checkpoint->getOpens()) {
                 throw new BrevetException("Checkpoint not open. Opening date time:  " . date("Y-m-d H:i:s", strtotime($checkpoint->getOpens())), 6, null);
+            }
             }
             // kolla att kontrollen har stängt
             if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
@@ -94,9 +112,15 @@ class RandonneurService
 
 
         // kolla om start eller mål
-        $isStart = $this->checkpointService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
+
 
         if($isStart == true){
+
+            if($this->settings['demo'] == 'false') {
+                if ($today < $startdate) {
+                    throw new BrevetException("You cannot checkin before startdate :  " . $startdate, 6, null);
+                }
+            }
             if(date('Y-m-d H:i:s') < $track->getStartDateTime()){
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1);
             } else if(date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {
@@ -145,8 +169,19 @@ class RandonneurService
         }
         $checkpoint = $this->checkpointService->checkpointFor($checkpoint_uid);
 
+
+
         if(!isset($checkpoint)){
             throw new BrevetException("Checkpoint not exists",5, null);
+        }
+
+        $today = date('Y-m-d');
+        $startdate = date('Y-m-d', strtotime($track->getStartDateTime()));
+
+        if($this->settings['demo'] == 'false') {
+            if ($today < $startdate) {
+                throw new BrevetException("You cannot set DNF before startdate :  " . $startdate, 6, null);
+            }
         }
 
 
@@ -154,6 +189,10 @@ class RandonneurService
 
         if(!isset($participant)){
             throw new BrevetException("Cannot find participant",5, null);
+        }
+
+        if($participant->isStarted() == false){
+            throw new BrevetException("You must start before you can break the race",6, null);
         }
 
         return $this->participantRepository->setDnf($participant->getParticipantUid());
@@ -192,6 +231,16 @@ class RandonneurService
             throw new BrevetException("Track not exists",5, null);
         }
         $checkpoint = $this->checkpointService->checkpointFor($checkpoint_uid);
+
+
+        $today = date('Y-m-d');
+        $startdate = date('Y-m-d', strtotime($track->getStartDateTime()));
+
+        if($this->settings['demo'] == 'false') {
+            if ($today < $startdate) {
+                throw new BrevetException("You cannot set DNS before startdate :  " . $startdate, 6, null);
+            }
+        }
 
         if(!isset($checkpoint)){
             throw new BrevetException("Checkpoint not exists",5, null);

@@ -22,8 +22,8 @@
     <strong>To next: </strong>{{distancetonext}} Km
     <br>
 <!--    <strong>{{checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing}}</strong>-->
-    <strong>Opens:</strong>{{checkpoints.checkpoint.opens}} <br>
-    <strong>Closes:</strong>{{checkpoints.checkpoint.closing}}
+    <strong>Opens: </strong>{{checkpoints.checkpoint.opens | dateTimePrettyPrint}} <br>
+    <strong>Closes: </strong>{{checkpoints.checkpoint.closing | dateTimePrettyPrint}}
     </ng-container>
     <br>
     <strong>Service:</strong> {{checkpoints.checkpoint.site.description}}<br>

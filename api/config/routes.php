@@ -24,6 +24,8 @@ return function (App $app) {
     $app->get('/results/year/{year}/event/{eventUid}', \App\Controller\ResultsController::class . ':getResultView')->setName('result');
     $app->get('/resultList/year/{year}/event/{eventUid}', \App\Controller\ResultsController::class . ':getResultList');
 
+    $app->get('/resultList/test', \App\Controller\ResultsController::class . ':getResultsPhp');
+
     // Ingång för att kunna visa en cyklists passeringar under ett lopp
 
 

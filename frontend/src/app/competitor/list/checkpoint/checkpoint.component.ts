@@ -58,8 +58,6 @@ export class CheckpointComponent implements OnInit {
   ngOnInit(): void {
     this.chekedinSubject.next(this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp') === false)
     this.dnfSubject.next(this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.dnf') === false)
-
-    console.log(this.distancetonext)
   }
   checkin() {
 
@@ -78,7 +76,7 @@ export class CheckpointComponent implements OnInit {
            accept: () => {
              this.checkedin.emit(false)
              this.checkedin.emit(true)
-             this.chekedinSubject.next(true);
+             // this.chekedinSubject.next(true);
            }
          });
        }
@@ -86,10 +84,10 @@ export class CheckpointComponent implements OnInit {
 
   setdnf(){
     if (this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.dnf')){
-      this.dnfSubject.next(true);
+    //  this.dnfSubject.next(true);
       this.dnf.emit(true);
     } else {
-      this.dnfSubject.next(false);
+     // this.dnfSubject.next(false);
       this.dnf.emit(false);
     }
   }

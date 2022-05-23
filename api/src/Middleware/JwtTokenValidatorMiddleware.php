@@ -40,6 +40,7 @@ class JwtTokenValidatorMiddleware
         try {
             $claims = $parser->parse($token);
         } catch (ValidationException $e) {
+
             return (new Response())->withStatus(401);
         }
         return $handler->handle($request);

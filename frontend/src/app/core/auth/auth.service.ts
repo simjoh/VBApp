@@ -81,11 +81,16 @@ export class AuthService {
     let role = null;
     if (roles.length === 1){
       role = roles[0];
+    } else {
+
+
     }
+
+    console.log(roles);
     if ((role === Role.ADMIN|| role === Role.SUPERUSER ||  role === Role.USER)) {
       this.router.navigate(['admin']);
     } else if (role === Role.COMPETITOR){
-      this.router.navigate(['competitor']);
+      this.router.navigate(['brevet-list']);
     } else if (role === Role.VOLONTEER) {
       this.router.navigate(['volunteer']);
     }

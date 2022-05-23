@@ -119,6 +119,19 @@ class VolonteerService extends ServiceAbstract
             throw new BrevetException("Cannot find participant",5, null);
         }
 
+        if($participant->isStarted() == false){
+            throw new BrevetException("Contestant must start before He/She can break",6, null);
+        }
+
+        $today = date('Y-m-d');
+        $startdate = date('Y-m-d', strtotime($track->getStartDateTime()));
+
+        if($this->settings['demo'] == 'false') {
+            if ($today < $startdate) {
+                throw new BrevetException("You cannot set DNF before startdate :  " . $startdate, 6, null);
+            }
+        }
+
        return  $this->participantrepository->setDnf($participant_uid, $checkpoint_uid);
     }
 
@@ -160,11 +173,26 @@ class VolonteerService extends ServiceAbstract
             throw new BrevetException("Cannot find participant",5, null);
         }
 
+        // kolla om start eller mål
+        $isStart = $this->checkpointService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
+
+        $today = date('Y-m-d');
+        $startdate = date('Y-m-d',strtotime($track->getStartDateTime()));
 
         if($this->settings['demo'] == 'false') {
-            //  kolla att kontrollern har öppnat
-            if (date('Y-m-d H:i:s') < $checkpoint->getOpens()) {
-                throw new BrevetException("Checkpoint not open. Opening date time:  " . date("Y-m-d H:i:s", strtotime($checkpoint->getOpens())), 6, null);
+            if ($today < $startdate) {
+                throw new BrevetException("You cannot checkin contestant before startdate :  " . $startdate, 6, null);
+            }
+        }
+
+
+        if($this->settings['demo'] == 'false') {
+            // är det start behöver vi inte göra kontroller då sätts starttiden till loppets starttid
+            if($isStart == false) {
+                //  kolla att kontrollern har öppnat
+                if (date('Y-m-d H:i:s') < $checkpoint->getOpens()) {
+                    throw new BrevetException("Checkpoint not open. Opening date time:  " . date("Y-m-d H:i:s", strtotime($checkpoint->getOpens())), 6, null);
+                }
             }
             // kolla att kontrollen har stängt
             if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
@@ -172,10 +200,15 @@ class VolonteerService extends ServiceAbstract
             }
         }
 
-        // kolla om start eller mål
-        $isStart = $this->checkpointService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
 
         if($isStart == true){
+
+            if($this->settings['demo'] == 'false') {
+                if ($today < $startdate) {
+                    throw new BrevetException("You cannot checkin contestant before startdate :  " . $startdate, 6, null);
+                }
+            }
+
             if(date('Y-m-d H:i:s') < $track->getStartDateTime()){
                 $this->participantrepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1);
             } else if(date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {

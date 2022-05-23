@@ -40,6 +40,7 @@ class PermissionvalidatorMiddleWare
         try {
             $claims = $parser->parse($token);
         } catch (ValidationException $e) {
+
             return (new Response())->withStatus(401);
         }
 
@@ -47,11 +48,13 @@ class PermissionvalidatorMiddleWare
         $permissions = $this->permissionrepository->getPermissionsFor($claims['id']);
 
         if(empty($permissions) && !Arrays::get($claims['roles'], 'isCompetitor') && !Arrays::get($claims['roles'], 'isVolonteer')){
+
             return (new Response())->withStatus(401);
         }
 
 
         if((Arrays::get($claims['roles'], 'isUser')) || (Arrays::get($claims['roles'], 'isAdmin')) || (Arrays::get($claims['roles'], 'isSuperuser'))) {
+
             $request = $request->withAttribute('currentuserUid', $claims['id']);
             return $handler->handle($request);
         };
@@ -66,6 +69,7 @@ class PermissionvalidatorMiddleWare
                 $request = $request->withAttribute('currentuserUid', $claims['id']);
                 return $handler->handle($request);
             } else {
+
                 return (new Response())->withStatus(401);
             }
         }

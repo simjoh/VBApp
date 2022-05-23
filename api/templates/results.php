@@ -70,8 +70,8 @@
     <?php foreach($value as $key1=>$val){ ?>
 			<tr class="done">
         <?php foreach($val as $key2=>$va){ ?>
+			<td><?php echo $va;?>
 
-			<td><?php echo $va; ?>
 			</td>
             <?php } ?>
 			</tr>

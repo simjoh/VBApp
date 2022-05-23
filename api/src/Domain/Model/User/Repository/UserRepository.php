@@ -32,18 +32,26 @@ class UserRepository extends BaseRepository
         $statement->bindParam(':user_name', $username, PDO::PARAM_STR);
         $statement->bindParam(':password', $passwordsha, PDO::PARAM_STR);
         $statement->execute();
-        $result = $statement->fetch();
+        $result = $statement->fetchAll();
         if (empty($result)) {
             return null;
         }
 
+        $roleArray = [];
+        foreach ($result as $row) {
+            array_push($roleArray, new Role(intval($row['role_id']), $row['role_name']));
+        }
+
+        $userdetails = $result[0];
+
         $user = new User();
-        $user->setId($result['user_uid']);
-        $user->setGivenname($result['given_name']);
-        $user->setFamilyname($result['family_name']);
-        $user->setUsername($result['user_name']);
+        $user->setId($userdetails['user_uid']);
+        $user->setGivenname($userdetails['given_name']);
+        $user->setFamilyname($userdetails['family_name']);
+        $user->setUsername($userdetails['user_name']);
         $user->setToken('');
-        $user->setRoles(array($result['role_name']));
+        $user->setRoles(array($userdetails['role_name']));
+       // $user->setRoles($roleArray);
         return $user;
     }
 
@@ -198,7 +206,7 @@ class UserRepository extends BaseRepository
     public function sqls($type): string
     {
         $usersqls['login'] = 'select * from users where user_name = :user_name and password = :password';
-        $usersqls['login2'] = 'select * from users s left join user_role r on r.user_uid = s.user_uid inner join roles ru on ru.role_id = r.role_id  where s.user_name = :user_name and password = :password';
+        $usersqls['login2'] = 'select * from users s inner join user_role r on r.user_uid = s.user_uid inner join roles ru on ru.role_id = r.role_id  where s.user_name = :user_name and password = :password';
         $usersqls['allUsers'] = 'select * from users s;';
         $usersqls['getUserById'] = 'select * from users s where s.user_uid = :user_uid;';
         $usersqls['updateUser']  = "UPDATE users SET given_name=:givenname, family_name=:familyname, username=:username WHERE user_uid=:user_uid";

@@ -19,7 +19,7 @@ export class FeedbackInterceptor implements HttpInterceptor {
       catchError(err => {
         if (err instanceof HttpErrorResponse) {
           if (Number(err.error.code) >= 6 ){
-            this.messageService.add({key: 'tc', severity:'warn', summary: 'Error', detail: this.felmeddelandeFor(err)});
+            this.messageService.add({key: 'tc', severity:'warn', summary: 'Warning', detail: this.felmeddelandeFor(err)});
           } else {
             this.messageService.add({key: 'tc', severity:'error', summary: 'Error', detail: this.felmeddelandeFor(err)});
           }

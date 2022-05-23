@@ -1,16 +1,16 @@
 
-  <div class="col-12">
+  <div class="col-lg-12 col-sm-12">
     <p-table   #dt1  [globalFilterFields]="['startNumber', 'familyName', 'givenName', 'passed']"  *ngIf="randonneurs | async as randonneurs" sortMode="multiple" responsiveLayout="stack" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [rowsPerPageOptions]="[10,25,50,75,100,125]" [value]="randonneurs.randonnerurs" styleClass="p-datatable-sm p-datatable-gridlines" >
       <ng-template pTemplate="caption">
-        <div  class="col-12 sm:col-12" ><strong  pTooltip="Vald kontroll" tooltipPosition="top">{{randonneurs.choosenControl}}</strong>
+        <div  class="col-8 sm:col-8" ><strong  pTooltip="Vald kontroll" tooltipPosition="top">{{randonneurs.choosenControl}}</strong>
 
-          <div class="p-input-icon-left ml-auto float-lg-right">
+          <div class="p-input-icon-left ml-auto float-lg-right float-sm-right">
             <i class="pi pi-search"></i>
             <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Sök deltagare" />
           </div>
         </div>
 
-        <div class="sm:col-12">
+        <div class="sm:col-8">
           <p-badge class="lg:hidden" pTooltip="Antal som passerat vald kontroll: {{randonneurs.choosenControl}}" tooltipPosition="top" [value]="randonneurs.statistics.countpassed" severity="success" styleClass="ml-2"></p-badge>
           <p-badge class="lg:hidden" pTooltip="Antal som brutit" tooltipPosition="top" [value]="randonneurs.statistics.dnf" severity="danger" styleClass="ml-2"></p-badge>
           <!--                <p-knob class="lg:hidden" pTooltip="Andel som passerat" [(ngModel)]="randonneurs.statistics.percentageoff" size="28"  valueTemplate="{value}%"></p-knob>-->
@@ -21,22 +21,23 @@
           <th colspan="1"><strong>Passerat:</strong>   <p-badge  pTooltip="Antal som passerat vald kontroll: {{randonneurs.choosenControl}}" tooltipPosition="top" [value]="randonneurs.statistics.countpassed" severity="success" styleClass="ml-2"></p-badge></th>
           <th colspan="2"> <strong>DNF:</strong> <p-badge pTooltip="Antal som brutit" tooltipPosition="top" [value]="randonneurs.statistics.dnf" severity="danger" styleClass="ml-2"></p-badge></th>
           <th class="justify-content-center" colspan="2"> <p-knob pTooltip="Andel av startande som inte brutit och har har passerat: {{randonneurs.choosenControl}}" tooltipPosition="top"  [(ngModel)]="randonneurs.statistics.percentageoff" size="50" valueTemplate="{value}%"></p-knob></th>
+<!--          <p-chart type="bar" [data]="randonneurs.statistics.percentageoff" [options]="horizontalOptions"></p-chart>-->
         <th></th>
         </tr>
         <tr  class="sticky-top">
-          <th class="w-2" pSortableColumn="startNumber">Startnummer<p-sortIcon field="startNumber"></p-sortIcon></th>
-          <th class="w-2" pSortableColumn="givenName">Förnamn<p-sortIcon field="givenName"></p-sortIcon></th>
-          <th class="w-2" pSortableColumn="familyName">Efternamn<p-sortIcon field="familyName"></p-sortIcon></th>
-          <th class="lg:w-2" pSortableColumn="passededDateTime">Tid<p-sortIcon field="passededDateTime"></p-sortIcon>
+          <th class="lg:w-1" pSortableColumn="startNumber">Startnummer<p-sortIcon field="startNumber"></p-sortIcon></th>
+          <th class="lg:w-1" pSortableColumn="givenName">Förnamn<p-sortIcon field="givenName"></p-sortIcon></th>
+          <th class="lg:w-3" pSortableColumn="familyName">Efternamn<p-sortIcon field="familyName"></p-sortIcon></th>
+          <th class="lg:w-1" pSortableColumn="passededDateTime">Tid<p-sortIcon field="passededDateTime"></p-sortIcon>
 
           </th>
-          <th class="lg:w-2" pSortableColumn="passed">Passerat<p-sortIcon field="passed"></p-sortIcon>
+          <th class="lg:w-1" pSortableColumn="passed">Passerat<p-sortIcon field="passed"></p-sortIcon>
 
             <p-columnFilter pTooltip="Filtrera på passerade" tooltipPosition="top"  type="boolean" field="passed"></p-columnFilter>
           </th>
 
 
-          <th class="lg:w-2"  pSortableColumn="dnf">DNF<p-sortIcon field="dnf"></p-sortIcon>
+          <th class="lg:w-1"  pSortableColumn="dnf">DNF<p-sortIcon field="dnf"></p-sortIcon>
             <span>
 
             <p-columnFilter  pTooltip="Filtrera på DNF" tooltipPosition="top"  type="boolean" field="dnf"></p-columnFilter>
@@ -50,7 +51,7 @@
           <td>{{product.startNumber}} </td>
           <td>{{product.givenName}}</td>
           <td>{{product.familyName}}</td>
-          <td>{{product.passededDateTime}}</td>
+          <td>{{product.passededDateTime | removeAfter}}</td>
           <td><button pTooltip="Checka in startnr: {{product.startNumber}} " tooltipPosition="top" pButton [disabled]="product.dnf"  (click)="checkin(product, $event)" type="button" label="{{product.passed === true ? 'Ångra': 'Checkin'}}" class="p-button-secondary  container-fluid"></button></td>
           <td><button pTooltip="Markera att deltagaren avser att bryta" tooltipPosition="top" pButton  (click)="setdnf(product, $event)" pRipple type="button" label="{{product.dnf === true ? 'Ångra': 'DNF'}}" class="p-button-outlined p-button-danger container-fluid"></button></td>
 

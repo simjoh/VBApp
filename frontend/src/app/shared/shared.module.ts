@@ -43,6 +43,9 @@ import {ConfirmPopupModule} from 'primeng/confirmpopup';
 import {ToastModule} from 'primeng/toast';
 import { ToastComponent } from './components/toast/toast.component';
 import {BrowserModule} from "@angular/platform-browser";
+import { DateTimePrettyPrintPipe } from './pipes/date-time-pretty-print.pipe';
+import { RemoveAfterPipe } from './pipes/remove-after.pipe';
+import {ChartModule} from "primeng/chart";
 
 @NgModule({
     declarations: [
@@ -54,6 +57,8 @@ import {BrowserModule} from "@angular/platform-browser";
         DistanceKmPipe,
         DatetimeBetweenPipe,
         ToastComponent,
+        DateTimePrettyPrintPipe,
+        RemoveAfterPipe,
     ],
   entryComponents: [],
   imports: [
@@ -92,11 +97,11 @@ import {BrowserModule} from "@angular/platform-browser";
     ConfirmPopupModule,
     ToastModule,
     BrowserModule,
-    FormsModule, ReactiveFormsModule,
+    FormsModule, ReactiveFormsModule
   ],
-  exports: [CommonModule, BrowserModule,ToastModule, ConfirmPopupModule, BadgeModule, KnobModule, ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
+  exports: [CommonModule, BrowserModule ,ToastModule, ConfirmPopupModule, BadgeModule, KnobModule, ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
     LogoComponent, DatePipe, NgbCollapseModule, BrowserAnimationsModule, ProgressSpinnerModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
-    ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent],
+    ProgressBarModule, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent, DateTimePrettyPrintPipe, RemoveAfterPipe],
   providers: [DatePipe]
 })
 export class SharedModule { }

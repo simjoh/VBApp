@@ -24,6 +24,8 @@ class ApiKeyValidatorMiddleware
         $api_key = "notsecret_developer_key";
 
         $api_key_header = $request->getHeaderLine("APIKEY");
+
+//        $api_key_header = "notsecret_developer_key";
         if ($api_key_header != $api_key) {
 
             $response = (new Response())->withStatus(403);
@@ -46,7 +48,7 @@ class ApiKeyValidatorMiddleware
     }
 
     private function pathsToIgnore(): array{
-        return array("/api/results/year/", "/api/resultList/year");
+        return array("/api/results/year/", "/api/resultList/year", "/api/resultList/test");
     }
 
 }
