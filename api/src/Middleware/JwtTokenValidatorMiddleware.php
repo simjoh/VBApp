@@ -7,6 +7,8 @@ use MiladRahimi\Jwt\Exceptions\ValidationException;
 use MiladRahimi\Jwt\Parser;
 use MiladRahimi\Jwt\Validator\DefaultValidator;
 use MiladRahimi\Jwt\Validator\Rules\NewerThan;
+use MiladRahimi\Jwt\Validator\Rules\NewerThanOrSame;
+use MiladRahimi\Jwt\Validator\Rules\OlderThan;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -49,7 +51,7 @@ class JwtTokenValidatorMiddleware
     private function addRules(): DefaultValidator
     {
         $validator = new DefaultValidator();
-//        $validator->addRule('exp', new NewerThan(time()), true);
+       $validator->addRule('exp', new NewerThanOrSame(time()), true);
 
         return $validator;
     }

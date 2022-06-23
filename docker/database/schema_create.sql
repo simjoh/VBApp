@@ -186,6 +186,7 @@ CREATE TABLE participant_checkpoint (
     checkpoint_uid char(36) NOT NULL,
     passed BOOLEAN DEFAULT false,
     passeded_date_time DATETIME,
+    volonteer_checkin BOOLEAN DEFAULT false,
     lat DECIMAL(10,8),
     lng DECIMAL(11,8),
     PRIMARY KEY (participant_uid,checkpoint_uid),
@@ -213,7 +214,7 @@ CREATE TABLE competitor_credential (
 
 
 
-create view v_partisipant_to_pass_checkpoint AS SELECT tr.track_uid, pach.participant_uid,sit.site_uid, cpo.checkpoint_uid, cpo.opens , sit.adress, a.startnumber, cp.given_name, cp.family_name, pach.passed, pach.passeded_date_time, a.started , a.dnf FROM `participant` a
+create view v_partisipant_to_pass_checkpoint AS SELECT tr.track_uid, pach.participant_uid,sit.site_uid, cpo.checkpoint_uid, cpo.opens , sit.adress, a.startnumber, cp.given_name, cp.family_name, pach.passed, pach.passeded_date_time, pach.volonteer_checkin , a.started , a.dnf FROM `participant` a
 inner join competitors cp on a.competitor_uid = cp.competitor_uid
 inner join track tr on tr.track_uid = a.track_uid
 inner join participant_checkpoint  pach on pach.participant_uid = a.participant_uid

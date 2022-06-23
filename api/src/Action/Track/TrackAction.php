@@ -79,7 +79,6 @@ class TrackAction
         }
 
 //        throw new Exception();
-        $filename = 'banor2022_2022_prod.csv';
         $this->trackService->buildFromCsv($filename, $uploadDir, $request->getAttribute('currentuserUid'));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }

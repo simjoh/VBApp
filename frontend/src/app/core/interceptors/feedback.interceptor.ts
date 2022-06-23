@@ -18,12 +18,14 @@ export class FeedbackInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError(err => {
         if (err instanceof HttpErrorResponse) {
-          if (Number(err.error.code) >= 6 ){
-            this.messageService.add({key: 'tc', severity:'warn', summary: 'Warning', detail: this.felmeddelandeFor(err)});
-          } else {
-            this.messageService.add({key: 'tc', severity:'error', summary: 'Error', detail: this.felmeddelandeFor(err)});
-          }
 
+          if (err.error){
+            if (Number(err.error.code) >= 6 ){
+              this.messageService.add({key: 'tc', severity:'warn', summary: 'Warning', detail: this.felmeddelandeFor(err)});
+            } else {
+              this.messageService.add({key: 'tc', severity:'error', summary: 'Error', detail: this.felmeddelandeFor(err)});
+            }
+          }
         }
         return observableThrowError(err);
       })) as Observable<any>;

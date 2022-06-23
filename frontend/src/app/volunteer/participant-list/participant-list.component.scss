@@ -16,7 +16,34 @@
 
 :host ::ng-deep .row-accessories {
   background-color: rgba(0,0,0,.15) !important;
+
 }
+
+:host {
+    ::ng-deep .p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {
+        padding: 0.2rem;
+        font-size: 22px;
+        font: inherit;
+        padding-left: 0.5rem;
+    }
+}
+
+:host {
+    ::ng-deep .p-datatable.p-datatable-sm .p-datatable-thead > tr > th{
+        padding: 0.2rem;
+    }
+}
+
+:host {
+    ::ng-deep .p-datatable.p-datatable-sm .p-datatable-header{
+        padding: 0.2rem;
+        padding-left: 0.5rem;
+    }
+}
+
+
+
+
 
 
 .sticky {

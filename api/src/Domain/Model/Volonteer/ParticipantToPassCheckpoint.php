@@ -14,6 +14,8 @@ class ParticipantToPassCheckpoint
     private string $family_name;
     private bool $passed;
     private bool $started;
+    private bool $volonteer_checkin;
+
 
 
     private bool $dnf;
@@ -212,4 +214,21 @@ class ParticipantToPassCheckpoint
     {
         $this->started = $started;
     }
+
+    /**
+     * @return bool
+     */
+    public function isVolonteerCheckin(): bool
+    {
+        return $this->volonteer_checkin;
+    }
+
+    /**
+     * @param bool $volonteer_checkin
+     */
+    public function setVolonteerCheckin(bool $volonteer_checkin): void
+    {
+        $this->volonteer_checkin = $volonteer_checkin;
+    }
+
 }

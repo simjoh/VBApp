@@ -240,6 +240,25 @@ class CheckpointRepository extends BaseRepository
         return array();
     }
 
+    public function countCheckpointsForTrack(string $track_uid) : int{
+
+        try {
+            $statement = $this->connection->prepare($this->sqls('countCheckpointforTrack'));
+            $statement->bindParam(':track_uid', $track_uid);
+            $statement->execute();
+            $count = $statement->fetchColumn();
+            if (empty($count)) {
+                return 0;
+            }
+
+            return $count;
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return 0;
+    }
     public function deleteCheckpoint(string $checkpoint_uid): void {
         try {
             $stmt = $this->connection->prepare($this->sqls('deleteCheckpoint'));
@@ -292,6 +311,7 @@ class CheckpointRepository extends BaseRepository
         $tracksqls['updateCheckpoint']  = "UPDATE checkpoint SET  title=:title , site_uid=:site_uid description=:description , distance=:distance, opens=:opens, closing=:closing  WHERE checkpoint_uid=:checkpoint_uid";
         $tracksqls['deleteCheckpoint'] = 'delete from checkpoint c where c.checkpoint_uid=:checkpoint_uid;';
         $tracksqls['getCheckpointByTrackUid'] = 'select checkpoint_uid from track_checkpoint where track_uid=:track_uid;';
+        $tracksqls['countCheckpointforTrack'] = 'select count(checkpoint_uid) from track_checkpoint where track_uid=:track_uid;';
         $tracksqls['existsBySiteUidAndDistance'] = 'select * from checkpoint e where e.site_uid=:site_uid and e.distance=:distance and opens=:opens and closing=:closing;';
         return $tracksqls[$type];
         // TODO: Implement sqls() method.

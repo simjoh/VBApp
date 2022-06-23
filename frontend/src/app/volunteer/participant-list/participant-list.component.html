@@ -1,8 +1,8 @@
 
   <div class="col-lg-12 col-sm-12">
-    <p-table   #dt1  [globalFilterFields]="['startNumber', 'familyName', 'givenName', 'passed']"  *ngIf="randonneurs | async as randonneurs" sortMode="multiple" responsiveLayout="stack" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [rowsPerPageOptions]="[10,25,50,75,100,125]" [value]="randonneurs.randonnerurs" styleClass="p-datatable-sm p-datatable-gridlines" >
+    <p-table   #dt1  [globalFilterFields]="['startNumber', 'familyName', 'givenName', 'passed']"  *ngIf="randonneurs | async as randonneurs" sortMode="multiple" responsiveLayout="stack" [paginator]="true" [rows]="20" [showCurrentPageReport]="true"    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [rowsPerPageOptions]="[20,40,60,80,100,120]" [value]="randonneurs.randonnerurs" styleClass="p-datatable-sm p-datatable-gridlines" >
       <ng-template pTemplate="caption">
-        <div  class="col-8 sm:col-8" ><strong  pTooltip="Vald kontroll" tooltipPosition="top">{{randonneurs.choosenControl}}</strong>
+        <div  class="col-12 sm:col-12" ><strong  pTooltip="Vald kontroll" tooltipPosition="top">{{randonneurs.choosenControl}}</strong>
 
           <div class="p-input-icon-left ml-auto float-lg-right float-sm-right">
             <i class="pi pi-search"></i>
@@ -27,8 +27,8 @@
         <tr  class="sticky-top">
           <th class="lg:w-1" pSortableColumn="startNumber">Startnummer<p-sortIcon field="startNumber"></p-sortIcon></th>
           <th class="lg:w-1" pSortableColumn="givenName">Förnamn<p-sortIcon field="givenName"></p-sortIcon></th>
-          <th class="lg:w-3" pSortableColumn="familyName">Efternamn<p-sortIcon field="familyName"></p-sortIcon></th>
-          <th class="lg:w-1" pSortableColumn="passededDateTime">Tid<p-sortIcon field="passededDateTime"></p-sortIcon>
+          <th class="lg:w-2" pSortableColumn="familyName">Efternamn<p-sortIcon field="familyName"></p-sortIcon></th>
+          <th class="lg:w-2" pSortableColumn="passededDateTime">Tid<p-sortIcon field="passededDateTime"></p-sortIcon>
 
           </th>
           <th class="lg:w-1" pSortableColumn="passed">Passerat<p-sortIcon field="passed"></p-sortIcon>
@@ -48,11 +48,11 @@
       </ng-template>
       <ng-template *ngIf="randonneurs.randonnerurs.length > 0"   pTemplate="body" let-product>
         <tr [ngClass]="{'passed': product.passed === true, 'dnf': product.dnf === true,'dns': product.dns === true}">
-          <td>{{product.startNumber}} </td>
-          <td>{{product.givenName}}</td>
-          <td>{{product.familyName}}</td>
-          <td>{{product.passededDateTime | removeAfter}}</td>
-          <td><button pTooltip="Checka in startnr: {{product.startNumber}} " tooltipPosition="top" pButton [disabled]="product.dnf"  (click)="checkin(product, $event)" type="button" label="{{product.passed === true ? 'Ångra': 'Checkin'}}" class="p-button-secondary  container-fluid"></button></td>
+          <td><strong>{{product.startNumber}}</strong> </td>
+          <td><strong>{{product.givenName}}</strong></td>
+          <td><strong>{{product.familyName}}</strong></td>
+          <td>{{product.passededDateTime |  dateTimePrettyPrint}} {{product.volonteer_checkin === true && product.passed === true ? 'Volontär': ''}}</td>
+          <td><button pTooltip="Checka in startnr: {{product.startNumber}} " tooltipPosition="top" pButton [disabled]="product.dnf"  (click)="checkin(product, $event)" type="button" label="{{product.passed === true ? 'Ångra': 'Checka in'}}" class="p-button-secondary  container-fluid"></button></td>
           <td><button pTooltip="Markera att deltagaren avser att bryta" tooltipPosition="top" pButton  (click)="setdnf(product, $event)" pRipple type="button" label="{{product.dnf === true ? 'Ångra': 'DNF'}}" class="p-button-outlined p-button-danger container-fluid"></button></td>
 
         </tr>

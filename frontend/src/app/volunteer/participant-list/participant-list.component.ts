@@ -50,7 +50,7 @@ export class ParticipantListComponent implements OnInit {
     map(([all, insert, mesure]) =>  {
       this.ss = new VyInformation();
       this.ss.randonnerurs = insert;
-      this.ss.choosenControl = all.site.adress + " " + all.site.place;
+      this.ss.choosenControl = all.site.adress + " - " + all.site.place;
       this.ss.statistics = mesure;
       return this.ss;
     }),

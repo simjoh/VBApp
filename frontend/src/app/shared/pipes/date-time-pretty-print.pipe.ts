@@ -7,6 +7,10 @@ export class DateTimePrettyPrintPipe implements PipeTransform {
 
   transform(value: string, ...args: unknown[]): string {
 
+    if (value === undefined || value === ""){
+      return "";
+    }
+
     var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const month = ['Januray', 'February', 'March', 'April', 'May', 'June', 'Juli', 'August', 'September', 'October', 'November', 'December'];
     var parseddate = Date.parse(value.replace(/ /g,"T"))

@@ -1,21 +1,23 @@
 <div class="grid container-fluid">
   <div class="ml-2 col-12 sm:col-12 lg:col-12">
-    <div class="col-12 sm:col-12 md:col-9 lg:col-9"><h3>Välj ett event och bana <button (click)="op.toggle($event)" pButton pRipple type="button" icon="pi pi-info" class="p-button-raised p-button-rounded p-button-sm "></button></h3></div>
+    <div class="col-12 sm:col-12 md:col-12 lg:col-12"><h3>Välj event och bana <button (click)="op.toggle($event)" pButton pRipple type="button" icon="pi pi-info" class="p-button-raised p-button-rounded p-button-sm "></button></h3></div>
     <p-overlayPanel #op>
       <ng-template pTemplate>
-        För att kunna se vilka deltagare som passerat eller ska passera vid din kontroll behöver du välja event och bana som kontrollen finns på i dropdowns nedan <br><br>
+        För att kunna se vilka deltagare som passerat eller ska passera vid din kontroll behöver du välja event och bana som kontrollen finns på i rulllistan nedan <br><br>
 
-        När du valt kontroll visas en tabell med deltagare som ska passera eller har passerat din kontroll <br><br>
+        När du valt kontroll visas en lista med deltagare som ska passera eller har passerat din kontroll <br><br>
         Som volontär kan du
         <ul>
             <li>Checka in deltagare på din kontroll</li>
             <li>Markera att deltagaren bryter loppet</li>
             <li>Ångra incheckning och markering att deltagare bryter</li>
         </ul>
+
+
       </ng-template>
     </p-overlayPanel>
   </div>
-  <div class="col-12 sm:col-12 md:col-5 lg:col-2">
+  <div class="col-12 sm:col-9 md:col-5 lg:col-2">
       <div class="col-12 sm:col-12 lg:col-12">
         <brevet-event-chooser></brevet-event-chooser>
       </div>
@@ -24,16 +26,16 @@
           <brevet-track-selector></brevet-track-selector>
         </ng-container>
       </div>
-      <div class="lg:hidden  col-12 sm:col-12">
-        <brevet-checkpoint-selector></brevet-checkpoint-selector>
-      </div>
-      <div class="hidden md:inline-flex col-12 lg:col-12">
+<!--      <div class="lg:hidden  col-12 sm:col-12">-->
+<!--        <brevet-checkpoint-selector></brevet-checkpoint-selector>-->
+<!--      </div>-->
+      <div class="md:inline-flex col-12 lg:col-12">
         <div class="col-12 p-0">
         <brevet-checkpoint-selector-listbox></brevet-checkpoint-selector-listbox>
         </div>
       </div>
   </div>
-  <div class="col-12 sm:col-12 lg:col-7 md:col-7">
+  <div class="col-12 sm:col-3 lg:col-10 md:col-7 justify-content-center">
        <brevet-participant-list></brevet-participant-list>
   </div>
 </div>

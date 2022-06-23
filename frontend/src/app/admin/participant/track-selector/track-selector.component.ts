@@ -23,7 +23,7 @@ export class TrackSelectorComponent implements OnInit {
     map((trackarray: any) => {
       const tracks: SelectItem[] = [];
       trackarray.map((track) => {
-        tracks.push( { label: track.title + ' ' + this.datePipe.transform(track.start_date_time, 'yyyy-MM-dd') , value :track.track_uid});
+        tracks.push( { label: track.title + ' ' + this.datePipe.transform(track.start_date_time.replace(' ', 'T')) , value :track.track_uid});
       });
       return tracks;
     })

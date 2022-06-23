@@ -120,6 +120,7 @@ export interface ParticipantToPassCheckpointRepresentation {
   familyName: string;
   passed: boolean;
   passededDateTime?: string;
+  volonteer_checkin: boolean;
   dnf: boolean;
   link: [];
 }

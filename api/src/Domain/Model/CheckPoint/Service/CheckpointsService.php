@@ -13,33 +13,36 @@ use Psr\Container\ContainerInterface;
 
 class CheckpointsService extends ServiceAbstract
 {
-     private $checkpointRepository;
-     private $siteservice;
-    public function __construct(ContainerInterface $c, CheckpointRepository $checkpointRepository, SiteService $siteService, PermissionRepository $permissionRepository )
+    private $checkpointRepository;
+    private $siteservice;
+
+    public function __construct(ContainerInterface $c, CheckpointRepository $checkpointRepository, SiteService $siteService, PermissionRepository $permissionRepository)
     {
         $this->checkpointRepository = $checkpointRepository;
         $this->siteservice = $siteService;
         $this->permissionrepository = $permissionRepository;
     }
 
-    public function allCheckpoints() : array{
+    public function allCheckpoints(): array
+    {
         $checkpoints = $this->checkpointRepository->allCheckpoints();
         return $this->toRepresentations($checkpoints);
     }
 
-    public function checkpointsFor(array $checkpoints_uid, string $currentUserUid) : array{
+    public function checkpointsFor(array $checkpoints_uid, string $currentUserUid): array
+    {
         $permissions = $this->getPermissions($currentUserUid);
         $checkpoints = $this->checkpointRepository->checkpointsFor($checkpoints_uid);
         return $this->toRepresentations($checkpoints);
     }
 
-    public function checkpointFor(?string $checkpoint_uid) : CheckpointRepresentation
+    public function checkpointFor(?string $checkpoint_uid): CheckpointRepresentation
     {
 
         return $this->toRepresentation($this->checkpointRepository->checkpointFor($checkpoint_uid));
     }
 
-    public function checkpointForTrack(?string $track_uid) : array
+    public function checkpointForTrack(?string $track_uid): array
     {
 
         $checkpointUIDS = $this->checkpointRepository->checkpointUidsForTrack($track_uid);
@@ -47,6 +50,11 @@ class CheckpointsService extends ServiceAbstract
         $checkpoints = $this->checkpointRepository->checkpointsFor($checkpointUIDS);
 
         return $this->toRepresentations($checkpoints);
+    }
+
+    public function countCheckpointsForTrack(?string $track_uid): int {
+
+             return $this->checkpointRepository->countCheckpointsForTrack($track_uid);
     }
 
 

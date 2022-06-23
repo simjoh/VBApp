@@ -38,7 +38,7 @@ export class CompetitorService {
         return site;
       }),
       tap(event =>  {
-        this.addMessage('Checkin ok on checkpoint ' + s.checkpoint.site.adress,'success','Success');
+       // this.addMessage('Checkin ok on checkpoint ' + s.checkpoint.site.adress,'success','Success');
       })
     ).toPromise();
   }
@@ -51,7 +51,7 @@ export class CompetitorService {
         return event;
       }),
       tap(event =>   {
-        this.addMessage('Rollback checkin succeed','success','Success');
+      //  this.addMessage('Rollback checkin succeed','success','Success');
       })
     ).toPromise()
   }
@@ -64,7 +64,7 @@ export class CompetitorService {
         return event;
       }),
       tap(event =>   {
-        this.addMessage('Success set DNF','success','Success');
+       // this.addMessage('Success set DNF','success','Success');
       })
     ).toPromise()
   }
@@ -76,7 +76,7 @@ export class CompetitorService {
         return event;
       }),
       tap(event =>  {
-        this.addMessage('Success rollback DNF','success','Success');
+      //  this.addMessage('Success rollback DNF','success','Success');
       })
     ).toPromise();
   }
