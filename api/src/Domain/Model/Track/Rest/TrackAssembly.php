@@ -44,6 +44,7 @@ class TrackAssembly
         $trackRepresentation->setHeightdifference("");
         $trackRepresentation->setDistance($track->getDistance());
         $trackRepresentation->setEventUid($track->getEventUid());
+        $trackRepresentation->setActive($track->isActive());
         if($track->getStartDateTime() !== null){
             $trackRepresentation->setStartDateTime($track->getStartDateTime());
         }

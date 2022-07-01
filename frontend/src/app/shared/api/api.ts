@@ -83,6 +83,7 @@ export interface EventRepresentation {
 
 export interface RandonneurCheckPointRepresentation {
   checkpoint: CheckpointRepresentation;
+  active: boolean;
   links: [];
 }
 
@@ -135,5 +136,6 @@ export interface TrackRepresentation {
   track_uid: string;
   event_uid: string;
   start_date_time: string;
+  active: boolean;
 }
 

@@ -6,6 +6,7 @@ use App\common\Exceptions\BrevetException;
 use App\common\Util;
 use App\Domain\Model\CheckPoint\Service\CheckpointsService;
 use App\Domain\Model\Competitor\Repository\CompetitorRepository;
+use App\Domain\Model\Event\Repository\EventRepository;
 use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
 use App\Domain\Model\Randonneur\Rest\RandonneurCheckpointAssembly;
 use App\Domain\Model\Randonneur\Rest\TrackInfoRepresentation;
@@ -23,7 +24,8 @@ class RandonneurService
                                 ParticipantRepository $participantRepository,
                                 CheckpointsService $checkpointsService,
                                 TrackRepository $trackRepository,
-                                RandonneurCheckpointAssembly $randonneurCheckpointAssembly, TrackAssembly $trackAssembly, ContainerInterface $c )
+                                RandonneurCheckpointAssembly $randonneurCheckpointAssembly,
+                                TrackAssembly $trackAssembly, ContainerInterface $c, EventRepository $eventRepository )
     {
         $this->repository = $repository;
          $this->participantRepository = $participantRepository;
@@ -31,6 +33,7 @@ class RandonneurService
         $this->trackrepository = $trackRepository;
         $this->randonneurCheckpointAssembly = $randonneurCheckpointAssembly;
         $this->trackAssembly = $trackAssembly;
+        $this->eventrepository = $eventRepository;
         $this->settings = $c->get('settings');
     }
 
@@ -38,6 +41,21 @@ class RandonneurService
         $checkpoints = [];
         $participant = $this->participantRepository->participantOntRackAndStartNumber($track_uid, $startnumber);
         $track = $this->trackrepository->getTrackByUid($track_uid);
+
+        $event = $this->eventrepository->eventFor($track->getEventUid());
+
+        if($event->isCompleted() == true) {
+            throw new BrevetException("Event is completed ", 6, null);
+        }
+
+        $racepassed = $this->trackrepository->isRacePassed($track_uid);
+
+        if($this->settings['demo'] == 'true'){
+            $racepassed = false;
+        }
+
+
+        // kolla om datumet för banan som körs är passerat eller inte
 
         if(!empty($participant)){
             // hämta checkpoints for track
@@ -48,7 +66,7 @@ class RandonneurService
             foreach ($checkpoints as $checkpoint) {
                 $stamped = $this->participantRepository->hasStampOnCheckpoint($participant->getParticipantUid(), $checkpoint->getCheckPointUId());
                 $hasDnf = $this->participantRepository->hasDnf($participant->getParticipantUid());
-                array_push($randonneurcheckpoints, $this->randonneurCheckpointAssembly->toRepresentation($checkpoint,$stamped,$track_uid, $current_user_uid, $startnumber, $hasDnf));
+                array_push($randonneurcheckpoints, $this->randonneurCheckpointAssembly->toRepresentation($checkpoint,$stamped,$track_uid, $current_user_uid, $startnumber, $hasDnf, $racepassed));
             }
 
             return $randonneurcheckpoints;

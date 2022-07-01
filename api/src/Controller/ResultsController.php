@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Domain\Model\CheckPoint\Checkpoint;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Psr7\Response;
@@ -13,12 +14,16 @@ class ResultsController
 {
 
 
+    public function __construct(ContainerInterface   $c){
+        $this->settings = $c->get('settings');
+    }
+
 
     //Resultat på text BRM2021
     public function getResultView(ServerRequestInterface $request, ResponseInterface $response, $args){
         $view = Twig::fromRequest($request);
         return $view->render($response, 'result.html', [
-            'link' => "/api/resultList/year/" . strval($args['year']) . "/event/" . $args['eventUid']
+            'link' => $this->settings['path'] . "resultList/year/" . strval($args['year']) . "/event/" . $args['eventUid']
         ]);
     }
 

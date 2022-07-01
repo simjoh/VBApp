@@ -17,12 +17,7 @@ class TrackRepresentation implements JsonSerializable
     private String $track_uid;
     private string $event_uid;
     private string $start_date_time;
-
-
-
-
-
-
+    private ?bool $active;
     private ?Link $link;
 
     /**
@@ -187,6 +182,22 @@ class TrackRepresentation implements JsonSerializable
     public function getStartDateTime(): string
     {
         return $this->start_date_time;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getActive(): ?bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param bool|null $active
+     */
+    public function setActive(?bool $active): void
+    {
+        $this->active = $active;
     }
 
     /**

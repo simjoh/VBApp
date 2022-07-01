@@ -31,9 +31,9 @@ export class CompetitorService {
     ) as Observable<Array<RandonneurCheckPointRepresentation>>;
   }
 
-   public stampOnCheckpoint(s: RandonneurCheckPointRepresentation){
+  async  stampOnCheckpoint(s: RandonneurCheckPointRepresentation): Promise<any>{
     const link = this.linkService.findByRel(s.links,'relation.randonneur.stamp', HttpMethod.POST)
-    return this.httpClient.post<any>(link.url, null).pipe(
+    return await this.httpClient.post<any>(link.url, null).pipe(
       map((site: boolean) => {
         return site;
       }),
@@ -44,9 +44,9 @@ export class CompetitorService {
   }
 
 
-  public rollbackStamp(s: RandonneurCheckPointRepresentation){
+  async rollbackStamp(s: RandonneurCheckPointRepresentation):Promise<any>{
     const link = this.linkService.findByRel(s.links,'relation.randonneur.rollback', HttpMethod.PUT)
-    return this.httpClient.put<any>( link.url, null).pipe(
+    return await this.httpClient.put<any>( link.url, null).pipe(
       map((event: boolean) => {
         return event;
       }),
@@ -56,10 +56,10 @@ export class CompetitorService {
     ).toPromise()
   }
 
-  public markAsDNF(s: RandonneurCheckPointRepresentation){
+  async markAsDNF(s: RandonneurCheckPointRepresentation): Promise<any>{
     const link = this.linkService.findByRel(s.links,'relation.randonneur.dnf', HttpMethod.PUT)
 
-    return this.httpClient.put<any>(link.url, null).pipe(
+    return await this.httpClient.put<any>(link.url, null).pipe(
       map((event: boolean) => {
         return event;
       }),
@@ -69,9 +69,9 @@ export class CompetitorService {
     ).toPromise()
   }
 
-  public rollbackDNF(s: RandonneurCheckPointRepresentation){
+ async  rollbackDNF(s: RandonneurCheckPointRepresentation): Promise<any>{
     const link = this.linkService.findByRel(s.links,'relation.randonneur.dnf.rollback', HttpMethod.PUT)
-    return this.httpClient.put<any>(link.url,null).pipe(
+    return await this.httpClient.put<any>(link.url,null).pipe(
       map((event: boolean) => {
         return event;
       }),

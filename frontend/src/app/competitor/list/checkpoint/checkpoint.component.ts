@@ -1,10 +1,10 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, Input, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
 import {CompetitorListComponentService} from "../competitor-list-component.service";
 import {RandonneurCheckPointRepresentation} from "../../../shared/api/api";
 import {BehaviorSubject} from "rxjs";
 import {LinkService} from "../../../core/link.service";
-import {map} from "rxjs/operators";
-import { ConfirmationService } from 'primeng/api';
+import {map, sample} from "rxjs/operators";
+import {ConfirmationService} from 'primeng/api';
 import {inputNames} from "@angular/cdk/schematics";
 
 @Component({
@@ -23,7 +23,7 @@ export class CheckpointComponent implements OnInit {
   chekedinSubject = new BehaviorSubject(false);
   checkedin$ = this.chekedinSubject.asObservable().pipe(
     map((val) => {
-      if (val === false){
+      if (val === false) {
         this.checkinknapptext = 'Checkin'
       } else {
         this.checkinknapptext = 'Undo checkin'
@@ -35,7 +35,7 @@ export class CheckpointComponent implements OnInit {
   dnfSubject = new BehaviorSubject(false);
   isdnf$ = this.dnfSubject.asObservable().pipe(
     map((val) => {
-      if (val === true){
+      if (val === true) {
         this.dnfknapptext = 'Undo DNF'
       } else {
         this.dnfknapptext = 'DNF'
@@ -50,10 +50,12 @@ export class CheckpointComponent implements OnInit {
   @Input() distance: any
   @Input() distancetonext: any
 
-  @Output() checkedin = new EventEmitter();
-  @Output() dnf = new EventEmitter();
+  @Output() checkedin = new EventEmitter<any>();
+  @Output() dnf = new EventEmitter<any>();
 
-  constructor(private linkservice: LinkService, private confirmationService: ConfirmationService) { }
+  constructor(private linkservice: LinkService, private confirmationService: ConfirmationService) {
+  }
+
 
   ngOnInit(): void {
     this.chekedinSubject.next(this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp') === false)
@@ -66,7 +68,7 @@ export class CheckpointComponent implements OnInit {
          this.confirmationService.confirm({
            message: 'Are you sure that you want to undo checkin at  '  + this.checkpoints.checkpoint.site.adress + " " + this.checkpoints.checkpoint.site.place,
            accept: () => {
-             this.checkedin.emit(false)
+             this.checkedin.emit(false);
              this.chekedinSubject.next(false);
            }
          });
@@ -74,9 +76,7 @@ export class CheckpointComponent implements OnInit {
          this.confirmationService.confirm({
            message: 'Are you sure that you want to checkin at ' + this.checkpoints.checkpoint.site.adress + " " + this.checkpoints.checkpoint.site.place,
            accept: () => {
-             this.checkedin.emit(false)
-             this.checkedin.emit(true)
-             // this.chekedinSubject.next(true);
+             this.checkedin.emit(true);
            }
          });
        }

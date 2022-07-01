@@ -69,6 +69,16 @@ class TrackService extends ServiceAbstract
     {
         $permissions = $this->getPermissions($currentuserUid);
         $track = $this->trackRepository->getTrackByUid($trackUid);
+
+       $isracePassed = $this->trackRepository->isRacePassed($trackUid);
+
+       if($isracePassed == true || $track->isActive() == false){
+           if($this->settings['demo'] == 'true'){
+               $track->setActive(true);
+           } else {
+               $track->setActive(false);
+           }
+       }
         return $this->trackAssembly->toRepresentation($track, $permissions, $currentuserUid);
     }
 

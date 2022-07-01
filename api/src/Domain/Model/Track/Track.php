@@ -13,6 +13,7 @@ class Track
    private string $description;
    private string $link = "";
    private string $distance;
+   private bool $active;
    private array $checkpoints = [];
    private  $start_date_time = "";
 
@@ -183,6 +184,22 @@ class Track
     public function setStartDateTime($start_date_time): void
     {
         $this->start_date_time = $start_date_time;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param bool $active
+     */
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
     }
 
 

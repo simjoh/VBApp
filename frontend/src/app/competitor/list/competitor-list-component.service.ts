@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import {CompetitorService} from "../competitor.service";
 import {AuthService} from "../../core/auth/auth.service";
-import {map, mergeMap, shareReplay, tap, withLatestFrom} from "rxjs/operators";
+import {map, mergeMap, shareReplay, take, tap, withLatestFrom} from "rxjs/operators";
 import {RandonneurCheckPointRepresentation} from "../../shared/api/api";
 import {BehaviorSubject, combineLatest, forkJoin, ReplaySubject} from "rxjs";
 import {TrackService} from "../track.service";
+import {LinkService} from "../../core/link.service";
+import {HttpMethod} from "../../core/HttpMethod";
 
 @Injectable()
 export class CompetitorListComponentService {
@@ -34,29 +36,36 @@ export class CompetitorListComponentService {
   // );
 
 
-  constructor(private competitorService: CompetitorService, private authService: AuthService, private trackService: TrackService) {
+  constructor(private competitorService: CompetitorService, private authService: AuthService, private trackService: TrackService,private linkservice: LinkService) {
   }
 
   public reload(){
     this.reloadSubject.next(true);
   }
 
-  async  stamp($event: boolean, s: RandonneurCheckPointRepresentation){
+  async  stamp($event: boolean, s: RandonneurCheckPointRepresentation):Promise<any>{
    await this.competitorService.stampOnCheckpoint(s);
-   this.reload();
+    this.reload()
   }
 
-  async rollbackStamp($event: any, s: RandonneurCheckPointRepresentation){
+  async rollbackStamp($event: any, s: RandonneurCheckPointRepresentation): Promise<any>{
     await this.competitorService.rollbackStamp(s);
     this.reload();
   }
 
-  async setDnf($event: any, s: RandonneurCheckPointRepresentation){
+
+  async setDnf($event: any, s: RandonneurCheckPointRepresentation): Promise<any>{
     if ($event === true){
       await this.competitorService.markAsDNF(s);
+      this.reload();
     } else {
       await this.competitorService.rollbackDNF(s);
+      this.reload();
     }
-    this.reload();
+
+  }
+
+  async dnfLinkExists(s: RandonneurCheckPointRepresentation): Promise<any>{
+    return this.linkservice.findByRel(s.links,'relation.randonneur.dnf', HttpMethod.PUT)
   }
 }

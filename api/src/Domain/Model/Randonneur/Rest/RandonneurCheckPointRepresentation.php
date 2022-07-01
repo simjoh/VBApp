@@ -11,6 +11,9 @@ class RandonneurCheckPointRepresentation implements JsonSerializable
 {
 
     private CheckpointRepresentation $checkpoint;
+    private ?bool $active;
+
+
     private array $links = [];
 
     /**
@@ -29,6 +32,21 @@ class RandonneurCheckPointRepresentation implements JsonSerializable
         $this->checkpoint = $checkpoint;
     }
 
+    /**
+     * @return bool|null
+     */
+    public function getActive(): ?bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param bool|null $active
+     */
+    public function setActive(?bool $active): void
+    {
+        $this->active = $active;
+    }
 
 
     /**

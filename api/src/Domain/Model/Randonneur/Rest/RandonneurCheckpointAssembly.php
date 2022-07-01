@@ -17,15 +17,23 @@ class RandonneurCheckpointAssembly
 
 
 
-    public function toRepresentation(CheckpointRepresentation $checkpoint, bool $stamped, string $track_uid, string $currentUserUId, string $startnumber, bool $hasDnf): RandonneurCheckPointRepresentation{
+    public function toRepresentation(CheckpointRepresentation $checkpoint, bool $stamped, string $track_uid, string $currentUserUId, string $startnumber, bool $hasDnf, $racepassed): RandonneurCheckPointRepresentation{
 
        $randonneurcheckpoint =  new RandonneurCheckPointRepresentation();
        $randonneurcheckpoint->setCheckpoint($checkpoint);
+
+       if($racepassed){
+           $randonneurcheckpoint->setActive(false);
+       } else {
+           $randonneurcheckpoint->setActive(true);
+       }
+
 //       $randonneurcheckpoint->setTrackInfoRepresentation($trackinfo);
         $linkArray = array();
+//        if($racepassed == false){
         if($stamped == false){
             array_push($linkArray, new Link("relation.randonneur.stamp", 'POST', $this->settings['path'] . 'randonneur/' . $currentUserUId . "/track/" . $track_uid . "/startnumber/" . $startnumber . "/checkpoint/" . $checkpoint->getCheckpointUid() . "/stamp"));
-        } else {
+        } else  {
             array_push($linkArray, new Link("relation.randonneur.rollback", 'PUT', $this->settings['path'] . 'randonneur/' . $currentUserUId . "/track/" . $track_uid . "/startnumber/" . $startnumber . "/checkpoint/" . $checkpoint->getCheckpointUid() . "/rollback"));
         }
         if($hasDnf == false){
@@ -33,6 +41,8 @@ class RandonneurCheckpointAssembly
         } else {
             array_push($linkArray, new Link("relation.randonneur.dnf.rollback", 'PUT', $this->settings['path'] . 'randonneur/' . $currentUserUId . "/track/" . $track_uid . "/startnumber/" . $startnumber . "/checkpoint/" . $checkpoint->getCheckpointUid() . "/rollbackdnf"));
         }
+
+//        }
 
         $randonneurcheckpoint->setLinks($linkArray);
         return $randonneurcheckpoint;

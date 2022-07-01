@@ -2,6 +2,7 @@
 
 namespace App\Domain\Model\Track\Repository;
 
+use App\common\Exceptions\BrevetException;
 use App\common\Repository\BaseRepository;
 use App\Domain\Model\Track\Track;
 use Exception;
@@ -123,6 +124,33 @@ class TrackRepository extends BaseRepository
             echo "Error: " . $e->getMessage();
         }
         return $tracks[0];
+    }
+
+    public function isRacePassed(string $trackUid): bool{
+
+        $statement = $this->connection->prepare($this->sqls('trackdatesPassed'));
+        $statement->bindParam(':track_uid', $trackUid);
+        $statement->execute();
+        $row = $statement->fetch();
+
+        if($statement->rowCount() > 1){
+            throw new BrevetException("Should not b", 5, null);
+        }
+
+        $today = date('Y-m-d');
+        $enddate = $row['closing'];
+        $startdate = $row['opens'];
+
+        if($today > $enddate){
+            return true;
+        }
+
+
+
+        return false;
+
+
+
     }
 
 
@@ -294,6 +322,8 @@ class TrackRepository extends BaseRepository
         $tracksqls['createTrack']  = "INSERT INTO track(track_uid, title ,link, heightdifference , event_uid,description, distance, start_date_time) VALUES (:track_uid,:title ,:link, :heightdifference ,:event_uid, :description ,:distance, :start_date_time)";
         $tracksqls['createTrackCheckpoint']  = "INSERT INTO track_checkpoint(track_uid, checkpoint_uid) VALUES (:track_uid,:checkpoint_uid)";
         $tracksqls['trackWithStartdateExists']  = "select * from track where event_uid=:event_uid and title=:title and start_date_time=:start_date_time;";
+
+        $tracksqls['trackdatesPassed']  = "SELECT max(c.distance) as distance ,min(c.opens) as opens , c.checkpoint_uid, max(c.closing) as closing FROM `track` t inner join track_checkpoint tc on tc.track_uid = t.track_uid inner join checkpoint c on c.checkpoint_uid = tc.checkpoint_uid where t.track_uid =:track_uid;";
 
 
 
