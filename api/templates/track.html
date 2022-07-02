@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Consume XML request</title>
-
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script type="text/javascript">
         function ajaxFunction(callback) {
@@ -39,30 +39,48 @@
                 }
             }
 
-             console.log(`{{event}}`);
             ajaxRequest.open("GET", `{{link}}`);
             ajaxRequest.setRequestHeader("API_KEY", "notsecret_developer_key");
             ajaxRequest.send(null);
         }
 
         function createTitle(data){
-            document.getElementById('title').innerHTML = data.replaceAll('&quot;','');
-           document.getElementById('title').classList.add('eventTitle');
+             let s = data.replaceAll('&quot;','"');
+            let result = s.replace(/^\/?|\/?$/g, "")
+            const event = JSON.parse(result);
+            document.getElementById('title').innerHTML = event.title;
+            document.getElementById('title').classList.add('eventTitle');
         }
 
+        function createNoContent(){
+            document.getElementById('nocontent').innerHTML = "No contestant to track";
+            document.getElementById('nocontent').classList.add('alert');
+            document.getElementById('nocontent').classList.add('alert-primary');
+		}
+
         function createTableCallBack(data){
+
+            if (data.length === 0){
+				createNoContent();
+
+            }
+
             let table = document.querySelector("table");
             generateTableHead(table, Object.keys(data[0]));
             generateTable(table, data);
 		}
 
         function generateTable(table, data) {
+
+
+
+
             data = sortResult(data);
             for (let element of data) {
                 let row = table.insertRow();
                 row.classList.add("done");
                 for (key in element) {
-                    if (element['Tid'] !== 'DNF' && element['Tid'] !== 'DNS') {
+                    if (element['Status'] !== 'DNF' && element['Status'] !== 'DNS') {
                         let cell = row.insertCell();
                         let text = null;
                         if (element[key] == "") {
@@ -77,7 +95,7 @@
                 let row2 = table.insertRow();
                 row2.classList.add("dnf");
                 for (key in element) {
-                    if (element['Tid'] == 'DNF' || element['Tid'] == 'DNS') {
+                    if (element['Status'] == 'DNF' || element['Status'] == 'DNS') {
                         let cell2 = row2.insertCell();
                         let text = null;
                         if(element[key] == ""){
@@ -101,14 +119,14 @@
                 // Sort by votes
                 // If the first item has a higher number, move it down
                 // If the first item has a lower number, move it up
-                if (vote1.Tid < vote2.Tid) return -1;
-                if (vote1.Tid > vote2.Tid) return 1;
+                if (vote1.Fornamn < vote2.Fornamn) return -1;
+                if (vote1.Fornamn > vote2.Fornamn) return 1;
 
                 // If the votes number is the same between both items, sort alphabetically
                 // If the first item comes first in the alphabet, move it up
                 // Otherwise move it down
-                // if (vote1.dns > vote2.dns) return 1;
-                // if (vote1.dns < vote2.dns) return -1;
+                if (vote1.Efternamn > vote2.Efternamn) return 1;
+                if (vote1.Efternamn < vote2.Efternamn) return -1;
 
             });
 
@@ -184,6 +202,8 @@
 
 
 <div class="center" id="title"></div>
+
+<div class="center" id="nocontent"></div>
 
 <table class="center"></table>
 

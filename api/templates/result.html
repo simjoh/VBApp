@@ -34,15 +34,21 @@
                 if(ajaxRequest.readyState === 4) {
                     var ajaxDisplay = document.getElementById('ajaxDiv');
                     // ajaxDisplay.innerHTML = JSON.parse(ajaxRequest.responseText)[0].name;
+					createTitle(`{{event}}`)
                     createTableCallBack(JSON.parse(ajaxRequest.responseText));
                 }
             }
 
+             console.log(`{{event}}`);
             ajaxRequest.open("GET", `{{link}}`);
             ajaxRequest.setRequestHeader("API_KEY", "notsecret_developer_key");
             ajaxRequest.send(null);
         }
 
+        function createTitle(data){
+            document.getElementById('title').innerHTML = data.replaceAll('&quot;','');
+           document.getElementById('title').classList.add('eventTitle');
+        }
 
         function createTableCallBack(data){
             let table = document.querySelector("table");
@@ -51,16 +57,63 @@
 		}
 
         function generateTable(table, data) {
+            data = sortResult(data);
             for (let element of data) {
                 let row = table.insertRow();
                 row.classList.add("done");
                 for (key in element) {
-                    let cell = row.insertCell();
-                    let text = document.createTextNode(element[key]);
-                    cell.appendChild(text);
+                    if (element['Tid'] !== 'DNF' && element['Tid'] !== 'DNS') {
+                        let cell = row.insertCell();
+                        let text = null;
+                        if (element[key] == "") {
+                            text = document.createTextNode(" ");
+                        } else {
+                            text = document.createTextNode(element[key]);
+                        }
+                        cell.appendChild(text);
+
+                    }
+                }
+                let row2 = table.insertRow();
+                row2.classList.add("dnf");
+                for (key in element) {
+                    if (element['Tid'] == 'DNF' || element['Tid'] == 'DNS') {
+                        let cell2 = row2.insertCell();
+                        let text = null;
+                        if(element[key] == ""){
+                            text = document.createTextNode(" ");
+                        } else {
+                            text = document.createTextNode(element[key]);
+                        }
+                        cell2.appendChild(text);
+
+                    }
                 }
             }
+
         }
+
+
+        function sortResult(data){
+
+            data.sort(function (vote1, vote2) {
+
+                // Sort by votes
+                // If the first item has a higher number, move it down
+                // If the first item has a lower number, move it up
+                if (vote1.Tid < vote2.Tid) return -1;
+                if (vote1.Tid > vote2.Tid) return 1;
+
+                // If the votes number is the same between both items, sort alphabetically
+                // If the first item comes first in the alphabet, move it up
+                // Otherwise move it down
+                // if (vote1.dns > vote2.dns) return 1;
+                // if (vote1.dns < vote2.dns) return -1;
+
+            });
+
+            return data;
+		}
 
         function generateTableHead(table, data) {
             let thead = table.createTHead();
@@ -98,11 +151,11 @@
         }
 
         td:nth-child(1) {
-            text-align: right;
+            text-align: left;
         }
 
         td:nth-child(2) {
-            text-align: right;
+            text-align: left;
         }
 
         .dnf {
@@ -121,13 +174,19 @@
             padding: 10px;
         }
 
+		.eventTitle {
+            font-weight: bold;
+			font-size: 25px;
+		}
+
 	</style>
 </head>
 
 
+<div class="center" id="title"></div>
 
-<table class="center">
-</table>
+<table class="center"></table>
+
 <!--<div id="ajaxDiv"></div>-->
 
 

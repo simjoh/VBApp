@@ -21,13 +21,19 @@ return function (App $app) {
      //$app->get('/bla/bla/bla', \App\Action\HomeAction::class)->setName('home');
 
     //lägg till ingång för att kunna generera resultat på vb.se
+    // Hämtar vyn för en resultat på ett event.
     $app->get('/results/year/{year}/event/{eventUid}', \App\Controller\ResultsController::class . ':getResultView')->setName('result');
+    // Hämtar själva resultatlistan för ett event.
     $app->get('/resultList/year/{year}/event/{eventUid}', \App\Controller\ResultsController::class . ':getResultList');
+    // resultat för en deltagare en person.
+    $app->put('/results/participant/{participantUid}', \App\Controller\ResultsController::class . ':resultForContestant');
 
     $app->get('/resultList/test', \App\Controller\ResultsController::class . ':getResultsPhp');
 
     // Ingång för att kunna visa en cyklists passeringar under ett lopp
-
+    $app->get('/track/event/{eventUid}', \App\Controller\ResultsController::class . ':getTrackView')->setName('track');
+    // Tracker för ett event dvs själva listan.
+    $app->get('/tracker/event/{eventUid}', \App\Controller\ResultsController::class . ':track');
 
     // User route group
     $app->group('/api', function(RouteCollectorProxy $apps) use ($app) {

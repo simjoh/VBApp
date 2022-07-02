@@ -2,11 +2,15 @@
 
 namespace App\Controller;
 
-use App\Domain\Model\CheckPoint\Checkpoint;
+use App\Domain\Model\Event\Repository\EventRepository;
+use App\Domain\Model\Event\Service\EventService;
+use App\Domain\Model\Result\Service\ResultService;
+use App\Domain\Model\Track\Service\TrackService;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Psr7\Response;
+use Slim\Routing\RouteContext;
 use Slim\Views\PhpRenderer;
 use Slim\Views\Twig;
 
@@ -14,24 +18,83 @@ class ResultsController
 {
 
 
-    public function __construct(ContainerInterface   $c){
+    public function __construct(ContainerInterface   $c, ResultService $resultService, EventService $eventService, TrackService $trackService){
         $this->settings = $c->get('settings');
+        $this->resultService = $resultService;
+        $this->eventservice = $eventService;
+        $this->trackService = $trackService;
     }
+
+
 
 
     //Resultat på text BRM2021
     public function getResultView(ServerRequestInterface $request, ResponseInterface $response, $args){
         $view = Twig::fromRequest($request);
+
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $eventUid = $route->getArgument('eventUid');
+        $year = $route->getArgument('year');
+
+         $event =  $this->eventservice->eventFor($eventUid, "");
+        $result =  $this->resultService->resultsOnEvent($eventUid, $year);
         return $view->render($response, 'result.html', [
-            'link' => $this->settings['path'] . "resultList/year/" . strval($args['year']) . "/event/" . $args['eventUid']
+            'link' => $this->settings['path'] . "resultList/year/" . strval($args['year']) . "/event/" . $args['eventUid'], 'event' => json_encode($event->getTitle())
+        ]);
+    }
+
+    public function getTrackView(ServerRequestInterface $request, ResponseInterface $response, $args){
+        $view = Twig::fromRequest($request);
+
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $eventUid = $route->getArgument('eventUid');
+        $event =  $this->eventservice->eventFor($eventUid, "");
+        $tracks =  $this->trackService->tracksForEvent( "",$eventUid);
+//        $result =  $this->resultService->trackContestants($eventUid, array());
+        return $view->render($response, 'track.html', [
+            'link' => $this->settings['path'] . "tracker/" . "event/" . $args['eventUid'], 'event' => json_encode($event === null ? "": $event), 'tracks' => json_encode($tracks)
         ]);
     }
 
     //Resultat på text BRM2021
     public function getResultList(ServerRequestInterface $request, ResponseInterface $response, $args){
-        $response->getBody()->write((string)json_encode($this->getJson()), JSON_UNESCAPED_SLASHES);
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $eventUid = $route->getArgument('eventUid');
+        $year = $route->getArgument('year');
+         $result =  $this->resultService->resultsOnEvent($eventUid,$year);
+        $response->getBody()->write((string)json_encode($result), JSON_UNESCAPED_SLASHES);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 
+    }
+
+    public function track(ServerRequestInterface $request, ResponseInterface $response, $args){
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $eventUid = $route->getArgument('eventUid');
+
+        $tracks =  $this->trackService->tracksForEvent( "",$eventUid);
+//        $year = $route->getArgument('year');
+         $result =  $this->resultService->trackContestants($eventUid,$tracks);
+        $response->getBody()->write((string)json_encode($result), JSON_UNESCAPED_SLASHES);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+
+    }
+
+
+    public function resultForContestant(ServerRequestInterface $request, ResponseInterface $response, $args){
+
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_Uid = $route->getArgument('participantUid');
+
+        $json   = json_decode($request->getBody()->getContents());
+        $array = get_object_vars($json);
+        $result =  $this->resultService->resultForContestant($participant_Uid,$array["trackUid"],$array["eventUid"]);
+        $response->getBody()->write((string)json_encode($result), JSON_UNESCAPED_SLASHES);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
     //Resultat på text BRM2021

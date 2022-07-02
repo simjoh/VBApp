@@ -224,21 +224,32 @@ inner join site sit on sit.site_uid = cpo.site_uid;
 
 
 create view v_result_for_event_and_track AS select * from (
-                                            select p.startnumber, p.dns, p.dnf, t.event_uid, p.time, c.given_name, c.family_name, club.title as club, ci.country , s.adress, pc.passeded_date_time, pc.passed from event ev
-                                            inner join track t on t.event_uid = ev.event_uid
-                                            inner join participant p on p.track_uid = t.track_uid
-                                            inner join competitors c on c.competitor_uid = p.competitor_uid
-                                            inner join club club on club.club_uid = p.club_uid
-                                            inner join competitor_info ci on c.competitor_uid = ci.competitor_uid
-                                            INNER join participant_checkpoint pc on pc.participant_uid = p.participant_uid
-                                                inner join checkpoint cp on cp.checkpoint_uid = pc.checkpoint_uid
-                                                inner join site s on s.site_uid = cp.site_uid
-                                                and  pc.passeded_date_time = (SELECT MAX(d.passeded_date_time) FROM participant_checkpoint d where   pc.passed = true and pc.participant_uid = d.participant_uid )
-                                            and t.active = false
-                                            and p.started = true
-                                            order by p.finished DESC
-                                                ) as sa
+select p.startnumber , p.started, ev.start_date as eventstart, ev.end_date as eventend, p.competitor_uid , t.title as bana , p.finished,  t.track_uid, p.dns, p.dnf, t.event_uid, p.time, c.given_name, c.family_name, club.title as club, ci.country , s.adress, pc.passeded_date_time, pc.passed from event ev
+inner join track t on t.event_uid = ev.event_uid
+inner join participant p on p.track_uid = t.track_uid
+inner join competitors c on c.competitor_uid = p.competitor_uid
+inner join club club on club.club_uid = p.club_uid
+inner join competitor_info ci on c.competitor_uid = ci.competitor_uid
+INNER join participant_checkpoint pc on pc.participant_uid = p.participant_uid
+inner join checkpoint cp on cp.checkpoint_uid = pc.checkpoint_uid
+inner join site s on s.site_uid = cp.site_uid
+and  pc.passeded_date_time = (SELECT MAX(d.passeded_date_time) FROM participant_checkpoint d where   pc.passed = true and pc.participant_uid = d.participant_uid )
+and t.active = false
+order by p.finished DESC ) as sa
 
+
+create view v_partisipant_passed_checkpoints AS SELECT tr.track_uid, pach.participant_uid,sit.site_uid, cpo.checkpoint_uid, cpo.opens , sit.adress, a.startnumber, cp.given_name, cp.family_name, pach.passed, pach.passeded_date_time, pach.volonteer_checkin , a.started , a.dns, a.dnf FROM `participant` a
+inner join competitors cp on a.competitor_uid = cp.competitor_uid
+inner join track tr on tr.track_uid = a.track_uid
+inner join participant_checkpoint  pach on pach.participant_uid = a.participant_uid
+inner join checkpoint cpo on cpo.checkpoint_uid = pach.checkpoint_uid
+inner join site sit on sit.site_uid = cpo.site_uid
+where pach.passed = true
+and a.started = true
+
+
+
+create view v_race_statistic AS  select sum(p.dnf) as dnf, SUM(p.dns) dns, SUM(p.finished) as completed , t.title , t.start_date_time as racestarts ,t.track_uid, ev.event_uid, ev.start_date as eventstarts, ev.end_date as eventends from participant p inner join track t on t.track_uid = p.track_uid inner join event ev on ev.event_uid = t.event_uid  GROUP by t.title order by t.title;
 
 
 
