@@ -4,6 +4,7 @@ namespace App\Domain\Model\Partisipant\Repository;
 use App\common\Exceptions\BrevetException;
 use App\common\Repository\BaseRepository;
 use App\Domain\Model\Partisipant\Participant;
+use App\Domain\Model\Partisipant\ParticipantCheckpoint;
 use Exception;
 use PDO;
 use PDOException;
@@ -656,6 +657,33 @@ class ParticipantRepository extends BaseRepository
             echo "Error: " . $e->getMessage();
         }
         return true;
+    }
+
+    public function stampTimeOnCheckpoint(string $participand_uid, $checkpoint_uid): ?ParticipantCheckpoint
+    {
+
+        try {
+            $statement = $this->connection->prepare($this->sqls('participanCheckpointByParticipantUidAndCheckpointUid'));
+            $statement->bindParam(':participant_uid', $participand_uid);
+            $statement->bindParam(':checkpoint_uid', $checkpoint_uid);
+            $statement->execute();
+            $checkpoint = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Partisipant\ParticipantCheckpoint::class, null);
+
+            if (empty($checkpoint)) {
+                return null;
+            }
+
+            if(count($checkpoint) > 1){
+                throw new BrevetException("Error", 5, null);
+            }
+
+            return $checkpoint[0];
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return null;
     }
 
     public function createTrackCheckpointsFor(Participant $participant, array $checkpoints)

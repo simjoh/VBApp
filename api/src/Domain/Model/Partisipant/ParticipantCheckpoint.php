@@ -9,6 +9,8 @@ class ParticipantCheckpoint
     private string $checkpoint_uid;
     private bool $passed;
     private  $passeded_date_time;
+    private ?string $lat;
+    private ?string $lng;
 
     /**
      * @return string
@@ -105,7 +107,6 @@ class ParticipantCheckpoint
     {
         $this->lng = $lng;
     }
-    private string $lat;
-    private string $lng;
+
 
 }

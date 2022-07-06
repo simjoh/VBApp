@@ -26,14 +26,20 @@ return function (App $app) {
     // Hämtar själva resultatlistan för ett event.
     $app->get('/resultList/year/{year}/event/{eventUid}', \App\Controller\ResultsController::class . ':getResultList');
     // resultat för en deltagare en person.
-    $app->put('/results/participant/{participantUid}', \App\Controller\ResultsController::class . ':resultForContestant');
+    //$app->put('/results/participant/{participantUid}', \App\Controller\ResultsController::class . ':resultForContestant');
+
+    // $app->get('/results/randonneur/{uid}', \App\Controller\ResultsController::class . ':getTrackView')->setName('track');
+    $app->get('/results/randonneur/{uid}', \App\Controller\ResultsController::class . ':resultForContestant');
 
     $app->get('/resultList/test', \App\Controller\ResultsController::class . ':getResultsPhp');
 
-    // Ingång för att kunna visa en cyklists passeringar under ett lopp
+    // Ingång för att kunna visa en cyklists passeringar under ett lopp. hämta vy
     $app->get('/track/event/{eventUid}', \App\Controller\ResultsController::class . ':getTrackView')->setName('track');
     // Tracker för ett event dvs själva listan.
     $app->get('/tracker/event/{eventUid}', \App\Controller\ResultsController::class . ':track');
+
+   // $app->get('/track/randonneur/{uid}/track/{trackUid}', \App\Controller\ResultsController::class . ':getTrackView')->setName('track');
+    $app->get('/track/randonneur/{uid}/track/{trackUid}', \App\Controller\ResultsController::class . ':trackrandonneurontrack');
 
     // User route group
     $app->group('/api', function(RouteCollectorProxy $apps) use ($app) {

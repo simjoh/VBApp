@@ -17,7 +17,7 @@ class RandonneurCheckpointAssembly
 
 
 
-    public function toRepresentation(CheckpointRepresentation $checkpoint, bool $stamped, string $track_uid, string $currentUserUId, string $startnumber, bool $hasDnf, $racepassed): RandonneurCheckPointRepresentation{
+    public function toRepresentation(CheckpointRepresentation $checkpoint, bool $stamped, string $track_uid, string $currentUserUId, string $startnumber, bool $hasDnf, $racepassed, $stamptime): RandonneurCheckPointRepresentation{
 
        $randonneurcheckpoint =  new RandonneurCheckPointRepresentation();
        $randonneurcheckpoint->setCheckpoint($checkpoint);
@@ -27,6 +27,8 @@ class RandonneurCheckpointAssembly
        } else {
            $randonneurcheckpoint->setActive(true);
        }
+
+       $randonneurcheckpoint->setStamptime($stamptime);
 
 //       $randonneurcheckpoint->setTrackInfoRepresentation($trackinfo);
         $linkArray = array();

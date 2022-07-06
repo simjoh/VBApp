@@ -84,6 +84,7 @@ export interface EventRepresentation {
 export interface RandonneurCheckPointRepresentation {
   checkpoint: CheckpointRepresentation;
   active: boolean;
+  stamptime: string;
   links: [];
 }
 

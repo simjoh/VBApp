@@ -12,6 +12,9 @@ class RandonneurCheckPointRepresentation implements JsonSerializable
 
     private CheckpointRepresentation $checkpoint;
     private ?bool $active;
+    private ?string $stamptime;
+
+
 
 
     private array $links = [];
@@ -46,6 +49,22 @@ class RandonneurCheckPointRepresentation implements JsonSerializable
     public function setActive(?bool $active): void
     {
         $this->active = $active;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStamptime(): string
+    {
+        return $this->stamptime;
+    }
+
+    /**
+     * @param string $stamptime
+     */
+    public function setStamptime(string $stamptime): void
+    {
+        $this->stamptime = $stamptime;
     }
 
 

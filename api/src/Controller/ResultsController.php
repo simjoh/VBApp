@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\common\Exceptions\BrevetException;
 use App\Domain\Model\Event\Repository\EventRepository;
 use App\Domain\Model\Event\Service\EventService;
 use App\Domain\Model\Result\Service\ResultService;
@@ -84,15 +85,39 @@ class ResultsController
     }
 
 
-    public function resultForContestant(ServerRequestInterface $request, ResponseInterface $response, $args){
-
+    public function trackrandonneurontrack(ServerRequestInterface $request, ResponseInterface $response, $args){
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
-        $participant_Uid = $route->getArgument('participantUid');
+        $trackUid = $route->getArgument('trackUid');
+        $competitorUid = $route->getArgument('trackUid');
+        $result =  $this->resultService->trackRandonneurOnTrack( $competitorUid,$trackUid);
+        $response->getBody()->write((string)json_encode($result), JSON_UNESCAPED_SLASHES);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 
-        $json   = json_decode($request->getBody()->getContents());
-        $array = get_object_vars($json);
-        $result =  $this->resultService->resultForContestant($participant_Uid,$array["trackUid"],$array["eventUid"]);
+    }
+
+
+    public function resultForContestant(ServerRequestInterface $request, ResponseInterface $response, $args){
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+
+        $competitorUId = $route->getArgument("uid");
+        $params = $request->getQueryParams();
+
+
+        if(array_key_exists('trackUid', $params)){
+            $trackUid = $params["trackUid"];
+        } else {
+            $trackUid = "";
+        }
+        if(array_key_exists('eventUid', $params)){
+            $eventUid = $params['eventUid'];
+        } else {
+            $eventUid = "";
+        }
+
+
+        $result =  $this->resultService->resultForContestant($competitorUId,$trackUid,$eventUid);
         $response->getBody()->write((string)json_encode($result), JSON_UNESCAPED_SLASHES);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }

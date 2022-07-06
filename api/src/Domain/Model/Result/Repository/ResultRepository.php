@@ -19,8 +19,7 @@ class ResultRepository  extends BaseRepository
     }
 
 
-    public function getResultsForEvent(string $event_uid, string $year): ?array {
-
+    public function getResultsForEvent(string $event_uid, string $year, bool $showtrackinfo): ?array {
 
         $statement = $this->connection->prepare($this->sqls('resultsForEvent'));
         $statement->bindParam(':event_uid', $event_uid);
@@ -29,54 +28,26 @@ class ResultRepository  extends BaseRepository
         $resultset = $statement->fetchAll(PDO::FETCH_ASSOC);
 
 
-//        $resultArray = array();
-//
-//        $files = array();
-//        $files['ID'] = '';
-//        $files['Fornamn'] = '';
-//        $files['Efternamn'] = '';
-////        foreach ($resultset as $s => $trc) {
-////           echo $trc;
-////        }
-//
-//        foreach($resultset as $item) {
-//
-//            $dnf = $item['DNF'];
-//            $dns = $item['DNS'];
-//            $time = $item['Tid'];
-//
-//
-//            $files = array();
-//            $files['ID'] = $item['ID'];
-//            $files['Fornamn'] = $item['Fornamn'];
-//            $files['Efternamn'] = $item['Efternamn'];
-//            $files['Klubb'] = $item['Klubb'];
-//            $files['last checkpoint'] = $item['Sista'];
-//
-//            if($item['mal'] == true){
-//                if($item['Tid'] == null){
-//                    $files['Tid'] = "";
-//                } else {
-//                    $files['Tid'] = $item['Tid'];
-//                }
-//
-//            }
-//            if($time == null & $item['mal'] == false){
-//                $files['Tid'] = "";
-//                if($dnf == true){
-//                    $files['Tid'] = 'DNF';
-//                }
-//                if($dns == true){
-//                    $files['Tid'] = 'DNS';
-//                    $files['last checkpoint'] = '';
-//                }
-//            }
-//
-//            array_push($resultArray,$files);
-//        }
+        $dnsstatement = $this->connection->prepare($this->sqls('dnsOnEventandtrack'));
+        $dnsstatement->bindParam(':event_uid', $event_uid);
+        $dnsstatement->bindParam(':year', $year);
+        $dnsstatement->execute();
+        $dnsresultset = $dnsstatement->fetchAll(PDO::FETCH_ASSOC);
 
-        return $this->getResultArray($resultset);
-      //  return $resultArray;
+        $dnfstatement = $this->connection->prepare($this->sqls('dnfonEvent'));
+        $dnfstatement->bindParam(':event_uid', $event_uid);
+        $dnfstatement->bindParam(':year', $year);
+        $dnfstatement->execute();
+        $dnfresultset = $dnfstatement->fetchAll(PDO::FETCH_ASSOC);
+
+
+
+
+        $dnfresults =  $this->getResultArrayDynamic($dnfresultset,$showtrackinfo);
+        $dnsresults =  $this->getResultArrayDynamic($dnsresultset,$showtrackinfo);
+        $resultarray = $this->getResultArrayDynamic($resultset, $showtrackinfo);
+        $resultarray =array_merge($resultarray,$dnfresults);
+        return array_merge($resultarray,$dnsresults);
 
 
     }
@@ -126,13 +97,27 @@ class ResultRepository  extends BaseRepository
             $files['Fornamn'] = $item['Fornamn'];
             $files['Efternamn'] = $item['Efternamn'];
             $files['Klubb'] = $item['Klubb'];
-            $files['last checkpoint'] = $item['Sista'];
+            $files['Last checkpoint'] = $item['Sista'];
 
             if($item['mal'] == true){
                 if($item['Tid'] == null){
                     $files['Tid'] = "";
                 } else {
-                    $files['Tid'] = $item['Tid'];
+                    $lastcheckpoint_adress = $this->lastCheckpointOnTrack($item['track_uid']);
+                    if($lastcheckpoint_adress != $item['Sista']){
+                        $files['last checkpoint'] = $lastcheckpoint_adress;
+                    }
+                    if(strlen($item['Tid']) == 4){
+                        $tidarray = explode(":",$item['Tid']);
+                        if($tidarray[1] == 0){
+                            $files['Tid'] = $tidarray[0] . ":" . "00";
+                        } else {
+                            $files['Tid'] = $tidarray[0] . ":"  . "0" . $tidarray[1] ;
+                        }
+
+                    } else {
+                        $files['Tid'] = $item['Tid'];
+                    }
                 }
 
             }
@@ -185,13 +170,33 @@ class ResultRepository  extends BaseRepository
             }
 
             $files['Klubb'] = $item['Klubb'];
-            $files['last checkpoint'] = $item['Sista'];
+            $files['Last checkpoint'] = $item['Sista'];
 
             if($item['mal'] == true){
                 if($item['Tid'] == null){
                     $files['Tid'] = "";
                 } else {
-                    $files['Tid'] = $item['Tid'];
+                    $lastcheckpoint_adress = $this->lastCheckpointOnTrack($item['track_uid']);
+                    if($lastcheckpoint_adress != $item['Sista'] && $lastcheckpoint_adress != null){
+                        $files['Last checkpoint'] = $lastcheckpoint_adress;
+                    } else {
+                        $files['Last checkpoint'] = $item['Sista'];
+                    }
+
+                    if(strlen($item['Tid']) == 4){
+                        $tidarray = explode(":",$item['Tid']);
+                        if($tidarray[1] == 0){
+                            $files['Tid'] = $tidarray[0] . ":" . "00";
+                        } else {
+                            $files['Tid'] = $tidarray[0] . ":"  . "0" . $tidarray[1] ;
+                        }
+
+                    } else {
+                        $files['Tid'] = $item['Tid'];
+                    }
+
+
+
                 }
 
             }
@@ -202,7 +207,7 @@ class ResultRepository  extends BaseRepository
                 }
                 if($dns == true){
                     $files['Tid'] = 'DNS';
-                    $files['last checkpoint'] = '';
+                    $files['Last checkpoint'] = '';
                 }
             }
 
@@ -322,10 +327,28 @@ class ResultRepository  extends BaseRepository
 
     }
 
+    public function lastCheckpointOnTrack(string $trackUid): ?string {
+
+        $track_checkpoint_statement = $this->connection->prepare($this->sqls('lastCheckpointOnTrack'));
+        $track_checkpoint_statement->bindParam(':track_uid', $trackUid);
+        $track_checkpoint_statement->execute();
+        $lastcheckpointresult = $track_checkpoint_statement->fetch();
+        if($lastcheckpointresult == null){
+            return null;
+        } else {
+            return $lastcheckpointresult['adress'];
+        }
+
+    }
+
+
     public function sqls($type)
     {
-        $resultsqls['resultsForEvent'] = 'select revent.startnumber AS ID, revent.finished as mal, revent.given_name as Fornamn, revent.family_name as Efternamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista  from v_result_for_event_and_track revent where revent.event_uid=:event_uid and YEAR(revent.eventstart) >=:year and YEAR(revent.eventend) <=:year and revent.dnf = true or revent.dns = true or revent.finished = true';
+        $resultsqls['resultsForEvent'] = 'select revent.startnumber AS ID, revent.finished as mal, revent.bana, revent.given_name as Fornamn, revent.family_name as Efternamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista, revent.track_uid  from v_result_for_event_and_track revent where revent.event_uid=:event_uid and YEAR(revent.eventstart) >=:year and YEAR(revent.eventend) <=:year and revent.finished = true';
         $resultsqls['baseResultSql'] = 'select revent.startnumber AS ID, revent.bana , revent.finished as mal, revent.given_name as Fornamn, revent.family_name as Efternamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista  from v_result_for_event_and_track revent ';
+        $resultsqls['dnsOnEventandtrack'] = 'select revent.startnumber AS ID,revent.bana, revent.finished as mal, revent.given_name as Fornamn, revent.family_name as Efternamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista  from v_dns_on_event_and_track revent where revent.event_uid=:event_uid and YEAR(revent.eventstart) >=:year and YEAR(revent.eventend) <=:year;';
+        $resultsqls['lastCheckpointOnTrack']  =  "select s.adress from track t inner join track_checkpoint tc on tc.track_uid = t.track_uid inner join checkpoint c on c.checkpoint_uid = tc.checkpoint_uid inner join site s on s.site_uid = c.site_uid where tc.track_uid=:track_uid and c.distance in (select max(distance) from checkpoint);";
+        $resultsqls['dnfonEvent'] = 'select revent.startnumber AS ID, revent.finished as mal, revent.bana, revent.given_name as Fornamn, revent.family_name as Efternamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista, revent.track_uid  from v_result_for_event_and_track revent where revent.event_uid=:event_uid and YEAR(revent.eventstart) >=:year and YEAR(revent.eventend) <=:year and revent.finished = false and revent.dnf = true';
         return $resultsqls[$type];
         // TODO: Implement sqls() method.
     }

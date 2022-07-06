@@ -148,6 +148,21 @@ class CompetitorRepository extends BaseRepository
     }
 
 
+
+    public function getCompetitorByUID(string $competitor_uid)
+    {
+
+        $stmt = $this->connection->prepare($this->sqls('competitor_by_uid'));
+        $stmt->bindParam(':competitor_uid', $competitor_uid, PDO::PARAM_STR);
+        $stmt->execute();
+        $competitor = $stmt->fetch();
+
+        $competitor = new Competitor($competitor['competitor_uid'],$competitor['user_name'], $competitor['given_name'],$competitor['family_name'], '');
+        $competitor->setRoles(array("COMPETITOR"));
+        return $competitor;
+    }
+
+
     public function sqls($type)
     {
         $competitorsqls['login'] = 'select * from competitors where user_name = :user_name and password = :password';
@@ -159,4 +174,5 @@ class CompetitorRepository extends BaseRepository
         return $competitorsqls[$type];
 
     }
+
 }

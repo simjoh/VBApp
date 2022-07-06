@@ -44,11 +44,12 @@ class RandonneurService
 
         $event = $this->eventrepository->eventFor($track->getEventUid());
 
-        if($event->isCompleted() == true) {
-            throw new BrevetException("Event is completed ", 6, null);
-        }
-
         $racepassed = $this->trackrepository->isRacePassed($track_uid);
+
+
+        if($event->isCompleted() == true || $racepassed == true) {
+            $racepassed = true;
+        }
 
         if($this->settings['demo'] == 'true'){
             $racepassed = false;
@@ -64,9 +65,17 @@ class RandonneurService
 
             $randonneurcheckpoints = [];
             foreach ($checkpoints as $checkpoint) {
+                $stamptime = "";
                 $stamped = $this->participantRepository->hasStampOnCheckpoint($participant->getParticipantUid(), $checkpoint->getCheckPointUId());
                 $hasDnf = $this->participantRepository->hasDnf($participant->getParticipantUid());
-                array_push($randonneurcheckpoints, $this->randonneurCheckpointAssembly->toRepresentation($checkpoint,$stamped,$track_uid, $current_user_uid, $startnumber, $hasDnf, $racepassed));
+                $participant_checkpoint = $this->participantRepository->stampTimeOnCheckpoint($participant->getParticipantUid(), $checkpoint->getCheckPointUId());
+
+                if($participant_checkpoint != null){
+                    if($participant_checkpoint->getPassededDateTime() != null){
+                        $stamptime = $participant_checkpoint->getPassededDateTime();
+                    }
+                }
+                array_push($randonneurcheckpoints, $this->randonneurCheckpointAssembly->toRepresentation($checkpoint,$stamped,$track_uid, $current_user_uid, $startnumber, $hasDnf, $racepassed,$stamptime));
             }
 
             return $randonneurcheckpoints;

@@ -251,8 +251,20 @@ and a.started = true
 
 create view v_race_statistic AS  select sum(p.dnf) as dnf, SUM(p.dns) dns, SUM(p.finished) as completed , t.title , t.start_date_time as racestarts ,t.track_uid, ev.event_uid, ev.start_date as eventstarts, ev.end_date as eventends from participant p inner join track t on t.track_uid = p.track_uid inner join event ev on ev.event_uid = t.event_uid  GROUP by t.title order by t.title;
 
-
-
+create view v_dns_on_event_and_track AS  select distinct(p.startnumber), p.started, ev.start_date as eventstart, ev.end_date as eventend, p.competitor_uid , t.title as bana , p.finished,  t.track_uid, p.dns, p.dnf, t.event_uid, p.time, c.given_name, c.family_name, club.title as club, ci.country , s.adress, pc.passeded_date_time, pc.passed from event ev
+inner join track t on t.event_uid = ev.event_uid
+inner join participant p on p.track_uid = t.track_uid
+inner join competitors c on c.competitor_uid = p.competitor_uid
+inner join club club on club.club_uid = p.club_uid
+inner join competitor_info ci on c.competitor_uid = ci.competitor_uid
+INNER join participant_checkpoint pc on pc.participant_uid = p.participant_uid
+inner join checkpoint cp on cp.checkpoint_uid = pc.checkpoint_uid
+inner join site s on s.site_uid = cp.site_uid
+and t.active = false
+and p.dns = true
+and p.started = false
+and pc.passeded_date_time not in (select passeded_date_time from participant_checkpoint where passeded_date_time = null)
+group by c.given_name
 
 
 
