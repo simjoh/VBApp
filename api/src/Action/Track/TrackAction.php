@@ -68,6 +68,19 @@ class TrackAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
+
+    public function deleteTrack(ServerRequestInterface $request, ResponseInterface $response){
+        $currentuserUid = $request->getAttribute('currentuserUid');
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $this->trackService->deleteTrack($route->getArgument('trackUid'),$currentuserUid);
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+
+
+
+
     public function buildfromCsv(ServerRequestInterface $request, ResponseInterface $response){
         $uploadDir = $this->settings['upload_directory'];
         $uploadedFiles = $request->getUploadedFiles();

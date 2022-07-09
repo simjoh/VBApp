@@ -55,6 +55,7 @@ class ResultRepository  extends BaseRepository
 
     public function trackParticipantsOnTrack(string $event_uid, array $track_uid):array{
 
+
         $track_uids = array();
         foreach ($track_uid as $track){
             array_push($track_uids,$track->getTrackUid());
@@ -63,11 +64,12 @@ class ResultRepository  extends BaseRepository
         $in  = str_repeat('?,', count($track_uids) - 1) . '?';
 
 
-        $sql = " select revent.startnumber AS ID, revent.finished as mal, revent.given_name as Fornamn, revent.family_name as Efternamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista, revent.passeded_date_time as passedtime  from v_result_for_event_and_track revent where revent.track_uid  IN ($in);";
+        $sql = " select revent.startnumber AS ID, revent.finished as mal, revent.given_name as Fornamn, revent.family_name as Efternamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista, revent.passeded_date_time as passedtime  from v_track_contestant_on_event_and_track revent where revent.track_uid  IN ($in);";
 
         $statement = $this->connection->prepare($sql);
         $statement->execute($track_uids);
         $resultset = $statement->fetchAll(PDO::FETCH_ASSOC);
+
         return $this->getTrackArray($resultset);
 
     }
@@ -339,6 +341,13 @@ class ResultRepository  extends BaseRepository
             return $lastcheckpointresult['adress'];
         }
 
+    }
+
+    public function isSuperrandonneur(): bool {
+
+        "SELECT * FROM `participant` p inner join track t on t.track_uid = p.track_uid inner join event e on e.event_uid = t.event_uid where finished = true and t.distance in (200,300,400,600)  and competitor_uid = '43aef45b-851b-4e5c-993b-222b0fc8af8b'";
+
+        return true;
     }
 
 

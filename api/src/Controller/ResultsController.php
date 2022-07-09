@@ -41,7 +41,7 @@ class ResultsController
          $event =  $this->eventservice->eventFor($eventUid, "");
         $result =  $this->resultService->resultsOnEvent($eventUid, $year);
         return $view->render($response, 'result.html', [
-            'link' => $this->settings['path'] . "resultList/year/" . strval($args['year']) . "/event/" . $args['eventUid'], 'event' => json_encode($event->getTitle())
+            'link' => $this->settings['path'] . "resultList/year/" . strval($args['year']) . "/event/" . $args['eventUid'], 'event' => json_encode($event)
         ]);
     }
 
@@ -53,6 +53,7 @@ class ResultsController
         $eventUid = $route->getArgument('eventUid');
         $event =  $this->eventservice->eventFor($eventUid, "");
         $tracks =  $this->trackService->tracksForEvent( "",$eventUid);
+
 //        $result =  $this->resultService->trackContestants($eventUid, array());
         return $view->render($response, 'track.html', [
             'link' => $this->settings['path'] . "tracker/" . "event/" . $args['eventUid'], 'event' => json_encode($event === null ? "": $event), 'tracks' => json_encode($tracks)

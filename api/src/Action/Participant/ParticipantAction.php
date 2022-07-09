@@ -104,6 +104,19 @@ class participantAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+
+    public function deleteParticipantsontrack(ServerRequestInterface $request, ResponseInterface $response){
+
+        $currentuserUid = $request->getAttribute('currentuserUid');
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $this->participantService->deleteParticipantsOnTrack($route->getArgument('trackUid'),$currentuserUid);
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+
+
+
     function moveUploadedFile($directory, UploadedFile $uploadedFile)
     {
         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);

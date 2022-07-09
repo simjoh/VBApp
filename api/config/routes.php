@@ -68,6 +68,7 @@ return function (App $app) {
         $app->put('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':updateTrack');
         $app->post('/track', \App\Action\Track\TrackAction::class . ':createTrack');
         $app->get('/tracks/event/{eventUid}', \App\Action\Track\TrackAction::class . ':tracksForEvent');
+        $app->delete('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':deleteTrack');
 
         $app->post('/buildlEventAndTrackFromCsv/upload', \App\Action\Track\TrackAction::class  . ':buildfromCsv');
 
@@ -115,6 +116,8 @@ return function (App $app) {
      //   $app->post('/participants/{trackUid}/upload', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
         $app->post('/participants/upload/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
         $app->delete('/participant/{uid}/deleteParticipant', \App\Action\Participant\ParticipantAction::class . ':deleteParticipant');
+
+        $app->delete('/participants/deleteParticipants/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':deleteParticipantsontrack');
         //Ingång för att lägga tillbrevenr i efterhand.
 
         // lägg till ingångar för admin av klubbar

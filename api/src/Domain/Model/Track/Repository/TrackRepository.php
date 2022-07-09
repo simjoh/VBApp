@@ -315,9 +315,52 @@ class TrackRepository extends BaseRepository
     }
 
 
+    public function deleteTrack(?string $track_uid)
+    {
+
+        try {
+            $stmt = $this->connection->prepare($this->sqls('deleteEvent'));
+            $stmt->bindParam(':track_uid', $event_uid);
+            $stmt->execute();
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+
+    public function deleteTrackCheckpoint(array $checkpoints)
+    {
+
+        // inga checkpoints då förutsätts det som att de redan existerar
+        if (isset($getCheckpoints)) {
+            return null;
+        }
+
+        try {
+            $in = str_repeat('?,', count($checkpoints) - 1) . '?';
+            $sql = " DELETE from track_checkpoint tc where  tc.track_uid  IN ($in);";
+
+            $test = [];
+            foreach ($checkpoints as $s => $ro) {
+                $test[] = $ro;
+            }
+
+            $statement = $this->connection->prepare($sql);
+            $status = $statement->execute($test);
+
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+        return null;
+    }
+
+
     public function sqls($type)
     {
         $tracksqls['allTracks'] = 'select * from track t;';
+        $tracksqls['deleteTrack'] = 'delete from track  where track_uid=:track_uid;';
         $tracksqls['trackByUid'] = 'select * from track where track_uid=:track_uid;';
         $tracksqls['tracksByEvent'] = 'select * from track where event_uid=:event_uid;';
         $tracksqls['getCheckpoints'] = 'select checkpoint_uid  from track_checkpoint where track_uid=:track_uid;';

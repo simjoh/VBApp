@@ -268,3 +268,18 @@ group by c.given_name
 
 
 
+create view v_track_contestant_on_event_and_track AS select * from (
+select p.startnumber , p.started, ev.start_date as eventstart, ev.end_date as eventend, p.competitor_uid , t.title as bana , p.finished,  t.track_uid, p.dns, p.dnf, t.event_uid, p.time, c.given_name, c.family_name, club.title as club, ci.country , s.adress, pc.passeded_date_time, pc.passed from event ev
+inner join track t on t.event_uid = ev.event_uid
+inner join participant p on p.track_uid = t.track_uid
+inner join competitors c on c.competitor_uid = p.competitor_uid
+inner join club club on club.club_uid = p.club_uid
+inner join competitor_info ci on c.competitor_uid = ci.competitor_uid
+INNER join participant_checkpoint pc on pc.participant_uid = p.participant_uid
+inner join checkpoint cp on cp.checkpoint_uid = pc.checkpoint_uid
+inner join site s on s.site_uid = cp.site_uid
+and  pc.passeded_date_time = (SELECT MAX(d.passeded_date_time) FROM participant_checkpoint d where   pc.passed = true and pc.participant_uid = d.participant_uid )
+order by p.finished DESC ) as sa
+
+
+

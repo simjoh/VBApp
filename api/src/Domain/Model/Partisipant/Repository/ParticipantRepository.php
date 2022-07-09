@@ -722,6 +722,48 @@ class ParticipantRepository extends BaseRepository
 
     }
 
+    public function hasAnyoneStartedonTrack(?string $track_uid): bool
+    {
+        try {
+            $stmt = $this->connection->prepare($this->sqls('hasAnyoneStartedOnTrack'));
+            $stmt->bindParam(':track_uid', $track_uid);
+            $status = $stmt->execute();
+            if($stmt->rowCount() == 0){
+                return true;
+            }
+        } catch (PDOException $e) {
+            echo 'Ett fel har inträffat' . $e->getMessage();
+        }
+        return false;
+
+    }
+
+    public function deleteparticipantsOnTrack(?string $track_uid): int {
+        try {
+            $stmt = $this->connection->prepare($this->sqls('deleteParticipantsOnTrack'));
+            $stmt->bindParam(':track_uid', $track_uid);
+            $stmt->execute();
+            return  $stmt->rowCount();
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+
+        return 0;
+    }
+
+    public function deleteParticipantCheckpointOnTrack(?string $track_uid) {
+        try {
+            $stmt = $this->connection->prepare($this->sqls('deleteParticipantCheckpointOnTrack'));
+            $stmt->bindParam(':track_uid', $track_uid);
+            $stmt->execute();
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+    }
 
 
     public function sqls($type)
@@ -749,6 +791,9 @@ class ParticipantRepository extends BaseRepository
         $eventqls['hasDnf'] = 'select dnf from participant e where e.participant_uid=:participant_uid and dnf = true;';
         $eventqls['participantHasStampOnAllExceptFinish'] = 'SELECT count(s.checkpoint_uid) FROM v_partisipant_to_pass_checkpoint s inner join track_checkpoint tc on s.checkpoint_uid = tc.checkpoint_uid  where s.passed = 1 and s.started = 1 and s.dnf = 0 and s.track_uid=:track_uid and s.checkpoint_uid !=:finishcheckpoint  and s.participant_uid =:participant_uid;';
         $eventqls['participantHasNotStampOnLastCheckpoint'] = 'SELECT count(s.checkpoint_uid) FROM v_partisipant_to_pass_checkpoint s  where s.passed = 0 and s.started = 1 and s.dnf = 0  and s.track_uid=:track_uid and s.checkpoint_uid=:finishcheckpoint  and s.participant_uid =:participant_uid;';
+        $eventqls['hasAnyoneStartedOnTrack'] = 'select * from participant e where e.track_uid=:track_uid and e.started = true or e.dns = true or e.dnf = true or e.finished = true or e.time != null;';
+        $eventqls['deleteParticipantsOnTrack'] = 'delete  from participant e where e.track_uid=:track_uid;';
+        $eventqls['deleteParticipantCheckpointOnTrack'] = 'delete from participant_checkpoint e where e.track_uid=:track_uid;';
         return $eventqls[$type];
         // TODO: Implement sqls() method.
     }

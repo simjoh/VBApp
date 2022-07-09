@@ -3,6 +3,7 @@
 namespace App\Domain\Model\Track\Service;
 
 
+use App\common\Exceptions\BrevetException;
 use App\common\Service\ServiceAbstract;
 use App\Domain\Model\CheckPoint\Checkpoint;
 use App\Domain\Model\Checkpoint\Repository\CheckpointRepository;
@@ -10,6 +11,8 @@ use App\Domain\Model\CheckPoint\Service\CheckpointsService;
 use App\Domain\Model\Event\Event;
 use App\Domain\Model\Event\Repository\EventRepository;
 use App\Domain\Model\Event\Service\EventService;
+use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
+use App\Domain\Model\Partisipant\Service\ParticipantService;
 use App\Domain\Model\Site\Repository\SiteRepository;
 use App\Domain\Model\Site\Site;
 use App\Domain\Model\Track\Bana;
@@ -45,7 +48,7 @@ class TrackService extends ServiceAbstract
                                 TrackAssembly        $trackAssembly,
                                 SiteRepository       $siteRepository,
                                 EventRepository      $eventRepository,
-                                CheckpointRepository $checkpointRepository)
+                                CheckpointRepository $checkpointRepository, ParticipantRepository $participantRepository)
     {
         $this->trackRepository = $trackRepository;
         $this->checkpointService = $checkpointService;
@@ -55,6 +58,7 @@ class TrackService extends ServiceAbstract
         $this->siteRepository = $siteRepository;
         $this->eventRepository = $eventRepository;
         $this->checkpointRepository = $checkpointRepository;
+        $this->participantRepository = $participantRepository;
     }
 
     public function allTracks(string $currentuserUid): array
@@ -350,7 +354,32 @@ class TrackService extends ServiceAbstract
 //        }
 //    }
 
+    public function deleteTrack(?string $track_uid, mixed $currentuserUid)
+    {
+        $track = $this->trackRepository->getTrackByUid($track_uid);
 
+        if($track == null){
+            throw new BrevetException("Finns ingen bana med angivet uid", 5);
+        }
+
+        $participants =  $this->participantRepository->getPArticipantsByTrackUids(array($track_uid));
+
+        if(count($participants) > 0 ){
+            throw new BrevetException("Kan inte tabort banan. Det finns deltagare kopplade till banan", 5);
+        }
+
+        // Tabort checkpoints
+         foreach($track->getCheckpoints() as $checkpoint){
+              $this->checkpointService->deleteCheckpoint($checkpoint);
+         }
+
+         // Tabort kopplingen till banan
+        $this->trackRepository->deleteTrackCheckpoint(array($track_uid));
+
+        //Tabort själva banan
+        $this->trackRepository->deleteTrack($track_uid);
+
+    }
 
 
 }

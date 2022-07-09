@@ -250,6 +250,35 @@ class ParticipantService extends ServiceAbstract
         return $this->participantassembly->toRepresentation($participant, $permissions);
     }
 
+    public function deleteParticipantsOnTrack(?string $track_uid, mixed $currentuserUid)
+    {
+        $track = $this->trackRepository->getTrackByUid($track_uid);
+
+        if($track == null){
+            throw new BrevetException("Bana finns inte", 5,null);
+        }
+        // kolla om loppet är använt har startats eller är passerat
+        if($this->participantRepository->hasAnyoneStartedonTrack($track_uid) == false){
+          $participants =  $this->participantRepository->getPArticipantsByTrackUids(array($track_uid));
+
+          if(count($participants) > 0){
+
+              foreach($participants as $participant){
+                  // tabort deltagarens credential för banan
+                  $this->competitorService->deleteCompetitorCredentialForParticipant($participant->getParticipantUid());
+              }
+              // Tabort deltagarnas participant checkpoints
+              $this->participantRepository->deleteParticipantCheckpointOnTrack($track_uid);
+
+              //Tabort själva deltagaren
+               $rowsaffected = $this->participantRepository->deleteparticipantsOnTrack($track_uid);
+          }
+
+        } else {
+            throw new BrevetException("Går inte att tabort deltagare. Deltagare har registrerade aktiviteter på banan", 5, null);
+        }
+    }
+
 
     private function getCsv(string $filename){
         $csv = Reader::createFromPath($this->settings['upload_directory']  . $filename, 'r');

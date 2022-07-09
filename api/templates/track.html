@@ -48,7 +48,16 @@
              let s = data.replaceAll('&quot;','"');
             let result = s.replace(/^\/?|\/?$/g, "")
             const event = JSON.parse(result);
-            document.getElementById('title').innerHTML = event.title;
+            document.title = event.title + " "  +" Track Randonneurs";
+
+            let startdate = event.startdate;
+            let enddate = event.enddate;
+            if (startdate === enddate){
+                document.getElementById('title').innerHTML = event.title + "  " + startdate
+            } else {
+                document.getElementById('title').innerHTML = event.title + "  " + startdate + " - " + enddate;
+            }
+
             document.getElementById('title').classList.add('eventTitle');
         }
 

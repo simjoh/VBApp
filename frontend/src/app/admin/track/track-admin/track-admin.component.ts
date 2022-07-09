@@ -19,6 +19,7 @@ export class TrackAdminComponent implements OnInit {
       {
         label: "Banor",
         routerLink: 'om-ds',
+        icon: "pi pi-fw pi-directions"
       },
       {
         label: "Ladda upp banor",
