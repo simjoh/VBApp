@@ -15,7 +15,9 @@ export class OverlayComponent implements OnInit  {
 
   @Input() icon: string
   @Input() heigth: string
+  @Input() width: string
   @Input() showCloseIcon: boolean
+  @Input() mouseActivate: boolean
 
 
   constructor() { }

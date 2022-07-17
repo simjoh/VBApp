@@ -3,8 +3,9 @@ import {combineLatest, Observable, Subject, throwError} from "rxjs";
 import {catchError, map, shareReplay, startWith, tap} from "rxjs/operators";
 
 import {HttpClient} from "@angular/common/http";
-import { EventRepresentation } from 'src/app/shared/api/api';
+import {EventRepresentation, TrackRepresentation} from 'src/app/shared/api/api';
 import { environment } from 'src/environments/environment';
+import {LinkService} from "../../../core/link.service";
 
 
 @Injectable({
@@ -40,7 +41,7 @@ export class EventService {
     }),
   );
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient,private linkService: LinkService) { }
 
 
   async newEvent(newSite: EventRepresentation) {
@@ -87,6 +88,15 @@ export class EventService {
       })
   }
 
+  public deleterEvent2(eventUid: string){
+    return this.httpClient.delete(environment.backend_url + "event/" + eventUid)
+      .pipe(
+        catchError(err => {
+          return throwError(err);
+        })
+      ).toPromise()
+  }
+
   public updateEvent(eventuid: string, event: EventRepresentation){
     return this.httpClient.put<EventRepresentation>(environment.backend_url + "event", {} as EventRepresentation).pipe(
       map((event: EventRepresentation) => {
@@ -94,6 +104,10 @@ export class EventService {
       }),
       tap(event =>   console.log(event))
     ) as Observable<EventRepresentation>
+  }
+
+  public deletelinkExists(event: EventRepresentation): boolean {
+    return this.linkService.exists(event.links,'relation.event.delete' , 'DELETE');
   }
 
   deepCopyProperties(obj: any): any {

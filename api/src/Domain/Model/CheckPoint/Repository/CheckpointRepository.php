@@ -111,6 +111,7 @@ class CheckpointRepository extends BaseRepository
         }
         catch(PDOException $e)
         {
+
             echo "Error: " . $e->getMessage();
         }
         $checkpoint->setCheckpointUid($checkpoint_uid);
@@ -309,7 +310,7 @@ class CheckpointRepository extends BaseRepository
         $tracksqls['getCheckpointsFor'] = 'select * from checkpoint where checkpoint_uid in (?);';
         $tracksqls['createCheckpoint']  = "INSERT INTO checkpoint(checkpoint_uid, site_uid, title, description, distance, opens, closing) VALUES (:checkpoint_uid, :site_uid,:title,:description,:distance, :opens,:closing)";
         $tracksqls['updateCheckpoint']  = "UPDATE checkpoint SET  title=:title , site_uid=:site_uid description=:description , distance=:distance, opens=:opens, closing=:closing  WHERE checkpoint_uid=:checkpoint_uid";
-        $tracksqls['deleteCheckpoint'] = 'delete from checkpoint c where c.checkpoint_uid=:checkpoint_uid;';
+        $tracksqls['deleteCheckpoint'] = 'delete from checkpoint  where checkpoint_uid=:checkpoint_uid;';
         $tracksqls['getCheckpointByTrackUid'] = 'select checkpoint_uid from track_checkpoint where track_uid=:track_uid;';
         $tracksqls['countCheckpointforTrack'] = 'select count(checkpoint_uid) from track_checkpoint where track_uid=:track_uid;';
         $tracksqls['existsBySiteUidAndDistance'] = 'select * from checkpoint e where e.site_uid=:site_uid and e.distance=:distance and opens=:opens and closing=:closing;';

@@ -50,4 +50,18 @@ class RandonneurCheckpointAssembly
         return $randonneurcheckpoint;
     }
 
+
+    public function toRepresentationPreview(CheckpointRepresentation $checkpoint, $stamptime, $dnf): RandonneurCheckPointRepresentation{
+
+        $randonneurcheckpoint =  new RandonneurCheckPointRepresentation();
+        $randonneurcheckpoint->setCheckpoint($checkpoint);
+
+        $randonneurcheckpoint->setStamptime($stamptime);
+
+        $linkArray = array();
+
+        $randonneurcheckpoint->setLinks($linkArray);
+        return $randonneurcheckpoint;
+    }
+
 }

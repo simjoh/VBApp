@@ -231,6 +231,7 @@ class TrackService extends ServiceAbstract
                     array_push($sitereturn, $this->siteRepository->createSite($siteDict->getValue($value[5] . $value[6])));
 
                 } else {
+
                     array_push($sitereturn, $existingSite);
                 }
             }
@@ -275,18 +276,19 @@ class TrackService extends ServiceAbstract
                 foreach ($sites as $rowIndex => $record) {
                     $place = $value[5];
                     $adress = $value[6];
-                    if ($place == $record->getPlace() && $adress == $record->getAdress()) {
+
+                    if (strtolower($place) == strtolower($record->getPlace()) && strtolower($adress) == strtolower($record->getAdress())) {
                         $checkpoint->setSiteUid($record->getSiteUid());
                         $checkpoint->setOpens($value[11] != null ? $value[11] : null);
                         $checkpoint->setClosing($value[12] != null ? $value[12] : null);
                         $checkpoint->setDistance(floatval($value[10]));
-
                         $sss = $this->checkpointRepository->existsBySiteUidAndDistance($checkpoint->getSiteUid(), $checkpoint->getDistance(), $checkpoint->getOpens(), $checkpoint->getClosing());
+
                         if ($sss == null) {
                              $this->checkpointRepository->createCheckpoint(null, $checkpoint);
                              array_push($checkpoints, $checkpoint);
                        } else {
-                                 array_push($checkpoints, $sss);
+                            array_push($checkpoints, $sss);
                       }
                     }
                 }
@@ -330,13 +332,13 @@ class TrackService extends ServiceAbstract
                 $trackout = $trackwithstartdate;
             }
             $trackout = $this->trackRepository->trackAndCheckpointsExists($trackToCreate->getEventUid(), $trackToCreate->getTitle(), $trackToCreate->getDistance(), $trackToCreate->getCheckpoints());
-
             if (!$trackout) {
                 $trackout = $this->trackRepository->createTrack($trackToCreate);
             }
 
             break;
         }
+
 
             return $trackout;
 
@@ -354,7 +356,7 @@ class TrackService extends ServiceAbstract
 //        }
 //    }
 
-    public function deleteTrack(?string $track_uid, mixed $currentuserUid)
+    public function deleteTrack(?string $track_uid, string $currentuserUid)
     {
         $track = $this->trackRepository->getTrackByUid($track_uid);
 
@@ -370,7 +372,12 @@ class TrackService extends ServiceAbstract
 
         // Tabort checkpoints
          foreach($track->getCheckpoints() as $checkpoint){
-              $this->checkpointService->deleteCheckpoint($checkpoint);
+
+             $checkpointa = $this->checkpointRepository->checkpointFor($checkpoint);
+             if($checkpointa != null){
+                 $this->checkpointService->deleteCheckpoint($checkpoint);
+             }
+
          }
 
          // Tabort kopplingen till banan

@@ -19,6 +19,9 @@ class TrackRepresentation implements JsonSerializable
     private string $start_date_time;
     private ?bool $active;
     private ?Link $link;
+    private array $links = [];
+
+
 
     /**
      * @return Link|null
@@ -206,5 +209,21 @@ class TrackRepresentation implements JsonSerializable
     public function setStartDateTime(string $start_date_time): void
     {
         $this->start_date_time = $start_date_time;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLinks(): array
+    {
+        return $this->links;
+    }
+
+    /**
+     * @param array $links
+     */
+    public function setLinks(array $links): void
+    {
+        $this->links = $links;
     }
 }

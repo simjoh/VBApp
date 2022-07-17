@@ -46,6 +46,7 @@ return function (App $app) {
 
         // ingångar som används av en cyklist
         $app->get('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}', \App\Action\Randonneur\RandonneurAction::class . ':getCheckpoint');
+        $app->get('/randonneur/preview/checkpoints/track/{track_uid}', \App\Action\Randonneur\RandonneurAction::class . ':getCheckpointPreView');
         $app->get('/randonneur/track/{track_uid}', \App\Action\Randonneur\RandonneurAction::class . ':getTrack');
         $app->post('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/stamp', \App\Action\Randonneur\RandonneurAction::class . ':stamp');
         $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/markasdnf', \App\Action\Randonneur\RandonneurAction::class . ':markasDNF');
@@ -75,6 +76,7 @@ return function (App $app) {
         // event
         $app->get('/events', \App\Action\Event\EventAction::class . ':allEvents');
         $app->get('/event/{eventUid}', \App\Action\Event\EventAction::class  . ':eventFor');
+        $app->get('/events/eventInformation', \App\Action\Event\EventAction::class  . ':eventInformation');
         $app->put('/event/{eventUid}', \App\Action\Event\EventAction::class  . ':updateEvent');
         $app->post('/event/', \App\Action\Event\EventAction::class . ':createEvent');
         $app->delete('/event/{eventUid}', \App\Action\Event\EventAction::class  . ':deleteEvent');

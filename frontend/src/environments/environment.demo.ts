@@ -5,5 +5,6 @@ export const environment = {
   backend_url: '/demo/api/',
   mock_login: false,
   mockbackendurl: '',
-  pictureurl: '../../../../../../api/uploads'
+  pictureurl: '../../../../../../api/uploads',
+  http_url: 'https://vasterbottenbrevet.se'
 };

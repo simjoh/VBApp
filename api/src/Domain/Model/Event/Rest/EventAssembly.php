@@ -4,6 +4,8 @@ namespace App\Domain\Model\Event\Rest;
 
 use App\common\Rest\Link;
 use App\Domain\Model\Event\Event;
+use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
+use App\Domain\Model\Track\Repository\TrackRepository;
 use App\Domain\Permission\PermissionRepository;
 use Psr\Container\ContainerInterface;
 
@@ -11,10 +13,12 @@ use Psr\Container\ContainerInterface;
 class EventAssembly
 {
 
-    public function __construct(PermissionRepository $permissionRepository, ContainerInterface $c)
+    public function __construct(PermissionRepository $permissionRepository, ContainerInterface $c, ParticipantRepository $participantRepository, TrackRepository $trackRepository)
     {
         $this->permissinrepository = $permissionRepository;
         $this->settings = $c->get('settings');
+        $this->participantRepository = $participantRepository;
+        $this->trackRepository = $trackRepository;
     }
 
     public function toRepresentations(array $eventsArray, string $currentUserUid): array {
@@ -40,15 +44,30 @@ class EventAssembly
         $eventrepresentation->setStartdate($event->getStartdate());
         $eventrepresentation->setEnddate($event->getEnddate());
 
+        $participantsarray = array();
         $linkArray = array();
         foreach ($permissions as $x =>  $site) {
             if($site->hasWritePermission()){
                 array_push($linkArray, new Link("relation.event.update", 'PUT', $this->settings['path'] .'user/' . $event->getEventUid()));
-                array_push($linkArray, new Link("relation.event.delete", 'DELETE', $this->settings['path'] .'user/' . $event->getEventUid()));
+                // ett event får inte tas bort om deltagare är tillagda
+              $tracks =  $this->trackRepository->tracksbyEvent($event->getEventUid());
+              foreach ($tracks as $track){
+                  $participants = $this->participantRepository->participantsOnTrack($track->getTrackUid());
+                  if(count($participants) > 0){
+                      array_push($participantsarray, $participants);
+                  }
+              }
+                if(count($participantsarray) == 0 && count($tracks) == 0){
+                    array_push($linkArray, new Link("relation.event.delete", 'DELETE', $this->settings['path'] .'user/' . $event->getEventUid()));
+                }
+
                 break;
             }
+
             if($site->hasReadPermission()){
                 array_push($linkArray, new Link("self", 'GET', $this->settings['path'] . 'user/' . $event->getEventUid()));
+
+                array_push($linkArray, new Link("relation.event.track", 'GET', $this->settings['path'] . 'track/event/' . $event->getEventUid()));
             };
         }
 

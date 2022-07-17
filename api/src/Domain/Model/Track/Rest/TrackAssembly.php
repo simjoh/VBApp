@@ -2,18 +2,25 @@
 
 namespace App\Domain\Model\Track\Rest;
 
+use App\common\Rest\Link;
 use App\Domain\Model\CheckPoint\Service\CheckpointsService;
+use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
 use App\Domain\Model\Track\Track;
 use App\Domain\Permission\PermissionRepository;
+use Psr\Container\ContainerInterface;
 
 class TrackAssembly
 {
 
-    public function __construct(PermissionRepository $permissionRepository,CheckpointsService $checkpointService)
+    public function __construct(PermissionRepository $permissionRepository,CheckpointsService $checkpointService, ParticipantRepository $participantRepository, ContainerInterface $c)
     {
         $this->permissinrepository = $permissionRepository;
         $this->checkpointService = $checkpointService;
+        $this->participantRepository = $participantRepository;
+        $this->settings = $c->get('settings');
     }
+
+
 
     public function toRepresentations(array $trackArray, string $currentUserUid , array $permissions): array
     {
@@ -52,6 +59,18 @@ class TrackAssembly
         if(!empty($track->getCheckpoints())){
             $trackRepresentation->setCheckpoints($this->checkpointService->checkpointsFor($track->getCheckpoints(),$curruentUserUid));
         }
+
+        $linkArray = array();
+
+        $participants = $this->participantRepository->participantsOnTrack($track->getTrackUid());
+        if(count($participants) == 0 || $participants == null){
+            array_push($linkArray, new Link("relation.track.delete", 'DELETE', $this->settings['path'] .'track/' . $track->getTrackUid()));
+        }
+
+        array_push($linkArray, new Link("self", 'GET', $this->settings['path'] . 'track/' . $track->getTrackUid()));
+
+        $trackRepresentation->setLinks($linkArray);
+
         return $trackRepresentation;
     }
 

@@ -31,6 +31,17 @@ class RandonneurAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    public function getCheckpointPreView(ServerRequestInterface $request, ResponseInterface $response){
+        //skicka tillbacka checkpoints med ny status
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('track_uid');
+        $checkpointforrandoneur =  $this->randonneurService->previewCheckpointsForRandonneur($track_uid, $request->getAttribute('currentuserUid'));
+        $response->getBody()->write(json_encode($checkpointforrandoneur));
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+
 
     public function getTrack(ServerRequestInterface $request, ResponseInterface $response){
         $routeContext = RouteContext::fromRequest($request);

@@ -2,21 +2,20 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {ListComponent} from "./list.component";
 import {SharedModule} from "../../shared/shared.module";
-import { CheckpointComponent } from './checkpoint/checkpoint.component';
 import {CompetitorModule} from "../competitor.module";
-import {TrackInfoComponent} from "../track-info/track-info.component";
+import { CheckpointComponent } from 'src/app/shared/components/checkpoint/checkpoint.component';
 
 
 
 @NgModule({
-  declarations: [ListComponent, CheckpointComponent],
+  declarations: [ListComponent],
   imports: [
     CommonModule,
     SharedModule,
     CompetitorModule,
   ],
-    exports: [
-        ListComponent
-    ]
+	exports: [
+		ListComponent
+	]
 })
 export class ListModule { }

@@ -319,8 +319,8 @@ class TrackRepository extends BaseRepository
     {
 
         try {
-            $stmt = $this->connection->prepare($this->sqls('deleteEvent'));
-            $stmt->bindParam(':track_uid', $event_uid);
+            $stmt = $this->connection->prepare($this->sqls('deleteTrack'));
+            $stmt->bindParam(':track_uid', $track_uid);
             $stmt->execute();
         }
         catch(PDOException $e)
@@ -340,7 +340,7 @@ class TrackRepository extends BaseRepository
 
         try {
             $in = str_repeat('?,', count($checkpoints) - 1) . '?';
-            $sql = " DELETE from track_checkpoint tc where  tc.track_uid  IN ($in);";
+            $sql = " DELETE from track_checkpoint where  track_uid  IN ($in);";
 
             $test = [];
             foreach ($checkpoints as $s => $ro) {

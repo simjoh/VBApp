@@ -27,7 +27,7 @@
     </ng-container>
     <br>
     <strong>Service:</strong> {{checkpoints.checkpoint.site.description}}<br>
-    <strong *ngIf="checkpoints.stamptime">Time:</strong> {{checkpoints.stamptime | dateTimePrettyPrint}}<br>
+    <strong *ngIf="checkpoints.stamptime">Time:</strong>{{checkpoints.stamptime != null ? checkpoints.stamptime: "" | dateTimePrettyPrint}}<br>
 <!--    <p-tag *ngIf="start" styleClass="mr-2" value="START"></p-tag>-->
 <!--    <p-tag *ngIf="finsih" styleClass="mr-2" value="FINISH"></p-tag>-->
     <p-tag hidden *ngIf="checkedin$ | async" styleClass="mr-2" icon="pi pi-check" severity="success" value="CHECKED IN"></p-tag>

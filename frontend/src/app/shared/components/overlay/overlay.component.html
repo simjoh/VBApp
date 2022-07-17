@@ -1,6 +1,7 @@
-<p-overlayPanel [style]="{height: heigth + 'px'}" [showTransitionOptions]="'200ms'" [showCloseIcon]="false" #op>
+<p-overlayPanel  [style]="{height: heigth + 'px', width: width + 'px'}" [showTransitionOptions]="'250ms'" [showCloseIcon]="false" #op>
   <ng-template pTemplate>
     <ng-content></ng-content>
   </ng-template>
 </p-overlayPanel>
-<button pButton pRipple icon="{{icon}}" class="p-button-rounded p-button-info mr-2" (click)="op.toggle($event)"></button>
+<button pButton pRipple icon="{{icon}}" *ngIf="!mouseActivate"  class="p-button-rounded p-button-info mr-2" (click)="op.toggle($event)"></button>
+<button *ngIf="mouseActivate" (mouseenter)="op.toggle($event)" (mouseleave)="op.toggle($event)" pButton pRipple icon="{{icon}}"  class="p-button-rounded p-button-info mr-2" (click)="op.toggle($event)"></button>

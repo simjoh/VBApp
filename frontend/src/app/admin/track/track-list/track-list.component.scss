@@ -1,0 +1,27 @@
+:host {
+    ::ng-deep {
+
+
+.p-button.p-button-icon-only.p-button-rounded {
+    border-radius: 50%;
+    height: 2.000rem;
+}
+
+.p-button.p-button-icon-only {
+    width: 2.000rem;
+    padding: 0.5rem 0;
+}
+
+
+.p-datatable.p-datatable-sm .p-datatable-thead > tr > th {
+    padding: 0.3rem 0.3rem;
+    padding-left: 0.5rem;
+}
+
+.p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {
+    padding: 0.3rem 0.3rem;
+     padding-left: 0.5rem;
+}
+
+    }
+}

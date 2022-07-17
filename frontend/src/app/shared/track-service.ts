@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {LinkService} from "../core/link.service";
-import {RandonneurCheckPointRepresentation, TrackRepresentation} from "./api/api";
+import {Link, TrackRepresentation} from "./api/api";
 import {environment} from "../../environments/environment";
-import {map, shareReplay, take, tap} from "rxjs/operators";
-import {Observable} from "rxjs";
+import {catchError, map, shareReplay, take, tap} from "rxjs/operators";
+import {Observable, throwError} from "rxjs";
+import {HttpMethod} from "../core/HttpMethod";
 
 @Injectable({
   providedIn: 'root'
@@ -43,5 +44,27 @@ export class TrackService {
       }),
       shareReplay(1)
     ) as Observable<Array<TrackRepresentation>>;
+  }
+
+
+  public deletetrack(track: TrackRepresentation){
+    const link = this.linkService.findByRel(track.links, 'relation.track.delete', HttpMethod.DELETE );
+    return this.httpClient.delete(link.url)
+      .pipe(
+        catchError(err => {
+          return throwError(err);
+        })
+      ).toPromise().then((s) => {
+       // this.removeSubject.next(eventUid);
+      })
+  }
+
+  public updatetrack(track: TrackRepresentation){
+
+
+  }
+
+  public deletelinkExists(track: TrackRepresentation): boolean {
+     return this.linkService.exists(track.links,'relation.track.delete' , 'DELETE');
   }
 }

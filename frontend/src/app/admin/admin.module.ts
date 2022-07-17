@@ -14,6 +14,7 @@ import {UserInfoPopoverComponent} from "./user-admin/user-info-popover/user-info
 import {SiteAdminModule} from "./site-admin/site-admin.module";
 import {EventAdminModule} from "./event-admin/event-admin.module";
 import { AdminStartComponent } from './admin-start/admin-start.component';
+import {TrackModule} from "./track/track.module";
 
 
 @NgModule({

@@ -1,0 +1,17 @@
+<brevet-track-info [track_uid]="track_uid" ></brevet-track-info>
+<ng-container *ngIf="previewdata$ | async as preview">
+      <ng-container *ngFor="let s of preview; index as i">
+              <brevet-checkpoint  [checkpoints]="s" [preview]="true"
+                                 [start]="i === 0"
+                                 [finsih]="i + 1 === preview.length"
+                                 [distance]="s.checkpoint.distance" [distancetonext]="s.checkpoint.distance | distanceBetween: i + 1 === preview.length ?  s.checkpoint.distance : preview[i  + 1].checkpoint.distance : true">
+              </brevet-checkpoint>
+        <br>
+        <br>
+      </ng-container>
+    <ng-container>
+      <div class="col-12 sm:col-12 lg:col-12"><button [disabled]="true" pButton  title="Press this button if you cant finish. You can undo this action"  pRipple type="button" label="DNF" class=" p-button-danger container-fluid"></button></div>
+</ng-container>
+
+</ng-container>
+

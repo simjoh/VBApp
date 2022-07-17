@@ -46,6 +46,7 @@ class ParticipantRepository extends BaseRepository
 
 
     public function getPArticipantsByTrackUids($track_uids): ?array {
+
             try {
                 $in  = str_repeat('?,', count($track_uids) - 1) . '?';
                 $sql = "select *  from participant  where  track_uid IN ($in)";
@@ -54,13 +55,13 @@ class ParticipantRepository extends BaseRepository
 
                 foreach ($track_uids as $s => $ro){
 
-                    $test[] = $ro["track_uid"];
+                    $test[] = $ro;
                 }
+
 
                 $statement = $this->connection->prepare($sql);
                 $statement->execute($test);
                 $checkpoint = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Partisipant\Participant::class, null);
-
                 return $checkpoint;
             }
             catch(PDOException $e)

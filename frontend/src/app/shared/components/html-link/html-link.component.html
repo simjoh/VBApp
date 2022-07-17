@@ -1,0 +1,3 @@
+<ng-container *ngIf="$vyinformation | async as vyinfo">
+<a href="{{vyinfo.link}}" target="{{vyinfo.target}}">{{vyinfo.text}}</a>
+</ng-container>

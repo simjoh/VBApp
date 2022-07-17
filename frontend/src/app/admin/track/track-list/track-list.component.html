@@ -1,0 +1,56 @@
+<ng-container *ngIf="$eventsandtrack | async as eventsandtrack">
+  <p-table  [value]="eventsandtrack" styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped" dataKey="event.title"
+           responsiveLayout="scroll">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3rem"></th>
+        <th pSortableColumn="event.title">Event
+          <p-sortIcon field="event.title"></p-sortIcon>
+        </th>
+        <th pSortableColumn="event.startdate">Startdatum
+          <p-sortIcon field="event.startdate"></p-sortIcon>
+        </th>
+        <th pSortableColumn="event.enddate">Slutdatum
+          <p-sortIcon field="event.enddate"></p-sortIcon>
+        </th>
+        <th pSortableColumn="inventoryStatus">Status
+          <p-sortIcon field="inventoryStatus"></p-sortIcon>
+        </th>
+        <th>Länk till trackingsida
+        </th>
+        <th>Åtgärd
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-product let-expanded="expanded">
+      <tr>
+        <td>
+          <button type="button" pButton pRipple [pRowToggler]="product" class="p-button-text p-button-rounded p-button-plain"
+                  [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+        </td>
+        <td>{{product.event.title}}</td>
+        <td>{{product.event.startdate}}</td>
+        <td>{{product.event.enddate}}</td>
+        <td>{{product.event.completed === true ? 'Genomförd' : product.event.active === true ? "Pågående": product.event.canceled === true ? "Inställd": ""}}</td>
+        <td><brevet-html-link [target]="'_blank'" [text]="'Följ loppet'" [rel]="'relation.event.track'" [link]="product.event.links"></brevet-html-link></td>
+        <td>
+          <button [disabled]="!isPossibleToDelete(product.event)" (click)="remove(product.event)" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1"></button>
+<!--          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success sm-0 p-ml-1" ></button>-->
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="rowexpansion" let-product>
+      <td colspan="7">
+        <div class="pl-8 pr-8 pt-3 pb-3">
+          <brevet-track-table (reload)="reload()" [tracks]="product.tracks"></brevet-track-table>
+        </div>
+  </ng-template>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="7">Det finns inga event</td>
+    </tr>
+  </ng-template>
+  </p-table>
+</ng-container>
+
+

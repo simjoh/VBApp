@@ -84,6 +84,23 @@ class RandonneurService
         return null;
     }
 
+    public function previewCheckpointsForRandonneur(?string $track_uid, string $current_user_uid): ?array {
+
+        $track = $this->trackrepository->getTrackByUid($track_uid);
+
+        $checkpoints = $this->checkpointService->checkpointForTrack($track_uid);
+
+        $randonneurcheckpoints = [];
+
+        foreach ($checkpoints as $checkpoint) {
+            $stamptime = "";
+            $stamped = false;
+            $hasDnf = false;
+            array_push($randonneurcheckpoints, $this->randonneurCheckpointAssembly->toRepresentationPreview($checkpoint,$stamped, $hasDnf));
+        }
+        return $randonneurcheckpoints;
+    }
+
     public function stampOnCheckpoint(?string $track_uid, $checkpoint_uid, string $startnumber ,string $current_useruid): bool{
 
         $track = $this->trackrepository->getTrackByUid($track_uid);

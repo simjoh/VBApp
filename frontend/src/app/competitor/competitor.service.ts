@@ -30,6 +30,19 @@ export class CompetitorService {
       shareReplay(1)
     ) as Observable<Array<RandonneurCheckPointRepresentation>>;
   }
+  public getCheckpointsPreview(trackuid: string): Observable<Array<RandonneurCheckPointRepresentation>>{
+    const path = "/randonneur/preview/checkpoints/track/" + trackuid;
+    return this.httpClient.get<Array<RandonneurCheckPointRepresentation>>(environment.backend_url + path).pipe(
+      take(1),
+      map((checkpoints: Array<RandonneurCheckPointRepresentation>) => {
+        return checkpoints;
+      }),
+      tap((checkpoints: Array<RandonneurCheckPointRepresentation>) => {
+        console.log(checkpoints);
+      }),
+      shareReplay(1)
+    ) as Observable<Array<RandonneurCheckPointRepresentation>>;
+  }
 
   async  stampOnCheckpoint(s: RandonneurCheckPointRepresentation): Promise<any>{
     const link = this.linkService.findByRel(s.links,'relation.randonneur.stamp', HttpMethod.POST)

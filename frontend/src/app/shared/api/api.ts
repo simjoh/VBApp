@@ -138,5 +138,18 @@ export interface TrackRepresentation {
   event_uid: string;
   start_date_time: string;
   active: boolean;
+  links: [];
+}
+
+export interface EventInformationRepresentation {
+  event: EventRepresentation
+  tracks: TrackRepresentation[]
+}
+
+export interface  TrackMetricsRepresentation{
+  countParticipants:string;
+  countDnf:string
+  countDns: string;
+  countFinished: string;
 }
 

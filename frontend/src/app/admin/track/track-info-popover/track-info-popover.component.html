@@ -1,0 +1,16 @@
+<brevet-overlay [mouseActivate]="false" [heigth]="'150'" [showCloseIcon]="false" [icon]="'p-button-rounded p-button-info pi pi-info'">
+  <dl class="dl-horizontal">
+    <dt>Antal deltagare:</dt>
+    <dd>{{trackmetrics.countParticipants}}</dd>
+    <dd class="line-break"></dd>
+    <dd class="line-break"></dd>
+    <dt>Antal i mål:</dt>
+    <dd>{{trackmetrics.countFinished}}</dd>
+    <dd class="line-break"></dd>
+    <dt>Antal DNF:</dt>
+    <dd>{{trackmetrics.countDnf}}</dd>
+    <dd class="line-break"></dd>
+    <dt>Antal DNS:</dt>
+    <dd>{{trackmetrics.countDns}}</dd>
+  </dl>
+</brevet-overlay>

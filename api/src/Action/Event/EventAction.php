@@ -45,6 +45,26 @@ class EventAction
     }
 
 
+    public function eventInformation(ServerRequestInterface $request, ResponseInterface $response){
+
+        $params = $request->getQueryParams();
+
+
+        if(array_key_exists('eventUid', $params)){
+            $eventUid = $params["eventUid"];
+        } else {
+            $eventUid = "";
+        }
+
+        if(array_key_exists('year', $params)){
+            $year = $params["year"];
+        } else {
+            $year = "";
+        }
+
+        $response->getBody()->write(json_encode($this->eventService->eventInformation($eventUid,$request->getAttribute('currentuserUid')), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
 
 
 
@@ -72,7 +92,7 @@ class EventAction
     public function deleteEvent(ServerRequestInterface $request, ResponseInterface $response){
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
-        $this->eventService->deleteEvent($route->getArgument('eventUid'));
+        $this->eventService->deleteEvent($route->getArgument('eventUid'),$request->getAttribute('currentuserUid'));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
