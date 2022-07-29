@@ -398,13 +398,13 @@ class ParticipantService extends ServiceAbstract
             } else if(date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, date('Y-m-d H:i:s'), 1,0);
             } else if(date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
-                if($this->settings['demo'] == 'false'){
-                    if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
-                        throw new BrevetException("Checkpoint is closed. Closing date time: " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())), 6, null);
-                    }
-                } else {
+//                if($this->settings['demo'] == 'false'){
+//                    if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
+//                        throw new BrevetException("Checkpoint is closed. Closing date time: " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())), 6, null);
+//                    }
+//                } else {
                     $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0);
-                }
+//                }
             } else {
                 throw new BrevetException("Error on checkin",  1, null);
             }
@@ -429,14 +429,14 @@ class ParticipantService extends ServiceAbstract
                 throw new BrevetException("Cannot checkin on finish checkpoint due to missed checkins on one or more checkpoints. Contact race administrator", 6, null);
             }
 
-            if($this->settings['demo'] == 'false') {
+//            if($this->settings['demo'] == 'false') {
                 if($track->getStartDateTime() != '-'){
                     // om mål sätt måltid till tiden för instämpling och beräkna tiden mella första och sista instämpling. Sätt totaltiden i participant och markera finished
                     if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
                         throw new BrevetException("Can not finish before the start of the race " . date("Y-m-d H:i:s", strtotime($track->getStartDateTime())), 1, null);
                     }
                 }
-            }
+//            }
 
             $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid,1, 0);
             $participant->setDnf(false);
