@@ -4,6 +4,7 @@ import {ParticipantComponent} from "./participant/participant.component";
 import {AdminStartComponent} from "../admin-start/admin-start.component";
 import {UploadParticipantComponent} from "./upload-participant/upload-participant.component";
 import {KontrollerCombinerComponent} from "../kontroller-combiner/kontroller-combiner.component";
+import {ParticipantListComponent} from "./participant-list/participant-list.component";
 
 
 
@@ -13,8 +14,8 @@ const routes: Routes = [
     component: ParticipantComponent,
     children: [
       { path: 'brevet-participant-upload', component:  UploadParticipantComponent},
-      { path: 'brevet-participant-list', component:  KontrollerCombinerComponent},
-      { path: '**', redirectTo: ''},
+      { path: 'brevet-participant-list', component:  ParticipantListComponent},
+      { path: '**', redirectTo: 'brevet-participant-list'},
     ]
   }];
 

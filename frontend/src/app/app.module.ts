@@ -63,7 +63,7 @@ import {HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 
   ],
-  exports: [CardModule,NgbModule, SharedModule],
+  exports: [CardModule, NgbModule, SharedModule, AppComponent],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy},MessageService,
     {
     provide: HTTP_INTERCEPTORS,

@@ -153,3 +153,36 @@ export interface  TrackMetricsRepresentation{
   countFinished: string;
 }
 
+
+export interface ParticipantRepresentation {
+  participant_uid: string;
+  track_uid: string;
+  competitor_uid: string;
+  startnumber: string ;
+  finished: boolean;
+  acpcode: string;
+  club_uid: string;
+  time: string;
+  dns: boolean;
+  dnf: boolean;
+  started: boolean;
+  brevenr: string;
+  links: [];
+}
+
+export interface CompetitorRepresentation {
+  given_name: string;
+  family_name: string;
+  birth_date: string;
+  links: [];
+}
+
+export interface ParticipantInformationRepresentation {
+  participant: ParticipantRepresentation ;
+  competitorRepresentation: CompetitorRepresentation
+
+}
+
+
+
+

@@ -56,6 +56,7 @@ import {
 } from "./components/checkpoint-preview/checkpoint-preview-dialog/checkpoint-preview-dialog.component";
 import {CheckpointComponent} from "./components/checkpoint/checkpoint.component";
 import {TrackInfoComponent} from "./components/track-info/track-info.component";
+import { TracksForEventSelectorComponent } from './components/tracks-for-event-selector/tracks-for-event-selector.component';
 
 
 
@@ -77,7 +78,8 @@ import {TrackInfoComponent} from "./components/track-info/track-info.component";
     CheckpointPreviewComponent,
     CheckpointPreviewDialogComponent,
     CheckpointComponent,
-    TrackInfoComponent
+    TrackInfoComponent,
+    TracksForEventSelectorComponent
   ],
   entryComponents: [],
   imports: [
@@ -119,11 +121,11 @@ import {TrackInfoComponent} from "./components/track-info/track-info.component";
     MenuModule,
     FormsModule, ReactiveFormsModule, AccordionModule
   ],
-  exports: [CommonModule ,ToastModule, ConfirmPopupModule,    TabViewModule,
-    PanelModule,
-    MenuModule, BadgeModule,CheckpointComponent,CheckpointPreviewComponent, CheckpointPreviewDialogComponent,KnobModule, HtmlLinkComponent ,ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
-    LogoComponent, DatePipe, NgbCollapseModule, ProgressSpinnerModule,AccordionModule ,TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
-    ProgressBarModule,TrackTableComponent, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent, DateTimePrettyPrintPipe, RemoveAfterPipe],
+	exports: [CommonModule, ToastModule, ConfirmPopupModule, TabViewModule,
+		PanelModule,
+		MenuModule, BadgeModule, TracksForEventSelectorComponent, CheckpointComponent, CheckpointPreviewComponent, CheckpointPreviewDialogComponent, KnobModule, HtmlLinkComponent, ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
+		LogoComponent, DatePipe, NgbCollapseModule, ProgressSpinnerModule, AccordionModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
+		ProgressBarModule, TrackTableComponent, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent, DateTimePrettyPrintPipe, RemoveAfterPipe, TracksForEventSelectorComponent, CheckpointTableComponent],
   providers: [DatePipe, DialogService]
 })
 export class SharedModule { }

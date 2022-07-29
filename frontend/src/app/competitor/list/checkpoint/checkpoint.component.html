@@ -32,7 +32,7 @@
 <!--    <p-tag *ngIf="finsih" styleClass="mr-2" value="FINISH"></p-tag>-->
     <p-tag hidden *ngIf="checkedin$ | async" styleClass="mr-2" icon="pi pi-check" severity="success" value="CHECKED IN"></p-tag>
     <p-tag *ngIf="isdnf$ | async" severity="danger" styleClass="mr-2" value="DNF"></p-tag>
-    <p-tag styleClass="mr-3" *ngIf="!checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing" severity="danger" value="CLOSED"></p-tag>
+    <p-tag styleClass="mr-3" *ngIf="checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing" severity="danger" value="CLOSED"></p-tag>
     <p-tag  *ngIf="checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing" styleClass="mr-2" value="OPEN"></p-tag>
   </div>
   <ng-template pTemplate="footer">

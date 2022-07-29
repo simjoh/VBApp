@@ -195,12 +195,15 @@ class ParticipantRepository extends BaseRepository
     }
 
     public function hasStampOnCheckpoint(string $participant_uid, string $checkpoint_uid): bool {
+
+
         try {
             $statement = $this->connection->prepare($this->sqls('hasStampOnCheckpoint'));
             $statement->bindParam(':participant_uid', $participant_uid);
             $statement->bindParam(':checkpoint_uid', $checkpoint_uid);
             $statement->execute();
             $result = $statement->fetch();
+
             if (empty($result)) {
                return false;
             }
@@ -521,12 +524,29 @@ class ParticipantRepository extends BaseRepository
     //görs i efterhand
     public function setDns(string $participant_uid): bool {
 
-        $participant_uid = $participant_uid;
         try {
-            $dnf = true;
+            $dns = true;
             $stmt = $this->connection->prepare($this->sqls('setDns'));
             $stmt->bindParam(':participant_uid', $participant_uid);
-            $stmt->bindParam(':dns', $dnf, PDO::PARAM_BOOL);
+            $stmt->bindParam(':dns', $dns, PDO::PARAM_BOOL);
+            $status = $stmt->execute();
+            if($status){
+                return true;
+            }
+        } catch (PDOException $e) {
+            echo 'Kunde inte uppdatera site: ' . $e->getMessage();
+        }
+        return $event;
+    }
+
+    //görs i efterhand
+    public function rollbackDns(string $participant_uid): bool {
+
+        try {
+            $dns = false;
+            $stmt = $this->connection->prepare($this->sqls('setDns'));
+            $stmt->bindParam(':participant_uid', $participant_uid);
+            $stmt->bindParam(':dns', $dns, PDO::PARAM_BOOL);
             $status = $stmt->execute();
             if($status){
                 return true;
@@ -766,6 +786,30 @@ class ParticipantRepository extends BaseRepository
         }
     }
 
+    public function deleteParticipantCheckpointOnTrackByParticipantUid(?string $participant_uid) {
+        try {
+            $stmt = $this->connection->prepare($this->sqls('deleteParticipantcheckpointbyparticipantuid'));
+            $stmt->bindParam(':participant_uid', $participant_uid);
+            $stmt->execute();
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+    public function deleteParticipantByUID(?string $participant_uid) {
+        try {
+            $stmt = $this->connection->prepare($this->sqls('deleteParticipant'));
+            $stmt->bindParam(':participant_uid', $participant_uid);
+            $stmt->execute();
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
 
     public function sqls($type)
     {
@@ -778,6 +822,7 @@ class ParticipantRepository extends BaseRepository
         $eventqls['participantonTrackWithStartnumber'] = 'select *  from participant e where e.track_uid=:track_uid and startnumber=:startnumber;';
         $eventqls['participantByTrackAndClub'] = 'select *  from participant e where e.track_uid=:track_uid and club_uid=:club_uid;';
         $eventqls['deleteParticipant'] = 'delete from participant  where participant_uid=:participant_uid;';
+        $eventqls['deleteParticipantcheckpointbyparticipantuid'] = 'delete from participant  where participant_uid=:participant_uid;';
         $eventqls['updateParticipant']  = "UPDATE participant SET  track_uid=:track_uid , competitor_uid=:competitor_uid , startnumber=:startnumber, finished=:finished, acpkod=:acpcode, club_uid=:club_uid , dns=:dns, dnf=:dnf , started=:started, register_date_time=:register_date_time , time=:times , brevenr=:brevenr WHERE participant_uid=:participant_uid";
         $eventqls['updateBrevenr']  = "UPDATE participant SET  brevenr=:brevenr WHERE participant_uid=:participant_uid";
         $eventqls['createParticipant'] = 'INSERT INTO participant(participant_uid, track_uid, competitor_uid, startnumber, finished,  acpkod, club_uid , time ,dns, dnf, brevenr,register_date_time) VALUES (:participant_uid, :track_uid,:competitor_uid,:startnumber,:finished , :acpcode, :club_uid, :time, :dns, :dnf, :brevenr, :register_date_time)';

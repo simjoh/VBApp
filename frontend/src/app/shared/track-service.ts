@@ -3,14 +3,22 @@ import {HttpClient} from "@angular/common/http";
 import {LinkService} from "../core/link.service";
 import {Link, TrackRepresentation} from "./api/api";
 import {environment} from "../../environments/environment";
-import {catchError, map, shareReplay, take, tap} from "rxjs/operators";
-import {Observable, throwError} from "rxjs";
+import {catchError, map, mergeMap, shareReplay, take, tap} from "rxjs/operators";
+import {BehaviorSubject, Observable, ReplaySubject, throwError} from "rxjs";
 import {HttpMethod} from "../core/HttpMethod";
 
 @Injectable({
   providedIn: 'root'
 })
 export class TrackService {
+
+
+  $currentTrackSubject = new BehaviorSubject("");
+  $currentTrack = this.$currentTrackSubject.asObservable().pipe(
+    map((val) => {
+      return val;
+    })
+  );
 
   constructor(private httpClient: HttpClient, private linkService: LinkService) { }
 
@@ -66,5 +74,9 @@ export class TrackService {
 
   public deletelinkExists(track: TrackRepresentation): boolean {
      return this.linkService.exists(track.links,'relation.track.delete' , 'DELETE');
+  }
+
+  public currentTrack(trackUid: string){
+    this.$currentTrackSubject.next(trackUid);
   }
 }

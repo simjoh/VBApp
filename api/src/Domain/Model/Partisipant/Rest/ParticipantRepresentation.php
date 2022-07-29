@@ -18,6 +18,7 @@ class ParticipantRepresentation implements JsonSerializable
     private $time;
     private bool $dns;
     private bool $dnf;
+    private bool $started;
     private ?string $brevenr;
     private array $links = [];
     /**
@@ -213,6 +214,22 @@ class ParticipantRepresentation implements JsonSerializable
     public function setLinks(array $links): void
     {
         $this->links = $links;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isStarted(): bool
+    {
+        return $this->started;
+    }
+
+    /**
+     * @param bool $started
+     */
+    public function setStarted(bool $started): void
+    {
+        $this->started = $started;
     }
 
     public function jsonSerialize()

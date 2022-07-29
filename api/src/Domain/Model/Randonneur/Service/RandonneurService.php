@@ -7,11 +7,13 @@ use App\common\Util;
 use App\Domain\Model\CheckPoint\Service\CheckpointsService;
 use App\Domain\Model\Competitor\Repository\CompetitorRepository;
 use App\Domain\Model\Event\Repository\EventRepository;
+use App\Domain\Model\Partisipant\Participant;
 use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
 use App\Domain\Model\Randonneur\Rest\RandonneurCheckpointAssembly;
 use App\Domain\Model\Randonneur\Rest\TrackInfoRepresentation;
 use App\Domain\Model\Track\Repository\TrackRepository;
 use App\Domain\Model\Track\Rest\TrackAssembly;
+use App\Domain\Model\Track\Track;
 use DateInterval;
 use DateTime;
 use Psr\Container\ContainerInterface;
@@ -140,7 +142,6 @@ class RandonneurService
             throw new BrevetException("You have not started in a race ",6, null);
         }
         if($this->settings['demo'] == 'false') {
-
             // är det start behöver vi inte göra kontroller då sätts starttiden till loppets starttid
             if($isStart == false){
                 // kolla att kontrollern har öppnat
@@ -363,6 +364,52 @@ class RandonneurService
         }
 
         return $this->participantRepository->rollbackStamp($participant->getParticipantUid(), $checkpoint_uid);
+    }
+
+    public function getChecpointsForRandonneurForAdmin(Participant $participant, Track $track)
+    {
+        $checkpoints = [];
+        $event = $this->eventrepository->eventFor($track->getEventUid());
+
+        $racepassed = $this->trackrepository->isRacePassed($track->getTrackUid());
+
+
+//        if($event->isCompleted() == true || $racepassed == true) {
+//            $racepassed = true;
+//        }
+
+        if($this->settings['demo'] == 'true'){
+            $racepassed = false;
+        }
+
+        // kolla om datumet för banan som körs är passerat eller inte
+
+        if(!empty($participant)){
+            // hämta checkpoints for track
+            $checkpoints = $this->checkpointService->checkpointForTrack($participant->getTrackUid());
+            // return $checkpoints;
+
+            $randonneurcheckpoints = [];
+            foreach ($checkpoints as $checkpoint) {
+                $stamptime = "";
+                $stamped = $this->participantRepository->hasStampOnCheckpoint($participant->getParticipantUid(), $checkpoint->getCheckPointUId());
+                $hasDnf = $this->participantRepository->hasDnf($participant->getParticipantUid());
+                $participant_checkpoint = $this->participantRepository->stampTimeOnCheckpoint($participant->getParticipantUid(), $checkpoint->getCheckPointUId());
+
+                if($participant_checkpoint != null){
+                    if($participant_checkpoint->getPassededDateTime() != null){
+                        $stamptime = $participant_checkpoint->getPassededDateTime();
+                    }
+                }
+
+                array_push($randonneurcheckpoints, $this->randonneurCheckpointAssembly->toRepresentationForAdmin($participant->getParticipantUid() ,$checkpoint,$stamped,$track->getTrackUid(), $hasDnf, $racepassed,$stamptime));
+            }
+
+            return $randonneurcheckpoints;
+        }
+
+        return null;
+
     }
 
 }

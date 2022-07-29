@@ -31,6 +31,75 @@ class participantAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    public function getCheckpointsForparticipant(ServerRequestInterface $request, ResponseInterface $response){
+        //skicka tillbacka checkpoints med ny status
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_uid = $route->getArgument('participantUid');
+        $checkpointforrandoneur =  $this->participantService->checkpointsForParticipant($participant_uid,$request->getAttribute('currentuserUid'));
+        $response->getBody()->write(json_encode($checkpointforrandoneur));
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+    public function markasDNF(ServerRequestInterface $request, ResponseInterface $response){
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_uid = $route->getArgument('uid');
+        $response->getBody()->write(json_encode($this->participantService->setDnf($participant_uid, $request->getAttribute('currentuserUid'))));
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+    public function markasDNS(ServerRequestInterface $request, ResponseInterface $response){
+
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_uid = $route->getArgument('uid');
+        $response->getBody()->write(json_encode($this->participantService->setDns($participant_uid, $request->getAttribute('currentuserUid'))));
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+
+    public function stampAdmin(ServerRequestInterface $request, ResponseInterface $response){
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_uid = $route->getArgument('uid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $response->getBody()->write(json_encode($this->participantService->stampAdmin($participant_uid, $checkpoint_uid, $request->getAttribute('currentuserUid'))));
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+
+    public function rollbackstampAdmin(ServerRequestInterface $request, ResponseInterface $response){
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_uid = $route->getArgument('uid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $response->getBody()->write(json_encode($this->participantService->rollbackstampAdmin($participant_uid, $checkpoint_uid, $request->getAttribute('currentuserUid'))));
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+
+
+
+    public function rollbackDNF(ServerRequestInterface $request, ResponseInterface $response){
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_uid = $route->getArgument('uid');
+        $response->getBody()->write(json_encode($this->participantService->rollbackDnf($participant_uid, $request->getAttribute('currentuserUid'))));
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+
+
+
+    public function rollbackDNS(ServerRequestInterface $request, ResponseInterface $response){
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_uid = $route->getArgument('uid');
+        $response->getBody()->write(json_encode($this->participantService->rollbackDns($participant_uid, $request->getAttribute('currentuserUid'))));
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
     public function participantOnEvent(ServerRequestInterface $request, ResponseInterface $response){
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
@@ -45,6 +114,17 @@ class participantAction
         $response->getBody()->write(json_encode($this->participantService->participantsOnTrack($track_uid, $request->getAttribute('currentuserUid'))));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
+
+    public function participantsOnTrackMore(ServerRequestInterface $request, ResponseInterface $response){
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('trackUid');
+        $response->getBody()->write(json_encode($this->participantService->participantsOnTrackWithMoreInformation($track_uid, $request->getAttribute('currentuserUid'))));
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+
+
     public function participantOnTrack(ServerRequestInterface $request, ResponseInterface $response){
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
@@ -101,6 +181,10 @@ class participantAction
         //return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
     public function deleteParticipant(ServerRequestInterface $request, ResponseInterface $response){
+        $currentuserUid = $request->getAttribute('currentuserUid');
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $this->participantService->deleteParticipant($route->getArgument('uid'),$currentuserUid);
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 

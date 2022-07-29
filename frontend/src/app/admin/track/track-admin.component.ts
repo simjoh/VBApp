@@ -32,7 +32,7 @@ export class TrackAdminComponent implements OnInit {
       {
         label: "Banor",
         routerLink: 'brevet-track-list',
-        icon: "pi pi-fw pi-directions"
+        icon: 'pi pi-list'
       },
       {
         label: "Ladda upp banor",

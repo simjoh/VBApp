@@ -21,7 +21,7 @@ class ClubRepository extends \App\common\Repository\BaseRepository
     }
 
 
-    public function getClubByUId(string $club_uid) {
+    public function getClubByUId(string $club_uid): ?Club {
         try {
             $statement = $this->connection->prepare($this->sqls('clubByUID'));
             $statement->bindParam(':club_uid', $club_uid);
@@ -29,16 +29,16 @@ class ClubRepository extends \App\common\Repository\BaseRepository
             $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Club\Club::class, null);
 
             if (empty($events)) {
-                return array();
+                return null;
             }
 
-            return $events;
+            return $events[0];
         }
         catch(PDOException $e)
         {
             echo "Error: " . $e->getMessage();
         }
-        return array();
+        return null;
 
     }
 

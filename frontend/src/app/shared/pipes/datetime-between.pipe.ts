@@ -10,7 +10,7 @@ export class DatetimeBetweenPipe implements PipeTransform {
     let currentDate = new Date();
     const dateOne = new Date(datestart);
     const dateTwo = new Date(dateend);
-    if (currentDate >= datestart && currentDate <= dateTwo){
+    if (currentDate >= dateOne && currentDate <= dateTwo){
       return true
     }
 

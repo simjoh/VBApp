@@ -1,0 +1,29 @@
+
+<ng-container *ngIf="$checkpoints | async as checkpoints">
+  <p-table [value]="checkpoints" styleClass="p-datatable-sm p-datatable-striped"
+           responsiveLayout="scroll">
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="lg:w-1">Logga</th>
+        <th class="lg:w-auto">Adress</th>
+        <th  class="lg:w-2">Ort</th>
+        <th class="lg:w-1">Distans</th>
+        <th class="lg:w-2">Tid</th>
+        <th class="lg:w-2">Åtgärd</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-check>
+      <tr>
+        <td>
+          <p-image width="40" height="40" src="{{check.checkpoint.site.image}}" alt="Image" [preview]="false"></p-image>
+        </td>
+        <td>{{check.checkpoint.site.adress}}</td>
+        <td>{{check.checkpoint.site.place}}</td>
+        <td>{{check.checkpoint.distance}}</td>
+        <td>{{check.stamptime | dateTimePrettyPrint}}</td>
+        <td><button pButton [disabled]="$dim | async" (click)="checkin(check)" label="{{check.stamptime  != '' ? 'Ångra': 'Checka in'}}"  type="button"  class="p-button-secondary  container-fluid"></button></td>
+      </tr>
+    </ng-template>
+  </p-table>
+</ng-container>
+

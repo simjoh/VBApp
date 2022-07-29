@@ -1,0 +1,89 @@
+
+    <p-table #dt1  [globalFilterFields]="['participant.startnumber', 'competitorRepresentation.given_name', 'competitorRepresentation.family_name', 'clubRepresentation.title']" [value]="$participant | async " styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped" dataKey="participant.participant_uid"
+             responsiveLayout="stack" >
+      <ng-template pTemplate="caption">
+        <div class="p-input-icon-left ml-auto">
+          <i class="pi pi-search"></i>
+          <input [disabled]="$searchDisabled | async" pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Sök deltagare" />
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th  class="w-auto">
+          </th>
+          <th pSortableColumn="participant.startnumber" class="lg:col-2">Startnummer
+            <p-sortIcon field="participant.startnumber"></p-sortIcon>
+          </th>
+          <th pSortableColumn="competitorRepresentation.given_name" class="lg:col-2">Förnamn<p-sortIcon field="competitorRepresentation.given_name"></p-sortIcon></th>
+          <th pSortableColumn="competitorRepresentation.family_name" class="lg:col-3">Efternamn<p-sortIcon field="competitorRepresentation.family_name"></p-sortIcon></th>
+          <th  pSortableColumn="clubRepresentation.title" class="lg:col-3">Klubb<p-sortIcon field="clubRepresentation.title"></p-sortIcon></th>
+          <th class="lg:col-4">Åtgärd</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-participant let-expanded="expanded">
+        <tr>
+          <td>
+            <button (click)="currentparticipant(participant.participant)" type="button" pButton pRipple [pRowToggler]="participant" class="p-button-text p-button-rounded p-button-plain"
+                    [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+          </td>
+          <td>{{participant.participant.startnumber}}</td>
+          <td>{{participant.competitorRepresentation.given_name}}</td>
+          <td>{{participant.competitorRepresentation.family_name}}</td>
+          <td>{{participant.clubRepresentation.title}}</td>
+          <td><button [disabled]="!isPossibleToDelete(participant.participant)" (click)="remove(participant.participant)" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1"></button></td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="rowexpansion" let-track>
+        <tr>
+          <td colspan="7">
+            <div class="row">
+              <div class="lg:col-12">
+
+                <div class="row p-2">
+                  <div class="col-md-3">
+                    <strong>Adress:</strong>
+                    <div>{{track.competitorInforepresentation.adress}}</div>
+                  </div>
+                  <div class="col-md-2">
+                    <strong>Ort:</strong>
+                    <div>{{track.competitorInforepresentation.place}}</div>
+                  </div>
+                  <div class="col-md-2">
+                    <strong>Land:</strong>
+                    <div>{{track.competitorInforepresentation.country}}</div>
+                  </div>
+                  <div class="col-md-2">
+                    <strong>Telefon:</strong>
+                    <div>{{track.competitorInforepresentation.phone}}</div>
+                  </div>
+                  <div class="col-md-3">
+                    <strong>Email:</strong>
+                    <div>{{track.competitorInforepresentation.email}}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="lg:col-12">
+                <div class="row">
+                  <div class="col-10">
+                  </div>
+                  <div class="col-2">
+                  <span class="p-buttonset">
+                      <button  pButton pRipple  [disabled]="!track.participant.started" (click)="dnf(track.participant)" type="button" label="{{textDnfButton(track.participant.started, track.participant.dnf)}}" class="p-button-danger"></button>
+                      <button  pButton [disabled]="track.participant.started" (click)="dns(track.participant)" pRipple type="button" label="{{textDnsButton(track.participant.started, track.participant.dns)}}" class="p-button-secondary"></button>
+                  </span>
+                  </div>
+               </div>
+                <div class="row p-2">
+                    <brevet-participant-checkpoint-table [participant]="track.participant" ></brevet-participant-checkpoint-table>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7">Det finns inga deltagare på banan</td>
+        </tr>
+      </ng-template>
+    </p-table>

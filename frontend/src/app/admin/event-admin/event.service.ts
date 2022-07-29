@@ -46,7 +46,7 @@ export class EventService {
     this.userInsertedSubject.next(user);
   }
 
-  private getAllEvents(): Observable<EventRepresentation[]>{
+  public getAllEvents(): Observable<EventRepresentation[]>{
     return this.httpClient.get<EventRepresentation[]>(environment.backend_url + "events").pipe(
       map((events: Array<EventRepresentation>) => {
         return events;

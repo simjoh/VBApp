@@ -109,8 +109,20 @@ return function (App $app) {
 
         // Deltagare på olika banor och event
         $app->get('/participants/event/{eventUid}', \App\Action\Participant\ParticipantAction::class. ':participantOnEvent');
+
+        // admin ska också kunna checka in och behöver kunna läsa upp dessa checkpoints och kunna stämpla in eller sätta dnf. Då nästan utan kontroller
+        $app->get('/participant/{participantUid}/checkpointsforparticipant', \App\Action\Participant\ParticipantAction::class. ':getCheckpointsForparticipant');
+        $app->put('/participant/{uid}/checkpoint/{checkpointUid}/rollbackstamp', \App\Action\Participant\ParticipantAction::class . ':rollbackstampAdmin');
+        $app->put('/participant/{uid}/checkpoint/{checkpointUid}/stamp', \App\Action\Participant\ParticipantAction::class . ':stampAdmin');
+        $app->put('/participant/{uid}/setdnf', \App\Action\Participant\ParticipantAction::class . ':markasDNF');
+        $app->put('/participant/{uid}/setdns', \App\Action\Participant\ParticipantAction::class . ':markasDNS');
+        $app->put('/participant/{uid}/rollbackdnf', \App\Action\Participant\ParticipantAction::class  . ':rollbackDNF');
+        $app->put('/participant/{uid}/rollbackdns', \App\Action\Participant\ParticipantAction::class  . ':rollbackDNS');
+
+
         $app->get('/participants/event/{eventUid}/track/{trackUid}', \App\Action\Participant\ParticipantAction::class. ':participantOnEventAndTrack');
         $app->get('/participants/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':participantsOnTrack');
+        $app->get('/participants/track/{trackUid}/extended', \App\Action\Participant\ParticipantAction::class . ':participantsOnTrackMore');
         $app->get('/participant/{participantUid}', \App\Action\Participant\ParticipantAction::class . ':participants');
         $app->get('/participant/{uid}/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':participantOnTrack');
         $app->put('/participant/{uid}/track/{trackUid}/update', \App\Action\Participant\ParticipantAction::class . ':updateParticipant');

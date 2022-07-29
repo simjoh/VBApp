@@ -19,22 +19,14 @@ export class ParticipantComponent implements OnInit {
 
     this.designTabs = [
       {
-        label: "Deltagare",
-        routerLink: 'om-ds',
+        label: "Lista",
+        routerLink: 'brevet-participant-list',
+        icon: 'pi pi-list'
       },
       {
         label: "Ladda upp deltagare",
         routerLink: 'brevet-participant-upload',
         icon: 'pi pi-fw pi-upload'
-      },
-      {
-        label: "Lista deltagare",
-        routerLink: 'brevet-participant-list'
-      },
-      {
-        label: "Administerar deltagare",
-        routerLink: 'sokning',
-        styleClass: 'ds-beta-tab'
       }
     ] as MenuItem[];
     // this.items = [

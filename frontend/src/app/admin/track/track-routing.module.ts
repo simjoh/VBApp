@@ -14,7 +14,7 @@ const routes: Routes = [
     children: [
       { path: 'brevet-track-upload', component:  UploadTrackComponent},
       { path: 'brevet-track-list', component:  TrackListComponent},
-      { path: '**', redirectTo: ''},
+      { path: '**', redirectTo: 'brevet-track-list'},
     ]
   }];
 

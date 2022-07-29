@@ -1,0 +1,17 @@
+ <p-dropdown [options]="$items | async" [filter]="true" filterBy="label" [showClear]="true" (ngModelChange)="setValue($event)" [(ngModel)]="selectedTrack" placeholder="Välj en bana" [group]="true">
+    <ng-template let-group pTemplate="group">
+      <div class="flex align-items-center">
+        <span>{{group.label}}</span>
+      </div>
+    </ng-template>
+  </p-dropdown>
+
+
+<!-- <p-multiSelect [options]="$items | async" [group]="true" [(ngModel)]="selected"  defaultLabel="Välj bana/banor" scrollHeight="250px" display="chip">-->
+<!--   <ng-template let-group pTemplate="group">-->
+<!--     <div class="flex align-items-center">-->
+<!--       <span>{{group.label}}</span>-->
+<!--     </div>-->
+<!--   </ng-template>-->
+<!-- </p-multiSelect>-->
+

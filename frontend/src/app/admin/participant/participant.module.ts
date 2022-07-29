@@ -13,12 +13,18 @@ import {AppModule} from "../../app.module";
 import {FormsModule} from "@angular/forms";
 import { TrackSelectorComponent } from './track-selector/track-selector.component';
 import {DropdownModule} from "primeng/dropdown";
+import { ParticipantListComponent } from './participant-list/participant-list.component';
+import { ParticipantTableComponent } from './participant-table/participant-table.component';
+import { ParticipantCheckpointTableComponent } from './participant-checkpoint-table/participant-checkpoint-table.component';
 
 @NgModule({
   declarations: [
     ParticipantComponent,
     UploadParticipantComponent,
-    TrackSelectorComponent
+    TrackSelectorComponent,
+    ParticipantListComponent,
+    ParticipantTableComponent,
+    ParticipantCheckpointTableComponent
   ],
   imports: [
     ParticipantRoutingModule,
@@ -28,6 +34,7 @@ import {DropdownModule} from "primeng/dropdown";
     InputTextModule,
     FormsModule,
     DropdownModule,
+    SharedModule,
   ],
   exports: []
 })

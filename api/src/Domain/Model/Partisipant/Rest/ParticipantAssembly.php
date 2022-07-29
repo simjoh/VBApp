@@ -32,7 +32,6 @@ class ParticipantAssembly
 
     public function toRepresentation(Participant $participant,  array $permissions): ?ParticipantRepresentation {
 
-
         $participantrepresentation = new ParticipantRepresentation();
         $participantrepresentation->setParticipantUid($participant->getParticipantUid());
         $participantrepresentation->setTrackUid($participant->getTrackUid());
@@ -44,19 +43,35 @@ class ParticipantAssembly
         $participantrepresentation->setTime($participant->getTime());
         $participantrepresentation->setDns($participant->isDns());
         $participantrepresentation->setDnf($participant->isDnf());
+        $participantrepresentation->setStarted($participant->isStarted());
         $participantrepresentation->setFinished($participant->isFinished());
 
         $linkArray = array();
-        foreach ($permissions as $x =>  $site) {
-            if($site->hasWritePermission()){
-                array_push($linkArray, new Link("relation.participant.update", 'PUT', $this->settings['path'] . 'participant/' . $participant->getParticipantUid()));
-                array_push($linkArray, new Link("relation.participant.delete", 'DELETE', $this->settings['path'] . 'participant/' . $participant->getParticipantUid));
-                break;
-            }
-            if($site->hasReadPermission()){
-                array_push($linkArray, new Link("self", 'GET', $this->settings['path'] .'user/' . $participant->getParticipantUid()));
-            };
-        }
+//        foreach ($permissions as $x =>  $site) {
+//            if($site->hasWritePermission()){
+
+                array_push($linkArray, new Link("relation.participant.checkpoints", 'GET', $this->settings['path'] .'participant/' . $participant->getParticipantUid() . "/checkpointsforparticipant"));
+                if($participant->isStarted() != true) {
+                    array_push($linkArray, new Link("relation.participant.delete", 'DELETE', $this->settings['path'] . 'participant/' . $participant->getParticipantUid() . "/deleteParticipant"));
+                    if($participant->isDns() != true){
+                        array_push($linkArray, new Link("relation.participant.setdns", 'PUT', $this->settings['path'] .'participant/' . $participant->getParticipantUid() . "/setdns"));
+                    } else {
+                        array_push($linkArray, new Link("relation.participant.rollbackdns", 'PUT', $this->settings['path'] .'participant/' . $participant->getParticipantUid() . "/rollbackdns"));
+                    }
+                    array_push($linkArray, new Link("relation.participant.update", 'PUT', $this->settings['path'] . 'participant/' . $participant->getParticipantUid()));
+                } else {
+                    if($participant->isDnf() != true){
+                        array_push($linkArray, new Link("relation.participant.setdnf", 'PUT', $this->settings['path'] .'participant/' . $participant->getParticipantUid()  . "/setdnf"));
+                    } else {
+                        array_push($linkArray, new Link("relation.participant.rollbackdnf", 'PUT', $this->settings['path'] .'participant/' . $participant->getParticipantUid()  . "/rollbackdnf"));
+                    }
+                }
+//                break;
+//            }
+//            if($site->hasReadPermission()){
+                array_push($linkArray, new Link("self", 'GET', $this->settings['path'] .'participant/' . $participant->getParticipantUid()));
+//            };
+//        }
 
         $participantrepresentation->setLinks($linkArray);
         return $participantrepresentation;
@@ -68,8 +83,6 @@ class ParticipantAssembly
 
         $participant = new Participant();
         $participant->setParticipantUid($participantRepresentation->getParticipantUid());
-
-
         return $participant;
     }
 

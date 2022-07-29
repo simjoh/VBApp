@@ -3,16 +3,22 @@
 namespace App\Domain\Model\Partisipant\Service;
 
 use App\common\Service\ServiceAbstract;
+use App\common\Util;
+use App\Domain\Model\CheckPoint\Service\CheckpointsService;
 use App\Domain\Model\Club\Club;
 use App\Domain\Model\Club\ClubRepository;
+use App\Domain\Model\Club\Service\ClubService;
 use App\Domain\Model\Competitor\Repository\CompetitorInfoRepository;
+use App\Domain\Model\Competitor\Service\CompetitorInfoService;
 use App\Domain\Model\Competitor\Service\CompetitorService;
 use App\common\Exceptions\BrevetException;
 use App\Domain\Model\Event\Repository\EventRepository;
 use App\Domain\Model\Partisipant\Participant;
 use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
 use App\Domain\Model\Partisipant\Rest\ParticipantAssembly;
+use App\Domain\Model\Partisipant\Rest\ParticipantInformationAssembly;
 use App\Domain\Model\Partisipant\Rest\ParticipantRepresentation;
+use App\Domain\Model\Randonneur\Service\RandonneurService;
 use App\Domain\Model\Track\Repository\TrackRepository;
 use App\Domain\Permission\PermissionRepository;
 use League\Csv\Reader;
@@ -30,7 +36,10 @@ class ParticipantService extends ServiceAbstract
                                 EventRepository $eventRepository,
                                 CompetitorService $competitorService,
                                 CompetitorInfoRepository $competitorInfoRepository,
-                                ClubRepository $clubRepository, PermissionRepository $permissionRepository)
+                                ClubRepository $clubRepository, PermissionRepository $permissionRepository,
+                                ParticipantInformationAssembly $ciass ,
+                                ClubService $clubservice,
+                                CompetitorInfoService $competitorInfoService, CheckpointsService $checkpointsService, RandonneurService $randonneurService)
     {
         $this->trackRepository = $trackRepository;
         $this->participantRepository = $participantRepository;
@@ -41,9 +50,32 @@ class ParticipantService extends ServiceAbstract
         $this->competitorInfoRepository = $competitorInfoRepository;
         $this->clubrepository = $clubRepository;
         $this->permissionrepoitory = $permissionRepository;
+        $this->competitorInformationAssembly = $ciass;
+        $this->clubService = $clubservice;
+        $this->competitorInfoService = $competitorInfoService;
+        $this->checkpointsService = $checkpointsService;
+        $this->randonneurservice = $randonneurService;
+    }
+
+
+    public function participantsOnTrackWithMoreInformation(string $trackuid, string $currentUserUid): array {
+
+        $partisipants = $this->participantsOnTrack($trackuid, $currentUserUid);
+        $participantsarray = array();
+        foreach ($partisipants as $participant){
+            $competitor = $this->competitorService->getCompetitorByUid($participant->getCompetitorUid(),$currentUserUid);
+            $competitor_info = $this->competitorInfoService->getCompetitorInfoByCompetitorUid($competitor->getCompetitorUid(), $currentUserUid);
+            $club = $this->clubService->getClubByUid($participant->getClubUid(),$currentUserUid);
+            array_push($participantsarray,  $this->competitorInformationAssembly->toRepresentation($participant,$competitor, $club, $competitor_info ,array()));
+        }
+
+        return $participantsarray;
     }
 
     public function participantsOnTrack(string $trackuid, string $currentUserUid): array {
+
+        $track = $this->trackRepository->getTrackByUid($trackuid);
+
         $participants = $this->participantRepository->participantsOnTrack($trackuid);
 
         if(!isset($participants)){
@@ -250,6 +282,28 @@ class ParticipantService extends ServiceAbstract
         return $this->participantassembly->toRepresentation($participant, $permissions);
     }
 
+
+    public function deleteParticipant(?string $participant_uid, string $currentuserUid){
+
+       $participant = $this->participantRepository->participantFor($participant_uid);
+
+        if($participant == null){
+            throw new BrevetException("Deltagare finns inte", 5,null);
+        }
+        $track = $this->trackRepository->getTrackByUid($participant->getTrackUid());
+
+        if($track == null){
+            throw new BrevetException("Bana finns inte", 5,null);
+        }
+
+
+        $this->competitorService->deleteCompetitorCredentialForParticipant($participant->getParticipantUid());
+
+        $this->participantRepository->deleteParticipantCheckpointOnTrackByParticipantUid($participant->getParticipantUid());
+
+       $this->participantRepository->deleteParticipantByUID($participant->getParticipantUid());
+    }
+
     public function deleteParticipantsOnTrack(?string $track_uid, mixed $currentuserUid)
     {
         $track = $this->trackRepository->getTrackByUid($track_uid);
@@ -278,6 +332,175 @@ class ParticipantService extends ServiceAbstract
             throw new BrevetException("Går inte att tabort deltagare. Deltagare har registrerade aktiviteter på banan", 5, null);
         }
     }
+
+    public function checkpointsForParticipant(?string $participant_uid, string $currentuserUid): array
+    {
+        $participant = $this->participantRepository->participantFor($participant_uid);
+        $track = $this->trackRepository->getTrackByUid($participant->getTrackUid());
+        return   $this->randonneurservice->getChecpointsForRandonneurForAdmin($participant,$track);
+    }
+
+    public function setDnf(?string $participant_uid, string $currentuserUid) {
+        $participant = $this->participantRepository->participantFor($participant_uid);
+      $status =  $this->participantRepository->setDnf($participant->getParticipantUid());
+
+        if($status == true){
+            $participant = $this->participantRepository->participantFor($participant_uid);
+        }
+
+    }
+
+    public function rollbackDnf(?string $participant_uid, string $currentuserUid): bool
+    {
+        $participant = $this->participantRepository->participantFor($participant_uid);
+        $status =  $this->participantRepository->rollbackDnf($participant->getParticipantUid());
+        return true;
+    }
+
+
+    public function setDns(?string $participant_uid, string $getAttribute)
+    {
+        $participant = $this->participantRepository->participantFor($participant_uid);
+        $status =  $this->participantRepository->setDns($participant->getParticipantUid());
+
+        if($status == true){
+            $participant = $this->participantRepository->participantFor($participant_uid);
+        }
+    }
+
+    public function rollbackDns(?string $participant_uid, string $getAttribute)
+    {
+        $participant = $this->participantRepository->participantFor($participant_uid);
+        $status =  $this->participantRepository->rollbackDns($participant->getParticipantUid());
+    }
+
+    public function stampAdmin(?string $participant_uid, ?string $checkpoint_uid, string $getAttribute): array
+    {
+
+        $participant = $this->participantRepository->participantFor($participant_uid);
+        $checkpoint = $this->checkpointsService->checkpointFor($checkpoint_uid);
+        $track = $this->trackRepository->getTrackByUid($participant->getTrackUid());
+
+        $isStart = $this->checkpointsService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
+        $isEnd = $this->checkpointsService->isEndCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
+
+        $today = date('Y-m-d');
+        $startdate = date('Y-m-d', strtotime($track->getStartDateTime()));
+
+        if($isStart == true){
+            if($this->settings['demo'] == 'false') {
+                if ($today < $startdate) {
+                    throw new BrevetException("You cannot checkin before startdate :  " . $startdate, 6, null);
+                }
+            }
+            if(date('Y-m-d H:i:s') < $track->getStartDateTime()){
+                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1,0);
+            } else if(date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {
+                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, date('Y-m-d H:i:s'), 1,0);
+            } else if(date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
+                if($this->settings['demo'] == 'false'){
+                    if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
+                        throw new BrevetException("Checkpoint is closed. Closing date time: " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())), 6, null);
+                    }
+                } else {
+                    $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0);
+                }
+            } else {
+                throw new BrevetException("Error on checkin",  1, null);
+            }
+            $participant->setStarted(1);
+            $this->participantRepository->updateParticipant($participant);
+
+           return  $this->randonneurservice->getChecpointsForRandonneurForAdmin($participant,$track);
+
+
+        }
+
+
+        if($isEnd == true){
+            if($participant->isDnf() == true){
+                throw new BrevetException("You cannot finsish race if dnf is set", 6, null);
+            }
+
+            $countCheckpoints = $this->checkpointService->countCheckpointsForTrack($participant->getTrackUid());
+            $oktofinish = $this->participantRepository->participantHasStampOnAllExceptFinish($participant->getTrackUid(),$checkpoint->getCheckpointUid(),$participant->getParticipantUid(), $countCheckpoints);
+
+            if($oktofinish == false){
+                throw new BrevetException("Cannot checkin on finish checkpoint due to missed checkins on one or more checkpoints. Contact race administrator", 6, null);
+            }
+
+            if($this->settings['demo'] == 'false') {
+                if($track->getStartDateTime() != '-'){
+                    // om mål sätt måltid till tiden för instämpling och beräkna tiden mella första och sista instämpling. Sätt totaltiden i participant och markera finished
+                    if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
+                        throw new BrevetException("Can not finish before the start of the race " . date("Y-m-d H:i:s", strtotime($track->getStartDateTime())), 1, null);
+                    }
+                }
+            }
+
+            $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid,1, 0);
+            $participant->setDnf(false);
+            $participant->setDns(false);
+
+            $participant->setFinished(true);
+            // beräkna tiden från första incheckning till nu och sätt tiden
+            $participant->setTime(Util::secToHR(Util::calculateSecondsBetween($track->getStartDateTime())));
+            $this->participantRepository->updateParticipant($participant);
+            return  $this->randonneurservice->getChecpointsForRandonneurForAdmin($participant,$track);
+
+        }
+
+        if($participant->isStarted() == false){
+            throw new BrevetException("You have to checkin on startcheckpoint before this", 6, null);
+        }
+
+        $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0);
+        return  $this->randonneurservice->getChecpointsForRandonneurForAdmin($participant,$track);
+    }
+
+    public function rollbackstampAdmin(?string $participant_uid, ?string $checkpoint_uid, string $getAttribute)
+    {
+
+        $participant = $this->participantRepository->participantFor($participant_uid);
+
+        $track = $this->trackRepository->getTrackByUid($participant->getTrackUid());
+
+        if(!isset($track)){
+            throw new BrevetException("Track not exists",5, null);
+        }
+        $checkpoint = $this->checkpointsService->checkpointFor($checkpoint_uid);
+
+        if(!isset($checkpoint)){
+            throw new BrevetException("Checkpoint not exists",5, null);
+        }
+
+        if(!isset($participant)){
+            throw new BrevetException("Cannot find participant",5, null);
+        }
+
+        $isEnd = $this->checkpointsService->isEndCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
+
+        if($isEnd == true){
+            $this->participantRepository->rollbackStamp($participant->getParticipantUid(), $checkpoint_uid);
+//            $participant->setDnf(false);
+//            $participant->setDns(false);
+            $participant->setFinished(false);
+            $participant->setTime(null);
+            $this->participantRepository->updateParticipant($participant);
+            return true;
+        }
+
+        $isStart = $this->checkpointsService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
+        if($isStart == true){
+            $participant->setStarted(false);
+            $participant->setTime(null);
+            $this->participantRepository->updateParticipant($participant);
+        }
+
+        return $this->participantRepository->rollbackStamp($participant->getParticipantUid(), $checkpoint_uid);
+    }
+
+
 
 
     private function getCsv(string $filename){
