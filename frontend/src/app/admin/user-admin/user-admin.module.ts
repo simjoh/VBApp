@@ -5,12 +5,14 @@ import { CreateUserDialogComponent } from './create-user-dialog/create-user-dial
 import { SharedModule } from 'src/app/shared/shared.module';
 import { UserInfoPopoverComponent } from './user-info-popover/user-info-popover.component';
 import {SiteAdminModule} from "../site-admin/site-admin.module";
+import { PermissionAdminComponent } from './permission-admin/permission-admin.component';
 
 
 @NgModule({
   declarations: [
     CreateUserDialogComponent,
-    UserInfoPopoverComponent
+    UserInfoPopoverComponent,
+    PermissionAdminComponent
   ],
   exports: [CreateUserDialogComponent, UserInfoPopoverComponent],
   imports: [

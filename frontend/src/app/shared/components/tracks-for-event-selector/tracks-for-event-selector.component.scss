@@ -1,5 +1,11 @@
-:host ::ng-deep .p-dropdown {
-    width: 28rem;
+:host ::ng-deep  {
+.p-dropdown {
+   width: 28rem;
+}
+//
+//.test {
+// width: 48rem;
+//}
 }
 
 .country-item-value {
@@ -7,6 +13,7 @@
         width: 17px;
     }
 }
+
 
 p-skeleton {
     width: 100%;

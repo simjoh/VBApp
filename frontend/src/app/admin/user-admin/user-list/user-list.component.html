@@ -1,6 +1,6 @@
 
 <ng-container *ngIf="$users | async as users">
-<p-table #dt [value]="users" [(selection)]="selectedCustomers" dataKey="id" styleClass="p-datatable-customers" [rowHover]="true"
+<p-table #dt [value]="users" [(selection)]="selectedCustomers" dataKey="id" styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped" [rowHover]="true"
          [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="loading"
          [paginator]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
          [filterDelay]="0" [globalFilterFields]="['givenname','familyname','username','status']">

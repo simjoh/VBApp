@@ -20,10 +20,12 @@ export class VolunteerComponent implements OnInit {
   constructor(private vol :VolonteerComponentService, private datePipe: DatePipe, public confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
-
   }
 
 
+  trackSelected($event: any) {
+    this.vol.valdBana($event);
+  }
 }
 
 

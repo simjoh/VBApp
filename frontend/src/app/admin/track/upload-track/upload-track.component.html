@@ -1,7 +1,19 @@
 <h3 class="mt-4">Här kan du ladda upp banor med en csv fil</h3>
 
-<p-fileUpload name="myfile[]" [customUpload]="true" (uploadHandler)="myUploader($event)">
+<p-fileUpload name="myfile[]"  #primeFileUpload  [showCancelButton]="false" [customUpload]="true" (onProgress)="progressReport($event)" (uploadHandler)="myUploader($event)" [fileLimit]="1" [accept]="'text/csv'">
 
+  <ng-template let-file pTemplate='file'>
+    <h4>Valda filer</h4>
+    <p-tag styleClass="">{{file.name}}  {{file.size}} bytes <button *ngIf="uploadedFiles.length === 0" class="pi pi-times p-button-sm p-button-icon-only" pButton type="button" label="Remove" (click)="removeFile(file, primeFileUpload)"></button></p-tag>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <ng-container *ngIf="uploadedFiles.length > 0">
+      <h4 class="mt-2">Uppladdad fil</h4>
+      <ng-container *ngFor="let file of uploadedFiles">
+        <p-tag styleClass="mr-2" icon="pi pi-check" severity="success" value="{{file.name}} - {{file.size}} bytes"></p-tag>
+      </ng-container>
+    </ng-container>
+  </ng-template>
 </p-fileUpload>
 
 

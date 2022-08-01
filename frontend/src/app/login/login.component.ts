@@ -36,7 +36,9 @@ export class LoginComponent implements  OnInit{
   login(){
     // @ts-ignore
     if (!this.form.invalid){
-      this.authServiceService.loginUser(this.loginComponetService.loginModel$);
+      this.authServiceService.loginUser(this.loginComponetService.loginModel$).then((ss) => {
+        console.log("ssssssssssss")
+      });
     }
 
 

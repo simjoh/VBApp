@@ -16,6 +16,7 @@ export class TracksForEventSelectorComponent implements OnInit {
   @Input() filter: boolean;
   @Input() showclear: boolean;
   @Input() placeholder: string;
+  @Input() styleClass: string;
   @Output() trackChange: EventEmitter<any> = new EventEmitter();
 
   selectedTrack: string;

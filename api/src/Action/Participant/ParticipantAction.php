@@ -174,7 +174,8 @@ class participantAction
 
         $uploadedParticipants = $this->participantService->parseUplodesParticipant($filename, $uploadDir, $track_uid,$request->getAttribute('currentuserUid'));
 
-        $response->getBody()->write($filename);
+//        $response->getBody()->write($filename);
+        $response->getBody()->write(json_encode($uploadedParticipants));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
 
 

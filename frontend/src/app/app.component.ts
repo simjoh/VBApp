@@ -2,7 +2,7 @@ import {Component, Injector, OnInit} from '@angular/core';
 import {InititatedService} from "./core/inititated.service";
 import {ServiceLocator} from "./core/locator.service";
 import {AuthenticatedService} from "./core/auth/authenticated.service";
-import {PrimeNGConfig} from "primeng/api";
+import {MenuItem, PrimeNGConfig} from "primeng/api";
 
 
 @Component({
@@ -12,6 +12,8 @@ import {PrimeNGConfig} from "primeng/api";
 })
 export class AppComponent implements OnInit{
   title = 'Västerbottenbrevet';
+
+  items: MenuItem[];
 
   init$ = this.initiatedService.initierad$;
   $authenticated = this.authenticatedservice.authenticated$
@@ -23,5 +25,7 @@ export class AppComponent implements OnInit{
 
   ngOnInit() {
     this.primengConfig.ripple = true;
+
+
   }
 }

@@ -54,6 +54,16 @@
     }
   }
 
+.p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {
+    padding: 0.3rem 0.3rem;
+}
+
+.p-paginator {
+    padding: 0.2rem;
+}
+
+
+
   /* Responsive */
   .p-datatable-customers .p-datatable-tbody > tr > td .p-column-title {
     display: none;
@@ -99,3 +109,6 @@
   }
 
 }
+
+
+

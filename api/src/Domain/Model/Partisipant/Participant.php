@@ -15,7 +15,7 @@ class Participant
     private $time;
     private bool $dns;
     private bool $dnf;
-    private bool $started;
+    private ?bool $started;
 
 
     private ?string $brevenr = null;

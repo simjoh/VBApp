@@ -2,6 +2,7 @@ import {Component, OnInit, ChangeDetectionStrategy, ViewChild} from '@angular/co
 import {FileUpload} from "primeng/fileupload";
 import {UploadService} from "../../../core/upload.service";
 import {environment} from "../../../../environments/environment";
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'brevet-upload-track',
@@ -33,6 +34,11 @@ export class UploadTrackComponent implements OnInit {
 
   progressReport($event: any) {
     this.primeFileUpload.progress = $event;
+  }
+
+  removeFile(file: File, uploader: FileUpload) {
+    const index = uploader.files.indexOf(file);
+    uploader.remove(null, index);
   }
 
 }

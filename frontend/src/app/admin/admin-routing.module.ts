@@ -23,14 +23,17 @@ const routes: Routes = [{
       path: 'banor',
       loadChildren: () => import('./track/track.module').then(m => m.TrackModule),
     },
+    {
+      path: 'useradmin',
+      loadChildren: () => import('./user-admin/user-admin.module').then(m => m.UserAdminModule),
+    },
     { path: 'brevet-admin-start', component: AdminStartComponent },
-    { path: 'brevet-kontroller-combiner', component: KontrollerCombinerComponent},
-    { path: 'brevet-user-admin', component: UserAdminComponent },
-    { path: 'brevet-dashboard', component: DashboardComponent },
-    { path: 'competitors-list-component', component: NgbdTableComplete },
-    { path: 'brevet-site-admin', component: SiteAdminComponent},
-    { path: 'brevet-event-admin', component: EventAdminComponent},
-    { path: '**', redirectTo: 'brevet-admin-start'},
+    // { path: 'brevet-kontroller-combiner', component: KontrollerCombinerComponent},
+    // // { path: 'brevet-user-admin', component: UserAdminComponent },
+    // { path: 'brevet-dashboard', component: DashboardComponent },
+    // { path: 'brevet-site-admin', component: SiteAdminComponent},
+    // { path: 'brevet-event-admin', component: EventAdminComponent},
+    // { path: '**', redirectTo: 'brevet-admin-start'},
   ]
 }
 ];

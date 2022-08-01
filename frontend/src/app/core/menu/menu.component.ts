@@ -4,6 +4,7 @@ import {map} from "rxjs/operators";
 import {Observable} from "rxjs";
 import { MenuItem } from 'primeng/api';
 import { DeviceDetectorService } from 'ngx-device-detector';
+import {Roles} from "../../shared/roles";
 
 @Component({
   selector: 'brevet-menu',
@@ -16,32 +17,117 @@ export class MenuComponent implements OnInit{
 
   isMenuCollapsed = false
 
+  items: MenuItem[] = [];
+
+  // $activeUser = this.menucomponentService.$activeuser.pipe(
+  //   map(user =>{
+  //     const vy = new VyInformation()
+  //     for (var val of user.roles) {
+  //       if (val === "COMPETITOR"){
+  //           vy.competitor = true
+  //           this.isMenuCollapsed = false;
+  //       }
+  //       if (val === "ADMIN"){
+  //         vy.admin = true;
+  //       }
+  //       if (val === "SUPERUSER"){
+  //         vy.superuser = true;
+  //       }
+  //       if (val === "VOLONTEER"){
+  //         vy.volonteer = true;
+  //       }
+  //
+  //       if (val === "USER"){
+  //         vy.user = true;
+  //       }
+  //     }
+  //     vy.namn = user.name;
+  //
+  //
+  //     return vy
+  //   })
+  // ) as Observable<VyInformation>
+
+
+
   $activeUser = this.menucomponentService.$activeuser.pipe(
     map(user =>{
-      const vy = new VyInformation()
-      for (var val of user.roles) {
-        if (val === "COMPETITOR"){
-            vy.competitor = true
-            this.isMenuCollapsed = false;
-        }
-        if (val === "ADMIN"){
-          vy.admin = true;
-        }
-        if (val === "SUPERUSER"){
-          vy.superuser = true;
-        }
-        if (val === "VOLONTEER"){
-          vy.volonteer = true;
+      // const vy = new VyInformation()
+      // for (var val of user.roles) {
+      //   if (val === "COMPETITOR"){
+      //     vy.competitor = true
+      //     this.isMenuCollapsed = false;
+      //   }
+      //   if (val === "ADMIN"){
+      //     vy.admin = true;
+      //   }
+      //   if (val === "SUPERUSER"){
+      //     vy.superuser = true;
+      //   }
+      //   if (val === "VOLONTEER"){
+      //     vy.volonteer = true;
+      //   }
+      //
+      //   if (val === "USER"){
+      //     vy.user = true;
+      //   }
+      // }
+      // vy.namn = user.name;
+
+
+      if (user.roles.includes("ADMIN") || user.roles.includes("SUPERUSER")) {
+
+        if (!this.items.some(item => item.label === 'Start')) {
+          this.items.push({
+            label: 'Start',
+            routerLink: '/admin/brevet-admin-start',
+          })
+
         }
 
-        if (val === "USER"){
-          vy.user = true;
+
+        if (!this.items.some(item => item.label === 'Deltagare')) {
+          this.items.push({
+            label: 'Deltagare',
+            routerLink: '/admin/participant',
+          })
         }
+
+        if (!this.items.some(item => item.label === 'Banor')) {
+          this.items.push({
+            label: 'Banor',
+            routerLink: '/admin/banor',
+          })
+        }
+        // if (!this.items.some(item => item.label === 'Systemadministration')) {
+        //   this.items.push({
+        //     label: 'Systemadministration',
+        //     items: [{
+        //       label: 'Användare',
+        //       routerLink: '/admin/useradmin/user'
+        //     },
+        //     ]
+        //   });
+        // }
+
       }
-      vy.namn = user.name;
-      return vy
+
+      if (user.roles.length > 1 && user.roles.includes("VOLONTEER") && !this.items.some(item => item.label === 'Volontär')) {
+        this.items.push({
+          label: 'Volontär',
+          routerLink: '/volunteer',
+        })
+      }
+      return this.items;
     })
-  ) as Observable<VyInformation>
+  ) as Observable<MenuItem[]>
+
+  $logedinas = this.menucomponentService.$activeuser.pipe(
+    map((val) => {
+     return val.name;
+    })
+  )
+
 
   constructor(private menucomponentService: MenuComponentService,  private deviceService: DeviceDetectorService) {
     if(this.deviceService.isDesktop()){
@@ -57,6 +143,25 @@ export class MenuComponent implements OnInit{
   }
 
   ngOnInit(): void {
+
+    // this.items = [
+    //   {
+    //     label: 'Deltagare',
+    //     routerLink: '/admin/participant',
+    //   },
+    //   {
+    //     label: 'Banor',
+    //     routerLink: '/admin/banor',
+    //   },
+    //   {
+    //     label: 'Systemadministration',
+    //     routerLink: '/admin/banor',
+    //     items: [{
+    //       label: 'Användare',
+    //     },
+    //     ]
+    //   }
+    // ];
    this.menucomponentService.reload();
   }
 }

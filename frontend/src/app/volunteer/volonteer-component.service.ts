@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {VolonteerService} from "./volonteer.service";
 import {EventService} from "../admin/event-admin/event.service";
 import {BehaviorSubject, Observable} from "rxjs";
-import {map, mergeMap, take, tap, withLatestFrom} from "rxjs/operators";
+import {map, mergeMap, startWith, take, tap, withLatestFrom} from "rxjs/operators";
 import {TrackService} from "../shared/track-service";
 import {CheckpointRepresentation, ParticipantToPassCheckpointRepresentation} from "../shared/api/api";
 
@@ -28,7 +28,7 @@ export class VolonteerComponentService {
 
   $tracksforevent = this.vald$.pipe(
     mergeMap((vald: any) => {
-        return this.trackService.tracksForEvent(vald.event_uid);
+       return this.trackService.tracksForEvent(vald.event_uid);
     }),
     map((tracks => {
 
@@ -36,8 +36,31 @@ export class VolonteerComponentService {
     }))
   );
 
+
+  // $tracksforevent2 = this.valtBanaSubject.asObservable().pipe(
+  //   map((vald: any) => {
+  //     return this.trackService.getAllTracks();
+  //   }),
+  //   map((tracks => {
+  //
+  //     return tracks;
+  //   }))
+  // ).subscribe();
+
+
+  // valdbana$ =  this.valtBanaSubject.asObservable().pipe(
+  //   withLatestFrom(this.$tracksforevent),
+  //   map(([first, second]) => {
+  //     const valdbana = second.find(item => {
+  //       return first === item.track_uid;
+  //     })
+  //     return valdbana;
+  //   }),
+  // ) as Observable<any>;
+
+
   valdbana$ =  this.valtBanaSubject.asObservable().pipe(
-    withLatestFrom(this.$tracksforevent),
+    withLatestFrom(this.trackService.getAllTracks()),
     map(([first, second]) => {
       const valdbana = second.find(item => {
         return first === item.track_uid;
@@ -45,6 +68,7 @@ export class VolonteerComponentService {
       return valdbana;
     }),
   ) as Observable<any>;
+
 
 
 

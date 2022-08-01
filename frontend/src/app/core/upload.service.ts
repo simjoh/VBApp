@@ -41,6 +41,7 @@ export class UploadService {
           progress.next(percentDone);
         } else if (event instanceof HttpResponse) {
 
+          console.log(event.body)
           // Close the progress-stream if we get an answer form the API
           // The upload is complete
           progress.complete();

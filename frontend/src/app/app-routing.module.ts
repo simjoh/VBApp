@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {UnknownRouteComponent} from "./unknown-route/unknown-route.component";
 import {AuthenticatedGuard} from "./core/auth/authenticated.guard";
+import {NgbdTableComplete} from "./admin/competitors-list/competitors-table-complete";
+import { KontrollFormComponent } from './admin/kontroll-form/kontroll-form.component';
 export const ROUTES: Routes = [
   {
     path: '',
@@ -25,7 +27,7 @@ export const ROUTES: Routes = [
       },
       {
         path: '',
-        redirectTo: '',
+        redirectTo: '/admin/brevet-admin-start',
         pathMatch: 'full'
       },
       {
@@ -33,10 +35,12 @@ export const ROUTES: Routes = [
         pathMatch: "full",
         component: UnknownRouteComponent
       }
-    ]
-  }
+    ],
+
+
+  },
   // { path: 'kontroller', component: KontrollerComponent },
-  // { path: 'kontroll-form', component: KontrollFormComponent },
+  { path: 'kontroll-form', component: KontrollFormComponent },
 ];
 @NgModule({
   imports: [RouterModule.forRoot(ROUTES)],

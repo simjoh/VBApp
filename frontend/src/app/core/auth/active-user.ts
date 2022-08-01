@@ -1,7 +1,7 @@
 export class ActiveUser {
   name: string;
   id?: string;
-  roles: [];
+  roles: string[];
   startnumber?: number;
   trackuid?: string
 }

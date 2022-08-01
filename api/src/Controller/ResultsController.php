@@ -27,8 +27,6 @@ class ResultsController
     }
 
 
-
-
     //Resultat på text BRM2021
     public function getResultView(ServerRequestInterface $request, ResponseInterface $response, $args){
         $view = Twig::fromRequest($request);
@@ -121,6 +119,30 @@ class ResultsController
         $result =  $this->resultService->resultForContestant($competitorUId,$trackUid,$eventUid);
         $response->getBody()->write((string)json_encode($result), JSON_UNESCAPED_SLASHES);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+
+    public function getResultViewForContestant(ServerRequestInterface $request, ResponseInterface $response, $args){
+        $view = Twig::fromRequest($request);
+
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $competitor_uid = $route->getArgument('uid');
+        $params = $request->getQueryParams();
+        $link = "?";
+
+       $params =  http_build_query( $params );
+
+       if($params != ""){
+           $link = $link . $params;
+       } else {
+           $link = "";
+       }
+
+//      $result =  $this->resultService->trackContestants($eventUid, array());
+        return $view->render($response, 'resultcontestant.html', [
+            'link' => $this->settings['path'] . "/results/randonneur/" . $args['uid'] . $link,
+        ]);
     }
 
     //Resultat på text BRM2021

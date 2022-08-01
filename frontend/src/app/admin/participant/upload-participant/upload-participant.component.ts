@@ -4,6 +4,7 @@ import {UploadService} from "../../../core/upload.service";
 import {ParticipantComponentService} from "../participant-component.service";
 import {map, tap} from "rxjs/operators";
 import {environment} from "../../../../environments/environment";
+import {MessageService} from "primeng/api";
 
 @Component({
   selector: 'brevet-upload-participant',
@@ -30,7 +31,7 @@ export class UploadParticipantComponent implements OnInit {
 
   uploadedFiles: any[] = [];
 
-  constructor( private uploadService: UploadService, private participantcomponentservice: ParticipantComponentService) { }
+  constructor( private uploadService: UploadService, private participantcomponentservice: ParticipantComponentService,private messageService: MessageService) { }
 
   ngOnInit(): void {
   }
@@ -39,15 +40,26 @@ export class UploadParticipantComponent implements OnInit {
     console.log($event.files);
     for(let file of $event.files) {
         let progress = this.uploadService.upload(environment.backend_url + "participants/upload/track/" + this.trackuid , new Set($event.files));
-        console.log("FILE TO BE UPLOADED: ", file);
-        this.primeFileUpload.onProgress.emit(100 / 100 * 100);
-        this.uploadedFiles.push(file);
 
+      progress[$event.files[0].name].progress.pipe(map((ss) => {
+        this.uploadedFiles.push(file);
+        this.primeFileUpload.onProgress.emit(ss / 100 * 100);
+      })).subscribe();
+        console.log("FILE TO BE UPLOADED: ", file);
     }
   }
 
   updateTtrack($event: any) {
     console.log($event);
       this.trackuid = $event
+  }
+
+  progressReport($event: any) {
+    this.primeFileUpload.progress = $event;
+  }
+
+  removeFile(file: File, uploader: FileUpload) {
+    const index = uploader.files.indexOf(file);
+    uploader.remove(null, index);
   }
 }

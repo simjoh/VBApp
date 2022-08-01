@@ -1,0 +1,49 @@
+//.col-10 {
+//    flex: 0 0 auto;
+//    padding: 0.5rem;
+//    width: 81.3333%;
+//}
+:host {
+    ::ng-deep {
+
+
+.p-button.p-button-icon-only.p-button-rounded {
+    border-radius: 50%;
+    height: 2.000rem;
+}
+
+.p-button.p-button-icon-only {
+    width: 2.000rem;
+    padding: 0.5rem 0;
+}
+
+
+.p-datatable.p-datatable-sm .p-datatable-thead > tr > th {
+    padding: 0.3rem 0.3rem;
+    padding-left: 0.5rem;
+}
+
+.p-button {
+    color: #ffffff;
+    background: #2196F3;
+    border: 1px solid #2196F3;
+    padding: 0.3rem 0.8rem;
+    font-size: 1rem;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    border-radius: 3px;
+}
+
+.p-button.p-button-secondary, .p-buttonset.p-button-secondary > .p-button, .p-splitbutton.p-button-secondary > .p-button {
+    color: #ffffff;
+    background: #607D8B;
+    border: 1px solid #607D8B;
+}
+
+
+.p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {
+    padding: 0.3rem 0.3rem;
+     padding-left: 0.5rem;
+}
+
+    }
+}

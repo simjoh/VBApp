@@ -29,7 +29,7 @@ import {CardModule} from "primeng/card";
 import {TokenHeaderInterceptor} from "./core/interceptors/token-header.interceptor";
 import {FeedbackInterceptor} from "./core/interceptors/feedback.interceptor";
 import {TrackInfoComponent} from "./competitor/track-info/track-info.component";
-import {MessageService} from "primeng/api";
+import {ConfirmationService, MessageService} from "primeng/api";
 import { EnvService } from './core/env.service';
 import {HashLocationStrategy, LocationStrategy } from '@angular/common';
 
@@ -98,7 +98,7 @@ import {HashLocationStrategy, LocationStrategy } from '@angular/common';
       useFactory: (envService: EnvService) => () => envService.init(),
       deps: [EnvService],
       multi: true
-    }],
+    },ConfirmationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,3 +1,9 @@
-<div class="container">
-<brevet-user-list></brevet-user-list>
+
+<div class="mt-2 sm:col-12 lg:col-8">
+  <h3><i class="pi pi-user-edit mr-2" style="font-size: 2rem"></i>Användarhantering</h3>
+  <p-tabMenu styleClass="mr-2" [model]="designTabs"></p-tabMenu>
+  <div class="mt-4 ml-2">
+    <router-outlet></router-outlet>
+  </div>
 </div>
+

@@ -1,4 +1,5 @@
- <p-dropdown [options]="$items | async" [filter]="true" filterBy="label" [showClear]="true" (ngModelChange)="setValue($event)" [(ngModel)]="selectedTrack" placeholder="Välj en bana" [group]="true">
+ <p-dropdown [options]="$items | async" [filter]="true" [styleClass]="styleClass"  pTooltip="Välj en av banorna "
+             tooltipPosition="right" filterBy="label" [showClear]="true" (ngModelChange)="setValue($event)" [(ngModel)]="selectedTrack" placeholder="Välj en bana" [group]="true">
     <ng-template let-group pTemplate="group">
       <div class="flex align-items-center">
         <span>{{group.label}}</span>

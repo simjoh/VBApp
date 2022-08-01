@@ -15,6 +15,7 @@ import {SiteAdminModule} from "./site-admin/site-admin.module";
 import {EventAdminModule} from "./event-admin/event-admin.module";
 import { AdminStartComponent } from './admin-start/admin-start.component';
 import {TrackModule} from "./track/track.module";
+import {UserAdminModule} from "./user-admin/user-admin.module";
 
 
 @NgModule({
@@ -23,8 +24,6 @@ import {TrackModule} from "./track/track.module";
     UserAdminComponent,
     DashboardComponent,
     UserListComponent,
-    CreateUserDialogComponent,
-    UserInfoPopoverComponent,
     AdminStartComponent,
   ],
   imports: [
@@ -35,6 +34,7 @@ import {TrackModule} from "./track/track.module";
     CheckboxModule,
     EventAdminModule,
     AdminRoutingModule,
+    UserAdminModule,
   ],
     exports: [AdminComponent]
 })

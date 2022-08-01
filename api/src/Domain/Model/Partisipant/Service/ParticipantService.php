@@ -220,6 +220,7 @@ class ParticipantService extends ServiceAbstract
             $participant->setDnf(false);
             $participant->setDns(false);
             $participant->setTime(null);
+            $participant->setStarted(false);
             $participant->setAcpkod("s");
             // kolla om klubben finns i databasen annars skapa vi en klubb
             $existingClub = $this->clubrepository->getClubByTitle($record[4]);
@@ -239,7 +240,9 @@ class ParticipantService extends ServiceAbstract
 
                     $this->participantRepository->createTrackCheckpointsFor($participant,$this->trackRepository->checkpoints($trackUid));
                 }
-            $createdParticipants [] = $participant;
+//            $createdParticipants [] = $participant;
+//                $createdParticipants = [];
+                array_push($createdParticipants,$participant);
             }
 
             if(isset($participantcreated) && isset($competitor)){

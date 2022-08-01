@@ -39,6 +39,23 @@
         padding: 0.2rem;
         padding-left: 0.5rem;
     }
+
+
+
+
+    .p-button.p-button-secondary, .p-buttonset.p-button-secondary > .p-button, .p-splitbutton.p-button-secondary > .p-button {
+        color: #ffffff;
+        background: #607D8B;
+        border: 1px solid #607D8B;
+             padding: 0.3rem 0.8rem;
+    }
+
+    .p-button.p-button-danger.p-button-outlined, .p-buttonset.p-button-danger > .p-button.p-button-outlined, .p-splitbutton.p-button-danger > .p-button.p-button-outlined {
+        background-color: transparent;
+        color: #D32F2F;
+        border: 1px solid;
+          padding: 0.3rem 0.8rem;
+    }
 }
 
 
@@ -51,3 +68,5 @@
   top: 0;
   width: 100%
 }
+
+

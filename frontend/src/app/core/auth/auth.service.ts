@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
-import {catchError, map} from "rxjs/operators";
+import {catchError, map, take} from "rxjs/operators";
 
 import {Observable, of, ReplaySubject} from "rxjs";
 import {AuthenticatedService} from "./authenticated.service";
@@ -11,6 +11,8 @@ import {Role} from "./roles";
 import {ActiveUser} from "./active-user";
 import {EventsService} from "../events/events.service";
 import {AEvent, EventType} from "../events/aevents";
+import {ConfirmationService} from "primeng/api";
+import {DialogService} from "primeng/dynamicdialog";
 
 
 @Injectable({
@@ -20,6 +22,7 @@ export class AuthService {
 
   private authSubjet = new ReplaySubject<ActiveUser>();
   $auth$ = this.authSubjet.asObservable().pipe(
+    take(1),
     map((active) => {
       if (active){
         return active;
@@ -30,14 +33,14 @@ export class AuthService {
   ) as Observable<ActiveUser>;
 
 
-  constructor(private httpClient: HttpClient, private authenticatedService: AuthenticatedService,private router: Router, private eventService: EventsService) { }
+  constructor(private httpClient: HttpClient, private authenticatedService: AuthenticatedService,private router: Router, private eventService: EventsService, private readonly :DialogService, private asd: ConfirmationService) { }
 
   async loginUser(loginModel$: Observable<LoginModel>)  {
 
     if (this.isMockedLoggin()){
       this.mockLogin();
     }
-    await loginModel$.pipe(
+await loginModel$.pipe(
       map(model => {
         this.httpClient.post<any>(this.backendUrl() + "login", this.createPayload(model))
           .pipe(
@@ -61,6 +64,8 @@ export class AuthService {
         });
       })
     ).toPromise();
+
+    return true;
   }
 
   private setActiveUser(data: any): void {
@@ -77,18 +82,16 @@ export class AuthService {
     this.authSubjet.next(activeUser)
   }
 
-  private redirect(roles: string): void{
+  private redirect(roles: string) {
     let role = null;
     if (roles.length === 1){
       role = roles[0];
     } else {
 
-
     }
 
-    console.log(roles);
     if ((role === Role.ADMIN|| role === Role.SUPERUSER ||  role === Role.USER)) {
-      this.router.navigate(['admin']);
+      this.router.navigate(['admin/brevet-admin-start']);
     } else if (role === Role.COMPETITOR){
       this.router.navigate(['brevet-list']);
     } else if (role === Role.VOLONTEER) {

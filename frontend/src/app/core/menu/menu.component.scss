@@ -1,23 +1,36 @@
-.menu {
-  .nav-item .nav-link.active {
-    color: #121313;
-    background: #f8b62a !important;
-  }
-  .nav-link {
-    color: #121313;
-  }
-
-  //flex-wrap: wrap;
+//.menu {
+//  .nav-item .nav-link.active {
+//    color: #121313;
+//    background: #f8b62a !important;
+//  }
+//  .nav-link {
+//    color: #121313;
+//  }
+//
+//  //flex-wrap: wrap;
+//}
+:host {
+    ::ng-deep {
+.p-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-link:not(.p-disabled):hover {
+    border-bottom: #6c757d 1px solid;
+    background: #e9ecef;
 }
 
 
-
-@media (min-width: 992px) {
-  .navbar-expand-lg {
-    flex-flow: row nowrap;
-    justify-content: space-between;
-  }
+.mr-2 {
+    margin-right: 1rem !important;
 }
+
+}}
+
+
+
+//@media (min-width: 992px) {
+//  .navbar-expand-lg {
+//    flex-flow: row nowrap;
+//    justify-content: space-between;
+//  }
+//}
 
 
 

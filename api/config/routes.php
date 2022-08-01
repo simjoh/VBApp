@@ -21,14 +21,14 @@ return function (App $app) {
      //$app->get('/bla/bla/bla', \App\Action\HomeAction::class)->setName('home');
 
     //lägg till ingång för att kunna generera resultat på vb.se
-    // Hämtar vyn för en resultat på ett event.
+    // Hämtar vyn för en resultat på ett event för ett event och år.
     $app->get('/results/year/{year}/event/{eventUid}', \App\Controller\ResultsController::class . ':getResultView')->setName('result');
     // Hämtar själva resultatlistan för ett event.
     $app->get('/resultList/year/{year}/event/{eventUid}', \App\Controller\ResultsController::class . ':getResultList');
     // resultat för en deltagare en person.
     //$app->put('/results/participant/{participantUid}', \App\Controller\ResultsController::class . ':resultForContestant');
 
-    // $app->get('/results/randonneur/{uid}', \App\Controller\ResultsController::class . ':getTrackView')->setName('track');
+    $app->get('/results/randonneur/{uid}/view', \App\Controller\ResultsController::class . ':getResultViewForContestant')->setName('resultcontestant');
     $app->get('/results/randonneur/{uid}', \App\Controller\ResultsController::class . ':resultForContestant');
 
     $app->get('/resultList/test', \App\Controller\ResultsController::class . ':getResultsPhp');
