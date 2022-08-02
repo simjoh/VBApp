@@ -154,6 +154,16 @@ class ParticipantService extends ServiceAbstract
     }
 
     public function createparticipant(ParticipantRepresentation $participantRepresentation ,string $currentUserUid): ?ParticipantRepresentation {
+
+
+        $track = $this->trackRepository->getTrackByUid($participantRepresentation->getTrackUid());
+
+        $club = $this->clubrepository->getClubByUId($participantRepresentation->getClubUid());
+
+
+
+
+
         $participant = $this->participantRepository->createparticipant($this->participantassembly->toParticipation($participantRepresentation));
         if(!isset($participantforcompetitor)){
             return null;

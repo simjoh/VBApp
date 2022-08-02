@@ -11,10 +11,11 @@ use Psr\Container\ContainerInterface;
 class ClubService
 {
 
-    public function __construct(ContainerInterface $c,
-                                ClubRepository     $clubRepository, PermissionRepository $permissionRepository, ClubAssembly $clubAssembly)
+    public function __construct(ContainerInterface   $c,
+                                ClubRepository       $clubRepository,
+                                PermissionRepository $permissionRepository,
+                                ClubAssembly         $clubAssembly)
     {
-
         $this->settings = $c->get('settings');
         $this->clubrepository = $clubRepository;
         $this->permissionrepoitory = $permissionRepository;
@@ -26,13 +27,13 @@ class ClubService
     {
         $permissions = $this->getPermissions($currentuser_id);
         $club = $this->clubrepository->getClubByUId($club_uid);
-        return $this->clubAssembly->toRepresentation($club,$permissions);
+        return $this->clubAssembly->toRepresentation($club, $permissions);
     }
 
 
     public function getPermissions($user_uid): array
     {
-        return $this->permissionrepoitory->getPermissionsTodata("CLUB",$user_uid);
+        return $this->permissionrepoitory->getPermissionsTodata("CLUB", $user_uid);
     }
 
 }

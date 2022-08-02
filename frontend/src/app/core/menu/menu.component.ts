@@ -99,16 +99,22 @@ export class MenuComponent implements OnInit{
             routerLink: '/admin/banor',
           })
         }
-        // if (!this.items.some(item => item.label === 'Systemadministration')) {
-        //   this.items.push({
-        //     label: 'Systemadministration',
-        //     items: [{
-        //       label: 'Användare',
-        //       routerLink: '/admin/useradmin/user'
-        //     },
-        //     ]
-        //   });
-        // }
+        if (!this.items.some(item => item.label === 'Systemadministration')) {
+          this.items.push({
+            label: 'Systemadministration',
+            items: [{
+              label: 'Användare',
+              routerLink: '/admin/useradmin/user'
+            },
+              {
+                label: 'Klubbar',
+                routerLink: '/admin/clubadmin/'
+              }
+            ]
+          });
+
+
+        }
 
       }
 

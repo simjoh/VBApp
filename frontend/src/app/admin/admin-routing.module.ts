@@ -2,12 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {AdminComponent} from "./admin.component";
 import {AuthenticatedGuard} from "../core/auth/authenticated.guard";
-import {NgbdTableComplete} from "./competitors-list/competitors-table-complete";
-import {KontrollerCombinerComponent} from "./kontroller-combiner/kontroller-combiner.component";
-import {UserAdminComponent} from "./user-admin/user-admin.component";
-import {DashboardComponent} from "./dashboard/dashboard.component";
-import {SiteAdminComponent} from "./site-admin/site-admin.component";
-import { EventAdminComponent } from './event-admin/event-admin.component';
 import {AdminStartComponent} from "./admin-start/admin-start.component";
 
 const routes: Routes = [{
@@ -26,6 +20,10 @@ const routes: Routes = [{
     {
       path: 'useradmin',
       loadChildren: () => import('./user-admin/user-admin.module').then(m => m.UserAdminModule),
+    },
+    {
+      path: 'clubadmin',
+      loadChildren: () => import('./club-admin/club-admin.module').then(m => m.ClubAdminModule),
     },
     { path: 'brevet-admin-start', component: AdminStartComponent },
     // { path: 'brevet-kontroller-combiner', component: KontrollerCombinerComponent},
