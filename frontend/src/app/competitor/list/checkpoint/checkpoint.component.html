@@ -4,11 +4,11 @@
 
   </ng-template>
   <div class="p-2 col-12 sm:col-12 lg:col-12">
-    <ng-container *ngIf="checkpoints.checkpoint.site.adress != '-'">
+    <ng-container *ngIf="checkpoints.checkpoint.site.adress != '-' || checkpoints.checkpoint.site.adress.toLowerCase() === 'hemlig'">
     <strong>{{checkpoints.checkpoint.site.adress}}</strong><br>
       </ng-container>
 
-    <ng-container *ngIf="checkpoints.checkpoint.site.adress === '-'">
+    <ng-container *ngIf="checkpoints.checkpoint.site.adress === '-' || checkpoints.checkpoint.site.adress.toLowerCase() === 'hemlig'">
       <strong>Distance:</strong> Secret <br>
         <strong>To next:</strong> Secret
           <br>
@@ -17,7 +17,7 @@
             <strong>Closes:</strong> Secret
     </ng-container>
 
-    <ng-container *ngIf="checkpoints.checkpoint.site.adress != '-'">
+    <ng-container *ngIf="checkpoints.checkpoint.site.adress != '-'  || !checkpoints.checkpoint.site.adress.toLowerCase() === 'hemlig'">
     <strong>Distance: </strong>{{distance}} Km <br>
     <strong>To next: </strong>{{distancetonext}} Km
     <br>
