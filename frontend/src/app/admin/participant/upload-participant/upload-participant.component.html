@@ -1,15 +1,10 @@
-<div class="mt-4 ml-2">
-
+<div class="mt-4 col-12 lg:col-5 sm:col-12 ">
   <h3>Här kan du ladda upp deltagare med en csv fil</h3>
-  <!--<input type="text" (ngModelChange)="updateTtrack()" pInputText [(ngModel)]="trackuid"/>-->
-
-  <!--<brevet-track-selector (open)="updateTtrack($event)"></brevet-track-selector>-->
-
-  <brevet-tracks-for-event-selector (trackChange)="updateTtrack($event)"></brevet-tracks-for-event-selector>
-
+  <brevet-tracks-for-event-selector [styleClass]="'w-25 sm:w-full md:w-full'" (trackChange)="updateTtrack($event)"></brevet-tracks-for-event-selector>
 </div>
+<hr>
 
-<div class="mt-3 col-8">
+<div class="mt-3 col-12 lg:col-12 sm:col-12 ">
 <p-fileUpload #primeFileUpload [disabled]="!trackuid" [fileLimit]="1" [accept]="'text/csv'"
   chooseLabel="Välj csv"
   uploadLabel="Ladda upp csv"

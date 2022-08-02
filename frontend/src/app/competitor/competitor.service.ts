@@ -31,7 +31,7 @@ export class CompetitorService {
     ) as Observable<Array<RandonneurCheckPointRepresentation>>;
   }
   public getCheckpointsPreview(trackuid: string): Observable<Array<RandonneurCheckPointRepresentation>>{
-    const path = "/randonneur/preview/checkpoints/track/" + trackuid;
+    const path = "randonneur/preview/checkpoints/track/" + trackuid;
     return this.httpClient.get<Array<RandonneurCheckPointRepresentation>>(environment.backend_url + path).pipe(
       take(1),
       map((checkpoints: Array<RandonneurCheckPointRepresentation>) => {

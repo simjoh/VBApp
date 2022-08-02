@@ -425,7 +425,7 @@ class ParticipantService extends ServiceAbstract
                 throw new BrevetException("You cannot finsish race if dnf is set", 6, null);
             }
 
-            $countCheckpoints = $this->checkpointService->countCheckpointsForTrack($participant->getTrackUid());
+            $countCheckpoints = $this->checkpointsService->countCheckpointsForTrack($participant->getTrackUid());
             $oktofinish = $this->participantRepository->participantHasStampOnAllExceptFinish($participant->getTrackUid(),$checkpoint->getCheckpointUid(),$participant->getParticipantUid(), $countCheckpoints);
 
             if($oktofinish == false){
@@ -434,9 +434,11 @@ class ParticipantService extends ServiceAbstract
 
 //            if($this->settings['demo'] == 'false') {
                 if($track->getStartDateTime() != '-'){
-                    // om mål sätt måltid till tiden för instämpling och beräkna tiden mella första och sista instämpling. Sätt totaltiden i participant och markera finished
-                    if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
-                        throw new BrevetException("Can not finish before the start of the race " . date("Y-m-d H:i:s", strtotime($track->getStartDateTime())), 1, null);
+                    if($this->settings['demo'] == 'false') {
+                        // om mål sätt måltid till tiden för instämpling och beräkna tiden mella första och sista instämpling. Sätt totaltiden i participant och markera finished
+                        if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
+                            throw new BrevetException("Can not finish before the start of the race " . date("Y-m-d H:i:s", strtotime($track->getStartDateTime())), 1, null);
+                        }
                     }
                 }
 //            }

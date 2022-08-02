@@ -1,68 +1,68 @@
 <ng-container *ngIf="($activeUser | async) as user">
 
-<!--  <nav class="navbar navbar-expand-lg navbar-light  bg-light">-->
-<!--    <a class="navbar-brand" href="#">-->
-<!--      <img src="./assets/cykelintresset.svg" width="250"  class="align-top" alt="">-->
-<!--    </a>-->
-<!--&lt;!&ndash;    <button class="navbar-toggler" type="button" (click)="isMenuCollapsed = !isMenuCollapsed">&ndash;&gt;-->
-<!--&lt;!&ndash;      &#9776;&ndash;&gt;-->
-<!--&lt;!&ndash;    </button>&ndash;&gt;-->
-<!--      <div class="justify-content-end " id="navbarCollapse">-->
-<!--        <span class=" py-0 px-lg-1 px-md-1 px-sm-1">-->
-<!--          Welcome: {{user.namn}}-->
-<!--        </span>-->
-<!--        <ul class="navbar-nav mb-auto mt-0 px-lg-1 px-md-1 px-sm-1">-->
-<!--          <li class="nav-item"> Language:-->
-<!--&lt;!&ndash;          <img [src]="'https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg' " class="mr-2" style="width: 20px" alt="Germany">&ndash;&gt;-->
-<!--&lt;!&ndash;          <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg' " class="mr-2" style="width: 20px" alt="France">&ndash;&gt;-->
-<!--&lt;!&ndash;          <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/f/fe/Flag_of_Sweden_%28Pantone%29.png'" class="mr-2" style="width: 20px" alt="Sweden">&ndash;&gt;-->
-<!--          <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/a/ae/Flag_of_the_United_Kingdom.svg'" class="mr-2" style="width: 20px" alt="United kingdom">-->
-<!--            <a href=""  (click)="logout()">Log Out</a>-->
-<!--          </li>-->
-<!--        </ul>-->
-<!--      </div>-->
-<!--  </nav>-->
+  <!--  <nav class="navbar navbar-expand-lg navbar-light  bg-light">-->
+  <!--    <a class="navbar-brand" href="#">-->
+  <!--      <img src="./assets/cykelintresset.svg" width="250"  class="align-top" alt="">-->
+  <!--    </a>-->
+  <!--&lt;!&ndash;    <button class="navbar-toggler" type="button" (click)="isMenuCollapsed = !isMenuCollapsed">&ndash;&gt;-->
+  <!--&lt;!&ndash;      &#9776;&ndash;&gt;-->
+  <!--&lt;!&ndash;    </button>&ndash;&gt;-->
+  <!--      <div class="justify-content-end " id="navbarCollapse">-->
+  <!--        <span class=" py-0 px-lg-1 px-md-1 px-sm-1">-->
+  <!--          Welcome: {{user.namn}}-->
+  <!--        </span>-->
+  <!--        <ul class="navbar-nav mb-auto mt-0 px-lg-1 px-md-1 px-sm-1">-->
+  <!--          <li class="nav-item"> Language:-->
+  <!--&lt;!&ndash;          <img [src]="'https://upload.wikimedia.org/wikipedia/commons/b/ba/Flag_of_Germany.svg' " class="mr-2" style="width: 20px" alt="Germany">&ndash;&gt;-->
+  <!--&lt;!&ndash;          <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg' " class="mr-2" style="width: 20px" alt="France">&ndash;&gt;-->
+  <!--&lt;!&ndash;          <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/f/fe/Flag_of_Sweden_%28Pantone%29.png'" class="mr-2" style="width: 20px" alt="Sweden">&ndash;&gt;-->
+  <!--          <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/a/ae/Flag_of_the_United_Kingdom.svg'" class="mr-2" style="width: 20px" alt="United kingdom">-->
+  <!--            <a href=""  (click)="logout()">Log Out</a>-->
+  <!--          </li>-->
+  <!--        </ul>-->
+  <!--      </div>-->
+  <!--  </nav>-->
 
-<!--  <div  class="pb-lg-2  pb-lg-2">-->
-<!--  <ul  class="menu nav nav-tabs bg-light mb-4">-->
-<!--    <li  *ngIf="user.admin || user.superuser || user.user" class="nav-item active ml-0"><a  class="nav-link" routerLink="/admin/brevet-admin-start" routerLinkActive="active">Start</a></li>-->
-<!--&lt;!&ndash;    <li  *ngIf="user.admin || user.superuser || user.user" class="nav-item active ml-0"><a  class="nav-link" routerLink="/admin/competitors-list-component" routerLinkActive="active">Deltagare</a></li>&ndash;&gt;-->
-<!--    <li  *ngIf="user.admin || user.superuser || user.user" class="nav-item active ml-0"><a  class="nav-link" routerLink="/admin/participant" routerLinkActive="active">Deltagare</a></li>-->
-<!--    <li  *ngIf="user.admin || user.superuser || user.user" class="nav-item active ml-0"><a  class="nav-link" routerLink="/admin/banor" routerLinkActive="active">Banor</a></li>-->
-<!--    <li  *ngIf="user.admin || user.superuser || user.user" class="nav-item active ml-0"><a  class="nav-link" routerLink="/volunteer" routerLinkActive="active">Volontär</a></li>-->
-<!--    &lt;!&ndash; <li><a routerLink="/kontroller" routerLinkActive="active">Kontroller</a></li> &ndash;&gt;-->
-<!--    &lt;!&ndash; <li><a routerLink="/kontroll-form" routerLinkActive="active">Kontroll Formulär</a></li> &ndash;&gt;-->
-<!--&lt;!&ndash;    <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/admin/brevet-kontroller-combiner" routerLinkActive="active">Kontroller</a></li>&ndash;&gt;-->
-<!--&lt;!&ndash;    <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/admin/brevet-dashboard" routerLinkActive="active">Dashboard</a></li>&ndash;&gt;-->
-<!--&lt;!&ndash;    <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/admin/brevet-user-admin" routerLinkActive="active">Användare</a></li>&ndash;&gt;-->
-<!--&lt;!&ndash;    <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/admin/brevet-site-admin" routerLinkActive="active">Siter</a></li>&ndash;&gt;-->
-<!--&lt;!&ndash;    <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/admin/brevet-event-admin" routerLinkActive="active">Events</a></li>&ndash;&gt;-->
-<!--&lt;!&ndash;&lt;!&ndash;    <li *ngIf="user.competitor || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-maps"  routerLinkActive="active">Karta</a></li>&ndash;&gt;&ndash;&gt;-->
-<!--&lt;!&ndash;    <li *ngIf="user.competitor || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-list" routerLinkActive="active">Checkpoints</a></li>&ndash;&gt;-->
-<!--  </ul>-->
-<!--    </div>-->
+  <!--  <div  class="pb-lg-2  pb-lg-2">-->
+  <!--  <ul  class="menu nav nav-tabs bg-light mb-4">-->
+  <!--    <li  *ngIf="user.admin || user.superuser || user.user" class="nav-item active ml-0"><a  class="nav-link" routerLink="/admin/brevet-admin-start" routerLinkActive="active">Start</a></li>-->
+  <!--&lt;!&ndash;    <li  *ngIf="user.admin || user.superuser || user.user" class="nav-item active ml-0"><a  class="nav-link" routerLink="/admin/competitors-list-component" routerLinkActive="active">Deltagare</a></li>&ndash;&gt;-->
+  <!--    <li  *ngIf="user.admin || user.superuser || user.user" class="nav-item active ml-0"><a  class="nav-link" routerLink="/admin/participant" routerLinkActive="active">Deltagare</a></li>-->
+  <!--    <li  *ngIf="user.admin || user.superuser || user.user" class="nav-item active ml-0"><a  class="nav-link" routerLink="/admin/banor" routerLinkActive="active">Banor</a></li>-->
+  <!--    <li  *ngIf="user.admin || user.superuser || user.user" class="nav-item active ml-0"><a  class="nav-link" routerLink="/volunteer" routerLinkActive="active">Volontär</a></li>-->
+  <!--    &lt;!&ndash; <li><a routerLink="/kontroller" routerLinkActive="active">Kontroller</a></li> &ndash;&gt;-->
+  <!--    &lt;!&ndash; <li><a routerLink="/kontroll-form" routerLinkActive="active">Kontroll Formulär</a></li> &ndash;&gt;-->
+  <!--&lt;!&ndash;    <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/admin/brevet-kontroller-combiner" routerLinkActive="active">Kontroller</a></li>&ndash;&gt;-->
+  <!--&lt;!&ndash;    <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/admin/brevet-dashboard" routerLinkActive="active">Dashboard</a></li>&ndash;&gt;-->
+  <!--&lt;!&ndash;    <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/admin/brevet-user-admin" routerLinkActive="active">Användare</a></li>&ndash;&gt;-->
+  <!--&lt;!&ndash;    <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/admin/brevet-site-admin" routerLinkActive="active">Siter</a></li>&ndash;&gt;-->
+  <!--&lt;!&ndash;    <li *ngIf="user.admin || user.superuser || user.user" class="nav-item" ><a class="nav-link" routerLink="/admin/brevet-event-admin" routerLinkActive="active">Events</a></li>&ndash;&gt;-->
+  <!--&lt;!&ndash;&lt;!&ndash;    <li *ngIf="user.competitor || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-maps"  routerLinkActive="active">Karta</a></li>&ndash;&gt;&ndash;&gt;-->
+  <!--&lt;!&ndash;    <li *ngIf="user.competitor || user.superuser" class="nav-item" ><a class="nav-link" routerLink="/brevet-list" routerLinkActive="active">Checkpoints</a></li>&ndash;&gt;-->
+  <!--  </ul>-->
+  <!--    </div>-->
 
   <ng-container *ngIf="($activeUser | async) as user">
+    <p-menubar [model]="items">
+      <ng-template pTemplate="start">
+        <img src="./assets/cykelintresset.svg" height="40" class="mr-2" alt="Cykelintresset i västerbotten">
+      </ng-template>
+      <ng-template pTemplate="end">
+        <div class="row">
+          <div class="mt-0 flex justify-content-end flex-wrap mr-2">
+            <strong>Welcome: &nbsp; </strong> {{$logedinas | async}}
+          </div>
+        </div>
+        <div class="row">
+          <div class="mt-0 flex justify-content-end flex-wrap pl-5">
+            <a href="" (click)="logout()">Log Out</a>
+          </div>
+        </div>
+        <!--                <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/a/ae/Flag_of_the_United_Kingdom.svg'" class="mr-2" style="width: 20px" alt="United kingdom">-->
+      </ng-template>
+    </p-menubar>
 
-
-
-
-  <p-menubar [model]="items">
-    <ng-template pTemplate="start">
-      <img src="./assets/cykelintresset.svg" height="40" class="mr-2" alt="cykelintresset i västerbotten">
-    </ng-template>
-    <ng-template pTemplate="end">
-      <span class=" py-0 px-lg-1 px-md-1 px-sm-1">
-          Welcome: {{$logedinas | async}}
-      </span>
-<!--                <img  [src]="'https://upload.wikimedia.org/wikipedia/commons/a/ae/Flag_of_the_United_Kingdom.svg'" class="mr-2" style="width: 20px" alt="United kingdom">-->
-        <a href=""  (click)="logout()">Log Out</a>
-
-    </ng-template>
-  </p-menubar>
-
-</ng-container>
-
+  </ng-container>
 </ng-container>
 
 

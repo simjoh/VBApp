@@ -17,7 +17,7 @@ export class EventTrackInformationService {
   constructor(private httpClient: HttpClient, private linkService: LinkService) { }
 
 public getEventsAndTracks(){
-  const path = '/events/eventInformation';
+  const path = 'events/eventInformation';
   return this.httpClient.get<Array<EventInformationRepresentation>>(environment.backend_url + path).pipe(
     take(1),
     map((tracks: Array<EventInformationRepresentation>) => {

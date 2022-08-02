@@ -1,8 +1,8 @@
-<div class="grid container-fluid">
-  <div class="ml-2 col-12 sm:col-12 lg:col-12">
-    <div class="col-12 sm:col-12 md:col-12 lg:col-12">
+<div class="grid">
+  <div class="ml-0 p-0 col-12 sm:col-12 lg:col-12">
+    <div class="p-2">
       <h3>Välj event och bana
-        <button (click)="op.toggle($event)" pButton pRipple type="button" icon="pi pi-info"
+        <button (click)="op.toggle($event)" pButton pRipple type="button"  icon="pi pi-info"
                 class="p-button-raised p-button-rounded p-button-sm "></button>
       </h3>
     </div>
@@ -21,24 +21,18 @@
       </ng-template>
     </p-overlayPanel>
   </div>
-  <div class="col-12 sm:col-9 md:col-5 lg:col-2">
-    <div class="col-12 sm:col-12 lg:col-12">
-      <brevet-tracks-for-event-selector [styleClass]="'lg:w-full'"
-                                        (trackChange)="trackSelected($event)"></brevet-tracks-for-event-selector>
-    </div>
-    <div class="md:inline-flex col-12 lg:col-12">
-      <div class="col-12 p-0">
-        <brevet-checkpoint-selector-listbox></brevet-checkpoint-selector-listbox>
-      </div>
-    </div>
-  </div>
-  <div class="col-12 sm:col-3 lg:col-10 md:col-7 justify-content-center">
-    <brevet-participant-list></brevet-participant-list>
-  </div>
 </div>
 
-
-
-
-
-
+<div class="grid">
+  <div class="col-12 lg:col-2 sm:col-12 md:col-12 mt-2">
+        <div class="grid">
+            <div class="col-12 lg:col-12 sm:col-12 md:col-12"> <brevet-tracks-for-event-selector [styleClass]="'lg:w-full'" (trackChange)="trackSelected($event)"></brevet-tracks-for-event-selector></div>
+        </div>
+    <div class="grid">
+         <div class="col-12 lg:col-12 sm:col-12 md:col-12"><brevet-checkpoint-selector-listbox></brevet-checkpoint-selector-listbox></div>
+    </div>
+  </div>
+  <div class="col-12 lg:col-10 sm:col-12 md:col-12">
+            <brevet-participant-list></brevet-participant-list>
+  </div>
+</div>

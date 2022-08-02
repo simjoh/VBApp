@@ -111,4 +111,8 @@ export class ParticipantTableComponent implements OnInit {
     }
 
   }
+
+  editTotalTime(participant: any) {
+    console.log("edit time")
+  }
 }

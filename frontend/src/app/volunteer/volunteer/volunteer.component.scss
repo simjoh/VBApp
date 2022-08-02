@@ -1,1 +1,15 @@
 
+
+:host ::ng-deep  {
+@media screen and (max-width: 800px) {
+.p-dropdown {
+    width: 100%;
+}
+}
+
+.p-button.p-button-icon-only.p-button-rounded {
+    border-radius: 50%;
+    height: 1.8rem;
+    width: 1.8rem;
+}
+}

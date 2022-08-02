@@ -40,7 +40,7 @@
               <div class="lg:col-12">
 
                 <div class="row p-2">
-                  <div class="col-md-3">
+                  <div class="col-md-2">
                     <strong>Adress:</strong>
                     <div>{{track.competitorInforepresentation.adress}}</div>
                   </div>
@@ -56,19 +56,25 @@
                     <strong>Telefon:</strong>
                     <div>{{track.competitorInforepresentation.phone}}</div>
                   </div>
-                  <div class="col-md-3">
+                  <div class="col-md-2">
                     <strong>Email:</strong>
                     <div>{{track.competitorInforepresentation.email}}</div>
                   </div>
                 </div>
               </div>
-              <div class="lg:col-12">
+              <div class="row">
+                <div class="lg:col-10">
+                </div>
+                <div class="lg:col-2">
+                  <div (click)="editTotalTime(track.participant)"  *ngIf="track.participant.time"><p-tag styleClass="" icon="pi pi-pencil" severity="success" value="Sluttid: {{track.participant.time}}"></p-tag></div>
+                </div>
+              </div>
                 <div class="row">
-                  <div class="col-10">
+                  <div class="lg:col-10">
                   </div>
-                  <div class="col-2">
+                  <div class="lg:col-2 sm:mt-1 md:mt-1">
                   <span class="p-buttonset">
-                      <button  pButton pRipple  [disabled]="!track.participant.started" (click)="dnf(track.participant)" type="button" label="{{textDnfButton(track.participant.started, track.participant.dnf)}}" class="p-button-danger"></button>
+                      <button  pButton pRipple  [disabled]="!track.participant.started || track.participant.finished" (click)="dnf(track.participant)" type="button" label="{{textDnfButton(track.participant.started, track.participant.dnf)}}" class="p-button-danger"></button>
                       <button  pButton [disabled]="track.participant.started" (click)="dns(track.participant)" pRipple type="button" label="{{textDnsButton(track.participant.started, track.participant.dns)}}" class="p-button-secondary"></button>
                   </span>
                   </div>
@@ -76,7 +82,6 @@
                 <div class="row p-2">
                     <brevet-participant-checkpoint-table [participant]="track.participant" ></brevet-participant-checkpoint-table>
                 </div>
-              </div>
             </div>
           </td>
         </tr>

@@ -20,9 +20,6 @@ import {Statistics} from "../../../volunteer/volonteer-component.service";
 export class ParticipantCheckpointTableComponent implements OnInit {
 
 
-
-
-
   $checkpoints = this.participantcheckpoint.$checkpoints;
 
   $dim = this.participantcheckpoint.$dimCheckin;
@@ -34,7 +31,13 @@ export class ParticipantCheckpointTableComponent implements OnInit {
 
   ngOnInit(): void {
 
-
+    // var a="14:10";
+    // var b="19:02";
+    //
+    // var date1=new Date("01-01-2017 " + a);
+    // var date2=new Date("01-01-2017 " + b + ":00");
+    //
+    // console.log(date1.getHours())
 
     this.participantcheckpoint.initCheckpoints(this.participant);
   }
@@ -42,6 +45,8 @@ export class ParticipantCheckpointTableComponent implements OnInit {
   checkin(checkpoint: RandonneurCheckPointRepresentation) {
       this.participantcheckpoint.checkin(checkpoint);
   }
+
+
 }
 
 

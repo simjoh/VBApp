@@ -25,7 +25,7 @@ export class CheckpointPreviewComponent implements OnInit {
   showPreview() {
     this.ref = this.dialogService.open(CheckpointPreviewDialogComponent, {
       header: 'Cyklistens vy',
-      width: '25%',
+      width: '50%',
       data: {track: this.track_uid},
       contentStyle: {"max-height": "800px", "overflow": "auto"},
       baseZIndex: 10000
@@ -33,7 +33,7 @@ export class CheckpointPreviewComponent implements OnInit {
 
     this.ref.onClose.subscribe((product: any) =>{
       if (product) {
-           console.log("ssssssssss")
+           // console.log("ssssssssss")
       }
     });
   }
