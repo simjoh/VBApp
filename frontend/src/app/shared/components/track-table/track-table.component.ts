@@ -2,6 +2,10 @@ import {Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, SimpleChan
 import {TracktableComponentService} from "./tracktable-component.service";
 import {TrackRepresentation} from "../../api/api";
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import {BehaviorSubject} from "rxjs";
+import {startWith} from "rxjs/operators";
+import {LinkService} from "../../../core/link.service";
+import {HttpMethod} from "../../../core/HttpMethod";
 
 
 @Component({
@@ -17,23 +21,22 @@ export class TrackTableComponent implements OnInit, OnChanges {
 
   ref: DynamicDialogRef;
 
-
   @Output() reload = new EventEmitter();
   @Input() expandable: boolean;
   @Input() editable: boolean;
   @Input() readonly : boolean;
   @Input() tracks: TrackRepresentation[];
 
-  constructor(private tracktablecomponentService: TracktableComponentService,public dialogService: DialogService) { }
+  constructor(private tracktablecomponentService: TracktableComponentService,public dialogService: DialogService, private link: LinkService) { }
 
   ngOnInit(): void {
-    this.tracktablecomponentService.initiateTracks(this.tracks);
+  //  this.tracktablecomponentService.initiateTracks(this.tracks);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes && changes.examinationstillfalle) {
+    if (changes && changes.tracks) {
       this.tracks = changes.tracks.currentValue;
-      this.tracktablecomponentService.initiateTracks(this.tracks);
+      this.tracktablecomponentService.initiateTracks(changes.tracks.currentValue);
     }
   }
 
@@ -61,5 +64,17 @@ export class TrackTableComponent implements OnInit, OnChanges {
     //     this.messageService.add({severity:'info', summary: 'Product Selected', detail: product.name});
     //   }
     // });
+  }
+
+    isPossibleToPublishResults(trackRepresentation: TrackRepresentation): boolean{
+        return !this.link.exists(trackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
+  }
+
+ async publish(trackRepresentation: TrackRepresentation) {
+    trackRepresentation.active = !trackRepresentation.active;
+    await this.tracktablecomponentService.publishReultLinkExists(trackRepresentation)
+    await this.tracktablecomponentService.publishResults(trackRepresentation).then((res) => {
+     this.reload.emit(trackRepresentation.track_uid);
+   })
   }
 }

@@ -19,7 +19,6 @@ export class EventTrackInformationService {
 public getEventsAndTracks(){
   const path = 'events/eventInformation';
   return this.httpClient.get<Array<EventInformationRepresentation>>(environment.backend_url + path).pipe(
-    take(1),
     map((tracks: Array<EventInformationRepresentation>) => {
       return tracks;
     }),

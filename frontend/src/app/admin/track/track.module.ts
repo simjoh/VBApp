@@ -14,6 +14,7 @@ import {PanelModule} from "primeng/panel";
 import {MenuModule} from "primeng/menu";
 import {TableModule} from "primeng/table";
 import { TrackInfoPopoverComponent } from './track-info-popover/track-info-popover.component';
+import { TrackBuilderComponent } from './track-builder/track-builder.component';
 
 
 
@@ -22,7 +23,8 @@ import { TrackInfoPopoverComponent } from './track-info-popover/track-info-popov
     TrackAdminComponent,
     UploadTrackComponent,
     TrackListComponent,
-    TrackInfoPopoverComponent
+    TrackInfoPopoverComponent,
+    TrackBuilderComponent
   ],
   exports: [
     TrackInfoPopoverComponent

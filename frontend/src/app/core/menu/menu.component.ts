@@ -4,7 +4,6 @@ import {map} from "rxjs/operators";
 import {Observable} from "rxjs";
 import { MenuItem } from 'primeng/api';
 import { DeviceDetectorService } from 'ngx-device-detector';
-import {Roles} from "../../shared/roles";
 
 @Component({
   selector: 'brevet-menu',
@@ -19,60 +18,9 @@ export class MenuComponent implements OnInit{
 
   items: MenuItem[] = [];
 
-  // $activeUser = this.menucomponentService.$activeuser.pipe(
-  //   map(user =>{
-  //     const vy = new VyInformation()
-  //     for (var val of user.roles) {
-  //       if (val === "COMPETITOR"){
-  //           vy.competitor = true
-  //           this.isMenuCollapsed = false;
-  //       }
-  //       if (val === "ADMIN"){
-  //         vy.admin = true;
-  //       }
-  //       if (val === "SUPERUSER"){
-  //         vy.superuser = true;
-  //       }
-  //       if (val === "VOLONTEER"){
-  //         vy.volonteer = true;
-  //       }
-  //
-  //       if (val === "USER"){
-  //         vy.user = true;
-  //       }
-  //     }
-  //     vy.namn = user.name;
-  //
-  //
-  //     return vy
-  //   })
-  // ) as Observable<VyInformation>
-
-
-
   $activeUser = this.menucomponentService.$activeuser.pipe(
     map(user =>{
-      // const vy = new VyInformation()
-      // for (var val of user.roles) {
-      //   if (val === "COMPETITOR"){
-      //     vy.competitor = true
-      //     this.isMenuCollapsed = false;
-      //   }
-      //   if (val === "ADMIN"){
-      //     vy.admin = true;
-      //   }
-      //   if (val === "SUPERUSER"){
-      //     vy.superuser = true;
-      //   }
-      //   if (val === "VOLONTEER"){
-      //     vy.volonteer = true;
-      //   }
-      //
-      //   if (val === "USER"){
-      //     vy.user = true;
-      //   }
-      // }
-      // vy.namn = user.name;
+
 
 
       if (user.roles.includes("ADMIN") || user.roles.includes("SUPERUSER")) {
@@ -109,6 +57,10 @@ export class MenuComponent implements OnInit{
               {
                 label: 'Klubbar',
                 routerLink: '/admin/clubadmin/'
+              },
+              {
+                label: 'Siter',
+                routerLink: '/admin/siteadmin/sites/'
               }
             ]
           });
@@ -124,7 +76,9 @@ export class MenuComponent implements OnInit{
           routerLink: '/volunteer',
         })
       }
+
       return this.items;
+     // return this.items.sort((a, b) => (a.label > b.label) ? 1 : -1)
     })
   ) as Observable<MenuItem[]>
 

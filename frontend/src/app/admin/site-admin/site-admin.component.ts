@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {DialogService} from "primeng/dynamicdialog";
-import {ConfirmationService} from "primeng/api";
+import {ConfirmationService, MenuItem} from "primeng/api";
 
 @Component({
   selector: 'brevet-site-admin',
@@ -11,9 +11,19 @@ import {ConfirmationService} from "primeng/api";
 })
 export class SiteAdminComponent implements OnInit {
 
+  designTabs = [];
+
   constructor() { }
 
   ngOnInit(): void {
+
+    this.designTabs = [
+      {
+        label: "Siter",
+        routerLink: 'brevet-site-list',
+        icon: 'pi pi-list'
+      }
+    ] as MenuItem[];
   }
 
 }

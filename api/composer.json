@@ -13,6 +13,7 @@
     "ext-pdo": "*",
     "box/spout": "^3.3",
     "equip/structure": "^1.1",
+    "fabpot/goutte": "^4.0",
     "jms/serializer": "^3.15",
     "karriere/json-decoder": "^4.0",
     "league/csv": "^9.0",

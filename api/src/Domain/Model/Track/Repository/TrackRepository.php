@@ -356,6 +356,25 @@ class TrackRepository extends BaseRepository
         return null;
     }
 
+    public function setInactive(?string $track_uid ,  $publish)
+
+    {
+        $active = $publish;
+        try {
+        $statement = $this->connection->prepare($this->sqls('setStatus'));
+        $statement->bindParam(':active', $active, PDO::PARAM_BOOL);
+        $statement->bindParam(':track_uid', $track_uid);
+        $status = $statement->execute();
+
+            if (!$status) {
+                throw new BrevetException("", 1, null);
+            }
+
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
 
     public function sqls($type)
     {
@@ -371,6 +390,7 @@ class TrackRepository extends BaseRepository
         $tracksqls['trackWithStartdateExists']  = "select * from track where event_uid=:event_uid and title=:title and start_date_time=:start_date_time;";
         $tracksqls['trackdatesPassed']  = "SELECT max(c.distance) as distance ,min(c.opens) as opens , c.checkpoint_uid, max(c.closing) as closing FROM `track` t inner join track_checkpoint tc on tc.track_uid = t.track_uid inner join checkpoint c on c.checkpoint_uid = tc.checkpoint_uid where t.track_uid =:track_uid;";
         $tracksqls['lastCheckpointOnTrack']  =  "select s.adress from track t inner join track_checkpoint tc on tc.track_uid = t.track_uid inner join checkpoint c on c.checkpoint_uid = tc.checkpoint_uid inner join site s on s.site_uid = c.site_uid where tc.track_uid=:track_uid and c.distance in (select max(distance) from checkpoint);";
+        $tracksqls['setStatus'] = "UPDATE track SET  active=:active WHERE track_uid=:track_uid";
 
         return $tracksqls[$type];
     }

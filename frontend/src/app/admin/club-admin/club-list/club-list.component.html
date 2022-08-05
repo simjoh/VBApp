@@ -1,1 +1,32 @@
-<p>club-list works!</p>
+
+  <div class="col-4" >
+    <p-table  #dt1 [globalFilterFields]="['title', 'acp_code']"  [value]="$clubs | async " styleClass="p-datatable-sm p-datatable-striped" dataKey="club_uid"
+             responsiveLayout="scroll">
+      <ng-template pTemplate="caption">
+        <div class="p-input-icon-left ml-auto">
+          <i class="pi pi-search"></i>
+          <input [disabled]="$searchDisabled | async" pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Sök klubbar" />
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="lg:col-4">Titel</th>
+          <th  class="lg:col-2">Acpkod</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-club>
+        <tr>
+          <td>
+            {{club.title}}
+          </td>
+          <td>{{club.acp_code}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+
+
+
+
+

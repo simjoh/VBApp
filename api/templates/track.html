@@ -35,7 +35,9 @@
                     var ajaxDisplay = document.getElementById('ajaxDiv');
                     // ajaxDisplay.innerHTML = JSON.parse(ajaxRequest.responseText)[0].name;
 					createTitle(`{{event}}`)
-                    createTableCallBack(JSON.parse(ajaxRequest.responseText));
+                    // createNoContent(`{{event}}`);
+                  	 data = JSON.parse(ajaxRequest.responseText)
+                    createTableCallBack(data,`{{event}}`);
                 }
             }
 
@@ -45,33 +47,47 @@
         }
 
         function createTitle(data){
+            //  let s = data.replaceAll('&quot;','"');
+            // let result = s.replace(/^\/?|\/?$/g, "")
+            // const event = JSON.parse(result);
+            // document.title = event.title + " "  +" Track Randonneurs";
+			//
+            // let startdate = event.startdate;
+            // let enddate = event.enddate;
+            // if (startdate === enddate){
+            //     document.getElementById('title').innerHTML = event.title + "  " + startdate
+            // } else {
+            //     document.getElementById('title').innerHTML = event.title + "  " + startdate + " - " + enddate;
+            // }
+			//
+            // document.getElementById('title').classList.add('eventTitle');
+        }
+
+        function createNoContent(data){
+
              let s = data.replaceAll('&quot;','"');
             let result = s.replace(/^\/?|\/?$/g, "")
             const event = JSON.parse(result);
-            document.title = event.title + " "  +" Track Randonneurs";
 
-            let startdate = event.startdate;
-            let enddate = event.enddate;
-            if (startdate === enddate){
-                document.getElementById('title').innerHTML = event.title + "  " + startdate
-            } else {
-                document.getElementById('title').innerHTML = event.title + "  " + startdate + " - " + enddate;
-            }
 
-            document.getElementById('title').classList.add('eventTitle');
-        }
-
-        function createNoContent(){
-            document.getElementById('nocontent').innerHTML = "No participants to track";
+            document.getElementById('nocontent').innerHTML = "Live tracking starts " + event.startdate + ' 08:00';
             document.getElementById('nocontent').classList.add('alert');
             document.getElementById('nocontent').classList.add('alert-primary');
 		}
 
-        function createTableCallBack(data){
+        function getTodayDate(){
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+           	return  yyyy + "-" + mm + '-' + dd;
+		}
+
+        function createTableCallBack(data, event){
 
             if (data.length === 0){
-				createNoContent();
-
+				createNoContent(event);
+				return
             }
 
             let table = document.querySelector("table");
@@ -79,10 +95,13 @@
             generateTable(table, data);
 		}
 
+        function replaceLast(x, y, z){
+            var a = x.split("");
+            a[x.lastIndexOf(y)] = z;
+            return a.join("");
+        }
+
         function generateTable(table, data) {
-
-
-
 
             data = sortResult(data);
             for (let element of data) {
@@ -161,6 +180,7 @@
         body {
             font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
             text-align: left;
+
         }
 
         table {
@@ -169,7 +189,7 @@
 
         th, td {
             border-bottom: 1px solid black;
-            padding: .6em;
+            padding: 0.3em;
         }
 
         th {
@@ -197,7 +217,7 @@
 
         .center {
             margin: auto;
-            width: 50%;
+            width: 100%;
             padding: 10px;
         }
 

@@ -24,7 +24,6 @@ import {TooltipModule} from "primeng/tooltip";
 import {MessageModule} from "primeng/message";
 import {OverlayPanelModule} from "primeng/overlaypanel";
 import { OverlayComponent } from './components/overlay/overlay.component';
-import {SiteListComponent} from "../admin/site-admin/site-list/site-list.component";
 import { YesNoPipe } from './pipes/yes-no.pipe';
 import {CalendarModule} from "primeng/calendar";
 import {InputTextareaModule} from "primeng/inputtextarea";

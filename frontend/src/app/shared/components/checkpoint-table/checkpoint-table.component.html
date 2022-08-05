@@ -5,7 +5,7 @@
       <tr>
         <th>Logga</th>
         <th>Adress</th>
-        <th>Ort</th>
+        <th class="hide">Ort</th>
         <th>Distans</th>
         <th>Öppnar</th>
         <th>Stänger</th>
@@ -17,7 +17,7 @@
           <p-image width="40" height="40" src="{{check.site.image}}" alt="Image" [preview]="false"></p-image>
         </td>
         <td>{{check.site.adress}}</td>
-        <td>{{check.site.place}}</td>
+        <td  class="hide">{{check.site.place}}</td>
         <td>{{check.distance}}</td>
         <td>{{check.opens}}</td>
         <td>{{check.closing}}</td>

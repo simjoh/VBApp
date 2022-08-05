@@ -1,13 +1,13 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {DialogService} from "primeng/dynamicdialog";
-import {ConfirmationService, PrimeNGConfig} from "primeng/api";
-import {SiteService} from "../site.service";
+import {ConfirmationService} from "primeng/api";
 import {map} from "rxjs/operators";
-import {EventRepresentation, Site, User} from "../../../shared/api/api";
 import {Observable} from "rxjs";
-import {CreateEventDialogComponent} from "../../event-admin/create-event-dialog/create-event-dialog.component";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {CreateSiteDialogComponent} from "../create-site-dialog/create-site-dialog.component";
+import { Site } from 'src/app/shared/api/api';
+import { SiteService } from '../site.service';
+
 
 @Component({
   selector: 'brevet-site-list',
@@ -19,12 +19,6 @@ import {CreateSiteDialogComponent} from "../create-site-dialog/create-site-dialo
 export class SiteListComponent implements OnInit {
 
 
-  // $sites = this.siteService.allSites$.pipe(
-  //   map((s:Array<Site>) => {
-  //     // this.table. = 0;
-  //     return s;
-  //   })
-  // ) as Observable<Site[]>;
 
   $sites = this.siteService.siteWithAdd$.pipe(
     map((s:Array<Site>) => {
@@ -33,7 +27,7 @@ export class SiteListComponent implements OnInit {
     })
   ) as Observable<Site[]>;
 
-  constructor(private siteService: SiteService, private primengConfig: PrimeNGConfig,
+  constructor(private siteService: SiteService,
               private dialogService: DialogService,
               private confirmationService: ConfirmationService,
               private deviceDetector: DeviceDetectorService) { }

@@ -22,6 +22,7 @@ class CompetitorRepository extends BaseRepository
      */
     public function __construct(PDO $connection,ParticipantRepository $participantRepository)
     {
+        parent::__construct($connection);
         $this->connection = $connection;
         $this->participantRepository = $participantRepository;
     }

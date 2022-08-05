@@ -1,6 +1,8 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import {TrackAdminComponentService} from "../track-admin-component.service";
 import {EventRepresentation} from "../../../shared/api/api";
+import {map} from "rxjs/operators";
+import {cdkMigrations} from "@angular/cdk/schematics";
 
 @Component({
   selector: 'brevet-track-list',
@@ -12,7 +14,7 @@ export class TrackListComponent implements OnInit {
 
   $eventsandtrack = this.trackadmincomponentservice.$eventsAndTrack;
 
-  constructor(private trackadmincomponentservice: TrackAdminComponentService) { }
+  constructor(private trackadmincomponentservice: TrackAdminComponentService,private cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.trackadmincomponentservice.init();
@@ -28,5 +30,10 @@ export class TrackListComponent implements OnInit {
 
   reload() {
     this.trackadmincomponentservice.init();
+  }
+
+  deepCopyProperties(obj: any): any {
+    // Konverterar till och från JSON, kopierar properties men tappar bort metoder
+    return obj === null || obj === undefined ? obj : JSON.parse(JSON.stringify(obj));
   }
 }

@@ -70,6 +70,7 @@ return function (App $app) {
         $app->post('/track', \App\Action\Track\TrackAction::class . ':createTrack');
         $app->get('/tracks/event/{eventUid}', \App\Action\Track\TrackAction::class . ':tracksForEvent');
         $app->delete('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':deleteTrack');
+        $app->put('/publishresults/track/{trackUid}', \App\Action\Track\TrackAction::class . ':publishresults');
 
         $app->post('/buildlEventAndTrackFromCsv/upload', \App\Action\Track\TrackAction::class  . ':buildfromCsv');
 
@@ -135,9 +136,9 @@ return function (App $app) {
         //Ingång för att lägga tillbrevenr i efterhand.
 
         // lägg till ingångar för admin av klubbar
-         // $app->get('/club/allclubs', \App\Action\Club\ClubAction::class . ':allUsers')->setName("allClubs");
+          $app->get('/club/allclubs', \App\Action\Club\ClubAction::class . ':allClubs');
         // $app->get('/club/club/{clubUid}', \App\Action\Club\ClubAction::class . ':allUsers')->setName("club");
-       // $app->post('/club/createclub', \App\Action\Club\ClubAction::class . ':allUsers')->setName("createClub");
+        $app->post('/club/createclub', \App\Action\Club\ClubAction::class . ':createClub');
         // $app->put('/club/updateClub/{clubUid}', \App\Action\Club\ClubAction::class . ':allUsers')->setName("updateClub");
         // $app->delete('/club/deleteClub/{clubUid}', \App\Action\Club\ClubAction::class . ':allUsers')->setName("deleteClub");
 

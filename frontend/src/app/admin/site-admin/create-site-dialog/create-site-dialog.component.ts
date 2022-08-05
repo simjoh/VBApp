@@ -1,7 +1,6 @@
 import {Component, OnInit, ChangeDetectionStrategy, ViewChild} from '@angular/core';
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {NgForm} from "@angular/forms";
-import {EventFormModel} from "../../event-admin/create-event-dialog/create-event-dialog.component";
 import { FileUpload } from 'primeng/fileupload';
 import {UploadService} from "../../../core/upload.service";
 

@@ -7,8 +7,9 @@ use JsonSerializable;
 class ClubRepresentation implements JsonSerializable
 {
 
-    private $club_uid;
-    private $title;
+    private string $club_uid;
+    private string $title;
+    private $acp_code;
     private array $links = [];
 
 
@@ -59,6 +60,22 @@ class ClubRepresentation implements JsonSerializable
     public function setLinks(array $links): void
     {
         $this->links = $links;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAcpCode()
+    {
+        return $this->acp_code;
+    }
+
+    /**
+     * @param mixed $acp_code
+     */
+    public function setAcpCode($acp_code): void
+    {
+        $this->acp_code = $acp_code;
     }
 
 

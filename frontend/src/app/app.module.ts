@@ -28,7 +28,6 @@ import {InputTextModule} from "primeng/inputtext";
 import {CardModule} from "primeng/card";
 import {TokenHeaderInterceptor} from "./core/interceptors/token-header.interceptor";
 import {FeedbackInterceptor} from "./core/interceptors/feedback.interceptor";
-import {TrackInfoComponent} from "./competitor/track-info/track-info.component";
 import {ConfirmationService, MessageService} from "primeng/api";
 import { EnvService } from './core/env.service';
 import {HashLocationStrategy, LocationStrategy } from '@angular/common';
@@ -60,8 +59,6 @@ import {HashLocationStrategy, LocationStrategy } from '@angular/common';
     ReactiveFormsModule,
     AppRoutingModule,
     InputTextModule,
-
-
   ],
   exports: [CardModule, NgbModule, SharedModule, AppComponent],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy},MessageService,

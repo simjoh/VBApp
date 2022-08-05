@@ -64,7 +64,7 @@ class ResultRepository  extends BaseRepository
         $in  = str_repeat('?,', count($track_uids) - 1) . '?';
 
 
-        $sql = " select revent.startnumber AS ID, revent.finished as mal, revent.given_name as Fornamn, revent.family_name as Efternamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista, revent.passeded_date_time as passedtime  from v_track_contestant_on_event_and_track revent where revent.track_uid  IN ($in);";
+        $sql = " select revent.startnumber AS ID, revent.bana as Bana, revent.finished as mal, revent.given_name as Fornamn, revent.family_name as Efternamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista, revent.passeded_date_time as passedtime  from v_track_contestant_on_event_and_track revent where revent.track_uid  IN ($in);";
 
         $statement = $this->connection->prepare($sql);
         $statement->execute($track_uids);
@@ -247,8 +247,9 @@ class ResultRepository  extends BaseRepository
             $files['Fornamn'] = $item['Fornamn'];
             $files['Efternamn'] = $item['Efternamn'];
             $files['Klubb'] = $item['Klubb'];
-            $files['Senaste checkpoint'] = $item['Sista'];
-            $files['Passerat'] = $item['passedtime'];
+            $files['Bana'] = $item['Bana'];
+            $files['Kontroll'] = $item['Sista'];
+            $files['Stämplat'] = $item['passedtime'];
             $files['Status'] = '';
 
             if($item['mal'] == true){

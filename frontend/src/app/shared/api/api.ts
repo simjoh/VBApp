@@ -184,5 +184,13 @@ export interface ParticipantInformationRepresentation {
 }
 
 
+export interface ClubRepresentation {
+  club_uid: string;
+  title : string;
+  acp_code: string;
+  links: [];
+}
+
+
 
 

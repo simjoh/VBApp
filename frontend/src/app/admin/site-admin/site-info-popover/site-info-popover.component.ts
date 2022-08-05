@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
-import {EventRepresentation, Site} from "../../../shared/api/api";
+import { Site } from 'src/app/shared/api/api';
 
 @Component({
   selector: 'brevet-site-info-popover',

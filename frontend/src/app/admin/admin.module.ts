@@ -8,13 +8,9 @@ import { UserAdminComponent } from './user-admin/user-admin.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { UserListComponent } from './user-admin/user-list/user-list.component';
 import {SharedModule} from "../shared/shared.module";
-import {CreateUserDialogComponent} from "./user-admin/create-user-dialog/create-user-dialog.component";
 import {CheckboxModule} from "primeng/checkbox";
-import {UserInfoPopoverComponent} from "./user-admin/user-info-popover/user-info-popover.component";
-import {SiteAdminModule} from "./site-admin/site-admin.module";
 import {EventAdminModule} from "./event-admin/event-admin.module";
 import { AdminStartComponent } from './admin-start/admin-start.component';
-import {TrackModule} from "./track/track.module";
 import {UserAdminModule} from "./user-admin/user-admin.module";
 
 
@@ -30,7 +26,6 @@ import {UserAdminModule} from "./user-admin/user-admin.module";
     CommonModule,
     CoreModule,
     SharedModule,
-    SiteAdminModule,
     CheckboxModule,
     EventAdminModule,
     AdminRoutingModule,

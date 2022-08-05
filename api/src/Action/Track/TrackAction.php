@@ -49,6 +49,20 @@ class TrackAction
     }
 
 
+    public function publishresults(ServerRequestInterface $request, ResponseInterface $response){
+        $currentuserUid = $request->getAttribute('currentuserUid');
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $route->getArgument('trackUid');
+        $params = $request->getQueryParams();
+        $action = filter_var($params["publish"], FILTER_VALIDATE_BOOLEAN);
+
+
+        $this->trackService->publishResults($route->getArgument('trackUid'),$action ,$currentuserUid);
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+
     public function updateTrack(ServerRequestInterface $request, ResponseInterface $response){
 
         $jsonDecoder = new JsonDecoder();

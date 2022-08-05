@@ -1,11 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {ParticipantComponent} from "../participant/participant/participant.component";
-import {UploadParticipantComponent} from "../participant/upload-participant/upload-participant.component";
-import {KontrollerCombinerComponent} from "../kontroller-combiner/kontroller-combiner.component";
 import {TrackAdminComponent} from "./track-admin.component";
 import {UploadTrackComponent} from "./upload-track/upload-track.component";
 import {TrackListComponent} from "./track-list/track-list.component";
+import {TrackBuilderComponent} from "./track-builder/track-builder.component";
 
 const routes: Routes = [
   {
@@ -14,6 +12,7 @@ const routes: Routes = [
     children: [
       { path: 'brevet-track-upload', component:  UploadTrackComponent},
       { path: 'brevet-track-list', component:  TrackListComponent},
+      { path: 'brevet-track-builder', component:  TrackBuilderComponent},
       { path: '**', redirectTo: 'brevet-track-list'},
     ]
   }];

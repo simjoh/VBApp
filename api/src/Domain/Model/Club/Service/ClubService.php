@@ -21,6 +21,7 @@ class ClubService
         $this->permissionrepoitory = $permissionRepository;
         $this->clubAssembly = $clubAssembly;
 
+
     }
 
     public function getClubByUid(string $club_uid, string $currentuser_id): ?ClubRepresentation
@@ -28,6 +29,34 @@ class ClubService
         $permissions = $this->getPermissions($currentuser_id);
         $club = $this->clubrepository->getClubByUId($club_uid);
         return $this->clubAssembly->toRepresentation($club, $permissions);
+    }
+
+
+    public function getAllClubs(string $currentuser_id): ?array
+    {
+        $permissions = $this->getPermissions($currentuser_id);
+        $clubs = $this->clubrepository->getAllClubs();
+        return $this->clubAssembly->toRepresentations($clubs, $currentuser_id);
+    }
+
+
+    public function createClub(string $currentuser_id, ClubRepresentation $clubRepresentation): ?ClubRepresentation
+    {
+        $permissions = $this->getPermissions($currentuser_id);
+        $club = $this->clubrepository->getClubByTitleLower($clubRepresentation->getTitle());
+        if ($club == null) {
+            $club_uid = $this->clubrepository->createClub($clubRepresentation->getAcpCode(), $clubRepresentation->getTitle());
+        }
+        $clubreturn = $this->clubrepository->getClubByUId($club_uid);
+        return $this->clubAssembly->toRepresentation($clubreturn, $permissions);
+    }
+
+    public function updateClub(string $currentuser_id, ClubRepresentation $clubRepresentation): ?ClubRepresentation
+    {
+        $club = $this->clubrepository->getClubByUId($clubRepresentation->getClubUid());
+        $permissions = $this->getPermissions($currentuser_id);
+        $clubReturn = $this->clubrepository->updateClub($club);
+        return $this->clubAssembly->toRepresentation($clubReturn, $permissions);
     }
 
 

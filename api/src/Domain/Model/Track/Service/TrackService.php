@@ -74,9 +74,11 @@ class TrackService extends ServiceAbstract
         $permissions = $this->getPermissions($currentuserUid);
         $track = $this->trackRepository->getTrackByUid($trackUid);
 
-       $isracePassed = $this->trackRepository->isRacePassed($trackUid);
 
-       if($isracePassed == true || $track->isActive() == false){
+//        print_r($track);
+
+       $isracePassed = $this->trackRepository->isRacePassed($trackUid);
+       if($isracePassed == true){
            if($this->settings['demo'] == 'true'){
                $track->setActive(true);
            } else {
@@ -385,6 +387,21 @@ class TrackService extends ServiceAbstract
 
         //Tabort själva banan
         $this->trackRepository->deleteTrack($track_uid);
+
+    }
+
+    public function publishResults(?string $track_uid,  $publish ,string $currentuserUid)
+    {
+        $track =  $this->trackRepository->getTrackByUid($track_uid);
+        if($track == null){
+            throw new BrevetException("Finns ingen bana med angivet uid", 5);
+        }
+
+        if($track->isActive()){
+            $this->trackRepository->setInactive($track_uid, 0);
+        } else {
+            $this->trackRepository->setInactive($track_uid, 1);
+        }
 
     }
 

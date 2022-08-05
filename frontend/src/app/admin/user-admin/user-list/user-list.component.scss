@@ -58,6 +58,8 @@
     padding: 0.3rem 0.3rem;
 }
 
+
+
 .p-paginator {
     padding: 0.2rem;
 }
@@ -68,6 +70,16 @@
   .p-datatable-customers .p-datatable-tbody > tr > td .p-column-title {
     display: none;
   }
+
+.p-button.p-button-success, .p-buttonset.p-button-success > .p-button, .p-splitbutton.p-button-success > .p-button {
+    color: #ffffff;
+    background: #689F38;
+    border: 1px solid #689F38;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
+}
 }
 
 @media screen and (max-width: 960px) {

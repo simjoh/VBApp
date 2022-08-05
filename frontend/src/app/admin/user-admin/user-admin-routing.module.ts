@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {UserAdminComponent} from "./user-admin.component";
-import {UploadTrackComponent} from "../track/upload-track/upload-track.component";
-import {TrackListComponent} from "../track/track-list/track-list.component";
 import {UserListComponent} from "./user-list/user-list.component";
 import {PermissionAdminComponent} from "./permission-admin/permission-admin.component";
 

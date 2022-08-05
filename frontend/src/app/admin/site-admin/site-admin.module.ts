@@ -1,10 +1,12 @@
-import { NgModule } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
-import { SiteListComponent } from './site-list/site-list.component';
-import { SiteAdminComponent } from './site-admin.component';
-import {SharedModule} from "../../shared/shared.module";
-import { SiteInfoPopoverComponent } from './site-info-popover/site-info-popover.component';
-import { CreateSiteDialogComponent } from './create-site-dialog/create-site-dialog.component';
+import {SiteAdminRoutingModule} from "./site-admin-routing.module";
+import {NgModule} from "@angular/core";
+import { SharedModule } from 'src/app/shared/shared.module';
+import {SiteAdminComponent} from "./site-admin.component";
+import {SiteListComponent} from "./site-list/site-list.component";
+import {SiteInfoPopoverComponent} from "./site-info-popover/site-info-popover.component";
+import {CreateSiteDialogComponent} from "./create-site-dialog/create-site-dialog.component";
 
 
 
@@ -16,9 +18,9 @@ import { CreateSiteDialogComponent } from './create-site-dialog/create-site-dial
     CreateSiteDialogComponent
   ],
   imports: [
-    CommonModule,
-    SharedModule
+    SharedModule,
+    SiteAdminRoutingModule
   ],
-  exports: [SiteListComponent]
+  exports: []
 })
 export class SiteAdminModule { }

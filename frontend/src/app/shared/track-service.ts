@@ -67,9 +67,15 @@ export class TrackService {
       })
   }
 
-  public updatetrack(track: TrackRepresentation){
-
-
+  async  publishresultaction(link: Link): Promise<any>{
+    return await  this.httpClient.put(link.url,{},  {})
+      .pipe(
+        catchError(err => {
+          return throwError(err);
+        })
+      ).toPromise().then((res) => {
+        return res
+      });
   }
 
   public deletelinkExists(track: TrackRepresentation): boolean {
@@ -78,5 +84,18 @@ export class TrackService {
 
   public currentTrack(trackUid: string){
     this.$currentTrackSubject.next(trackUid);
+  }
+
+  publishReultLinkExists(track: TrackRepresentation) {
+    return this.linkService.exists(track.links, 'relation.track.publisresults', HttpMethod.PUT );
+  }
+
+
+  async undopublishresult(trackRepresentation: TrackRepresentation) {
+    return await this.publishresultaction(this.linkService.findByRel(trackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT ))
+  }
+
+  async publishresult(trackRepresentation: TrackRepresentation) {
+    return await this.publishresultaction(this.linkService.findByRel(trackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT ))
   }
 }

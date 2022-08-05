@@ -25,7 +25,12 @@ const routes: Routes = [{
       path: 'clubadmin',
       loadChildren: () => import('./club-admin/club-admin.module').then(m => m.ClubAdminModule),
     },
+    {
+      path: 'siteadmin',
+      loadChildren: () => import('./site-admin/site-admin.module').then(m => m.SiteAdminModule),
+    },
     { path: 'brevet-admin-start', component: AdminStartComponent },
+    // { path: 'brevet-site-admin', component: SiteAdminComponent},
     // { path: 'brevet-kontroller-combiner', component: KontrollerCombinerComponent},
     // // { path: 'brevet-user-admin', component: UserAdminComponent },
     // { path: 'brevet-dashboard', component: DashboardComponent },
