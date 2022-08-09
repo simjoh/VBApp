@@ -1,0 +1,22 @@
+
+
+<p-dropdown
+  styleClass="col-12" pTooltip="Plats är en punkt där en kontroll är belägen"
+  tooltipPosition="left" optionLabel="place" tooltip="Plats är en punkt där en kontroll är belägen"
+  [options]="$sites | async" [(ngModel)]="selectedEvent"
+  (ngModelChange)="setValue($event)" placeholder="Välj plats"
+  [virtualScroll]="true" [itemSize]="31"
+  [filter]="true">
+  <ng-template pTemplate="selectedItem">
+    <div class="site-item site-item-value" *ngIf="selectedEvent">
+      <img [src]="selectedEvent.image" class="mr-3" [height]="'30'" [width]="'30'" [alt]="selectedEvent.adress"/>
+      {{selectedEvent.place}} {{selectedEvent.adress}}
+    </div>
+  </ng-template>
+  <ng-template let-site pTemplate="item">
+    <div class="site-item">
+      <img [src]="site.image" class="mr-2" [height]="'30'" [width]="'30'" [alt]="'(Logga saknas)'"/>
+       {{site.place}} {{site.adress}}
+    </div>
+  </ng-template>
+</p-dropdown>

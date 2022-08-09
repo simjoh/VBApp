@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {MenuItem} from "primeng/api";
 import {TrackAdminComponentService} from "./track-admin-component.service";
 
@@ -8,6 +8,7 @@ import {TrackAdminComponentService} from "./track-admin-component.service";
   styleUrls: ['./track-admin.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [TrackAdminComponentService]
+
 })
 export class TrackAdminComponent implements OnInit {
 

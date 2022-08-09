@@ -30,7 +30,7 @@ export class SiteService {
     this.siteInsertedSubject.next(user);
   }
 
-  private getAllSites(): Observable<Site[]>{
+   getAllSites(): Observable<Site[]>{
     return this.httpClient.get<Site[]>(environment.backend_url + "sites").pipe(
       map((sites: Array<Site>) => {
         return sites;

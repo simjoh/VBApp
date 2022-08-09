@@ -1,0 +1,8 @@
+<p-dropdown
+  styleClass="col-12" pTooltip="Välj event"
+  tooltipPosition="left" tooltip="Välj event"
+  [options]="$eventItems | async" [(ngModel)]="selectedEvent"
+  (ngModelChange)="setValue($event)" placeholder="Välj event"
+  [virtualScroll]="true" [itemSize]="31"
+  [filter]="true">
+</p-dropdown>

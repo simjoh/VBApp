@@ -57,6 +57,9 @@ import {CheckpointComponent} from "./components/checkpoint/checkpoint.component"
 import {TrackInfoComponent} from "./components/track-info/track-info.component";
 import { TracksForEventSelectorComponent } from './components/tracks-for-event-selector/tracks-for-event-selector.component';
 import {InputNumberModule} from "primeng/inputnumber";
+import { EventSelectorComponent } from './components/event-selector/event-selector.component';
+import { SiteSelectorComponent } from './components/site-selector/site-selector.component';
+import {ToolbarModule} from "primeng/toolbar";
 
 
 
@@ -79,7 +82,9 @@ import {InputNumberModule} from "primeng/inputnumber";
     CheckpointPreviewDialogComponent,
     CheckpointComponent,
     TrackInfoComponent,
-    TracksForEventSelectorComponent
+    TracksForEventSelectorComponent,
+    EventSelectorComponent,
+    SiteSelectorComponent
   ],
   entryComponents: [],
   imports: [
@@ -119,11 +124,11 @@ import {InputNumberModule} from "primeng/inputnumber";
     TabViewModule,
     PanelModule,
     MenuModule,
-    FormsModule, ReactiveFormsModule, AccordionModule, InputNumberModule
+    FormsModule, ReactiveFormsModule, AccordionModule, InputNumberModule, ToolbarModule
   ],
 	exports: [CommonModule, ToastModule, ConfirmPopupModule, TabViewModule,
-		PanelModule,
-		MenuModule, BadgeModule, InputNumberModule,TracksForEventSelectorComponent, CheckpointComponent, CheckpointPreviewComponent, CheckpointPreviewDialogComponent, KnobModule, HtmlLinkComponent, ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
+		PanelModule,ToolbarModule,
+		MenuModule, BadgeModule, ListboxModule, SiteSelectorComponent ,EventSelectorComponent, InputNumberModule,TracksForEventSelectorComponent, CheckpointComponent, CheckpointPreviewComponent, CheckpointPreviewDialogComponent, KnobModule, HtmlLinkComponent, ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
 		LogoComponent, DatePipe, NgbCollapseModule, ProgressSpinnerModule, AccordionModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
 		ProgressBarModule, TrackTableComponent, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent, DateTimePrettyPrintPipe, RemoveAfterPipe, TracksForEventSelectorComponent, CheckpointTableComponent],
   providers: [DatePipe, DialogService]

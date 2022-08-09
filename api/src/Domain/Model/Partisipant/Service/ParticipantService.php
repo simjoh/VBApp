@@ -438,9 +438,9 @@ class ParticipantService extends ServiceAbstract
             $countCheckpoints = $this->checkpointsService->countCheckpointsForTrack($participant->getTrackUid());
             $oktofinish = $this->participantRepository->participantHasStampOnAllExceptFinish($participant->getTrackUid(),$checkpoint->getCheckpointUid(),$participant->getParticipantUid(), $countCheckpoints);
 
-            if($oktofinish == false){
-                throw new BrevetException("Cannot checkin on finish checkpoint due to missed checkins on one or more checkpoints. Contact race administrator", 6, null);
-            }
+//            if($oktofinish == false){
+//                throw new BrevetException("Cannot checkin on finish checkpoint due to missed checkins on one or more checkpoints. Contact race administrator", 6, null);
+//            }
 
 //            if($this->settings['demo'] == 'false') {
                 if($track->getStartDateTime() != '-'){

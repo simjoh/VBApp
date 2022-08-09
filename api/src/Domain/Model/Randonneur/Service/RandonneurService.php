@@ -195,9 +195,9 @@ class RandonneurService
             $countCheckpoints = $this->checkpointService->countCheckpointsForTrack($participant->getTrackUid());
             $oktofinish = $this->participantRepository->participantHasStampOnAllExceptFinish($track_uid,$checkpoint->getCheckpointUid(),$participant->getParticipantUid(), $countCheckpoints);
 
-            if($oktofinish == false){
-                throw new BrevetException("Cannot checkin on finish checkpoint due to missed checkins on one or more checkpoints. Contact race administrator", 6, null);
-            }
+//            if($oktofinish == false){
+//                throw new BrevetException("Cannot checkin on finish checkpoint due to missed checkins on one or more checkpoints. Contact race administrator", 6, null);
+//            }
 
             if($this->settings['demo'] == 'false') {
                 if($track->getStartDateTime() != '-'){

@@ -1,5 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { MenuItem } from 'primeng/api';
+import {ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {MenuItem} from 'primeng/api';
 import {ParticipantComponentService} from "../participant-component.service";
 
 @Component({
@@ -7,7 +7,7 @@ import {ParticipantComponentService} from "../participant-component.service";
   templateUrl: './participant.component.html',
   styleUrls: ['./participant.component.scss'],
   providers: [ParticipantComponentService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ParticipantComponent implements OnInit {
 

@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {MenuComponentService} from "./menu-component.service";
 import {map} from "rxjs/operators";
-import {Observable} from "rxjs";
+import {BehaviorSubject, Observable} from "rxjs";
 import { MenuItem } from 'primeng/api';
 import { DeviceDetectorService } from 'ngx-device-detector';
 
@@ -13,8 +13,12 @@ import { DeviceDetectorService } from 'ngx-device-detector';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MenuComponent implements OnInit{
-
+  deviceInfo = null;
   isMenuCollapsed = false
+
+
+  $menuSubject = new BehaviorSubject<Array<MenuItem>>([]);
+  $menuitems = this.$menuSubject.asObservable();
 
   items: MenuItem[] = [];
 
@@ -45,6 +49,7 @@ export class MenuComponent implements OnInit{
           this.items.push({
             label: 'Banor',
             routerLink: '/admin/banor',
+            expanded: true
           })
         }
         if (!this.items.some(item => item.label === 'Systemadministration')) {
@@ -64,9 +69,8 @@ export class MenuComponent implements OnInit{
               }
             ]
           });
-
-
         }
+
 
       }
 
@@ -76,6 +80,24 @@ export class MenuComponent implements OnInit{
           routerLink: '/volunteer',
         })
       }
+
+      if (!this.items.some(item => item.label === 'Logout')) {
+        if (!this.deviceService.isDesktop()){
+          if (this.deviceService.isMobile()  ||  this.deviceService.isTablet()){
+            this.items.push({
+              label: 'Logout',
+              icon: 'pi pi-fw pi-sign-out',
+              styleClass: "lg:hidden",
+              command:()=> this.logout(),
+            })
+          }
+        }
+
+      }
+
+
+
+      this.$menuSubject.next(this.items);
 
       return this.items;
      // return this.items.sort((a, b) => (a.label > b.label) ? 1 : -1)
@@ -103,27 +125,43 @@ export class MenuComponent implements OnInit{
   }
 
   ngOnInit(): void {
-
-    // this.items = [
-    //   {
-    //     label: 'Deltagare',
-    //     routerLink: '/admin/participant',
-    //   },
-    //   {
-    //     label: 'Banor',
-    //     routerLink: '/admin/banor',
-    //   },
-    //   {
-    //     label: 'Systemadministration',
-    //     routerLink: '/admin/banor',
-    //     items: [{
-    //       label: 'Användare',
-    //     },
-    //     ]
-    //   }
-    // ];
    this.menucomponentService.reload();
   }
+
+  test() {
+  }
+
+  onResize($event: any) {
+    // const userAgent = window.navigator.userAgent;
+    // if (this.deviceService.isMobile(window.navigator.userAgent)) {
+    //
+    //   let items = this.$menuSubject.value
+    //   if (!items.some(item => item.label === 'Logout')) {
+    //
+    //     items.push({
+    //       label: 'Logout',
+    //       icon: 'pi pi-fw pi-sign-out',
+    //       styleClass: "lg:hidden",
+    //       command:()=> this.logout(),
+    //     })
+    //
+    //     this.$menuSubject.next(items)
+    //   } else {
+    //     console.log(items.length)
+    //     if (items.some(item => item.label === 'Logout')) {
+    //       console.log(this.deviceService.isMobile(window.navigator.userAgent) + 'Ska filtrerar')
+    //         items = items.filter(function (item) {
+    //           return item.label != 'Logout';
+    //         })
+    //     }
+    //     console.log(items)
+    //     this.$menuSubject.next(items)
+    //   }
+    //
+    // }
+  }
+
+
 }
 export class VyInformation {
   namn: string;

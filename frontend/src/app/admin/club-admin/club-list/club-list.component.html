@@ -1,5 +1,5 @@
 
-  <div class="col-4" >
+  <div class="lg:col-5 sm:col-12 md:col-12" >
     <p-table  #dt1 [globalFilterFields]="['title', 'acp_code']"  [value]="$clubs | async " styleClass="p-datatable-sm p-datatable-striped" dataKey="club_uid"
              responsiveLayout="scroll">
       <ng-template pTemplate="caption">
@@ -10,8 +10,8 @@
       </ng-template>
       <ng-template pTemplate="header">
         <tr>
-          <th class="lg:col-4">Titel</th>
-          <th  class="lg:col-2">Acpkod</th>
+          <th>Titel</th>
+          <th>Acpkod</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-club>
