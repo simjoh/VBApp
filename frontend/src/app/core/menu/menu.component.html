@@ -5,14 +5,19 @@
       </ng-template>
       <ng-template pTemplate="end">
         <div class="">
-          {{$logedinas | async}}
+          <strong>Welcome:</strong>  {{$logedinas | async}}
         </div>
-        <div >
+        <div>
             <a class="ml-2 float-right" href="" (click)="logout()">Log Out</a>
         </div>
       </ng-template>
     </p-menubar>
   </ng-container>
+
+
+
+
+
 
 
 

@@ -1,42 +1,41 @@
-
 <ng-container *ngIf="$sites | async as users">
-  <p-table #dt [value]="users" [(selection)]="selectedCustomers" dataKey="id" styleClass="p-datatable-customers" [rowHover]="true"
+  <p-table #dt [value]="users" [(selection)]="selectedCustomers" dataKey="id" styleClass="p-datatable-customers p-datatable-gridlines  sm:col-12"
+           [rowHover]="true"
            [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="loading"
            [paginator]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
            [filterDelay]="0" [globalFilterFields]="['place','familyname','username','status']">
     <ng-template pTemplate="caption">
       <div class="table-header">
       <span class="p-input-icon-left  sm:inline-flex">
-              <h4 class="pt-2"><strong>Siter</strong></h4>
-          <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2 ml-2" (click)="openNew()"></button>
+          <button pButton pRipple label="New" icon="pi pi-plus" class="thin p-button-success p-mr-2 ml-2" (click)="openNew()"></button>
       </span>
         <span class="p-input-icon-left sm:inline-flex">
         <i class="pi pi-search"></i>
-        <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Sök" />
+        <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Sök"/>
       </span>
       </div>
     </ng-template>
     <ng-template pTemplate="header">
       <tr>
-        <th pSortableColumn="place">
+        <th class="lg:w-4rem" pSortableColumn="place">
           <div class="p-d-flex p-jc-between p-ai-center">
             Plats
             <p-sortIcon field="place"></p-sortIcon>
           </div>
         </th>
-        <th pSortableColumn="adress">
+        <th class="lg:w-3rem" pSortableColumn="adress">
           <div class="p-d-flex p-jc-between p-ai-center">
             Adress
             <p-sortIcon field="adress"></p-sortIcon>
           </div>
         </th>
-        <th>
+        <th class="lg:w-1">
           <div class="p-d-flex p-jc-between p-ai-center">
             Bild
           </div>
         </th>
-        <th>
-          <div class="p-d-flex p-jc-between pi-align-rightl">
+        <th class="lg:w-1rem">
+          <div class="p-d-flex p-jc-between pi-align-right">
             Åtgärder
           </div>
         </th>
@@ -52,15 +51,17 @@
           <span class="p-column-title">Adress</span>
           <span class="image-text">{{site.adress}}</span>
         </td>
-        <td>
+        <td class="align-content-center">
           <span class="p-column-title">Bild</span>
-          <img width="50" height="50" class="p-shadow-4"  [src]="site.image" src="assets/brevet.PNG" alt="Bild på site">
+          <img width="40" height="40" class="p-shadow-4" [src]="site.image" src="assets/brevet.PNG" alt="Bild på site">
         </td>
         <td>
           <span class="p-column-title">Åtgärder</span>
-         <brevet-site-info-popover [site]="site" ></brevet-site-info-popover>
-          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success sm-0 p-ml-1" (click)="editProduct(site.site_uid)"></button>
-          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1" (click)="deleteProduct(site.site_uid)"></button>
+          <brevet-site-info-popover [site]="site"></brevet-site-info-popover>
+          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success sm-0 p-ml-1"
+                  (click)="editProduct(site.site_uid)"></button>
+          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1"
+                  (click)="deleteProduct(site.site_uid)"></button>
         </td>
       </tr>
     </ng-template>

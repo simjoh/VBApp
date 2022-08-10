@@ -3,10 +3,14 @@
 /* Importing Bootstrap SCSS file. */
 @import '~bootstrap/scss/bootstrap';
 
-//@import "src/app/design/vbstyle";
+@import "src/app/design/vbstyle";
+
+
+
 
 
 .container {
+font-size: 0.9rem;
   height: 100%;
   display: flex;
   flex-direction: column;

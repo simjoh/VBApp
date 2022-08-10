@@ -1,0 +1,20 @@
+.p-button.p-button-icon-only.p-button-rounded {
+    border-radius: 50%;
+    height: 2.000rem;
+}
+
+.p-button.p-button-icon-only {
+    width: 2.000rem;
+    padding: 0.5rem 0;
+}
+
+
+.thin.p-button.p-button-success, .p-buttonset.p-button-success > .p-button, .p-splitbutton.p-button-success > .p-button {
+    color: #ffffff;
+    background: #689F38;
+    border: 1px solid #689F38;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
+}

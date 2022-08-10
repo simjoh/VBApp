@@ -32,14 +32,15 @@ $settings['error'] = [
     'log_error_details' => true,
 ];
 
+
 // Database settings
 $settings['db'] = [
     'driver' => 'mysql',
-    'host' => 'database',
+    'host' => 's687.loopia.se',
     'port' => '3306',
-    'username' => 'myuser',
+    'username' => 'brevet@v231933',
     'database' => 'vasterbottenbrevet_se',
-    'password' => 'secret',
+    'password' => 'msr_1200',
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_unicode_ci',
     'flags' => [
