@@ -36,11 +36,11 @@ $settings['error'] = [
 // Database settings
 $settings['db'] = [
     'driver' => 'mysql',
-    'host' => 's687.loopia.se',
+    'host' => 'database',
     'port' => '3306',
-    'username' => 'brevet@v231933',
+    'username' => 'myuser',
     'database' => 'vasterbottenbrevet_se',
-    'password' => 'msr_1200',
+    'password' => 'secret',
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_unicode_ci',
     'flags' => [
