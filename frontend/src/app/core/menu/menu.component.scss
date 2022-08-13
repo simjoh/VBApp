@@ -6,14 +6,12 @@
    background-color: var(--purple-20);
  }
 
-
-
-
-
 	@media screen and (max-width: 500px) {
-		//.p-menubar-end {
-		//	display: none;
-		//}
+	   .p-menubar {
+       font-size: 0.6rem;
+       padding: 0 0.6rem;
+       background-color: var(--purple-20);
+     }
 	}
 	}
 

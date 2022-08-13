@@ -16,15 +16,7 @@ export class TrackAdminComponentService {
 
 
   $eventTrackSubject = new BehaviorSubject([] as any[]);
-  // $eventsAndTrack = this.$eventTrackSubject.asObservable().pipe(
-  //   mergeMap((s) => {
-  //    return this.eventtrackService.getEventsAndTracks().pipe(
-  //      map((ss) => {
-  //        return this.sortEvents(ss);
-  //      })
-  //    );
-  //   })
-  // )
+
 
 
   $reloadSubject = new Subject();

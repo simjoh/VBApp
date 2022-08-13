@@ -1,16 +1,32 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {TrackBuilderComponentService} from "./track-builder-component.service";
+import {RusaTimeCalculationApiService} from "./rusa-time-calculation-api.service";
+import {RusaTimeAssemblerService} from "./rusa-time-assembler.service";
 
 @Component({
   selector: 'brevet-track-builder',
   templateUrl: './track-builder.component.html',
   styleUrls: ['./track-builder.component.scss'],
+  providers: [TrackBuilderComponentService,RusaTimeAssemblerService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TrackBuilderComponent implements OnInit {
 
-  constructor() { }
+  items = [];
+  testa$ = this.test.aktuell;
+
+  value13 = 25;
+
+  constructor(private test: TrackBuilderComponentService) { }
 
   ngOnInit(): void {
+
+    this.items = [
+      {label: 'Step 1'},
+      {label: 'Step 2'},
+      {label: 'Step 3'}
+    ];
+      this.test.read();
   }
 
 }

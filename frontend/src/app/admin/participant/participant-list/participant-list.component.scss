@@ -1,0 +1,13 @@
+:host ::ng-deep {
+	@media screen and (max-width: 800px) {
+		.p-dropdown {
+        display: inline-flex;
+        cursor: pointer;
+        width: 100%;
+        position: relative;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+	}
+}

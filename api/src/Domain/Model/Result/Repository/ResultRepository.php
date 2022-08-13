@@ -165,7 +165,7 @@ class ResultRepository  extends BaseRepository
 
             $files = array();
             $files['ID'] = $item['ID'];
-            $files['Fornamn'] = $item['Fornamn'];
+            $files['Förnamn'] = $item['Fornamn'];
             $files['Efternamn'] = $item['Efternamn'];
             if($bana == true){
                 $files['Bana'] = $item['bana'];
@@ -244,7 +244,7 @@ class ResultRepository  extends BaseRepository
 
             $files = array();
             $files['ID'] = $item['ID'];
-            $files['Fornamn'] = $item['Fornamn'];
+            $files['Förnamn'] = $item['Fornamn'];
             $files['Efternamn'] = $item['Efternamn'];
             $files['Klubb'] = $item['Klubb'];
             $files['Bana'] = $item['Bana'];

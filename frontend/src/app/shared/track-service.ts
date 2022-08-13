@@ -3,8 +3,8 @@ import {HttpClient} from "@angular/common/http";
 import {LinkService} from "../core/link.service";
 import {Link, TrackRepresentation} from "./api/api";
 import {environment} from "../../environments/environment";
-import {catchError, map, mergeMap, shareReplay, take, tap} from "rxjs/operators";
-import {BehaviorSubject, Observable, ReplaySubject, throwError} from "rxjs";
+import {catchError, map, shareReplay, take, tap} from "rxjs/operators";
+import {BehaviorSubject, Observable, throwError} from "rxjs";
 import {HttpMethod} from "../core/HttpMethod";
 
 @Injectable({

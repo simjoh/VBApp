@@ -10,5 +10,12 @@
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
+  },
+  "/rusatime/*": {
+    "target": "https://rusa.jkassen.org/time/rusa-time-api.php",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
   }
+
 }

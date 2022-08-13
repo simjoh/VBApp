@@ -3,6 +3,10 @@
 @import "table/table";
 @import "button/button";
 
+body {
+
+ //background-color: var(--surface-ground);;
+}
 
 body .p-component
 {
@@ -15,5 +19,20 @@ body .p-component
     font-size: 1.3rem;
   }
 	}
+
+
+		@media screen and (max-width: 500px) {
+      	body .p-component {
+            font-size: 0.9rem;
+        }
+  	}
+
+  			@media screen and (max-width: 350px) {
+          	body .p-component {
+                font-size: 0.5rem;
+            }
+      	}
+
+
 
 

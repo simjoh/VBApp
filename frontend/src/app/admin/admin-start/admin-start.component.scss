@@ -1,13 +1,31 @@
 :host ::ng-deep {
 
-.p-card .p-card-title {
-    font-size: 0.9rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    justify-content: center;
+.p-card.p-element {
+width: 350px;
 }
 
 
+
+
+.p-card .p-card-title {
+    font-size: 1.0rem;
+    margin: 0.7rem;
+    text-align: center;
+}
+
+
+	@media screen and (max-width: 700px) {
+	.p-card .p-card-title {
+      font-size: 0.6rem;
+      margin: 0.5rem;
+      text-align: center;
+  }
+
+  .p-card .p-card-footer {
+      padding: 1rem 0 0 0;
+      font-size: 0.6rem;
+  }
+	}
 }
 
 
