@@ -1,0 +1,73 @@
+
+
+<p-card header="Arangemang">
+  <ng-container *ngIf="(event$)  | async as s">
+    <h4>{{s.title}}</h4>  {{s.startdate}} - {{s.enddate}}
+  </ng-container>
+</p-card>
+
+<p-card header="Bana" styleClass="mt-0">
+  <!--        <ng-template pTemplate="header">-->
+  <!--          Track info-->
+  <!--        </ng-template>-->
+  <ng-container *ngIf="$track | async as track">
+
+    <h4>{{track.TRACK_TITLE}}</h4>
+    <h4>{{track.EVENT_DISTANCE_KM}}</h4><br>
+
+    <h4>{{track.START_DATE}}</h4><br>
+    <h4>{{track.START_TIME}}</h4><br>
+    <h4>{{track.MAX_TIME}}/{{track.MIN_TIME}}</h4><br>
+
+<!--    {{track | json}}-->
+
+  </ng-container>
+
+</p-card>
+
+
+
+<p-card header="Kontroller" styleClass="mt-2">
+
+  <ng-container *ngIf="$controls | async as control">
+
+
+<!--    {{control | json}}-->
+
+    <ng-container *ngFor="let control of control">
+
+  <div class="bg-black-alpha-10 mb-2">
+      <p-image width="60" height="60" src="{{control.siteRepresentation.image}}" alt="Image" [preview]="false"></p-image>
+      {{control.siteRepresentation.adress}}
+
+
+
+
+      {{control.rusaControlRepresentation.CONTROL_DISTANCE_KM}}<br>
+
+      {{control.rusaControlRepresentation.CONTROL_NAME}}<br>
+
+    Öppnar  {{control.rusaControlRepresentation.OPEN}}<br>
+
+    Stänger  {{control.rusaControlRepresentation.CLOSE}}<br>
+
+      {{control.rusaControlRepresentation.RELATIVE_OPEN}}<br>
+      {{control.rusaControlRepresentation.RELATIVE_CLOSE}}<br>
+  </div>
+    </ng-container>
+
+
+  </ng-container>
+
+
+  <ng-template pTemplate="footer">
+
+
+  </ng-template>
+</p-card>
+<div class="flex justify-content-center mt-2">
+  <p-button  label="Spara bana"  icon="" styleClass="p-button-sm p-button-success"></p-button>
+
+
+</div>
+

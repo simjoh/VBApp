@@ -1,0 +1,38 @@
+<p-card>
+  {{model|json}}
+  <div class="grid p-fluid">
+
+    <div class="col-12 lg:col-12 md:col-12">
+      <span><strong>Arrangemang</strong></span>
+      <brevet-event-selector (trackChange)="addEvent($event)"></brevet-event-selector>
+    </div>
+  </div>
+  <div class="grid p-fluid">
+    <div class="col-12 lg:col-6 md:col-6">
+      <span><strong>Bana</strong></span>
+      <div class="p-inputgroup">
+        <input  (blur)="add()" [(ngModel)]="model.trackname"  pTooltip="Banans namn tex MSR 1200 " type="text" id="trackname" pInputText placeholder="Ange ett namn på banan">
+      </div>
+    </div>
+    <div class="col-12 lg:col-6 md:col-6">
+      <span><strong>Distans</strong></span>
+      <div class="p-inputgroup">
+        <p-inputNumber  (onBlur)="add()"  pTooltip="Banans sträcka tex 200" [(ngModel)]="model.trackdistance" max="2000"  placeholder="Ange banans längd" [showButtons]="true" id="tracklength"  suffix=" km"></p-inputNumber>
+      </div>
+    </div>
+  </div>
+  <div class="grid p-fluid">
+    <div class="col-12 lg:col-6 md:col-6">
+      <span><strong>Startdatum</strong></span>
+      <div class="p-inputgroup">
+        <input  (blur)="add()" [(ngModel)]="model.startdate" pTooltip="Om fältet lämnas tomt sätt startdatum  automatiskt till nästkommande dag" tooltipPosition="top" type="text" id="startdate" pInputText placeholder="YYYY-MM-DD">
+      </div>
+    </div>
+    <div class="col-12 lg:col-6 md:col-6">
+      <span><strong>Starttid</strong></span>
+      <div class="p-inputgroup">
+        <input (blur)="add()" [(ngModel)]="model.starttime" pTooltip="Om fältet lämnas tomt sätt starttiden automatiskt till 07:00" tooltipPosition="top" type="text" id="starttime" pInputText placeholder="HH:MM">
+      </div>
+    </div>
+  </div>
+</p-card>
