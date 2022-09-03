@@ -2,16 +2,25 @@
 
 namespace App\Action\Track;
 
+use App\Domain\Model\Site\Rest\SiteRepresentation;
+use App\Domain\Model\Site\Rest\SiteRepresentationTransformer;
+use App\Domain\Model\Track\Rest\RusaPlannerInputRepresentation;
+use App\Domain\Model\Track\Rest\RusaPlannerInputRepresentationTransformer;
+use App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation;
+use App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentationTransformer;
 use App\Domain\Model\Track\Rest\TrackRepresentation;
 use App\Domain\Model\Track\Rest\TrackRepresentationTransformer;
 use App\Domain\Model\Track\Service\TrackService;
 use Exception;
+use GuzzleHttp\Client;
+use InvalidArgumentException;
 use Karriere\JsonDecoder\JsonDecoder;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Psr7\UploadedFile;
 use Slim\Routing\RouteContext;
+use stdClass;
 
 class TrackAction
 {
@@ -79,6 +88,44 @@ class TrackAction
         $trackrepresentation = (object) $jsonDecoder->decode($request->getBody(), TrackRepresentation::class);
         $created = $this->trackService->createTrack($trackrepresentation,  $request->getAttribute('currentuserUid'));
         $response->getBody()->write((string)json_encode($created),JSON_UNESCAPED_SLASHES);
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+    }
+
+
+
+    public function createTrackFromPlanner(ServerRequestInterface $request, ResponseInterface $response){
+        $jsonDecoder = new JsonDecoder();
+        $jsonDecoder->register(new RusaPlannerResponseRepresentationTransformer());
+//        $jsonDecoder->register(new SiteRepresentationTransformer());
+
+        $trackrepresentation = json_decode($request->getBody());
+
+      //  $trackrepresentation = (object) $jsonDecoder->decode($request->getBody(), RusaPlannerResponseRepresentation::class);
+
+
+
+         $created = $this->trackService->createTrackFromPlanner($trackrepresentation,  $request->getAttribute('currentuserUid'));
+
+        $response->getBody()->write((string)json_encode($created),JSON_UNESCAPED_SLASHES);
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+    }
+
+
+
+
+    public function trackplanner(ServerRequestInterface $request, ResponseInterface $response){
+
+        $currentuserUid = $request->getBody()->getContents();
+
+        $jsonDecoder = new JsonDecoder();
+        $jsonDecoder->register(new RusaPlannerInputRepresentationTransformer());
+        $rusaPlannnerInput = (object) $jsonDecoder->decode($currentuserUid, RusaPlannerInputRepresentation::class);
+
+
+
+       $result = $this->trackService->planTrack($rusaPlannnerInput,$currentuserUid);
+
+       $response->getBody()->write(json_encode($result),JSON_UNESCAPED_SLASHES);
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 

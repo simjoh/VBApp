@@ -36,11 +36,11 @@ $settings['error'] = [
 // Database settings
 $settings['db'] = [
     'driver' => 'mysql',
-    'host' => 's687.loopia.se',
+    'host' => 'database',
     'port' => '3306',
-    'username' => 'brevet@v231933',
+    'username' => 'myuser',
     'database' => 'vasterbottenbrevet_se',
-    'password' => 'msr_1200',
+    'password' => 'secret',
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_unicode_ci',
     'flags' => [
@@ -53,8 +53,8 @@ $settings['db'] = [
         // Set default fetch mode to array
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ],
-
 ];
+
 
 
 $settings['secretkey'] = "12345678901234567890123456789012";
@@ -63,5 +63,7 @@ $settings['secretkey'] = "12345678901234567890123456789012";
 $settings['path'] = "/api/";
 
 $settings['demo'] = "true";
+
+$settings['rusaurl'] = 'https://rusa.jkassen.org/time/rusa-time-api.php';
 
 return $settings;

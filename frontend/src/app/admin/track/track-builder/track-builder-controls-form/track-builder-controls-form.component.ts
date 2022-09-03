@@ -18,7 +18,7 @@ export class TrackBuilderControlsFormComponent implements OnInit {
   constructor(private trackbuildercomponentService: TrackBuilderComponentService) { }
 
   ngOnInit(): void {
-    this.rusatimeControls.push(this.emptyControlObject());
+   // this.rusatimeControls.push(this.emptyControlObject());
   }
 
   addControl() {

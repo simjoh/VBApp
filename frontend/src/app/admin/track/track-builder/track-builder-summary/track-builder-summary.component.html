@@ -1,62 +1,80 @@
-
-
-<p-card header="Arangemang">
+<p-card header="Arrangemang">
   <ng-container *ngIf="(event$)  | async as s">
-    <h4>{{s.title}}</h4>  {{s.startdate}} - {{s.enddate}}
+    <h5>{{s.title}}</h5>
+    {{s.startdate}} - {{s.enddate}}
   </ng-container>
 </p-card>
 
 <p-card header="Bana" styleClass="mt-0">
-  <!--        <ng-template pTemplate="header">-->
-  <!--          Track info-->
-  <!--        </ng-template>-->
   <ng-container *ngIf="$track | async as track">
 
-    <h4>{{track.TRACK_TITLE}}</h4>
-    <h4>{{track.EVENT_DISTANCE_KM}}</h4><br>
 
-    <h4>{{track.START_DATE}}</h4><br>
-    <h4>{{track.START_TIME}}</h4><br>
-    <h4>{{track.MAX_TIME}}/{{track.MIN_TIME}}</h4><br>
-
-<!--    {{track | json}}-->
-
+    <div class="grid">
+      <div class="col-5">
+        <h4>{{track.TRACK_TITLE}}</h4>
+      </div>
+      <div class="col-7">
+        <div class="grid">
+          <div class="col-4">
+            <strong>Distans:</strong> {{track.EVENT_DISTANCE_KM}}
+          </div>
+          <div class="col-4">
+            <strong>Datum:</strong> {{track.START_DATE}}
+          </div>
+          <div class="col-4">
+            <strong>Tid:</strong> {{track.START_TIME}}
+          </div>
+          <div class="col-12">
+            <strong>Min/Max:</strong> {{track.MIN_TIME}}/{{track.MAX_TIME}}
+          </div>
+          <div class="col-12">
+            <strong>Länk:</strong> {{track.LINK_TO_TRACK}}
+          </div>
+        </div>
+      </div>
+    </div>
   </ng-container>
 
 </p-card>
 
 
-
 <p-card header="Kontroller" styleClass="mt-2">
-
   <ng-container *ngIf="$controls | async as control">
-
-
-<!--    {{control | json}}-->
-
+    <hr>
     <ng-container *ngFor="let control of control">
-
-  <div class="bg-black-alpha-10 mb-2">
-      <p-image width="60" height="60" src="{{control.siteRepresentation.image}}" alt="Image" [preview]="false"></p-image>
-      {{control.siteRepresentation.adress}}
-
-
-
-
-      {{control.rusaControlRepresentation.CONTROL_DISTANCE_KM}}<br>
-
-      {{control.rusaControlRepresentation.CONTROL_NAME}}<br>
-
-    Öppnar  {{control.rusaControlRepresentation.OPEN}}<br>
-
-    Stänger  {{control.rusaControlRepresentation.CLOSE}}<br>
-
-      {{control.rusaControlRepresentation.RELATIVE_OPEN}}<br>
-      {{control.rusaControlRepresentation.RELATIVE_CLOSE}}<br>
-  </div>
+      <div class="mb-2 ">
+        <div class="grid">
+          <div class="col-1">
+            <p-image width="60" height="60" src="{{control.siteRepresentation.image}}" alt="Image" [preview]="false"></p-image>
+          </div>
+          <div class="col-11">
+            <div class="grid">
+              <div class="col-3">
+                <strong>Kontroll:</strong> {{control.siteRepresentation.adress}}
+              </div>
+              <div class="col-3">
+                <strong>Distans:</strong> {{control.rusaControlRepresentation.CONTROL_DISTANCE_KM}}km
+              </div>
+              <div class="col-3">
+                <strong>Öppnar:</strong>  {{control.rusaControlRepresentation.OPEN}}
+              </div>
+              <div class="col-3">
+                <strong>Stänger:</strong>  {{control.rusaControlRepresentation.CLOSE}}
+              </div>
+              <div class="col-3">
+                {{control.rusaControlRepresentation.RELATIVE_OPEN}} {{control.rusaControlRepresentation.RELATIVE_CLOSE}}
+              </div>
+              <div class="col-9">
+                <strong>Service:</strong> {{control.siteRepresentation.description}}
+              </div>
+            </div>
+            <div class="col-9">
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
     </ng-container>
-
-
   </ng-container>
 
 
@@ -66,8 +84,7 @@
   </ng-template>
 </p-card>
 <div class="flex justify-content-center mt-2">
-  <p-button  label="Spara bana"  icon="" styleClass="p-button-sm p-button-success"></p-button>
-
-
+  <p-button [disabled]="($buttonDisable | async) === false" label="Spara bana" (click)="createTrack()" icon=""
+            styleClass="p-button-sm p-button-success"></p-button>
 </div>
 

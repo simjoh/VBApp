@@ -57,6 +57,10 @@
       <path value="$PROJECT_DIR$/api/vendor/symfony/service-contracts" />
       <path value="$PROJECT_DIR$/api/vendor/symfony/mime" />
       <path value="$PROJECT_DIR$/api/vendor/fabpot/goutte" />
+      <path value="$PROJECT_DIR$/api/vendor/psr/http-client" />
+      <path value="$PROJECT_DIR$/api/vendor/guzzlehttp/promises" />
+      <path value="$PROJECT_DIR$/api/vendor/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/api/vendor/guzzlehttp/guzzle" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0">

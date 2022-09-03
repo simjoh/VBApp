@@ -4,8 +4,9 @@ import {LinkService} from "../core/link.service";
 import {Link, TrackRepresentation} from "./api/api";
 import {environment} from "../../environments/environment";
 import {catchError, map, shareReplay, take, tap} from "rxjs/operators";
-import {BehaviorSubject, Observable, throwError} from "rxjs";
+import {BehaviorSubject, firstValueFrom, Observable, throwError} from "rxjs";
 import {HttpMethod} from "../core/HttpMethod";
+import {RusaPlannerResponseRepresentation, RusaTimeRepresentation} from './api/rusaTimeApi';
 
 @Injectable({
   providedIn: 'root'
@@ -97,5 +98,9 @@ export class TrackService {
 
   async publishresult(trackRepresentation: TrackRepresentation) {
     return await this.publishresultaction(this.linkService.findByRel(trackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT ))
+  }
+
+  createTrack(s: RusaPlannerResponseRepresentation) {
+      firstValueFrom(this.httpClient.post(environment.backend_url + "/trackplanner/createtrackfromplanner",s))
   }
 }

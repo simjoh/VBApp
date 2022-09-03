@@ -1,5 +1,6 @@
+
 <p-dropdown
-  styleClass="col-12" pTooltip="Välj event"
+  styleClass="{{styleClass}}" pTooltip="Välj event"
   tooltipPosition="left" tooltip="Välj event"
   [options]="$eventItems | async" [(ngModel)]="selectedEvent"
   (ngModelChange)="setValue($event)" placeholder="Välj event"

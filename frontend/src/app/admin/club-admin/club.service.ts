@@ -19,7 +19,7 @@ export class ClubService {
 
 
   private getAllClubs(): Observable<Array<ClubRepresentation>>{
-    const path = '/club/allclubs';
+    const path = 'club/allclubs';
     return this.httpClient.get<Array<ClubRepresentation>>(environment.backend_url + path).pipe(
       take(1),
       map((tracks: Array<ClubRepresentation>) => {

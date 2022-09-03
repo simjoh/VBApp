@@ -1,6 +1,7 @@
 <?php
 
 
+use App\common\Rest\RusaTimeRestClient;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\App;
@@ -62,6 +63,12 @@ return [
     PhpRenderer::class => function (ContainerInterface $container) {
         return new PhpRenderer($container->get('settings')['view']['path']);
     },
+
+
+    RusaTimeRestClient::class => function(ContainerInterface $container){
+             return new RusaTimeRestClient($container->get('settings')['rusaurl']);
+
+    }
 
 
 

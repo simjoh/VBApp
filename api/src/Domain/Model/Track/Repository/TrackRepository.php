@@ -206,7 +206,9 @@ class TrackRepository extends BaseRepository
             $statement->bindParam(':link', $link);
             $statement->bindParam(':start_date_time', $start_date_time);
             $data = $statement->execute();
+
             if ($data && !empty($track->getCheckpoints())) {
+
                 $query = $this->connection->prepare($this->sqls('createTrackCheckpoint'));
                 foreach ($track->getCheckpoints() as $s => $ro) {
                     $query->bindparam(':checkpoint_uid', $ro);

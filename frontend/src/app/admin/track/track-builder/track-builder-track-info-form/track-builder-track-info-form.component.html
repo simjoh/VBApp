@@ -1,5 +1,5 @@
 <p-card>
-  {{model|json}}
+<!--  {{model|json}}-->
   <div class="grid p-fluid">
 
     <div class="col-12 lg:col-12 md:col-12">
@@ -33,6 +33,10 @@
       <div class="p-inputgroup">
         <input (blur)="add()" [(ngModel)]="model.starttime" pTooltip="Om fältet lämnas tomt sätt starttiden automatiskt till 07:00" tooltipPosition="top" type="text" id="starttime" pInputText placeholder="HH:MM">
       </div>
+    </div>
+    <div class="col-12">
+      <span><strong>Banan på Strava</strong></span>
+      <input  (blur)="add()" [(ngModel)]="model.link"  pTooltip="Banans namn tex MSR 1200 " type="text" id="linktostrava" pInputText placeholder="Länk till strava">
     </div>
   </div>
 </p-card>

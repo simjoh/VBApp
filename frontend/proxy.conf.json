@@ -11,11 +11,15 @@
     "changeOrigin": true,
     "logLevel": "debug"
   },
-  "/rusatime/*": {
+  "/test/planner/*": {
     "target": "https://rusa.jkassen.org/time/rusa-time-api.php",
     "secure": false,
     "changeOrigin": true,
-    "logLevel": "debug"
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/test/planner/": ""
+    }
+
   }
 
 }

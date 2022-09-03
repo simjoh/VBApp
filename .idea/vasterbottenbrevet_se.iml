@@ -63,6 +63,10 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/service-contracts" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/mime" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/fabpot/goutte" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/psr/http-client" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/guzzlehttp/promises" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/guzzlehttp/psr7" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/guzzlehttp/guzzle" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

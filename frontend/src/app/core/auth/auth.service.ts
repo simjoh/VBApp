@@ -120,12 +120,12 @@ await loginModel$.pipe(
   public logoutUser() {
     localStorage.removeItem('loggedInUser');
     localStorage.removeItem('activeUser');
-    this.authSubjet.next()
+    this.authSubjet.next(null)
     this.authenticatedService.authenticatedSubject.next(false);
   }
 
   public reload(){
-    this.authSubjet.next();
+    this.authSubjet.next(null);
   }
 
   private backendUrl(): string{

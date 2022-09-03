@@ -7,6 +7,7 @@ use App\Domain\Model\Club\Rest\ClubRepresentationTransformer;
 use App\Domain\Model\Club\Service\ClubService;
 use App\Domain\Model\Event\Rest\EventRepresentation;
 use App\Domain\Model\Event\Rest\EventRepresentationTransformer;
+use GuzzleHttp\Client;
 use Karriere\JsonDecoder\JsonDecoder;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;

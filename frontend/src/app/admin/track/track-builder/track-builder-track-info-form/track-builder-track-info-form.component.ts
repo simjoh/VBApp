@@ -9,7 +9,7 @@ import {TrackBuilderComponentService} from "../track-builder-component.service";
 })
 export class TrackBuilderTrackInfoFormComponent implements OnInit {
 
-  model = new EventTrackInfo(0,"", "", "", "");
+  model = new EventTrackInfo(0,"", "", "", "", "");
 
   constructor(private trackbuildercomponentService: TrackBuilderComponentService) { }
 
@@ -30,7 +30,8 @@ export class TrackBuilderTrackInfoFormComponent implements OnInit {
         start_date: this.model.startdate,
         event_uid: "",
         track_title: this.model.trackname,
-        controls: []
+        controls: [],
+        link: this.model.link
       }
     )
   }
@@ -43,6 +44,7 @@ export class EventTrackInfo {
     public event_uid: string,
     public starttime?: string,
     public startdate?: string,
+    public link?: string,
   ) {  }
 
 }

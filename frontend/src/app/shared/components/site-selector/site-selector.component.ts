@@ -1,5 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input, Output, EventEmitter} from '@angular/core';
-import { Site } from '../../api/api';
+import {Site, SiteRepresentation} from '../../api/api';
 import {SiteSelectorComponentService} from "./site-selector-component.service";
 
 @Component({
@@ -20,6 +20,7 @@ export class SiteSelectorComponent implements OnInit {
   @Input() placeholder: string;
   @Input() styleClass: string;
   @Output() SiteChange: EventEmitter<any> = new EventEmitter();
+  @Output() SiteRepresentattionChange: EventEmitter<any> = new EventEmitter();
 
 
   selectedEvent: Site;
@@ -34,5 +35,6 @@ export class SiteSelectorComponent implements OnInit {
   setValue($event: any) {
     this.SiteChange.emit(this.selectedEvent.site_uid)
     this.siteselectorComponentService.currentEvent(this.selectedEvent)
+    this.SiteRepresentattionChange.emit(this.selectedEvent)
   }
 }

@@ -74,6 +74,12 @@ return function (App $app) {
 
         $app->post('/buildlEventAndTrackFromCsv/upload', \App\Action\Track\TrackAction::class  . ':buildfromCsv');
 
+        $app->post('/trackplanner', \App\Action\Track\TrackAction::class  . ':trackplanner');
+
+        $app->post('/trackplanner/createtrackfromplanner', \App\Action\Track\TrackAction::class  . ':createTrackFromPlanner');
+
+
+
         // event
         $app->get('/events', \App\Action\Event\EventAction::class . ':allEvents');
         $app->get('/event/{eventUid}', \App\Action\Event\EventAction::class  . ':eventFor');
