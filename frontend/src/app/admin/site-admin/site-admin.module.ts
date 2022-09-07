@@ -7,6 +7,7 @@ import {SiteAdminComponent} from "./site-admin.component";
 import {SiteListComponent} from "./site-list/site-list.component";
 import {SiteInfoPopoverComponent} from "./site-info-popover/site-info-popover.component";
 import {CreateSiteDialogComponent} from "./create-site-dialog/create-site-dialog.component";
+import { EditSiteDialogComponent } from './edit-site-dialog/edit-site-dialog.component';
 
 
 
@@ -15,7 +16,8 @@ import {CreateSiteDialogComponent} from "./create-site-dialog/create-site-dialog
     SiteAdminComponent,
     SiteListComponent,
     SiteInfoPopoverComponent,
-    CreateSiteDialogComponent
+    CreateSiteDialogComponent,
+    EditSiteDialogComponent
   ],
   imports: [
     SharedModule,

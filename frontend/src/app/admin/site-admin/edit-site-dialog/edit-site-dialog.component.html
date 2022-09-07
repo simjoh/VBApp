@@ -2,37 +2,43 @@
 <form #eventFormName="ngForm" (ngSubmit)="addEvent(eventFormName)" novalidate>
   <div class="p-dynamicdialog">
     <div class="p-dialog-content">
+
       <div class="form-group">
-        <label class="col-form-label" for="place">Plats</label>
+        <label class="col-form-label" for="place"><strong>Plats</strong></label>
 
         <input pInputText pTooltip="Plats"  tooltipPosition="left"   #place="ngModel" type="text" name="place" class="form-control" id="place" [(ngModel)]="siteform.place" placeholder="Broparken" required>
       </div>
       <div class="form-group">
-        <label class="col-form-label" for="adress">Adress</label>
+        <label class="col-form-label" for="adress"><strong>Adress</strong></label>
         <input pInputText pTooltip="Adress"  tooltipPosition="left"   #adress="ngModel" type="text" name="adress" class="form-control" id="adress" [(ngModel)]="siteform.adress" placeholder="Brogatan 1" required>
       </div>
       <div class="form-group">
         <div class="form-row">
           <div class="col-6">
-            Latitud
-            <input pInputText pTooltip="Latitud"  tooltipPosition="left"   #title="ngModel" type="text" name="title" class="form-control" id="lat" [(ngModel)]="siteform.lat" placeholder="" required>
+
+            <strong>Latitud</strong>
+            <input pInputText pTooltip="Latitud"  tooltipPosition="left"   #lat="ngModel" type="text" name="lat" class="form-control" id="lat" [(ngModel)]="siteform.lat" placeholder="" required>
           </div>
           <div class="col-6">
-            Longitud
-            <input pInputText pTooltip="Longitud"  tooltipPosition="left"   #title="ngModel" type="text" name="title" class="form-control" id="long" [(ngModel)]="siteform.long" placeholder="" required>
+            <strong>Longitud</strong>
+            <input pInputText pTooltip="Longitud"  tooltipPosition="left"   #lng="ngModel" type="text" name="lng" class="form-control" id="long" [(ngModel)]="siteform.lng" placeholder="" required>
           </div>
         </div>
       </div>
       <div class="form-group">
         <div class="form-group">
-          Description
+          <strong>Description</strong>
           <textarea  pTooltip="Beskrivning för platsen" tooltipPosition="left" [(ngModel)]="siteform.description" name="description" placeholder="" class="col-12" rows="5"  pInputTextarea autoResize="autoResize"></textarea>
         </div>
         <div class="form-group">
-          Ladda upp bild
-<!--          <p-fileUpload showCancelButton="false" (onSelect)="onupload($event)" name="myfile[]" url="/api/site/upload"></p-fileUpload>-->
+          <img width="70" height="70" class="p-shadow-4" [src]="siteform.image"  alt="logga">
+        </div>
+        <div class="form-group">
+          <strong>Byt logga</strong>
 
-          <p-fileUpload #primeFileUpload (onProgress)="progressReport($event)" name="myfile[]" customUpload="true" (uploadHandler)="myUploader($event)">
+          <!--          <p-fileUpload showCancelButton="false" (onSelect)="onupload($event)" name="myfile[]" url="/api/site/upload"></p-fileUpload>-->
+
+          <p-fileUpload #primeFileUploadw (onProgress)="progressReport($event)" name="myfile[]" customUpload="true" (uploadHandler)="myUploader($event)">
             multiple="multiple" accept="image/*" maxFileSize="1000000">
             <ng-template pTemplate="content">
               <ul *ngIf="uploadedFiles.length">

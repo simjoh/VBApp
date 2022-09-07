@@ -2,6 +2,7 @@
 
 namespace App\Domain\Model\Site\Service;
 
+use App\common\Exceptions\BrevetException;
 use App\common\Service\ServiceAbstract;
 use App\Domain\Model\Site\Repository\SiteRepository;
 use App\Domain\Model\Site\Rest\SiteAssembly;
@@ -42,11 +43,25 @@ class SiteService extends ServiceAbstract
     }
 
     public function deleteSite($siteUid){
+
+        if($this->siterepository->siteInUse($siteUid) == true){
+            throw new BrevetException("Unable to delete site. Site in use",6,null);
+        }
+
+
         $this->siterepository->deleteSite($siteUid);
     }
 
     public function createSite(SiteRepresentation $siteRepresentation){
-       return $this->siterepository->createSite($this->siteassembly->toSite($siteRepresentation));
+
+        $exists = $this->siterepository->existsByPlaceAndAdress2(strtolower(str_replace(' ', '', $siteRepresentation->getPlace())), strtolower(str_replace(' ', '', $siteRepresentation->getAdress())));
+        if ($exists !== null) {
+            throw new BrevetException("Det finns redan en kontrollplats med samma plats och adress", 6, null);
+
+        }
+
+        return $this->siterepository->createSite($this->siteassembly->toSite($siteRepresentation));
+
     }
 
     public function getPermissions($user_uid): array

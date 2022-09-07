@@ -53,14 +53,14 @@
         </td>
         <td class="align-content-center">
           <span class="p-column-title">Bild</span>
-          <img width="40" height="40" class="p-shadow-4" [src]="site.image" src="assets/brevet.PNG" alt="Bild på site">
+          <img width="30" height="30" class="p-shadow-4" [src]="site.image" src="assets/brevet.PNG" alt="Bild på site">
         </td>
         <td>
           <span class="p-column-title">Åtgärder</span>
           <brevet-site-info-popover [site]="site"></brevet-site-info-popover>
           <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success sm-0 p-ml-1"
-                  (click)="editProduct(site.site_uid)"></button>
-          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1"
+                  (click)="editProduct(site)"></button>
+          <button [disabled]="!canDelete(site)"  pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1"
                   (click)="deleteProduct(site.site_uid)"></button>
         </td>
       </tr>

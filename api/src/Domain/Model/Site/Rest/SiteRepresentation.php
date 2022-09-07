@@ -15,7 +15,8 @@ class SiteRepresentation implements JsonSerializable
     private string $description = "";
     private string $lat = "";
     private string $lng = "";
-    private ?array $link;
+    private ?array $links = [];
+
 
 
 
@@ -104,8 +105,17 @@ class SiteRepresentation implements JsonSerializable
      */
     public function setLink(array $link): void
     {
-        $this->link = $link;
+        $this->links = $link;
     }
+
+    /**
+     * @return array|null
+     */
+    public function getLinks(): ?array
+    {
+        return $this->links;
+    }
+
 
     /**
      * @return string

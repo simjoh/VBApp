@@ -84,7 +84,7 @@ export class CreateSiteDialogComponent implements OnInit {
   }
 }
 
-export class SiteFormModel {
+export class SiteFormModel extends NgForm{
   event_uid: string;
   image: string;
   lat: string;

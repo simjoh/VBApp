@@ -21,18 +21,12 @@ export class UserListComponent implements OnInit {
   @ViewChild('dt',{ static: false }) table: Table;
   $users = this.userService.usersWithAdd$.pipe(
     map((s:Array<User>) => {
-      // this.table. = 0;
       return s;
     })
   ) as Observable<User[]>;
   selectedCustomers: User[];
 
   loading: boolean = false;
-
-  // activityValues: number[] = [0, 100];
-
-  // cols: any[];
-
 
   constructor(private userService: UserService,
               private primengConfig: PrimeNGConfig,

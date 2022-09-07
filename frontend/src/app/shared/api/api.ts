@@ -14,7 +14,7 @@ export interface Site{
   lat?: string;
   lng?: string;
   picture?: string;
-  link?: Link;
+  links?: [];
 }
 
 export interface Event {

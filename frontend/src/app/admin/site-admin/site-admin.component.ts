@@ -19,7 +19,7 @@ export class SiteAdminComponent implements OnInit {
 
     this.designTabs = [
       {
-        label: "Siter",
+        label: "Platser",
         routerLink: 'brevet-site-list',
         icon: 'pi pi-list'
       }

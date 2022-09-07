@@ -81,6 +81,7 @@ class SiteRepository extends BaseRepository
         $site_uid = $site->getSiteUid();
         $adress = $site->getAdress();
         $place = $site->getPlace();
+        $logo = $site->getPicture();
         $description = $site->getDescription();
         try {
             $statement = $this->connection->prepare($this->sqls('updateSite'));
@@ -88,6 +89,7 @@ class SiteRepository extends BaseRepository
             $statement->bindParam(':adress',$adress );
             $statement->bindParam(':description',$description );
             $statement->bindParam(':place', $place);
+            $statement->bindParam(':picture', $logo);
             $statement->execute();
         } catch (PDOException $e) {
 
@@ -113,6 +115,27 @@ class SiteRepository extends BaseRepository
                 empty($data["lat"]) ? new DecimalNumber("0") : new DecimalNumber(strval($data["lat"])),
                 empty($data["lng"]) ? new DecimalNumber("0")  : new DecimalNumber(strval($data["lng"])), is_null($data["picture"]) ? "": $data["picture"]);
         }
+        } catch (PDOException $e) {
+            echo 'Kunde inte läsa upp site: ' . $e->getMessage();
+        }
+        return null;
+    }
+
+
+    public function existsByPlaceAndAdress2(string $place, string $adress): ?Site
+    {
+        try {
+
+            $statement = $this->connection->prepare($this->sqls('existsByPlaceAndAdress2'));
+            $statement->bindParam(':place', $place);
+            $statement->bindParam(':adress', $adress);
+            $statement->execute();
+            $data = $statement->fetch();
+            if($statement->rowCount() > 0){
+                return new Site($data["site_uid"],  $data["place"], $data["adress"],$data['description'],$data["location"],
+                    empty($data["lat"]) ? new DecimalNumber("0") : new DecimalNumber(strval($data["lat"])),
+                    empty($data["lng"]) ? new DecimalNumber("0")  : new DecimalNumber(strval($data["lng"])), is_null($data["picture"]) ? "": $data["picture"]);
+            }
         } catch (PDOException $e) {
             echo 'Kunde inte läsa upp site: ' . $e->getMessage();
         }
@@ -167,6 +190,24 @@ class SiteRepository extends BaseRepository
         }
     }
 
+    public function siteInUse($siteUid)
+    {
+        try {
+            $stmt = $this->connection->prepare($this->sqls('siteInUse'));
+            $stmt->bindParam(':site_uid', $siteUid);
+            $stmt->execute();
+            if ($stmt->rowCount() > 0) {
+                return true;
+            } else {
+               return false;
+            }
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
     public function sqls($type): string
     {
         $sitesqls['allSites'] = 'select * from site s;';
@@ -175,9 +216,13 @@ class SiteRepository extends BaseRepository
         $sitesqls['deleteSite'] = 'delete from site  where site_uid = :site_uid';
         $sitesqls['createSite']  = "INSERT INTO site(site_uid, place, adress, description, location, lat, lng, picture) VALUES (:site_uid, :place, :adress, :description ,:location, :lat, :lng, :picture)";
         $sitesqls['existsByPlaceAndAdress'] = 'select *  from site e where e.place=:place and e.adress=:adress;';
+        $sitesqls['existsByPlaceAndAdress2'] = 'select *  from site e where REPLACE(TRIM(lower(e.place))," ","")=:place and REPLACE(TRIM(lower(e.adress))," ","")=:adress;';
+        $sitesqls['siteInUse'] = 'select 1 from checkpoint WHERE site_uid=:site_uid limit 1;';
         return $sitesqls[$type];
 
     }
+
+
 
 
 }

@@ -24,14 +24,20 @@ class RusaTimeRestClient
 
     public function postAsync(string $payload)
     {
-        $promise = $this->client->requestAsync('POST', $this->rusaurl . $payload);
+
+        $promise = $this->client->requestAsync('GET', $this->rusaurl . $payload , ['headers' => ['User-agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36', 'sec-ch-ua' => 'Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104']]);
         return $promise->then(
             function (ResponseInterface $res) {
-                return $res->getBody()->getContents();
+                if($res->getStatusCode() === 200){
+                    return $res->getBody()->getContents();
+                } else {
+                    return "{}";
+                }
+
             },
             function (RequestException $e) {
-                echo $e->getMessage() . "\n";
-                echo $e->getRequest()->getMethod();
+                 print_r($e->getMessage() . "\n");
+                print_r($e->getRequest()->getMethod());
             }
         )->wait();
     }

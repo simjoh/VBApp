@@ -55,7 +55,7 @@ export class RusaTimeCalculationApiService {
       headers: new HttpHeaders()
     }
     httpOptions.headers.append('Access-Control-Allow-Origin', '*');
-    return this.httpClient.post<RusaPlannerResponseRepresentation>(environment.backend_url + '/trackplanner', rusaPlannerInputRepresentation, httpOptions).pipe(
+    return this.httpClient.post<RusaPlannerResponseRepresentation>(environment.backend_url + 'trackplanner', rusaPlannerInputRepresentation, httpOptions).pipe(
       map((site: RusaPlannerResponseRepresentation) => {
         return site;
       }),

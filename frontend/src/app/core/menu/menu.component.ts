@@ -64,7 +64,7 @@ export class MenuComponent implements OnInit{
                 routerLink: '/admin/clubadmin/'
               },
               {
-                label: 'Siter',
+                label: 'Kontrollplatser',
                 routerLink: '/admin/siteadmin/sites/'
               }
             ]

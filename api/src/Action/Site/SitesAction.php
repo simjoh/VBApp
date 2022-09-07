@@ -78,7 +78,7 @@ class SitesAction
         foreach ($uploadedFiles as $uploadedFile) {
 //            if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
                 $filename = $this->moveUploadedFile($uploadDir, $uploadedFile);
-                $response->getBody()->write($filename);
+                $response->getBody()->write(json_encode($filename));
 //            }
         }
 

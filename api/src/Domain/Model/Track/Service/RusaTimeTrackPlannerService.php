@@ -50,7 +50,7 @@ class RusaTimeTrackPlannerService
 
 
             $resposne = $this->rusatimeClient->postAsync($payload);
-
+//            print_r($resposne);
             if ($this->isJson($resposne) != true) {
                 throw  new BrevetException("No a valid format", 5, null);
             }

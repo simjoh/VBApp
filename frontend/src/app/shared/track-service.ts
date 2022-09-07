@@ -101,6 +101,6 @@ export class TrackService {
   }
 
   createTrack(s: RusaPlannerResponseRepresentation) {
-      firstValueFrom(this.httpClient.post(environment.backend_url + "/trackplanner/createtrackfromplanner",s))
+      firstValueFrom(this.httpClient.post(environment.backend_url + "trackplanner/createtrackfromplanner",s))
   }
 }

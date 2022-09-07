@@ -3,6 +3,7 @@
 namespace App\Domain\Model\Site\Rest;
 
 use App\common\Rest\Link;
+use App\Domain\Model\Site\Repository\SiteRepository;
 use App\Domain\Model\Site\Site;
 use App\Domain\Permission\PermissionRepository;
 use PrestaShop\Decimal\DecimalNumber;
@@ -11,10 +12,11 @@ use Psr\Container\ContainerInterface;
 class SiteAssembly
 {
 
-    public function __construct(ContainerInterface $c ,PermissionRepository $permissionRepository)
+    public function __construct(ContainerInterface $c ,PermissionRepository $permissionRepository,SiteRepository $siterepository)
     {
         $this->permissinrepository = $permissionRepository;
         $this->settings = $c->get('settings');
+        $this->siterepository = $siterepository;
     }
 
     public function toRepresentations(array $SiteArray, array $permissions): array {
@@ -46,13 +48,16 @@ class SiteAssembly
         $linkArray = array();
         foreach ($permissions as $x =>  $site) {
             if($site->hasWritePermission()){
-                array_push($linkArray, new Link("relation.site.update", 'PUT', $this->settings['path'] . 'user/' . $s->getSiteUid()));
-                array_push($linkArray, new Link("relation.site.delete", 'DELETE', $this->settings['path'] .'user/' . $s->getSiteUid()));
-                array_push($linkArray, new Link("self", 'GET', $this->settings['path'] .' user/' . $s->getSiteUid()));
+                array_push($linkArray, new Link("relation.site.update", 'PUT', $this->settings['path'] . 'site/' . $s->getSiteUid()));
+                if($this->siterepository->siteInUse($s->getSiteUid()) == false){
+                    array_push($linkArray, new Link("relation.site.delete", 'DELETE', $this->settings['path'] .'site/' . $s->getSiteUid()));
+                }
+
+                array_push($linkArray, new Link("self", 'GET', $this->settings['path'] .'site/' . $s->getSiteUid()));
                 break;
             }
             if($site->hasReadPermission()){
-                array_push($linkArray, new Link("self", 'GET', $this->settings['path'] .'user/' . $s->getSiteUid()));
+                array_push($linkArray, new Link("self", 'GET', $this->settings['path'] .'site/' . $s->getSiteUid()));
             };
         }
         $siteRepresentation->setLink($linkArray);
@@ -63,7 +68,7 @@ class SiteAssembly
         return new Site($site->getSiteUid(), $site->getPlace(),
             $site->getAdress(), $site->getDescription()
             ,$site->getLocation(), new DecimalNumber($site->getLat())
-            , new DecimalNumber($site->getLng()), $site->getImage());
+            , new DecimalNumber($site->getLng()), substr($site->getImage(), strrpos($site->getImage(), '/') + 1));
     }
 
 

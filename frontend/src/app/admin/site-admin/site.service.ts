@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {combineLatest, Observable, Subject, throwError} from "rxjs";
+import {combineLatest, firstValueFrom, Observable, Subject, throwError} from "rxjs";
 import {Site} from "../../shared/api/api";
 import {environment} from "../../../environments/environment";
 import {catchError, map, shareReplay, startWith, tap} from "rxjs/operators";
+import {LinkService} from "../../core/link.service";
+import {HttpMethod} from "../../core/HttpMethod";
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +17,11 @@ export class SiteService {
     startWith(''),
   );
 
+  siteReloadAction = new Subject<Site>()
+  $sitesReload = this.siteReloadAction.asObservable().pipe(
+    startWith(null),
+  );
+
   // allSites$ = this.getAllSites() as Observable<Site[]>;
 
   private siteInsertedSubject = new Subject<Site>();
@@ -22,7 +29,9 @@ export class SiteService {
     startWith(''),
   );
 
-  constructor(private httpClient: HttpClient) { }
+
+
+  constructor(private httpClient: HttpClient, private linkService: LinkService) { }
 
 
   async newSite(newSite: Site) {
@@ -40,8 +49,8 @@ export class SiteService {
     );
   }
 
-  siteWithAdd$ = combineLatest([this.getAllSites(), this.siteInsertedAction$, this.relaod$]).pipe(
-    map(([all, insert, del]) =>  {
+  siteWithAdd$ = combineLatest([this.getAllSites(), this.siteInsertedAction$, this.relaod$, this.$sitesReload]).pipe(
+    map(([all, insert, del, reload]) =>  {
       if(insert){
         return  [...all, insert]
       }
@@ -50,6 +59,12 @@ export class SiteService {
         all.splice(index, 1);
         const userArray = all;
         return   this.deepCopyProperties(all);
+      }
+
+      if (reload){
+        var indexreload = all.findIndex((elt) => elt.site_uid === reload.site_uid);
+        all[indexreload] = reload;
+
       }
       return this.deepCopyProperties(all);
     }),
@@ -84,13 +99,15 @@ export class SiteService {
       })
   }
 
-  public updateUser(useruid: string, user: Site){
-    return this.httpClient.put<Site>(environment.backend_url + "site", {} as Site).pipe(
+  public updateUser(site: Site){
+    const  link = this.linkService.findByRel(site.links, 'relation.site.update', HttpMethod.PUT)
+    return this.httpClient.put<Site>(link.url, site).pipe(
       map((site: Site) => {
+        this.siteReloadAction.next(site);
         return site;
       }),
       tap(site =>   console.log(site))
-    ) as Observable<Site>
+    ).toPromise();
   }
 
   deepCopyProperties(obj: any): any {

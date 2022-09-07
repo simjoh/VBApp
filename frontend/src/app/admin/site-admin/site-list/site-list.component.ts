@@ -1,12 +1,15 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {DialogService} from "primeng/dynamicdialog";
 import {ConfirmationService} from "primeng/api";
-import {map} from "rxjs/operators";
+import {map, take} from "rxjs/operators";
 import {Observable} from "rxjs";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {CreateSiteDialogComponent} from "../create-site-dialog/create-site-dialog.component";
-import { Site } from 'src/app/shared/api/api';
+import {Site, SiteRepresentation, User} from 'src/app/shared/api/api';
 import { SiteService } from '../site.service';
+import {LinkService} from "../../../core/link.service";
+import {CreateUserDialogComponent} from "../../user-admin/create-user-dialog/create-user-dialog.component";
+import {EditSiteDialogComponent} from "../edit-site-dialog/edit-site-dialog.component";
 
 
 @Component({
@@ -22,12 +25,11 @@ export class SiteListComponent implements OnInit {
 
   $sites = this.siteService.siteWithAdd$.pipe(
     map((s:Array<Site>) => {
-      // this.table. = 0;
       return s;
     })
   ) as Observable<Site[]>;
 
-  constructor(private siteService: SiteService,
+  constructor(private siteService: SiteService, private linkService: LinkService,
               private dialogService: DialogService,
               private confirmationService: ConfirmationService,
               private deviceDetector: DeviceDetectorService) { }
@@ -59,7 +61,25 @@ export class SiteListComponent implements OnInit {
     });
   }
 
-  editProduct(user_uid: any) {
+  editProduct(site: string) {
+
+    const editref = this.dialogService.open(EditSiteDialogComponent, {
+      data: {
+        user: site,
+        id: '51gF3'
+      },
+      header: 'Editera kontrollplats',
+    });
+
+    editref.onClose.pipe(take(1)).subscribe(((user: SiteRepresentation) => {
+      if (user) {
+        console.log(user);
+        this.siteService.updateUser(user);
+      } else {
+        editref.destroy();
+      }
+
+    }));
 
   }
 
@@ -76,5 +96,9 @@ export class SiteListComponent implements OnInit {
         console.log("reject");
       }
     });
+  }
+
+  canDelete(site: any):boolean {
+    return this.linkService.exists(site.links,"relation.site.delete");
   }
 }
