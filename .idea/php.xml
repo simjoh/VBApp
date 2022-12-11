@@ -16,7 +16,6 @@
       <path value="$PROJECT_DIR$/api/vendor/nikic/fast-route" />
       <path value="$PROJECT_DIR$/api/vendor/slim/psr7" />
       <path value="$PROJECT_DIR$/api/vendor/slim/slim" />
-      <path value="$PROJECT_DIR$/api/vendor/opis/closure" />
       <path value="$PROJECT_DIR$/api/vendor/symfony/polyfill-php80" />
       <path value="$PROJECT_DIR$/api/vendor/php-di/phpdoc-reader" />
       <path value="$PROJECT_DIR$/api/vendor/php-di/php-di" />
@@ -49,7 +48,6 @@
       <path value="$PROJECT_DIR$/api/vendor/symfony/polyfill-intl-idn" />
       <path value="$PROJECT_DIR$/api/vendor/symfony/polyfill-php72" />
       <path value="$PROJECT_DIR$/api/vendor/symfony/browser-kit" />
-      <path value="$PROJECT_DIR$/api/vendor/symfony/polyfill-php73" />
       <path value="$PROJECT_DIR$/api/vendor/symfony/http-client-contracts" />
       <path value="$PROJECT_DIR$/api/vendor/symfony/dom-crawler" />
       <path value="$PROJECT_DIR$/api/vendor/symfony/http-client" />
@@ -61,6 +59,8 @@
       <path value="$PROJECT_DIR$/api/vendor/guzzlehttp/promises" />
       <path value="$PROJECT_DIR$/api/vendor/guzzlehttp/psr7" />
       <path value="$PROJECT_DIR$/api/vendor/guzzlehttp/guzzle" />
+      <path value="$PROJECT_DIR$/api/vendor/masterminds/html5" />
+      <path value="$PROJECT_DIR$/api/vendor/laravel/serializable-closure" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0">

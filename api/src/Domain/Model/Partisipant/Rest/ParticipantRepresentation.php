@@ -232,7 +232,7 @@ class ParticipantRepresentation implements JsonSerializable
         $this->started = $started;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return (object)get_object_vars($this);
     }

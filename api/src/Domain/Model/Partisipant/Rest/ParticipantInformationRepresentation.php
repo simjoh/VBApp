@@ -87,7 +87,7 @@ class ParticipantInformationRepresentation implements JsonSerializable
     }
 
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return (object)get_object_vars($this);
     }

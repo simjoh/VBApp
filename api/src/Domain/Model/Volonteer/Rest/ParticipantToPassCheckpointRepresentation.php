@@ -252,7 +252,7 @@ class ParticipantToPassCheckpointRepresentation  implements JsonSerializable
         $this->volonteer_checkin = $volonteer_checkin;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return (object)get_object_vars($this);
     }

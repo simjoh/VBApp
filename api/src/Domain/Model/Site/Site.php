@@ -137,7 +137,7 @@ class Site implements JsonSerializable
         $this->site_uid = $site_uid;
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): mixed {
         return (object) get_object_vars($this);
     }
 

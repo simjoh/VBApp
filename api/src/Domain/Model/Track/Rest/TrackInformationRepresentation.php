@@ -43,7 +43,7 @@ class TrackInformationRepresentation implements JsonSerializable
         $this->trackRepresentation = $trackRepresentation;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return (object) get_object_vars($this);
     }

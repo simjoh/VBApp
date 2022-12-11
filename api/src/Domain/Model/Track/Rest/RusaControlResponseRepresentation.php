@@ -43,7 +43,7 @@ class RusaControlResponseRepresentation implements JsonSerializable
         $this->rusaControlRepresentation = $rusaControlRepresentation;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return (object) get_object_vars($this);
     }

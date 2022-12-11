@@ -112,7 +112,7 @@ class User implements JsonSerializable
         $this->username = $username;
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): string {
         return (object) get_object_vars($this);
     }
 }

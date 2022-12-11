@@ -94,7 +94,7 @@ class CompetitorRepresentation implements JsonSerializable
         $this->competitor_uid = $competitor_uid;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return (object)get_object_vars($this);
     }

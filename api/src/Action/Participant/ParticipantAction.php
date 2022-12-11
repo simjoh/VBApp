@@ -78,9 +78,6 @@ class participantAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
-
-
-
     public function rollbackDNF(ServerRequestInterface $request, ResponseInterface $response){
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
@@ -88,9 +85,6 @@ class participantAction
         $response->getBody()->write(json_encode($this->participantService->rollbackDnf($participant_uid, $request->getAttribute('currentuserUid'))));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
-
-
-
 
     public function rollbackDNS(ServerRequestInterface $request, ResponseInterface $response){
         $routeContext = RouteContext::fromRequest($request);
@@ -122,8 +116,6 @@ class participantAction
         $response->getBody()->write(json_encode($this->participantService->participantsOnTrackWithMoreInformation($track_uid, $request->getAttribute('currentuserUid'))));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
-
-
 
     public function participantOnTrack(ServerRequestInterface $request, ResponseInterface $response){
         $routeContext = RouteContext::fromRequest($request);
@@ -167,14 +159,7 @@ class participantAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('trackUid');
-
-       //$track_uid = "c8578cc8-249d-49cc-9a5e-3dd515999534";
-
-        //edfe915c-8928-439c-9ef7-f548645e9918
-
         $uploadedParticipants = $this->participantService->parseUplodesParticipant($filename, $uploadDir, $track_uid,$request->getAttribute('currentuserUid'));
-
-//        $response->getBody()->write($filename);
         $response->getBody()->write(json_encode($uploadedParticipants));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
 

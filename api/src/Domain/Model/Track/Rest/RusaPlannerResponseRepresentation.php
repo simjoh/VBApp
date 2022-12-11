@@ -78,7 +78,7 @@ class RusaPlannerResponseRepresentation implements JsonSerializable
         $this->rusaplannercontrols = $rusaplannercontrols;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return (object) get_object_vars($this);
     }

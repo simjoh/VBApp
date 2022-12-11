@@ -129,7 +129,7 @@ class RusaPlannerInputRepresentation implements JsonSerializable
         $this->start_time = $start_time;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return (object) get_object_vars($this);
     }

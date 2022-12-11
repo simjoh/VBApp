@@ -3,6 +3,7 @@ import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {NgForm} from "@angular/forms";
 import { FileUpload } from 'primeng/fileupload';
 import {UploadService} from "../../../core/upload.service";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'brevet-create-site-dialog',
@@ -68,7 +69,7 @@ export class CreateSiteDialogComponent implements OnInit {
   }
 
   myUploader(event) {
-    this.siteform.image = event.files[0].name;
+    this.siteform.image =  environment.pictureurl + "/" + event.files[0].name;
     console.log("onUpload() START");
     for(let file of event.files) {
       let progress = this.uploadService.upload("/api/site/upload" , new Set(event.files));

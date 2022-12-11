@@ -22,7 +22,7 @@ class Link implements JsonSerializable
         $this->url = $url;
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): mixed {
         return (object) get_object_vars($this);
     }
 }
