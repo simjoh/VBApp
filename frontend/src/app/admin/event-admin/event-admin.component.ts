@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {DialogService} from "primeng/dynamicdialog";
-import {ConfirmationService} from "primeng/api";
+import {ConfirmationService, MenuItem} from "primeng/api";
 
 @Component({
   selector: 'brevet-event-admin',
@@ -11,9 +11,19 @@ import {ConfirmationService} from "primeng/api";
 })
 export class EventAdminComponent implements OnInit {
 
+  designTabs = [];
+
   constructor() { }
 
   ngOnInit(): void {
+
+    this.designTabs = [
+      {
+        label: "Event",
+        routerLink: 'brevet-event-list',
+        icon: 'pi pi-list'
+      }
+    ] as MenuItem[];
   }
 
 }

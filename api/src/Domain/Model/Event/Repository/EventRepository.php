@@ -122,7 +122,7 @@ class EventRepository extends BaseRepository
         $canceled = $event->isCanceled();
         $start_date = $event->getStartdate();
         $end_date = $event->getEnddate();
-        $eve_U = '62c332d2-72c8-407c-b71c-ca2541d72577';
+        $eve_U = $event->getEventUid();
         try {
             $statement = $this->connection->prepare($this->sqls('updateEvent'));
 

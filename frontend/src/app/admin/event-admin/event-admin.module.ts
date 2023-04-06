@@ -5,8 +5,8 @@ import { EventListComponent } from './event-list/event-list.component';
 import {SharedModule} from "../../shared/shared.module";
 import { EventInfoPopoverComponent } from './event-info-popover/event-info-popover.component';
 import { CreateEventDialogComponent } from './create-event-dialog/create-event-dialog.component';
-
-
+import {EventAdminRoutingModule} from "./event-admin-routing.module";
+import { EditEventDialogComponent } from './edit-event-dialog/edit-event-dialog.component';
 
 
 @NgModule({
@@ -14,11 +14,13 @@ import { CreateEventDialogComponent } from './create-event-dialog/create-event-d
    EventAdminComponent,
    EventListComponent,
    EventInfoPopoverComponent,
-   CreateEventDialogComponent
+   CreateEventDialogComponent,
+   EditEventDialogComponent
   ],
   imports: [
     CommonModule,
-    SharedModule
+    SharedModule,
+    EventAdminRoutingModule
   ]
 })
 export class EventAdminModule { }

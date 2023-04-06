@@ -20,6 +20,17 @@
         </div>
     </div>
       <div class="form-group">
+        <div class="form-row">
+          <div *ngFor="let category of categories" class="p-field-checkbox">
+            <div class="flex align-items-center ml-1">
+              <p-radioButton (onClick)="changeStatus($event)" [inputId]="category.key" name="category"  [value]="category" [(ngModel)]="eventStatus"
+                             [disabled]="category.key === 'R'"></p-radioButton>
+              <label [for]="category.key">{{category.name}}</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
         Description
         <textarea  pTooltip="Beskrivning av eventet" tooltipPosition="left" [(ngModel)]="eventForm.description" name="description" placeholder="" class="col-12" rows="5"  pInputTextarea autoResize="autoResize"></textarea>
       </div>

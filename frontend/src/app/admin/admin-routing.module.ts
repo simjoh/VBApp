@@ -29,6 +29,10 @@ const routes: Routes = [{
       path: 'siteadmin',
       loadChildren: () => import('./site-admin/site-admin.module').then(m => m.SiteAdminModule),
     },
+    {
+      path: 'eventadmin',
+      loadChildren: () => import('./event-admin/event-admin.module').then(m => m.EventAdminModule),
+    },
     { path: 'brevet-admin-start', component: AdminStartComponent },
     // { path: 'brevet-site-admin', component: SiteAdminComponent},
     // { path: 'brevet-kontroller-combiner', component: KontrollerCombinerComponent},

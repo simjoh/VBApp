@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import {map} from "rxjs/operators";
-import {EventRepresentation, Site, User} from "../../../shared/api/api";
+import {map, take} from "rxjs/operators";
+import {EventRepresentation, Site, SiteRepresentation, User} from "../../../shared/api/api";
 import {Observable} from "rxjs";
 import {EventService} from "../event.service";
 import {CreateUserDialogComponent} from "../../user-admin/create-user-dialog/create-user-dialog.component";
@@ -8,6 +8,9 @@ import {ConfirmationService, PrimeNGConfig} from "primeng/api";
 import {DialogService} from "primeng/dynamicdialog";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {CreateEventDialogComponent} from "../create-event-dialog/create-event-dialog.component";
+import {LinkService} from "../../../core/link.service";
+import {EditSiteDialogComponent} from "../../site-admin/edit-site-dialog/edit-site-dialog.component";
+import {EditEventDialogComponent} from "../edit-event-dialog/edit-event-dialog.component";
 
 @Component({
   selector: 'brevet-event-list',
@@ -30,7 +33,8 @@ export class EventListComponent implements OnInit {
               private primengConfig: PrimeNGConfig,
               private dialogService: DialogService,
               private confirmationService: ConfirmationService,
-              private deviceDetector: DeviceDetectorService) { }
+              private deviceDetector: DeviceDetectorService,
+              private linkService: LinkService) { }
 
   ngOnInit(): void {
   }
@@ -61,6 +65,23 @@ export class EventListComponent implements OnInit {
 
   editProduct(user_uid: any) {
 
+    const editref = this.dialogService.open(EditEventDialogComponent, {
+      data: {
+        event: user_uid,
+        id: '51gF3'
+      },
+      header: 'Editera event',
+    });
+
+    editref.onClose.pipe(take(1)).subscribe(((event: EventRepresentation) => {
+      if (event) {
+        console.log(event);
+        this.eventService.updateEvent(event.event_uid, event);
+      } else {
+        editref.destroy();
+      }
+
+    }));
   }
 
   deleteProduct(event_uid: any) {
@@ -76,5 +97,9 @@ export class EventListComponent implements OnInit {
         console.log("reject");
       }
     });
+  }
+
+  canDelete(site: any):boolean {
+    return this.linkService.exists(site.links,"relation.event.delete");
   }
 }

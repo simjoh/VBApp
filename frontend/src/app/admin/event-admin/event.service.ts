@@ -15,6 +15,11 @@ export class EventService {
     startWith(''),
   );
 
+  eventReloadAction = new Subject<EventRepresentation>()
+  $eventReload = this.eventReloadAction.asObservable().pipe(
+    startWith(null),
+  );
+
   allEvents$ = this.getAllEvents() as Observable<EventRepresentation[]>;
 
   private userInsertedSubject = new Subject<EventRepresentation>();
@@ -23,8 +28,8 @@ export class EventService {
   );
 
 
-  eventsWithAdd$ = combineLatest([this.getAllEvents(), this.userInsertedAction$, this.relaod$]).pipe(
-    map(([all, insert, del]) =>  {
+  eventsWithAdd$ = combineLatest([this.getAllEvents(), this.userInsertedAction$, this.relaod$, this.$eventReload]).pipe(
+    map(([all, insert, del, eventreload]) =>  {
       if(insert){
         return  [...all, insert]
       }
@@ -33,6 +38,12 @@ export class EventService {
         all.splice(index, 1);
         const userArray = all;
         return   this.deepCopyProperties(all);
+      }
+
+      if (eventreload){
+        var indexreload = all.findIndex((elt) => elt.event_uid === eventreload.event_uid);
+        all[indexreload] = eventreload;
+
       }
       return this.deepCopyProperties(all);
     }),
@@ -86,12 +97,13 @@ export class EventService {
   }
 
   public updateEvent(eventuid: string, event: EventRepresentation){
-    return this.httpClient.put<EventRepresentation>(environment.backend_url + "event", {} as EventRepresentation).pipe(
+    return this.httpClient.put<EventRepresentation>(environment.backend_url + "event/" + eventuid, event as EventRepresentation).pipe(
       map((event: EventRepresentation) => {
+        this.eventReloadAction.next(event)
         return event;
       }),
       tap(event =>   console.log(event))
-    ) as Observable<EventRepresentation>
+    ).toPromise()
   }
 
   deepCopyProperties(obj: any): any {

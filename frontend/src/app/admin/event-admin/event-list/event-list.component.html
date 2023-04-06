@@ -6,7 +6,6 @@
     <ng-template pTemplate="caption">
       <div class="table-header">
       <span class="p-input-icon-left  sm:inline-flex">
-          Events
           <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2 ml-2" (click)="openNew()"></button>
       </span>
         <span class="p-input-icon-left sm:inline-flex">
@@ -70,8 +69,8 @@
           <span class="p-column-title">Åtgärder</span>
           <!--        <button pButton pRipple icon="pi pi-info" class="p-button-rounded p-button-info mr-2" (click)="viewUser(customer.user_uid)"></button>-->
           <brevet-event-info-popover [event]="event" ></brevet-event-info-popover>
-          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success sm-0 p-ml-1" (click)="editProduct(event.event_uid)"></button>
-          <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1" (click)="deleteProduct(event.event_uid)"></button>
+          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success sm-0 p-ml-1" (click)="editProduct(event)"></button>
+          <button  [disabled]="!canDelete(event)" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1" (click)="deleteProduct(event.event_uid)"></button>
         </td>
       </tr>
     </ng-template>

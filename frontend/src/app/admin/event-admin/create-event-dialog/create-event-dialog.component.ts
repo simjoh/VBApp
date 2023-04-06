@@ -14,12 +14,16 @@ export class CreateEventDialogComponent implements OnInit {
 
   eventForm: EventFormModel;
   es: any;
+  eventStatus: any;
+  categories: any[] = [{name: 'Aktiv', key: 'A'}, {name: 'Inställd', key: 'I'}, {name: 'Utförd', key: 'U'}];
 
 
   constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig,public datepipe: DatePipe) { }
 
   ngOnInit(): void {
    this.eventForm = this.createObject();
+
+    this.eventStatus = this.categories[0];
 
 
   }
@@ -58,6 +62,30 @@ export class CreateEventDialogComponent implements OnInit {
         completed: false,
         description: eventForm.controls.description.value
       } as EventRepresentation
+  }
+
+  changeStatus(event: any) {
+
+    if (this.eventStatus.key === "A") {
+      this.eventForm.active = true;
+      this.eventForm.completed = false;
+      this.eventForm.canceled = false;
+      this.eventStatus = this.categories[0];
+    }
+
+    if (this.eventStatus.key === "U") {
+      this.eventForm.active = false;
+      this.eventForm.completed = true;
+      this.eventForm.canceled = false;
+      this.eventStatus = this.categories[2];
+    }
+
+    if (this.eventStatus.key === "I") {
+      this.eventForm.active = false;
+      this.eventForm.completed = false;
+      this.eventForm.canceled = true;
+      this.eventStatus = this.categories[1];
+    }
   }
 }
 
