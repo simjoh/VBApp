@@ -52,12 +52,28 @@ class ResultService
         if(empty($tracks)){
             return array();
         }
+
         $result =   $this->resultrepo->trackParticipantsOnTrack($event_uid, $tracks);
         return $result;
     }
 
     public function trackRandonneurOnTrack(?string $competitorUid, ?string $trackUid)
     {
+
+        $competitor = $this->competitorRepository->getCompetitorByUID($competitorUid);
+        if($competitor == null){
+            throw new BrevetException("Participant not exists", 5, null);
+        }
+
+        if($trackUid != ""){
+            $track =  $this->trackrepository->getTrackByUid($trackUid);
+            if($track == null){
+                throw new BrevetException("Track not exists", 5, null);
+            }
+        }
+
+        $this->resultrepo->trackParticipantOnTrack($competitorUid, $trackUid);
+
     }
 
     public function resultForContestant(string $competitor_uid, string $track_uid, $event_uid): ?array {

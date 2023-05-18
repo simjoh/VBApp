@@ -74,6 +74,16 @@ class ResultRepository  extends BaseRepository
 
     }
 
+    public function trackParticipantOnTrack(?string $competitorUid, ?string $trackUid)
+    {
+        $statement = $this->connection->prepare('select * from  v_track_contestant_on_event_and_track revent  where revent.competitor_uid=:competitor_uid and revent.track_uid=:track_uid');
+        $statement->bindParam(':competitor_uid', $competitorUid);
+        $statement->bindParam(':track_uid', $trackUid);
+
+        $statement->execute();
+        $trackinginfo = $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     private function getResultArray($resultset): array {
 
         $resultArray = array();

@@ -58,6 +58,24 @@ class ResultsController
         ]);
     }
 
+    public function getTrackOnTrackView(ServerRequestInterface $request, ResponseInterface $response, $args){
+        $view = Twig::fromRequest($request);
+
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $trackUid = $route->getArgument('trackUid');
+
+        $tracks =  $this->trackService->getTrackByTrackUid( $trackUid,"");
+        $event =  $this->eventservice->eventFor($tracks->getEventUid(), "");
+
+
+//        $result =  $this->resultService->trackContestants($eventUid, array());
+        return $view->render($response, 'tracktrack.html', [
+            'link' => $this->settings['path'] . "tracker/" . "track/" . $args['trackUid'], 'event' => json_encode($event === null ? "": $event), 'track' => json_encode($tracks === null ? "": $tracks), 'tracks' => json_encode($tracks)
+        ]);
+    }
+
+
     //Resultat på text BRM2021
     public function getResultList(ServerRequestInterface $request, ResponseInterface $response, $args){
         $routeContext = RouteContext::fromRequest($request);
@@ -88,8 +106,11 @@ class ResultsController
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $trackUid = $route->getArgument('trackUid');
-        $competitorUid = $route->getArgument('trackUid');
-        $result =  $this->resultService->trackRandonneurOnTrack( $competitorUid,$trackUid);
+        $track = $this->trackService->getTrackByTrackUid($trackUid, "");
+        $trackArray = array();
+
+        array_push($trackArray, $track);
+        $result =  $this->resultService->trackContestants($track->getEventUid(), $trackArray);
         $response->getBody()->write((string)json_encode($result), JSON_UNESCAPED_SLASHES);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 

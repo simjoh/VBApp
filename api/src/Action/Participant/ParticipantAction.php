@@ -4,6 +4,8 @@ namespace App\Action\Participant;
 
 use App\Domain\Model\Event\Rest\EventRepresentation;
 use App\Domain\Model\Partisipant\Rest\EventRepresentationTransformer;
+use App\Domain\Model\Partisipant\Rest\ParticipantInformationRepresentation;
+use App\Domain\Model\Partisipant\Rest\ParticipantInformationRepresentationTransformer;
 use App\Domain\Model\Partisipant\Service\ParticipantService;
 use Karriere\JsonDecoder\JsonDecoder;
 use Psr\Container\ContainerInterface;
@@ -140,9 +142,13 @@ class participantAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
     public function addParticipantOntrack(ServerRequestInterface $request, ResponseInterface $response){
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('trackUid');
         $jsonDecoder = new JsonDecoder();
-        $jsonDecoder->register(new EventRepresentationTransformer());
-        $checkpoint = $jsonDecoder->decode($request->getBody()->getContents(), EventRepresentation::class);
+        $jsonDecoder->register(new ParticipantInformationRepresentationTransformer());
+        $newParticipant = $jsonDecoder->decode($request->getBody()->getContents(), ParticipantInformationRepresentation::class);
+        $this->participantService->addParticipantOnTrack($track_uid, $newParticipant);
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
     public function uploadParticipants(ServerRequestInterface $request, ResponseInterface $response){

@@ -30,9 +30,8 @@ namespace App\common;
 
 
       static function secToHR($seconds) {
-         $hours = floor($seconds / 3600);
-         $minutes = floor(($seconds / 60) % 60);
-         return "$hours:$minutes";
+          $hoursminsandsecs = date('H:i',$seconds);
+          return $hoursminsandsecs;
      }
 
       static function calculateSecondsBetween($date): int{

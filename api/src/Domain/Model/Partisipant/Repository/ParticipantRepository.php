@@ -18,57 +18,56 @@ class ParticipantRepository extends BaseRepository
      *
      * @param PDO $connection The database connection
      */
-    public function __construct(PDO $connection) {
+    public function __construct(PDO $connection)
+    {
         $this->connection = $connection;
         $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
 
-    public function allParticipants(): ?array {
+    public function allParticipants(): ?array
+    {
         try {
             $statement = $this->connection->prepare($this->sqls('allParticipantsOnTrack'));
             $statement->bindParam(':track_uid', $track_uid);
             $statement->execute();
-            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Partisipant\Participant::class, null);
+            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\Participant::class, null);
 
             if (empty($events)) {
                 return array();
             }
 
             return $events;
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
         return array();
     }
 
 
-    public function getPArticipantsByTrackUids($track_uids): ?array {
+    public function getPArticipantsByTrackUids($track_uids): ?array
+    {
 
-            try {
-                $in  = str_repeat('?,', count($track_uids) - 1) . '?';
-                $sql = "select *  from participant  where  track_uid IN ($in)";
-                $test = [];
-
-
-                foreach ($track_uids as $s => $ro){
-
-                    $test[] = $ro;
-                }
+        try {
+            $in = str_repeat('?,', count($track_uids) - 1) . '?';
+            $sql = "select *  from participant  where  track_uid IN ($in)";
+            $test = [];
 
 
-                $statement = $this->connection->prepare($sql);
-                $statement->execute($test);
-                $checkpoint = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Partisipant\Participant::class, null);
-                return $checkpoint;
+            foreach ($track_uids as $s => $ro) {
+
+                $test[] = $ro;
             }
-            catch(PDOException $e)
-            {
-                echo "Error: " . $e->getMessage();
-            }
-            return array();
+
+
+            $statement = $this->connection->prepare($sql);
+            $statement->execute($test);
+            $checkpoint = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\Participant::class, null);
+            return $checkpoint;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+        return array();
 
     }
 
@@ -81,18 +80,16 @@ class ParticipantRepository extends BaseRepository
             $statement->execute();
             $event = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\Participant::class, null);
 
-            if($statement->rowCount() > 1){
+            if ($statement->rowCount() > 1) {
                 // Fixa bätter felhantering
                 throw new BrevetException("Error fetching participant", 1, null);
             }
-            if(!empty($event)){
+            if (!empty($event)) {
                 return $event[0];
             }
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             throw new BrevetException("Error fetching participant", 1, null);
-          //  echo "Error: " . $e->getMessage();
+            //  echo "Error: " . $e->getMessage();
         }
 
         return null;
@@ -108,93 +105,88 @@ class ParticipantRepository extends BaseRepository
             $statement->execute();
             $event = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\Participant::class, null);
 
-            if($statement->rowCount() > 1){
+            if ($statement->rowCount() > 1) {
                 // Fixa bätter felhantering
                 throw new BrevetException("Error fetching participants", 1, null);
             }
-            if(!empty($event)){
+            if (!empty($event)) {
                 return $event[0];
             }
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             throw new BrevetException("Error fetching participant", 1, null);
-           // echo "Error: " . $e->getMessage();
+            // echo "Error: " . $e->getMessage();
         }
 
         return null;
     }
 
-    public function participantsOnTrack(string $track_uid) {
+    public function participantsOnTrack(string $track_uid)
+    {
         try {
             $statement = $this->connection->prepare($this->sqls('allParticipantsOnTrack'));
             $statement->bindParam(':track_uid', $track_uid);
             $statement->execute();
-            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Partisipant\Participant::class, null);
+            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\Participant::class, null);
 
             if (empty($events)) {
                 return array();
             }
 
             return $events;
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             throw new BrevetException("Error fetching participants", 1, null);
-          //  echo "Error: " . $e->getMessage();
+            //  echo "Error: " . $e->getMessage();
         }
-
 
 
     }
 
-    public function participantsOnTrackDns(string $track_uid) {
+    public function participantsOnTrackDns(string $track_uid)
+    {
         try {
             $dns = true;
             $statement = $this->connection->prepare($this->sqls('dns'));
             $statement->bindParam(':track_uid', $track_uid);
             $statement->bindParam(':dns', $dns);
             $statement->execute();
-            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Partisipant\Participant::class, null);
+            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\Participant::class, null);
 
             if (empty($events)) {
                 return array();
             }
 
             return $events;
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             throw new BrevetException("Error set dns for participant", 1, null);
 
         }
 
     }
 
-    public function participantsOnTrackDnf(string $track_uid) {
+    public function participantsOnTrackDnf(string $track_uid)
+    {
         try {
             $dnf = true;
             $statement = $this->connection->prepare($this->sqls('dnf'));
             $statement->bindParam(':track_uid', $track_uid);
             $statement->bindParam(':dnf', $dnf);
             $statement->execute();
-            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Partisipant\Participant::class, null);
+            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\Participant::class, null);
 
             if (empty($events)) {
                 return array();
             }
 
             return $events;
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             throw new BrevetException("Error set dnf for participant", 1, null);
         }
 
 
     }
 
-    public function hasStampOnCheckpoint(string $participant_uid, string $checkpoint_uid): bool {
+    public function hasStampOnCheckpoint(string $participant_uid, string $checkpoint_uid): bool
+    {
 
 
         try {
@@ -205,18 +197,17 @@ class ParticipantRepository extends BaseRepository
             $result = $statement->fetch();
 
             if (empty($result)) {
-               return false;
+                return false;
             }
             return true;
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
         return true;
     }
 
-    public function hasDnfOnCheckpoint(string $participant_uid, string $checkpoint_uid): bool {
+    public function hasDnfOnCheckpoint(string $participant_uid, string $checkpoint_uid): bool
+    {
         try {
             $statement = $this->connection->prepare($this->sqls('hasStampOnCheckpoint'));
             $statement->bindParam(':participant_uid', $participant_uid);
@@ -227,15 +218,14 @@ class ParticipantRepository extends BaseRepository
                 return false;
             }
             return true;
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
         return true;
     }
 
-    public function hasDnf(string $participant_uid): bool {
+    public function hasDnf(string $participant_uid): bool
+    {
         try {
             $statement = $this->connection->prepare($this->sqls('hasDnf'));
             $statement->bindParam(':participant_uid', $participant_uid);
@@ -245,59 +235,56 @@ class ParticipantRepository extends BaseRepository
                 return false;
             }
             return true;
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
         return true;
     }
 
 
-    public function participantsbyTrackAndClub(string $track_uid, $club_uid) {
+    public function participantsbyTrackAndClub(string $track_uid, $club_uid)
+    {
         try {
             $statement = $this->connection->prepare($this->sqls('allParticipants'));
             $statement->bindParam(':track_uid', $track_uid);
             $statement->bindParam(':club_uid', $club_uid);
             $statement->execute();
-            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Partisipant\Participant::class, null);
+            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\Participant::class, null);
 
             if (empty($events)) {
                 return array();
             }
 
             return $events;
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
         return array();
 
     }
 
-    public function participantsForCompetitor(string $competitor_uid) {
+    public function participantsForCompetitor(string $competitor_uid)
+    {
         try {
             $statement = $this->connection->prepare($this->sqls('allParticipants'));
             $statement->bindParam(':$competitor_uid', $competitor_uid);
             $statement->execute();
-            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Partisipant\Participant::class, null);
+            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\Participant::class, null);
 
             if (empty($events)) {
                 return array();
             }
 
             return $events;
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
         return array();
 
     }
 
-    public function participantOntRackAndStartNumber(string $track_uid, $startnumber): ?Participant {
+    public function participantOntRackAndStartNumber(string $track_uid, $startnumber): ?Participant
+    {
         try {
 
             $statement = $this->connection->prepare($this->sqls('participantonTrackWithStartnumber'));
@@ -307,18 +294,16 @@ class ParticipantRepository extends BaseRepository
 
             $event = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\Participant::class, null);
 
-            if($statement->rowCount() > 1){
+            if ($statement->rowCount() > 1) {
                 // Fixa bätter felhantering
 
                 throw new Exception();
             }
-            if(!empty($event)){
+            if (!empty($event)) {
 
                 return $event[0];
             }
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
 
             echo "Error: " . $e->getMessage();
         }
@@ -326,7 +311,8 @@ class ParticipantRepository extends BaseRepository
         return null;
     }
 
-    public function participantHasStampOnAllExceptFinish(string $track_uid, string $finishCheckpoint_uid, string $participant_uid, int $totalcheckpointsfortrack): bool {
+    public function participantHasStampOnAllExceptFinish(string $track_uid, string $finishCheckpoint_uid, string $participant_uid, int $totalcheckpointsfortrack): bool
+    {
 
 
         $statement = $this->connection->prepare($this->sqls('participantHasStampOnAllExceptFinish'));
@@ -345,7 +331,7 @@ class ParticipantRepository extends BaseRepository
 
         $countlast = $statementlast->fetchColumn();
 
-        if($countlast + $count == $totalcheckpointsfortrack){
+        if ($countlast + $count == $totalcheckpointsfortrack) {
             return true;
         }
 
@@ -353,7 +339,8 @@ class ParticipantRepository extends BaseRepository
     }
 
 
-    public function createparticipant(Participant $participanttoCreate): ?Participant {
+    public function createparticipant(Participant $participanttoCreate): ?Participant
+    {
         try {
             $participant_uid = Uuid::uuid4();
             $track_uid = $participanttoCreate->getTrackUid();
@@ -367,25 +354,23 @@ class ParticipantRepository extends BaseRepository
             $brevenr2 = $participanttoCreate->getBrevenr() == null ? null : $participanttoCreate->getBrevenr();
             $brevenr = intval($brevenr2);
             $time = $participanttoCreate->getTime();
-          //  date("Y-m-d H:i:s");
+            //  date("Y-m-d H:i:s");
             $register_date_time = $participanttoCreate->getRegisterDateTime();
             $stmt = $this->connection->prepare($this->sqls('createParticipant'));
             $stmt->bindParam(':participant_uid', $participant_uid);
-            $stmt->bindParam(':track_uid',$track_uid );
-            $stmt->bindParam(':competitor_uid',$competitor_uid);
+            $stmt->bindParam(':track_uid', $track_uid);
+            $stmt->bindParam(':competitor_uid', $competitor_uid);
             $stmt->bindParam(':startnumber', $startnumber);
-            $stmt->bindParam(':finished', $finished,PDO::PARAM_BOOL);
+            $stmt->bindParam(':finished', $finished, PDO::PARAM_BOOL);
             $stmt->bindParam(':acpcode', $acpkod);
             $stmt->bindParam(':club_uid', $club_uid);
-            $stmt->bindParam(':dns', $dns,PDO::PARAM_BOOL);
+            $stmt->bindParam(':dns', $dns, PDO::PARAM_BOOL);
             $stmt->bindParam(':time', $time);
-            $stmt->bindParam(':dnf', $dnf,PDO::PARAM_BOOL);
+            $stmt->bindParam(':dnf', $dnf, PDO::PARAM_BOOL);
             $stmt->bindParam(':brevenr', $brevenr);
             $stmt->bindParam(':register_date_time', $register_date_time);
             $stmt->execute();
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
 
@@ -393,7 +378,8 @@ class ParticipantRepository extends BaseRepository
         return $participanttoCreate;
     }
 
-    public function updateParticipant(Participant $participantToUpdate): ?Participant {
+    public function updateParticipant(Participant $participantToUpdate): ?Participant
+    {
 
         $participant_uid = $participantToUpdate->getParticipantUid();
         $track_uid = $participantToUpdate->getTrackUid();
@@ -411,8 +397,8 @@ class ParticipantRepository extends BaseRepository
         try {
             $stmt = $this->connection->prepare($this->sqls('updateParticipant'));
             $stmt->bindParam(':participant_uid', $participant_uid);
-            $stmt->bindParam(':track_uid',$track_uid );
-            $stmt->bindParam(':competitor_uid',$competitor_uid);
+            $stmt->bindParam(':track_uid', $track_uid);
+            $stmt->bindParam(':competitor_uid', $competitor_uid);
             $stmt->bindParam(':startnumber', $startnumber);
             $stmt->bindParam(':finished', $finished, PDO::PARAM_BOOL);
             $stmt->bindParam(':acpcode', $acpkod);
@@ -426,7 +412,7 @@ class ParticipantRepository extends BaseRepository
 
 
             $status = $stmt->execute();
-            if($status){
+            if ($status) {
                 return $participantToUpdate;
             }
         } catch (PDOException $e) {
@@ -437,16 +423,17 @@ class ParticipantRepository extends BaseRepository
 
 
     //görs i efterhand
-    public function updateBrevenr(string $brevenr, string $participant_uid): bool {
+    public function updateBrevenr(string $brevenr, string $participant_uid): bool
+    {
 
         $participant_uid = $participant_uid;
         $brevenr = $brevenr;
         try {
             $stmt = $this->connection->prepare($this->sqls('updateBrevenr'));
             $stmt->bindParam(':participant_uid', $participant_uid);
-            $stmt->bindParam(':brevenr',$brevenr );
+            $stmt->bindParam(':brevenr', $brevenr);
             $status = $stmt->execute();
-            if($status){
+            if ($status) {
                 return true;
             }
         } catch (PDOException $e) {
@@ -456,7 +443,8 @@ class ParticipantRepository extends BaseRepository
     }
 
     //görs i efterhand
-    public function setDnf(string $participant_uid): bool {
+    public function setDnf(string $participant_uid): bool
+    {
 
         $participant_uid = $participant_uid;
         try {
@@ -465,7 +453,7 @@ class ParticipantRepository extends BaseRepository
             $stmt->bindParam(':participant_uid', $participant_uid);
             $stmt->bindParam(':dnf', $dnf, PDO::PARAM_BOOL);
             $status = $stmt->execute();
-            if($status){
+            if ($status) {
                 return true;
             }
         } catch (PDOException $e) {
@@ -476,7 +464,8 @@ class ParticipantRepository extends BaseRepository
 
 
     //görs i efterhand
-    public function rollbackDnf(string $participant_uid): bool {
+    public function rollbackDnf(string $participant_uid): bool
+    {
 
         $participant_uid = $participant_uid;
         try {
@@ -485,7 +474,7 @@ class ParticipantRepository extends BaseRepository
             $stmt->bindParam(':participant_uid', $participant_uid);
             $stmt->bindParam(':dnf', $dnf, PDO::PARAM_BOOL);
             $status = $stmt->execute();
-            if($status){
+            if ($status) {
                 return true;
             }
         } catch (PDOException $e) {
@@ -496,7 +485,8 @@ class ParticipantRepository extends BaseRepository
 
 
     //görs i efterhand
-    public function isDnf(string $participant_uid): bool {
+    public function isDnf(string $participant_uid): bool
+    {
 
         $participant_uid = $participant_uid;
         try {
@@ -505,7 +495,7 @@ class ParticipantRepository extends BaseRepository
             $stmt->bindParam(':participant_uid', $participant_uid);
             $stmt->bindParam(':dnf', $dnf, PDO::PARAM_BOOL);
             $status = $stmt->execute();
-            if($status){
+            if ($status) {
                 return true;
             }
         } catch (PDOException $e) {
@@ -515,14 +505,9 @@ class ParticipantRepository extends BaseRepository
     }
 
 
-
-
-
-
-
-
     //görs i efterhand
-    public function setDns(string $participant_uid): bool {
+    public function setDns(string $participant_uid): bool
+    {
 
         try {
             $dns = true;
@@ -530,7 +515,7 @@ class ParticipantRepository extends BaseRepository
             $stmt->bindParam(':participant_uid', $participant_uid);
             $stmt->bindParam(':dns', $dns, PDO::PARAM_BOOL);
             $status = $stmt->execute();
-            if($status){
+            if ($status) {
                 return true;
             }
         } catch (PDOException $e) {
@@ -540,7 +525,8 @@ class ParticipantRepository extends BaseRepository
     }
 
     //görs i efterhand
-    public function rollbackDns(string $participant_uid): bool {
+    public function rollbackDns(string $participant_uid): bool
+    {
 
         try {
             $dns = false;
@@ -548,7 +534,7 @@ class ParticipantRepository extends BaseRepository
             $stmt->bindParam(':participant_uid', $participant_uid);
             $stmt->bindParam(':dns', $dns, PDO::PARAM_BOOL);
             $status = $stmt->execute();
-            if($status){
+            if ($status) {
                 return true;
             }
         } catch (PDOException $e) {
@@ -558,8 +544,8 @@ class ParticipantRepository extends BaseRepository
     }
 
 
-
-    public function stamp(string $participant_uid, string $checkpoint_uid, bool $passed): bool{
+    public function stamp(string $participant_uid, string $checkpoint_uid, bool $passed): bool
+    {
 
         try {
             $passed_date_timestamp = date('Y-m-d H:i:s');
@@ -567,43 +553,40 @@ class ParticipantRepository extends BaseRepository
             $lng = null;
             $stmt = $this->connection->prepare($this->sqls('stampOnCheckpoint'));
             $stmt->bindParam(':participant_uid', $participant_uid);
-            $stmt->bindParam(':checkpoint_uid',$checkpoint_uid );
-            $stmt->bindParam(':passed',$passed);
+            $stmt->bindParam(':checkpoint_uid', $checkpoint_uid);
+            $stmt->bindParam(':passed', $passed);
             $stmt->bindParam(':passed_date_time', $passed_date_timestamp);
             $stmt->bindParam(':lat', $lat);
             $stmt->bindParam(':lng', $lng);
             $stmt->execute();
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
         return true;
     }
 
 
-    public function getParticipantCheckpointBy(string $participand_uid, string $checkpoint_uid){
+    public function getParticipantCheckpointBy(string $participand_uid, string $checkpoint_uid)
+    {
         try {
             $statement = $this->connection->prepare($this->sqls('allParticipants'));
             $statement->bindParam(':participant_uid', $participand_uid);
             $statement->bindParam(':checkpoint_uid', $checkpoint_uid);
             $statement->execute();
-            $checkpoint = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Partisipant\ParticipantCheckpoint::class, null);
+            $checkpoint = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\ParticipantCheckpoint::class, null);
 
             if (empty($checkpoint)) {
                 return array();
             }
 
             return $checkpoint[0];
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
         return array();
     }
 
-    public function stampOnCheckpoint(string $participant_uid, string $checkpoint_uid, bool $started, bool $volonteercheckin) : bool
+    public function stampOnCheckpoint(string $participant_uid, string $checkpoint_uid, bool $started, bool $volonteercheckin): bool
     {
         try {
 
@@ -613,19 +596,42 @@ class ParticipantRepository extends BaseRepository
             $passed = true;
             $stmt = $this->connection->prepare($this->sqls('updateCheckpoint'));
             $stmt->bindParam(':participant_uid', $participant_uid);
-            $stmt->bindParam(':checkpoint_uid',$checkpoint_uid );
-            $stmt->bindParam(':passed',$passed, PDO::PARAM_BOOL);
+            $stmt->bindParam(':checkpoint_uid', $checkpoint_uid);
+            $stmt->bindParam(':passed', $passed, PDO::PARAM_BOOL);
             $stmt->bindParam(':passed_date_time', $passed_date_timestamp);
-            $stmt->bindParam(':volonteer_checkin',$volonteercheckin, PDO::PARAM_BOOL);
+            $stmt->bindParam(':volonteer_checkin', $volonteercheckin, PDO::PARAM_BOOL);
             $stmt->bindParam(':lat', $lat);
             $stmt->bindParam(':lng', $lng);
             $stmt->execute();
-        }
-        catch(PDOException $e)
-        {
+        } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
         return true;
+    }
+
+    public function stampCheckoutOnCheckpoint(string $participant_uid, string $checkpoint_uid, bool $started, bool $volonteercheckout): bool {
+
+
+        try {
+
+            $checkout_date_time = date('Y-m-d H:i:s');
+            $lat = null;
+            $lng = null;
+            $passed = true;
+            $stmt = $this->connection->prepare($this->sqls('stampCheckoutOnCheckpoint'));
+            $stmt->bindParam(':participant_uid', $participant_uid);
+            $stmt->bindParam(':checkpoint_uid', $checkpoint_uid);
+            $stmt->bindParam(':checkedout', $passed, PDO::PARAM_BOOL);
+            $stmt->bindParam(':checkout_date_time', $checkout_date_time);
+            $stmt->bindParam(':volonteer_checkout', $volonteercheckout, PDO::PARAM_BOOL);
+            $stmt->bindParam(':lat', $lat);
+            $stmt->bindParam(':lng', $lng);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+        return true;
+
     }
 
     public function stampOnCheckpointWithTime(string $participant_uid, string $checkpoint_uid, string $datetime, bool $started, bool $volonteercheckin) : bool
@@ -840,6 +846,7 @@ class ParticipantRepository extends BaseRepository
         $eventqls['hasAnyoneStartedOnTrack'] = 'select * from participant e where e.track_uid=:track_uid and e.started = true or e.dns = true or e.dnf = true or e.finished = true or e.time != null;';
         $eventqls['deleteParticipantsOnTrack'] = 'delete  from participant e where e.track_uid=:track_uid;';
         $eventqls['deleteParticipantCheckpointOnTrack'] = 'delete from participant_checkpoint e where e.track_uid=:track_uid;';
+        $eventqls['stampCheckoutOnCheckpoint']  = "UPDATE participant_checkpoint SET  checkedout=:checkedout, checkout_date_time=:checkout_date_time, volonteer_checkout=:volonteer_checkout, lat=:lat, lng=:lng  WHERE participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid;";
         return $eventqls[$type];
         // TODO: Implement sqls() method.
     }

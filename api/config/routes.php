@@ -38,8 +38,8 @@ return function (App $app) {
     // Tracker för ett event dvs själva listan.
     $app->get('/tracker/event/{eventUid}', \App\Controller\ResultsController::class . ':track');
 
-   // $app->get('/track/randonneur/{uid}/track/{trackUid}', \App\Controller\ResultsController::class . ':getTrackView')->setName('track');
-    $app->get('/track/randonneur/{uid}/track/{trackUid}', \App\Controller\ResultsController::class . ':trackrandonneurontrack');
+    $app->get('/track/track/{trackUid}', \App\Controller\ResultsController::class . ':getTrackOnTrackView')->setName('trackontrack');
+    $app->get('/tracker/track/{trackUid}', \App\Controller\ResultsController::class . ':trackrandonneurontrack');
 
     // User route group
     $app->group('/api', function(RouteCollectorProxy $apps) use ($app) {
@@ -133,7 +133,7 @@ return function (App $app) {
         $app->get('/participant/{participantUid}', \App\Action\Participant\ParticipantAction::class . ':participants');
         $app->get('/participant/{uid}/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':participantOnTrack');
         $app->put('/participant/{uid}/track/{trackUid}/update', \App\Action\Participant\ParticipantAction::class . ':updateParticipant');
-        $app->post('/participant/addparticipant', \App\Action\Participant\ParticipantAction::class . ':addParticipantOntrack');
+        $app->post('/participant/addparticipant/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':addParticipantOntrack');
      //   $app->post('/participants/{trackUid}/upload', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
         $app->post('/participants/upload/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
         $app->delete('/participant/{uid}/deleteParticipant', \App\Action\Participant\ParticipantAction::class . ':deleteParticipant');

@@ -157,7 +157,6 @@ class CompetitorRepository extends BaseRepository
         $stmt->bindParam(':competitor_uid', $competitor_uid, PDO::PARAM_STR);
         $stmt->execute();
         $competitor = $stmt->fetch();
-
         $competitor = new Competitor($competitor['competitor_uid'],$competitor['user_name'], $competitor['given_name'],$competitor['family_name'], '');
         $competitor->setRoles(array("COMPETITOR"));
         return $competitor;

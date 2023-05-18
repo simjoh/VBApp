@@ -111,6 +111,7 @@ export class VolonteerComponentService {
       stats.countpassed = rand.filter((obj) => obj.passed === true).length;
       stats.notPassed = rand.filter((obj) => obj.passed === false).length;
       stats.dnf = rand.filter((obj) => obj.dnf === true).length;
+   //   stats.dns = rand.filter((obj) => obj.dns === true).length;
       if (!stats.dns){
           stats.dns = 0;
       }

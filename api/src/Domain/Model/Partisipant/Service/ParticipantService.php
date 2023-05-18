@@ -8,6 +8,7 @@ use App\Domain\Model\CheckPoint\Service\CheckpointsService;
 use App\Domain\Model\Club\Club;
 use App\Domain\Model\Club\ClubRepository;
 use App\Domain\Model\Club\Service\ClubService;
+use App\Domain\Model\Competitor\Competitor;
 use App\Domain\Model\Competitor\Repository\CompetitorInfoRepository;
 use App\Domain\Model\Competitor\Service\CompetitorInfoService;
 use App\Domain\Model\Competitor\Service\CompetitorService;
@@ -17,6 +18,7 @@ use App\Domain\Model\Partisipant\Participant;
 use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
 use App\Domain\Model\Partisipant\Rest\ParticipantAssembly;
 use App\Domain\Model\Partisipant\Rest\ParticipantInformationAssembly;
+use App\Domain\Model\Partisipant\Rest\ParticipantInformationRepresentation;
 use App\Domain\Model\Partisipant\Rest\ParticipantRepresentation;
 use App\Domain\Model\Randonneur\Service\RandonneurService;
 use App\Domain\Model\Track\Repository\TrackRepository;
@@ -153,22 +155,72 @@ class ParticipantService extends ServiceAbstract
         return $this->participantassembly->toRepresentations($participant, $currentUserUid);
     }
 
-    public function createparticipant(ParticipantRepresentation $participantRepresentation ,string $currentUserUid): ?ParticipantRepresentation {
+    public function createparticipant(string $track_uid, ParticipantInformationRepresentation $participantInformationRepresentation ,string $currentUserUid): ?ParticipantRepresentation {
 
+        $track = $this->trackRepository->getTrackByUid($track_uid);
 
-        $track = $this->trackRepository->getTrackByUid($participantRepresentation->getTrackUid());
-
-        $club = $this->clubrepository->getClubByUId($participantRepresentation->getClubUid());
-
-
-
-
-
-        $participant = $this->participantRepository->createparticipant($this->participantassembly->toParticipation($participantRepresentation));
-        if(!isset($participantforcompetitor)){
-            return null;
+        if(!isset($track)){
+            throw new  BrevetException('Finns ingen bana med det uid:et', 1, null);
         }
-        return $this->participantassembly->toRepresentation($participant, $currentUserUid);
+
+        $club = $participantInformationRepresentation->getClubRepresentation();
+        $competitorrepresentation = $participantInformationRepresentation->getCompetitorRepresentation();
+        $competitorInfo = $participantInformationRepresentation->getCompetitorInforepresentation();
+        $participantInput = $participantInformationRepresentation->getParticipant();
+
+
+        if(isset($club) && $club->getClubUid() !== null){
+            $club = $this->clubrepository->getClubByUId($club->getClubUid());
+        } else {
+             $club_uid = $this->clubrepository->createClub($club->getAcpCode(),$club->getTitle());
+             $club = $this->clubrepository->getClubByUId($club_uid);
+        }
+
+        if(isset($competitorrepresentation)){
+            if($competitorrepresentation->getCompetitorUid() != null){
+                $competitorrepresentation = $this->competitorService->getCompetitorByUid($competitorrepresentation->getCompetitorUid(),"");
+            } else {
+
+                $competitor = $this->competitorService->createCompetitor($competitorrepresentation->getGivenName(), $competitorrepresentation->getFamilyName(),"ordernr", $competitorrepresentation->getBirthDate());
+
+                if($competitor->getId() != null){
+                    $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParams($competitorInfo->getEmail(), $competitorInfo->getPhone(), $competitorInfo->getAdress(), $competitorInfo->getAdress(),$competitorInfo->getPlace(), $competitorInfo->getCountry(), $competitor->getId());
+                }
+
+
+            }
+        } else {
+            throw new  BrevetException('Kan inte skapa deltagare', 1, null);
+        }
+
+        $participant = new Participant();
+        $participant->setCompetitorUid(isset($competitor) && $competitor->getId() != null ? $competitor->getId() : $competitorrepresentation->getCompetitorUid());
+        $participant->setStartnumber($participantInput->getStartnumber());
+        $participant->setFinished(false);
+        $participant->setTrackUid($track->getTrackUid());
+        $participant->setDnf(false);
+        $participant->setDns(false);
+        $participant->setTime(null);
+        $participant->setStarted(false);
+        $participant->setAcpkod("s");
+        $participant->setClubUid($club->getClubUid());
+        $participant->setTrackUid($track->getTrackUid());
+        $participant->setRegisterDateTime(date('Y-m-d H:i:s'));
+
+
+        $participantcreated = $this->participantRepository->createparticipant($participant);
+
+        if(isset($participantcreated)){
+
+            $this->participantRepository->createTrackCheckpointsFor($participant,$this->trackRepository->checkpoints($track->getTrackUid()));
+        }
+
+        if(isset($participantcreated) && isset($competitor)){
+            // skapa upp inloggning för cyklisten
+            $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $participant->getStartnumber(), $participant->getStartnumber());
+        }
+
+        return $this->participantassembly->toRepresentation($participant, array());
     }
 
     public function updatparticipant(ParticipantRepresentation $participantRepresentation ,string $currentUserUid): ?ParticipantRepresentation {
@@ -515,7 +567,13 @@ class ParticipantService extends ServiceAbstract
         return $this->participantRepository->rollbackStamp($participant->getParticipantUid(), $checkpoint_uid);
     }
 
+    public function addParticipantOnTrack(string $track_uid,ParticipantInformationRepresentation $participantInformationRepresentation )
+    {
 
+        $this->createparticipant($track_uid, $participantInformationRepresentation, "");
+//        $track = $this->trackRepository->getTrackByUid($participant->getTrackUid());
+
+    }
 
 
     private function getCsv(string $filename){

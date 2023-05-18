@@ -22,9 +22,9 @@ export class CheckpointComponent implements OnInit {
   checkedin$ = this.chekedinSubject.asObservable().pipe(
     map((val) => {
       if (val === false) {
-        this.checkinknapptext = 'Checkin'
+        this.checkinknapptext = 'Check in'
       } else {
-        this.checkinknapptext = 'Undo checkin'
+        this.checkinknapptext = 'Undo check in'
       }
       return val;
     })

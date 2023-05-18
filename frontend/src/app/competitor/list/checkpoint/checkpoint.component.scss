@@ -1,0 +1,31 @@
+
+:host {
+    ::ng-deep
+
+    .p-button.p-button-secondary {
+        color: #ffffff;
+        background: #343a40;
+        border: 1px solid #343a40;
+        font-size: 1.5rem;
+    }
+
+   .p-button.p-button-secondary {
+      height: 75px;
+    }
+
+    .p-button.p-button-danger, .p-buttonset.p-button-danger > .p-button, .p-splitbutton.p-button-danger > .p-button {
+        height: 50px;
+    }
+
+
+    .p-button.p-button-success, .p-buttonset.p-button-success > .p-button, .p-splitbutton.p-button-success > .p-button {
+        color: #ffffff;
+        background: #689F38;
+        border: 1px solid #689F38;
+    }
+
+
+
+
+
+}
