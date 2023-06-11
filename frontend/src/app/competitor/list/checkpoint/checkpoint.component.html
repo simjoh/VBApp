@@ -1,52 +1,72 @@
 <p-card [id]="checkpoints.checkpoint.checkpoint_uid" styleClass="p-card-shadow">
   <ng-template pTemplate="header">
-    <p-image class="mt-8 ml-2"  src="{{checkpoints.checkpoint.site.image}}" alt="Image" width="320" height="320" [preview]="false"></p-image>
-
+    <p-image class="mt-8 ml-2" src="{{checkpoints.checkpoint.site.image}}" alt="Image" width="320" height="320"
+             [preview]="false"></p-image>
   </ng-template>
-  <div class="p-2 col-12 sm:col-12 lg:col-12">
-    <ng-container *ngIf="checkpoints.checkpoint.site.adress != '-' || checkpoints.checkpoint.site.adress.toLowerCase() === 'hemlig'">
-    <strong>{{checkpoints.checkpoint.site.adress}}</strong><br>
-      </ng-container>
-
-    <ng-container *ngIf="checkpoints.checkpoint.site.adress === '-' || checkpoints.checkpoint.site.adress.toLowerCase() === 'hemlig'">
-      <strong>Distance:</strong> Secret <br>
-        <strong>To next:</strong> Secret
-          <br>
-          <!--    <strong>{{checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing}}</strong>-->
-          <strong>Opens:</strong> Secret <br>
-            <strong>Closes:</strong> Secret
+  <div class="p-2 col-12 sm:col-12 lg:col-12 p-card-content">
+    <ng-container
+      *ngIf="checkpoints.checkpoint.site.adress != '-' && checkpoints.checkpoint.site.place.toLowerCase()  != 'secret' && checkpoints.checkpoint.site.adress.toLowerCase() != 'hemlig'">
+      <strong>{{checkpoints.checkpoint.site.adress}}</strong><br>
     </ng-container>
 
-    <ng-container *ngIf="checkpoints.checkpoint.site.adress != '-'  || !checkpoints.checkpoint.site.adress.toLowerCase() === 'hemlig'">
-    <strong>Distance: </strong>{{distance}} Km <br>
-    <strong>To next: </strong>{{distancetonext}} Km
-    <br>
-<!--    <strong>{{checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing}}</strong>-->
-    <strong>Opens: </strong>{{checkpoints.checkpoint.opens | dateTimePrettyPrint}} <br>
-    <strong>Closes: </strong>{{checkpoints.checkpoint.closing | dateTimePrettyPrint}}
+    <ng-container
+      *ngIf="checkpoints.checkpoint.site.adress === '-' || checkpoints.checkpoint.site.place.toLowerCase() === 'secret' || checkpoints.checkpoint.site.adress.toLowerCase() === 'hemlig'">
+      <strong>Distance:</strong> - <br>
+      <strong>To next:</strong> -
+      <br>
+      <!--    <strong>{{checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing}}</strong>-->
+      <strong>Opens:</strong> - <br>
+      <strong>Closes:</strong> -
+    </ng-container>
+
+    <ng-container
+      *ngIf="checkpoints.checkpoint.site.adress != '-'  && checkpoints.checkpoint.site.adress.toLowerCase() != 'hemlig' && checkpoints.checkpoint.site.place.toLowerCase() != 'secret'">
+      <strong>Distance: </strong>{{distance}} Km <br>
+      <ng-container *ngIf="!nextIsSecret">
+        <strong>To next: </strong>{{distancetonext}} Km
+      </ng-container>
+
+      <ng-container *ngIf="nextIsSecret">
+        <strong>To next: </strong> - Km
+      </ng-container>
+      <br>
+      <!--    <strong>{{checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing}}</strong>-->
+      <strong>Opens: </strong>{{checkpoints.checkpoint.opens | dateTimePrettyPrint}} <br>
+      <strong>Closes: </strong>{{checkpoints.checkpoint.closing | dateTimePrettyPrint}}
     </ng-container>
     <br>
     <strong>Service:</strong> {{checkpoints.checkpoint.site.description}}<br>
-    <strong *ngIf="checkpoints.stamptime">Time:</strong>{{checkpoints.stamptime != null ? checkpoints.stamptime: "" | dateTimePrettyPrint}}<br>
-<!--    <p-tag *ngIf="start" styleClass="mr-2" value="START"></p-tag>-->
-<!--    <p-tag *ngIf="finsih" styleClass="mr-2" value="FINISH"></p-tag>-->
+    <strong
+      *ngIf="checkpoints.stamptime">Time:</strong>{{checkpoints.stamptime != null ? checkpoints.stamptime : "" | dateTimePrettyPrint}}
+    <br>
+    <!--    <p-tag *ngIf="start" styleClass="mr-2" value="START"></p-tag>-->
+    <!--    <p-tag *ngIf="finsih" styleClass="mr-2" value="FINISH"></p-tag>-->
     <p-tag hidden *ngIf="checkedin$ | async" styleClass="mr-2" icon="pi pi-check" severity="success" value="CHECKED IN"></p-tag>
     <p-tag *ngIf="isdnf$ | async" severity="danger" styleClass="mr-2" value="DNF"></p-tag>
-    <p-tag styleClass="mr-3" *ngIf="checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing" severity="danger" value="CLOSED"></p-tag>
-    <p-tag  *ngIf="checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing" styleClass="mr-2" value="OPEN"></p-tag>
+<!--    <p-tag styleClass="mr-3" *ngIf="checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing" severity="danger"-->
+<!--           value="CLOSED"></p-tag>-->
+    <p-tag *ngIf="checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing" styleClass="mr-2"
+           value="OPEN"></p-tag>
   </div>
   <ng-template pTemplate="footer">
-    <div class="col-12 sm:col-12 lg:col-12"><button [ngClass]="{'p-button-success': checkedin$ | async}" (click)="checkin()" [hidden]="!checkpoints.active" [disabled]="isdnf$ | async" class="container-fluid p-button-secondary" pButton pRipple label="{{checkinknapptext}}"></button></div>
-    <div class="col-12 sm:col-12 lg:col-12"><button  (click)="checkin()" [hidden]="checkpoints.active" [disabled]="!checkpoints.active" class="container-fluid p-button-secondary" pButton pRipple label="{{checkinknapptext}}"></button></div>
+    <div class="col-12 sm:col-12 lg:col-12">
+      <button [ngClass]="{'p-button-success': checkedin$ | async}" (click)="checkin()" [hidden]="!checkpoints.active"
+              [disabled]="isdnf$ | async" class="container-fluid p-button-secondary" pButton pRipple
+              label="{{checkinknapptext}}"></button>
+    </div>
+    <div class="col-12 sm:col-12 lg:col-12">
+      <button (click)="checkin()" [hidden]="checkpoints.active" [disabled]="!checkpoints.active"
+              class="container-fluid p-button-secondary" pButton pRipple label="{{checkinknapptext}}"></button>
+    </div>
 
-<!--    <ng-container *ngIf="checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing">-->
-<!--      <div  class="col-12 sm:col-12 lg:col-12"><button (click)="checkin()"  [disabled]="isdnf$ | async" class="container-fluid p-button-secondary" pButton pRipple label="{{checkinknapptext}}"></button></div>-->
-<!--    </ng-container>-->
-<!--    <ng-container *ngIf="!checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing">-->
-<!--      <div  class="col-12 sm:col-12 lg:col-12"><button (click)="checkin()"  [disabled]="true" class="container-fluid p-button-secondary" pButton pRipple label="{{checkinknapptext}}"></button></div>-->
-<!--    </ng-container>-->
+    <!--    <ng-container *ngIf="checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing">-->
+    <!--      <div  class="col-12 sm:col-12 lg:col-12"><button (click)="checkin()"  [disabled]="isdnf$ | async" class="container-fluid p-button-secondary" pButton pRipple label="{{checkinknapptext}}"></button></div>-->
+    <!--    </ng-container>-->
+    <!--    <ng-container *ngIf="!checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing">-->
+    <!--      <div  class="col-12 sm:col-12 lg:col-12"><button (click)="checkin()"  [disabled]="true" class="container-fluid p-button-secondary" pButton pRipple label="{{checkinknapptext}}"></button></div>-->
+    <!--    </ng-container>-->
 
-<!--    <div class="hidden col-12 sm:col-12 lg:col-12"> <button pButton (click)="setdnf()"  disabled="disabled" pRipple type="button" label="{{dnfknapptext}}" class="p-button-outlined p-button-danger container-fluid"></button></div>-->
+    <!--    <div class="hidden col-12 sm:col-12 lg:col-12"> <button pButton (click)="setdnf()"  disabled="disabled" pRipple type="button" label="{{dnfknapptext}}" class="p-button-outlined p-button-danger container-fluid"></button></div>-->
   </ng-template>
 </p-card>
 <!--<button pButton (click)="setdnf()"  disabled="{{!checkpoints.active}}" pRipple type="button" label="{{dnfknapptext}}" class="p-button-outlined p-button-danger container-fluid"></button>-->

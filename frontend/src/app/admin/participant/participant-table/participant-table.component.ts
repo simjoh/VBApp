@@ -1,8 +1,10 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {ParticipantComponentService} from "../participant-component.service";
-import {map, mergeMap, startWith} from "rxjs/operators";
-import {CheckpointRepresentation, ParticipantInformationRepresentation, ParticipantRepresentation} from "../../../shared/api/api";
-import {BehaviorSubject, combineLatest, interval} from "rxjs";
+import {map, startWith} from "rxjs/operators";
+import {ParticipantInformationRepresentation, ParticipantRepresentation} from "../../../shared/api/api";
+import {BehaviorSubject, interval} from "rxjs";
+import {DialogService} from "primeng/dynamicdialog";
+import {EditTimeDialogComponent} from "../edit-time-dialog/edit-time-dialog.component";
 
 @Component({
   selector: 'brevet-participant-table',
@@ -32,8 +34,8 @@ export class ParticipantTableComponent implements OnInit {
   intervalSub: any;
 
 
-
-  constructor(private participantComponentService: ParticipantComponentService) { }
+  constructor(private participantComponentService: ParticipantComponentService, private dialogService: DialogService) {
+  }
 
   ngOnInit(): void {
     this.intervalSub = interval(60000).pipe(
@@ -53,8 +55,8 @@ export class ParticipantTableComponent implements OnInit {
 
   }
 
-  private searchDisabled(vals: ParticipantInformationRepresentation[]){
-    if (vals.length > 0){
+  private searchDisabled(vals: ParticipantInformationRepresentation[]) {
+    if (vals.length > 0) {
       this.$serachDisabledSubject.next(false);
     } else {
       this.$serachDisabledSubject.next(true);
@@ -63,19 +65,19 @@ export class ParticipantTableComponent implements OnInit {
 
 
   test(participant_uid: any) {
-      this.participantComponentService.setCurrentparticipant(participant_uid)
+    this.participantComponentService.setCurrentparticipant(participant_uid)
   }
 
   currentparticipant(participant: ParticipantRepresentation) {
-      this.test(participant);
+    this.test(participant);
   }
 
   dnf(participant: ParticipantRepresentation) {
-      if (participant.dnf === true){
-        this.participantComponentService.rollbackdnf(participant);
-      } else {
-        this.participantComponentService.dnf(participant);
-      }
+    if (participant.dnf === true) {
+      this.participantComponentService.rollbackdnf(participant);
+    } else {
+      this.participantComponentService.dnf(participant);
+    }
 
   }
 
@@ -92,8 +94,8 @@ export class ParticipantTableComponent implements OnInit {
   }
 
   textDnsButton(started: boolean, dns: boolean): string {
-    if (!started){
-      if (dns === true){
+    if (!started) {
+      if (dns === true) {
         return "Ångra DNS";
       } else {
         return "DNS";
@@ -104,7 +106,7 @@ export class ParticipantTableComponent implements OnInit {
   }
 
   dns(participant: ParticipantRepresentation) {
-    if (participant.dns === true){
+    if (participant.dns === true) {
       this.participantComponentService.rollbackDns(participant);
     } else {
       this.participantComponentService.dns(participant);
@@ -112,7 +114,21 @@ export class ParticipantTableComponent implements OnInit {
 
   }
 
-  editTotalTime(participant: any) {
-    console.log("edit time")
+  editTotalTime(participant: ParticipantRepresentation) {
+
+    const ref = this.dialogService.open(EditTimeDialogComponent, {
+      data: {
+        time: participant.time
+      },
+      header: 'Ändra sluttid',
+    });
+
+    ref.onClose.subscribe((newTime: string) => {
+      if (newTime) {
+        participant.time = newTime
+        this.participantComponentService.updateTime(participant);
+        this.participantComponentService.reload();
+      }
+    });
   }
 }

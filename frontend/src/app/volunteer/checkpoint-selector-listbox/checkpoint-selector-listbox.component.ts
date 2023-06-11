@@ -20,7 +20,13 @@ export class CheckpointSelectorListboxComponent implements OnInit, OnDestroy {
     map((events) => {
       const items: SelectItem[] = [];
       events.map((event) => {
-        items.push( { label: event.site.place,value: event.checkpoint_uid})
+
+        if (event.site.place === 'Secret' || event.site.place === 'Secret Checkpoint' || event.site.place === 'Hemlig'){
+          items.push( { label: "Hemlig kontroll",value: event.checkpoint_uid})
+        } else {
+          items.push( { label: event.site.place,value: event.checkpoint_uid})
+        }
+
       });
       return items;
     })

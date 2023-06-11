@@ -121,4 +121,10 @@ export class ParticipantComponentService {
   reload() {
     this.$reloadsubject.next("reload");
   }
+
+async updateTime(participant: ParticipantRepresentation) {
+      await this.participantService.updateTime(participant).then(() => {
+
+      })
+  }
 }

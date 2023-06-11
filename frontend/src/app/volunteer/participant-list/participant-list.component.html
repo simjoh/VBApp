@@ -26,8 +26,8 @@
         </tr>
         <tr  class="sticky-top">
           <th class="lg:w-1" pSortableColumn="startNumber">Startnummer<p-sortIcon field="startNumber"></p-sortIcon></th>
-          <th class="lg:w-1" pSortableColumn="givenName">Förnamn<p-sortIcon field="givenName"></p-sortIcon></th>
           <th class="lg:w-2" pSortableColumn="familyName">Efternamn<p-sortIcon field="familyName"></p-sortIcon></th>
+          <th class="lg:w-1" pSortableColumn="givenName">Förnamn<p-sortIcon field="givenName"></p-sortIcon></th>
           <th class="lg:w-2" pSortableColumn="passededDateTime">Tid<p-sortIcon field="passededDateTime"></p-sortIcon>
 
           </th>
@@ -49,8 +49,8 @@
       <ng-template *ngIf="randonneurs.randonnerurs.length > 0"   pTemplate="body" let-product>
         <tr [ngClass]="{'passed': product.passed === true, 'dnf': product.dnf === true,'dns': product.dns === true}">
           <td><strong>{{product.startNumber}}</strong> </td>
-          <td><strong>{{product.givenName}}</strong></td>
           <td><strong>{{product.familyName}}</strong></td>
+          <td><strong>{{product.givenName}}</strong></td>
           <td>{{product.passededDateTime |  dateTimePrettyPrint}} {{product.volonteer_checkin === true && product.passed === true ? 'Volontär': ''}}</td>
           <td><button pTooltip="Checka in startnr: {{product.startNumber}} " tooltipPosition="top" pButton [disabled]="product.dnf"  (click)="checkin(product, $event)" type="button" label="{{product.passed === true ? 'Ångra': 'Checka ut'}}" class="p-button-secondary  container-fluid"></button></td>
           <td><button pTooltip="Markera att deltagaren avser att bryta" tooltipPosition="top" pButton  (click)="setdnf(product, $event)" pRipple type="button" label="{{product.dnf === true ? 'Ångra': 'DNF'}}" class="p-button-outlined p-button-danger container-fluid"></button></td>

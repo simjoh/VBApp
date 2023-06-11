@@ -16,6 +16,7 @@ import {DropdownModule} from "primeng/dropdown";
 import { ParticipantListComponent } from './participant-list/participant-list.component';
 import { ParticipantTableComponent } from './participant-table/participant-table.component';
 import { ParticipantCheckpointTableComponent } from './participant-checkpoint-table/participant-checkpoint-table.component';
+import { EditTimeDialogComponent } from './edit-time-dialog/edit-time-dialog.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { ParticipantCheckpointTableComponent } from './participant-checkpoint-ta
     TrackSelectorComponent,
     ParticipantListComponent,
     ParticipantTableComponent,
-    ParticipantCheckpointTableComponent
+    ParticipantCheckpointTableComponent,
+    EditTimeDialogComponent
   ],
   imports: [
     ParticipantRoutingModule,

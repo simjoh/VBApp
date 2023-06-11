@@ -1,13 +1,13 @@
 { "logos": [
  {
-    "startdate": "2022-06-19",
+    "startdate": "2023-06-11",
     "enddate": "2022-06-24",
-    "logo": "assets/midnigthsun.PNG"
+    "logo": "assets/msr-{0}.svg"
   },
   {
     "startdate": "",
     "enddate": "",
-    "logo": "assets/cykelintresset1.svg"
+    "logo": "assets/cykelintresset-{0}.svg"
   }
 ]
 }

@@ -137,10 +137,45 @@ class participantAction
     }
 
     public function updateParticipant(ServerRequestInterface $request, ResponseInterface $response){
-        $jsonDecoder = new JsonDecoder();
-        $jsonDecoder->register(new EventRepresentationTransformer());
+
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_uid = $route->getArgument('uid');
+        $track_uid = $route->getArgument('trackUid');
+        print_r('ddddddddddddddddddddddddddd');
+        $params = $request->getQueryParams();
+
+        $newTime = $params["newTime"];
+
+
+
+        $this->participantService->updateTime($track_uid, $participant_uid, $newTime);
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+    }
+
+
+    public function updateTime(ServerRequestInterface $request, ResponseInterface $response){
+
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_uid = $route->getArgument('uid');
+        $track_uid = $route->getArgument('trackUid');
+        $params = $request->getQueryParams();
+
+        $newTime = $params["newTime"];
+
+
+
+        $this->participantService->updateTime($track_uid, $participant_uid, $newTime);
+
+//        $this->participantService->updatparticipant($track_uid, $newParticipant);
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
+
+
+
+
+
     public function addParticipantOntrack(ServerRequestInterface $request, ResponseInterface $response){
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();

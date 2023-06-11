@@ -133,6 +133,7 @@ return function (App $app) {
         $app->get('/participant/{participantUid}', \App\Action\Participant\ParticipantAction::class . ':participants');
         $app->get('/participant/{uid}/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':participantOnTrack');
         $app->put('/participant/{uid}/track/{trackUid}/update', \App\Action\Participant\ParticipantAction::class . ':updateParticipant');
+        $app->put('/participant/{uid}/track/{trackUid}/updateTime', \App\Action\Participant\ParticipantAction::class . ':updateTime');
         $app->post('/participant/addparticipant/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':addParticipantOntrack');
      //   $app->post('/participants/{trackUid}/upload', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
         $app->post('/participants/upload/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');

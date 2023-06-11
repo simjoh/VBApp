@@ -2,6 +2,7 @@ import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
 import {LogoComponentService} from "./logo-component.service";
 import {map} from "rxjs/operators";
 import {DatePipe} from "@angular/common";
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'brevet-logo',
@@ -20,12 +21,26 @@ export class LogoComponent implements OnInit {
     map(all => {
       const date = new Date();
       const logotToShow = all.logos.find((logo:any) => {
+        let logoreturn;
         if(date.toISOString().split('T')[0] === logo.startdate || date.toISOString().split('T')[0] <= logo.enddate && date.toISOString().split('T')[0] >= logo.startdate) {
-          return logo;
+
+          if (this.isProduction()){
+            logoreturn = logo.logo.replace('{0}', 'prod')
+          } else {
+            logoreturn = logo.logo.replace('{0}', 'demo')
+          }
+
         }
         if(!logo.startdate && !logo.endate){
-          return logo;
+          if (this.isProduction()){
+           logoreturn = logo.logo.replace('{0}', 'prod')
+            return logo
+          } else {
+            logoreturn = logo.logo.replace('{0}', 'demo')
+          }
         }
+        logo.logo = logoreturn;
+        return logo.logo;
       })
       return logotToShow;
     }),
@@ -38,6 +53,15 @@ export class LogoComponent implements OnInit {
       } as Viewinformation
     })
   )
+
+  private isProduction(): boolean{
+    return environment.production
+  }
+
+  private replacePlaceholder(){
+
+
+  }
 
   constructor(private logocomponentService:  LogoComponentService, public datepipe: DatePipe) { }
 

@@ -1,17 +1,17 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
 import {CompetitorListComponentService} from "../competitor-list-component.service";
 import {RandonneurCheckPointRepresentation} from "../../../shared/api/api";
 import {BehaviorSubject} from "rxjs";
 import {LinkService} from "../../../core/link.service";
-import {map, sample} from "rxjs/operators";
+import {map} from "rxjs/operators";
 import {ConfirmationService} from 'primeng/api';
-import {inputNames} from "@angular/cdk/schematics";
 
 @Component({
   selector: 'brevet-checkpoint',
   templateUrl: './checkpoint.component.html',
   styleUrls: ['./checkpoint.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.Emulated,
   providers: [CompetitorListComponentService, ConfirmationService]
 })
 export class CheckpointComponent implements OnInit {
@@ -24,9 +24,9 @@ export class CheckpointComponent implements OnInit {
   checkedin$ = this.chekedinSubject.asObservable().pipe(
     map((val) => {
       if (val === false) {
-        this.checkinknapptext = 'Check in'
+        this.checkinknapptext = 'CHECK OUT'
       } else {
-        this.checkinknapptext = 'Undo check in'
+        this.checkinknapptext = 'UNDO CHECK OUT'
       }
       return val;
     })
@@ -36,7 +36,7 @@ export class CheckpointComponent implements OnInit {
   isdnf$ = this.dnfSubject.asObservable().pipe(
     map((val) => {
       if (val === true) {
-        this.dnfknapptext = 'Undo DNF'
+        this.dnfknapptext = 'UNDO DNF'
       } else {
         this.dnfknapptext = 'DNF'
       }
@@ -49,6 +49,7 @@ export class CheckpointComponent implements OnInit {
   @Input() finsih: boolean
   @Input() distance: any
   @Input() distancetonext: any
+  @Input() nextIsSecret: boolean
 
   @Output() checkedin = new EventEmitter<any>();
   @Output() dnf = new EventEmitter<any>();
@@ -61,37 +62,37 @@ export class CheckpointComponent implements OnInit {
     this.chekedinSubject.next(this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp') === false)
     this.dnfSubject.next(this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.dnf') === false)
   }
+
   checkin() {
 
-       if (!this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp')){
+    if (!this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp')) {
 
-         this.confirmationService.confirm({
-           message: 'Are you sure that you want to undo checkin at  '  + this.checkpoints.checkpoint.site.adress + " " + this.checkpoints.checkpoint.site.place,
-           accept: () => {
-             this.checkedin.emit(false);
-             this.chekedinSubject.next(false);
-           }
-         });
-       } else {
-         this.confirmationService.confirm({
-           message: 'Are you sure that you want to checkin at ' + this.checkpoints.checkpoint.site.adress + " " + this.checkpoints.checkpoint.site.place,
-           accept: () => {
-             this.checkedin.emit(true);
-           }
-         });
-       }
-  }
-
-  setdnf(){
-    if (this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.dnf')){
-    //  this.dnfSubject.next(true);
-      this.dnf.emit(true);
+      this.confirmationService.confirm({
+        message: 'Do you want to undo check out',
+        accept: () => {
+          this.checkedin.emit(false);
+          this.chekedinSubject.next(false);
+        }
+      });
     } else {
-     // this.dnfSubject.next(false);
-      this.dnf.emit(false);
+      this.confirmationService.confirm({
+        message: 'Do you want want to check out',
+        accept: () => {
+          this.checkedin.emit(true);
+        }
+      });
     }
   }
 
+  setdnf() {
+    if (this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.dnf')) {
+      //  this.dnfSubject.next(true);
+      this.dnf.emit(true);
+    } else {
+      // this.dnfSubject.next(false);
+      this.dnf.emit(false);
+    }
+  }
 
 
 }

@@ -3,6 +3,7 @@
       <ng-container *ngFor="let s of preview; index as i">
               <brevet-checkpoint  [checkpoints]="s" [preview]="true"
                                  [start]="i === 0"
+                                  [nextIsSecret]="nextISSceret(i < preview.length && i > 0 ? preview[i + 1] : preview[i])"
                                  [finsih]="i + 1 === preview.length"
                                  [distance]="s.checkpoint.distance" [distancetonext]="s.checkpoint.distance | distanceBetween: i + 1 === preview.length ?  s.checkpoint.distance : preview[i  + 1].checkpoint.distance : true">
               </brevet-checkpoint>

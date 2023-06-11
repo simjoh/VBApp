@@ -71,7 +71,7 @@ class ResultsController
 
 //        $result =  $this->resultService->trackContestants($eventUid, array());
         return $view->render($response, 'tracktrack.html', [
-            'link' => $this->settings['path'] . "tracker/" . "track/" . $args['trackUid'], 'event' => json_encode($event === null ? "": $event), 'track' => json_encode($tracks === null ? "": $tracks), 'tracks' => json_encode($tracks)
+            'link' => $this->settings['path'] . "tracker/" . "track/" . $args['trackUid'], 'event' => json_encode($event === null ? null: $event), 'track' => json_encode($tracks === null ? null: $tracks)
         ]);
     }
 

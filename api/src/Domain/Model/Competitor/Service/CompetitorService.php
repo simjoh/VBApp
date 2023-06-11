@@ -50,9 +50,8 @@ class CompetitorService
         $this->repository->creatCompetitorCredential($getId,$getParticipantUid,$int,   $int1);
     }
 
-    public function deleteCompetitorCredentialForParticipant($getParticipantUid)
+    public function deleteCompetitorCredentialForParticipant($getParticipantUid, $competitor_uid)
     {
-
-
+        $this->repository->deleteCompetitorCredentialForParticipant($getParticipantUid, $competitor_uid);
     }
 }

@@ -6,12 +6,15 @@
   <ng-container *ngFor="let s of kontroller; index as i">
     <brevet-checkpoint (checkedin)="checkin($event,s,kontroller,i)" (dnf)="dnf($event,s)"  [checkpoints]="s"
                        [start]="i === 0"
+                       [nextIsSecret]="nextISSceret(i < kontroller.length && i >= 0 ? kontroller[i + 1] : kontroller[i])"
                        [finsih]="i + 1 === kontroller.length"
                        [distance]="s.checkpoint.distance" [distancetonext]="s.checkpoint.distance | distanceBetween: i + 1 === kontroller.length ?  s.checkpoint.distance : kontroller[i  + 1].checkpoint.distance : true">
     </brevet-checkpoint>
+    <div id="{{kontroller.length + 1}}"></div>
     <br>
     <br>
   </ng-container>
+
   <div class="col-12 sm:col-12 lg:col-12"><button [disabled]="!kontroller[0].active" pButton (click)="dnf2(kontroller[0])" title="Press this button if you cant finish. You can undo this action"  pRipple type="button" label="{{dnfknapptext}}" class=" p-button-danger container-fluid"></button></div>
 </ng-container>
 

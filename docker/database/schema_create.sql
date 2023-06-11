@@ -247,8 +247,6 @@ inner join site sit on sit.site_uid = cpo.site_uid
 where pach.passed = true
 and a.started = true;
 
-
-
 create view v_race_statistic AS  select SUM(p.dnf) as dnf, SUM(p.dns) dns, SUM(p.finished) as completed , count(participant_uid) as countparticipants , t.title , t.start_date_time as racestarts ,t.track_uid, ev.event_uid, ev.start_date as eventstarts, ev.end_date as eventends from participant p inner join track t on t.track_uid = p.track_uid inner join event ev on ev.event_uid = t.event_uid  GROUP by t.title order by t.title;
 
 create view v_dns_on_event_and_track AS  select distinct(p.startnumber), p.started, ev.start_date as eventstart, ev.end_date as eventend, p.competitor_uid , t.title as bana , p.finished,  t.track_uid, p.dns, p.dnf, t.event_uid, p.time, c.given_name, c.family_name, club.title as club, ci.country , s.adress, pc.passeded_date_time, pc.passed from event ev
@@ -265,8 +263,6 @@ and p.dns = true
 and p.started = false
 and pc.passeded_date_time not in (select passeded_date_time from participant_checkpoint where passeded_date_time = null)
 group by c.given_name;
-
-
 
 create view v_track_contestant_on_event_and_track AS select * from (
 select p.startnumber , p.started, ev.start_date as eventstart, ev.end_date as eventend, p.competitor_uid , t.title as bana , p.finished,  t.track_uid, p.dns, p.dnf, t.event_uid, p.time, c.given_name, c.family_name, club.title as club, ci.country , s.adress, pc.passeded_date_time, pc.passed from event ev

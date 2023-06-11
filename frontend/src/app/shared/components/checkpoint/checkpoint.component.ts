@@ -1,8 +1,8 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input, Output, EventEmitter, OnChanges, SimpleChanges} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {RandonneurCheckPointRepresentation} from "../../../shared/api/api";
 import {BehaviorSubject} from "rxjs";
 import {LinkService} from "../../../core/link.service";
-import {map, sample} from "rxjs/operators";
+import {map} from "rxjs/operators";
 import {ConfirmationService} from 'primeng/api';
 
 @Component({
@@ -22,9 +22,9 @@ export class CheckpointComponent implements OnInit {
   checkedin$ = this.chekedinSubject.asObservable().pipe(
     map((val) => {
       if (val === false) {
-        this.checkinknapptext = 'Check in'
+        this.checkinknapptext = 'CHECK OUT'
       } else {
-        this.checkinknapptext = 'Undo check in'
+        this.checkinknapptext = 'UNDO CHECK OUT'
       }
       return val;
     })
@@ -34,7 +34,7 @@ export class CheckpointComponent implements OnInit {
   isdnf$ = this.dnfSubject.asObservable().pipe(
     map((val) => {
       if (val === true) {
-        this.dnfknapptext = 'Undo DNF'
+        this.dnfknapptext = 'UNDO DNF'
       } else {
         this.dnfknapptext = 'DNF'
       }
@@ -48,6 +48,8 @@ export class CheckpointComponent implements OnInit {
   @Input() distance: any
   @Input() distancetonext: any
   @Input() preview: boolean
+  @Input() nextIsSecret: boolean
+
 
   @Output() checkedin = new EventEmitter<any>();
   @Output() dnf = new EventEmitter<any>();
@@ -58,7 +60,7 @@ export class CheckpointComponent implements OnInit {
 
   ngOnInit(): void {
 
-    if (this.preview === true){
+    if (this.preview === true) {
       this.chekedinSubject.next(false)
       this.dnfSubject.next(false)
     } else {
@@ -67,45 +69,50 @@ export class CheckpointComponent implements OnInit {
     }
 
   }
+
   checkin() {
 
-      if (this.preview === true){
-        alert("Preview mode");
-      }
+    if (this.preview === true) {
+      alert("Preview mode");
+    }
 
-       if (!this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp')){
+    if (!this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp')) {
 
-         this.confirmationService.confirm({
-           message: 'Are you sure that you want to undo checkin at  '  + this.checkpoints.checkpoint.site.adress + " " + this.checkpoints.checkpoint.site.place,
-           accept: () => {
-             this.checkedin.emit(false);
-             this.chekedinSubject.next(false);
-           }
-         });
-       } else {
-         this.confirmationService.confirm({
-           message: 'Are you sure that you want to checkin at ' + this.checkpoints.checkpoint.site.adress + " " + this.checkpoints.checkpoint.site.place,
-           accept: () => {
-             this.checkedin.emit(true);
-           }
-         });
-       }
+      this.confirmationService.confirm({
+        message: 'Do you want want to undo check out',
+        accept: () => {
+          this.checkedin.emit(false);
+          this.chekedinSubject.next(false);
+        }
+      });
+    } else {
+      this.confirmationService.confirm({
+        message: 'Do you want want to check out',
+        accept: () => {
+          this.checkedin.emit(true);
+        }
+      });
+    }
   }
 
-  setdnf(){
+  setdnf() {
 
-    if (this.preview === true){
-        alert("Preview mode");
+    if (this.preview === true) {
+      alert("Preview mode");
     }
-    if (this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.dnf')){
-    //  this.dnfSubject.next(true);
+    if (this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.dnf')) {
+      //  this.dnfSubject.next(true);
       this.dnf.emit(true);
     } else {
-     // this.dnfSubject.next(false);
+      // this.dnfSubject.next(false);
       this.dnf.emit(false);
     }
   }
 
+
+  trimWhitespaces(s: string) {
+    return s.replace('/ /gi', "")
+  }
 
 
 }

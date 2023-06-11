@@ -14,8 +14,8 @@
           <th pSortableColumn="participant.startnumber" class="lg:col-2">Startnummer
             <p-sortIcon field="participant.startnumber"></p-sortIcon>
           </th>
-          <th pSortableColumn="competitorRepresentation.given_name" class="lg:col-2">Förnamn<p-sortIcon field="competitorRepresentation.given_name"></p-sortIcon></th>
           <th pSortableColumn="competitorRepresentation.family_name" class="lg:col-3">Efternamn<p-sortIcon field="competitorRepresentation.family_name"></p-sortIcon></th>
+          <th pSortableColumn="competitorRepresentation.given_name" class="lg:col-2">Förnamn<p-sortIcon field="competitorRepresentation.given_name"></p-sortIcon></th>
           <th  pSortableColumn="clubRepresentation.title" class="lg:col-3">Klubb<p-sortIcon field="clubRepresentation.title"></p-sortIcon></th>
           <th class="lg:col-4">Åtgärd</th>
         </tr>
@@ -27,8 +27,8 @@
                     [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
           </td>
           <td>{{participant.participant.startnumber}}</td>
-          <td>{{participant.competitorRepresentation.given_name}}</td>
           <td>{{participant.competitorRepresentation.family_name}}</td>
+          <td>{{participant.competitorRepresentation.given_name}}</td>
           <td>{{participant.clubRepresentation.title}}</td>
           <td><button [disabled]="!isPossibleToDelete(participant.participant)" (click)="remove(participant.participant)" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1"></button></td>
         </tr>

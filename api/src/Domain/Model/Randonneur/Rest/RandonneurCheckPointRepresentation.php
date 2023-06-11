@@ -14,9 +14,6 @@ class RandonneurCheckPointRepresentation implements JsonSerializable
     private ?bool $active;
     private ?string $stamptime;
 
-
-
-
     private array $links = [];
 
     /**

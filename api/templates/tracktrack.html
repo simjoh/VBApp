@@ -1,11 +1,11 @@
-
 <!DOCTYPE html>
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Consume XML request</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+		  integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script type="text/javascript">
         function ajaxFunction(callback) {
@@ -30,14 +30,14 @@
                     }
                 }
             }
-            ajaxRequest.onreadystatechange = function() {
-                if(ajaxRequest.readyState === 4) {
+            ajaxRequest.onreadystatechange = function () {
+                if (ajaxRequest.readyState === 4) {
                     var ajaxDisplay = document.getElementById('ajaxDiv');
                     // ajaxDisplay.innerHTML = JSON.parse(ajaxRequest.responseText)[0].name;
-					createTitle(`{{event}}`)
+                    createTitle(`{{event}}`)
                     // createNoContent(`{{event}}`);
-                  	 data = JSON.parse(ajaxRequest.responseText)
-                    createTableCallBack(data,`{{track}}`);
+                    data = JSON.parse(ajaxRequest.responseText)
+                    createTableCallBack(data, `{{track}}`);
                 }
             }
 
@@ -46,12 +46,12 @@
             ajaxRequest.send(null);
         }
 
-        function createTitle(data){
+        function createTitle(data) {
             //  let s = data.replaceAll('&quot;','"');
             // let result = s.replace(/^\/?|\/?$/g, "")
             // const event = JSON.parse(result);
             // document.title = event.title + " "  +" Track Randonneurs";
-			//
+            //
             // let startdate = event.startdate;
             // let enddate = event.enddate;
             // if (startdate === enddate){
@@ -59,13 +59,13 @@
             // } else {
             //     document.getElementById('title').innerHTML = event.title + "  " + startdate + " - " + enddate;
             // }
-			//
+            //
             // document.getElementById('title').classList.add('eventTitle');
         }
 
-        function createNoContent(data){
+        function createNoContent(data) {
 
-             let s = data.replaceAll('&quot;','"');
+            let s = data.replaceAll('&quot;', '"');
             let result = s.replace(/^\/?|\/?$/g, "")
             const event = JSON.parse(result);
 
@@ -73,32 +73,62 @@
             document.getElementById('nocontent').innerHTML = "Live track of " + event.title.toLowerCase() + " starts " + today.split('T')[0];
             document.getElementById('nocontent').classList.add('alert');
             document.getElementById('nocontent').classList.add('alert-primary');
-		}
+        }
 
-        function getTodayDate(){
+        function getTodayDate() {
             var today = new Date();
             var dd = String(today.getDate()).padStart(2, '0');
             var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
             var yyyy = today.getFullYear();
-           	return  yyyy + "-" + mm + '-' + dd;
-		}
+            return yyyy + "-" + mm + '-' + dd;
+        }
 
-        function createTableCallBack(data, event){
+        function parseEvent(data) {
 
-            if (data.length === 0){
-				createNoContent(event);
-				return
+            let s = data.replaceAll('&quot;', '"');
+            let result = s.replace(/^\/?|\/?$/g, "")
+            const event = JSON.parse(result);
+            return event;
+        }
+
+        function createTableCallBack(data, event) {
+
+            if (data.length === 0) {
+                createNoContent(event);
+                return
             }
 
             let table = document.querySelector("table");
-            generateTableHead(table, Object.keys(data[0]));
-            generateTable(table, data);
-		}
 
-        function replaceLast(x, y, z){
+            let event1 = parseEvent(event)
+            if (event1.title.replace(" ", "").includes('MidnightSun')) {
+                generateStaticTableHead(table)
+            } else {
+                generateTableHead(table, Object.keys(data[0]));
+            }
+
+
+            //  generateTableHead(table, Object.keys(data[0]));
+            generateTable(table, data);
+        }
+
+        function replaceLast(x, y, z) {
             var a = x.split("");
             a[x.lastIndexOf(y)] = z;
             return a.join("");
+        }
+
+        function generateStaticTableHead(table) {
+            let head = ['Id', 'Family name', 'Given name', 'Club', 'Track', 'Checkpoint', 'Checkout time', 'Status']
+            let thead = table.createTHead();
+            let row = thead.insertRow();
+
+            for (let key of head) {
+                let th = document.createElement("th");
+                let text = document.createTextNode(key);
+                th.appendChild(text);
+                row.appendChild(th);
+            }
         }
 
         function generateTable(table, data) {
@@ -126,7 +156,7 @@
                     if (element['Status'] == 'DNF' || element['Status'] == 'DNS') {
                         let cell2 = row2.insertCell();
                         let text = null;
-                        if(element[key] == ""){
+                        if (element[key] == "") {
                             text = document.createTextNode(" ");
                         } else {
                             text = document.createTextNode(element[key]);
@@ -140,7 +170,7 @@
         }
 
 
-        function sortResult(data){
+        function sortResult(data) {
 
             data.sort(function (vote1, vote2) {
 
@@ -159,7 +189,7 @@
             });
 
             return data;
-		}
+        }
 
         function generateTableHead(table, data) {
             let thead = table.createTHead();
@@ -220,10 +250,10 @@
             width: 100%;
         }
 
-		.eventTitle {
+        .eventTitle {
             font-weight: bold;
-			font-size: 25px;
-		}
+            font-size: 25px;
+        }
 
 	</style>
 </head>
