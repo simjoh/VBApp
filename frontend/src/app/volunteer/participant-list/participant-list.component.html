@@ -52,7 +52,7 @@
           <td><strong>{{product.familyName}}</strong></td>
           <td><strong>{{product.givenName}}</strong></td>
           <td>{{product.passededDateTime |  dateTimePrettyPrint}} {{product.volonteer_checkin === true && product.passed === true ? 'Volontär': ''}}</td>
-          <td><button pTooltip="Checka in startnr: {{product.startNumber}} " tooltipPosition="top" pButton [disabled]="product.dnf"  (click)="checkin(product, $event)" type="button" label="{{product.passed === true ? 'Ångra': 'Checka ut'}}" class="p-button-secondary  container-fluid"></button></td>
+          <td><button pTooltip="Checka in startnr: {{product.startNumber}} " tooltipPosition="top" pButton [disabled]="product.dnf"  (click)="checkin(product, $event)" type="button" label="{{product.passed === true ? 'Ångra': 'Checka in'}}" class="p-button-secondary  container-fluid"></button></td>
           <td><button pTooltip="Markera att deltagaren avser att bryta" tooltipPosition="top" pButton  (click)="setdnf(product, $event)" pRipple type="button" label="{{product.dnf === true ? 'Ångra': 'DNF'}}" class="p-button-outlined p-button-danger container-fluid"></button></td>
 
         </tr>

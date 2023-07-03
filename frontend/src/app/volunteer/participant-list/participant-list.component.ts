@@ -25,9 +25,9 @@ export class ParticipantListComponent implements OnInit {
     map((val) => {
       let text = "";
       if (val === false){
-        text = 'Checka ut'
+        text = 'Checka in'
       } else {
-        text = 'Ångra checka ut'
+        text = 'Ångra checka in'
       }
       return text;
     })

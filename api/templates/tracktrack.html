@@ -186,6 +186,14 @@
                 if (vote1.Efternamn > vote2.Efternamn) return 1;
                 if (vote1.Efternamn < vote2.Efternamn) return -1;
 
+                if (vote1.Status === 'DNF') return  1
+
+
+            });
+
+            data.forEach(function (car) {
+                data.push(data.splice(data.findIndex(v => v.Status == 'DNF'), 1)[0])
+                data.push(data.splice(data.findIndex(v => v.Status == 'DNS'), 1)[0])
             });
 
             return data;

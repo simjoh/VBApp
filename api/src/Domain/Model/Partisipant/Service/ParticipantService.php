@@ -473,7 +473,7 @@ class ParticipantService extends ServiceAbstract
             if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0);
             } else if (date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {
-                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, date('Y-m-d H:i:s'), 1, 0);
+                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0);
             } else if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
 //                if($this->settings['demo'] == 'false'){
 //                    if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
@@ -523,7 +523,8 @@ class ParticipantService extends ServiceAbstract
 
             $participant->setFinished(true);
             // beräkna tiden från första incheckning till nu och sätt tiden
-            $participant->setTime(Util::secToHR(Util::calculateSecondsBetween($track->getStartDateTime())));
+          //  $participant->setTime(Util::secToHR(Util::calculateSecondsBetween($track->getStartDateTime())));
+            $participant->setTime(Util::calculateSecondsBetween($track->getStartDateTime()));
             $this->participantRepository->updateParticipant($participant);
             return $this->randonneurservice->getChecpointsForRandonneurForAdmin($participant, $track);
 

@@ -34,7 +34,6 @@ export class LogoComponent implements OnInit {
         if(!logo.startdate && !logo.endate){
           if (this.isProduction()){
            logoreturn = logo.logo.replace('{0}', 'prod')
-            return logo
           } else {
             logoreturn = logo.logo.replace('{0}', 'demo')
           }

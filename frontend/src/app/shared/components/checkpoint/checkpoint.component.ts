@@ -22,9 +22,9 @@ export class CheckpointComponent implements OnInit {
   checkedin$ = this.chekedinSubject.asObservable().pipe(
     map((val) => {
       if (val === false) {
-        this.checkinknapptext = 'CHECK OUT'
+        this.checkinknapptext = 'CHECK IN'
       } else {
-        this.checkinknapptext = 'UNDO CHECK OUT'
+        this.checkinknapptext = 'UNDO CHECK IN'
       }
       return val;
     })
@@ -79,7 +79,7 @@ export class CheckpointComponent implements OnInit {
     if (!this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp')) {
 
       this.confirmationService.confirm({
-        message: 'Do you want want to undo check out',
+        message: 'Do you want want to undo check in',
         accept: () => {
           this.checkedin.emit(false);
           this.chekedinSubject.next(false);
@@ -87,7 +87,7 @@ export class CheckpointComponent implements OnInit {
       });
     } else {
       this.confirmationService.confirm({
-        message: 'Do you want want to check out',
+        message: 'Do you want want to check in',
         accept: () => {
           this.checkedin.emit(true);
         }
