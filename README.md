@@ -1,25 +1,34 @@
 # VBApp
+
 App för att administrera randonnéelopp
 
+Består av ett gui skriver i Angular och ett api skrivet i PHP
 
-  Består av ett gui skriver i Angular och ett api skrivet i PHP
-
-* [Frontend](frontend/README.md)
-* [Backend](api/README.md)
+* [Brevet-gui](frontend/README.md)
+* [Brevet-api](api/README.md)
+* [Loppservice-api](loppservice/README.md)
 
 ## Systemkrav
-    
- - Docker & docker compose
- - Angular cli
- - php
- - composer
- 
+
+- Docker & docker compose
+- Angular cli
+- php
+- composer
+
 ###Starta lokalt för utveckling
 
 ###Starta allt i docker
+
 * [Docker](docker/README.md)
-       
-#### Endast gui
+
+#### Endast brevet-gui
+
 * [Frontend](frontend/README.md)
-#### Endast backend
-* [Backend](api/README.md)
+
+#### Endast brevet-api
+
+* [Brevet-api](api/README.md)
+
+#### Endast loppservice-api
+
+* [Loppservice-api](loppservice/README.md)
