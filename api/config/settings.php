@@ -66,4 +66,6 @@ $settings['demo'] = "true";
 
 $settings['rusaurl'] = 'https://rusa.jkassen.org/time/rusa-time-api.php';
 
+$settings['loppserviceurl'] = 'http://app:80/loppservice';
+
 return $settings;

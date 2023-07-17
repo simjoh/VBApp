@@ -14,6 +14,7 @@ class PingController extends Controller
     public function ping()
     {
 
+        print_r("sssssssssssssssssssss");
         // Test database connection
         try {
            $conn = DB::connection()->getPdo();

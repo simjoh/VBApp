@@ -16,6 +16,7 @@ services:
       PMA_HOST: db-2
     links:
       - db-2
+      - app
     networks:
       - sample_network
   app:
