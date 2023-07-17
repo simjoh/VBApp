@@ -1,0 +1,93 @@
+version: "3.6"
+services:
+  php-vasterbottenbrevetapp:
+    container_name: php-apache
+    build:
+      context: .
+      dockerfile: ./docker/apache/Dockerfile
+    depends_on:
+      - database
+    volumes:
+      - ./api:/var/www/html/api/
+      - working_dir:/var/www/html/
+    ports:
+      - 8090:80
+    environment:
+      PMA_HOST: database
+    links:
+      - database
+  app:
+    build:
+      context: .
+      dockerfile: ./loppservice/Dockerfile
+      target: dev
+    volumes:
+      - ./loppservice:/var/www/html
+    ports:
+      - "8082:80"
+    environment:
+      - APP_ENV=dev
+      - APP_DEBUG=true
+    depends_on:
+      - mysql
+  mysql:
+    image: 'mysql/mysql-server:8.0'
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_USER: "loppservice"
+      MYSQL_PASSWORD: "pass"
+      MYSQL_DATABASE: "loppservice"
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    ports:
+      - 3307:3306
+    volumes:
+      - './docker/loppservice/mysql8:/var/lib/mysql:rw'
+      - './docker/loppservice/db/init.sql:/docker-entrypoint-initdb.d/01init.sql'
+  phpmyadmin_loppservice:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - '8200:80'
+    restart: always
+    environment:
+      PMA_HOST: mysql
+    depends_on:
+      - mysql
+    links:
+      - mysql
+  database:
+    build:
+      context: .
+      dockerfile: ./docker/database/Dockerfile
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci  --innodb-flush-log-at-trx-commit=0
+    environment:
+      - MYSQL_DATABASE=vasterbottenbrevet_se
+      - MYSQL_USER=myuser
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=docker
+    volumes:
+      - ./docker/database/schema_create.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./docker/database/schema_demo_data.sql:/docker-entrypoint-initdb.d/3.sql
+      - ./docker/database/functions.sql:/docker-entrypoint-initdb.d/2.sql
+    ports:
+      - '3306:3306'
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - '8080:80'
+    restart: always
+    environment:
+      PMA_HOST: database
+    depends_on:
+      - database
+    links:
+      - database
+  brevetapp_gui:
+    build:
+      context: .
+      dockerfile: ./docker/frontend/Dockerfile
+    depends_on:
+      - php-vasterbottenbrevetapp
+    links:
+      - php-vasterbottenbrevetapp
+volumes:
+  working_dir: {}

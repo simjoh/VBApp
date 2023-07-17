@@ -1,56 +1,56 @@
-version: "3.6"
-services:
-  php-apache-environment:
-    container_name: php-apache
-    build:
-      context: ./apache
-      dockerfile: Dockerfile
-    depends_on:
-      - database
-      - frontend
-    volumes:
-      - ../api:/var/www/html/api/
-      - working_dir:/var/www/html/
-    ports:
-      - 8090:80
-    environment:
-      PMA_HOST: database
-    links:
-      - database
-  database:
-    build:
-      context: ./database
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci  --innodb-flush-log-at-trx-commit=0
-    environment:
-      - MYSQL_DATABASE=vasterbottenbrevet_se
-      - MYSQL_USER=myuser
-      - MYSQL_PASSWORD=secret
-      - MYSQL_ROOT_PASSWORD=docker
-    volumes:
-      - ./database/schema_create.sql:/docker-entrypoint-initdb.d/1.sql
-      - ./database/schema_demo_data.sql:/docker-entrypoint-initdb.d/3.sql
-      - ./database/functions.sql:/docker-entrypoint-initdb.d/2.sql
-    ports:
-      - '3306:3306'
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    ports:
-      - '8080:80'
-    restart: always
-    environment:
-      PMA_HOST: database
-    depends_on:
-      - database
-    links:
-      - database
-  frontend:
-    build: ../frontend
-    volumes:
-      - working_dir:/app/dist/brevet-frontend
-  composer:
-    image: composer
-    volumes:
-      - ../api:/var/www/api
-    command: install
-volumes:
-  working_dir: {}
+#version: "3.6"
+#services:
+#  php-apache-environment:
+#    container_name: php-apache
+#    build:
+#      context: ./apache
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - database
+#      - frontend
+#    volumes:
+#      - ../api:/var/www/html/api/
+#      - working_dir:/var/www/html/
+#    ports:
+#      - 8090:80
+#    environment:
+#      PMA_HOST: database
+#    links:
+#      - database
+#  database:
+#    build:
+#      context: ./database
+#    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci  --innodb-flush-log-at-trx-commit=0
+#    environment:
+#      - MYSQL_DATABASE=vasterbottenbrevet_se
+#      - MYSQL_USER=myuser
+#      - MYSQL_PASSWORD=secret
+#      - MYSQL_ROOT_PASSWORD=docker
+#    volumes:
+#      - ./database/schema_create.sql:/docker-entrypoint-initdb.d/1.sql
+#      - ./database/schema_demo_data.sql:/docker-entrypoint-initdb.d/3.sql
+#      - ./database/functions.sql:/docker-entrypoint-initdb.d/2.sql
+#    ports:
+#      - '3306:3306'
+#  phpmyadmin:
+#    image: phpmyadmin/phpmyadmin
+#    ports:
+#      - '8080:80'
+#    restart: always
+#    environment:
+#      PMA_HOST: database
+#    depends_on:
+#      - database
+#    links:
+#      - database
+#  frontend:
+#    build: ../frontend
+#    volumes:
+#      - working_dir:/app/dist/brevet-frontend
+#  composer:
+#    image: composer
+#    volumes:
+#      - ../api:/var/www/api
+#    command: install
+#volumes:
+#  working_dir: {}

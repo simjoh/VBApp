@@ -7,3 +7,6 @@ composer.lock
 !tmp/
 tmp/*
 !tmp/empty
+
+docker/loppservice/mysql8
+loppservice/vendor

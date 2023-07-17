@@ -1,18 +1,17 @@
-FROM node:14.13-alpine as builder
+FROM node:16.10.0-alpine as builder
 
 WORKDIR /app
 
-COPY ./ /app
+COPY ./frontend/ /app
 
 RUN npm install
 
-RUN npm build
 
-FROM node:14.13-alpine
+FROM node:16.10.0-alpine
 
 RUN npm install -g serve
 
 COPY --from=builder /app/dist/brevet-frontend /app/dist/brevet-frontend
 
-ENTRYPOINT ["serve", "-s", "build", "-l", "3000"]
+ENTRYPOINT ["serve", "-s", "build", "-l", "3000", "bash"]
 
