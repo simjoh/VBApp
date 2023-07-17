@@ -1,3 +1,10 @@
+# Loppservice-api
+
+## Restapi som hanterar anmälningar till lopp
+
+### Projektet basersas på Lumen PHP
+
+
 # Lumen PHP Framework
 
 [![Build Status](https://travis-ci.org/laravel/lumen-framework.svg)](https://travis-ci.org/laravel/lumen-framework)
