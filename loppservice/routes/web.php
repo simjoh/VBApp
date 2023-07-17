@@ -17,24 +17,19 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-
-
 $router->group(['prefix' => 'loppservice/api'], function () use ($router) {
 
 
-$router->get('/ping', function () use ($router) {
-    return "ssssssssssssdddddddddd";
-});
+    $router->get('/ping', 'PingController@ping');
 
 
-$router->group(['prefix' => 'test'], function () use ($router) {
+    $router->group(['prefix' => 'test'], function () use ($router) {
 
 
-$router->get('/ping', function () use ($router) {
-    return "ping in test";
-});
+        $router->get('/ping', function () use ($router) {
+            return "ping in test";
+        });
 
 
-
-});
+    });
 });

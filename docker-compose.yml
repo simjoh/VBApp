@@ -6,16 +6,18 @@ services:
       context: .
       dockerfile: ./docker/apache/Dockerfile
     depends_on:
-      - database
+      - db-2
     volumes:
       - ./api:/var/www/html/api/
       - working_dir:/var/www/html/
     ports:
       - 8090:80
     environment:
-      PMA_HOST: database
+      PMA_HOST: db-2
     links:
-      - database
+      - db-2
+    networks:
+      - sample_network
   app:
     build:
       context: .
@@ -29,65 +31,76 @@ services:
       - APP_ENV=dev
       - APP_DEBUG=true
     depends_on:
-      - mysql
-  mysql:
-    image: 'mysql/mysql-server:8.0'
-    environment:
-      MYSQL_ROOT_PASSWORD: "root"
-      MYSQL_USER: "loppservice"
-      MYSQL_PASSWORD: "pass"
-      MYSQL_DATABASE: "loppservice"
-      MYSQL_ALLOW_EMPTY_PASSWORD: 1
-    ports:
-      - 3307:3306
-    volumes:
-      - './docker/loppservice/mysql8:/var/lib/mysql:rw'
-      - './docker/loppservice/db/init.sql:/docker-entrypoint-initdb.d/01init.sql'
-  phpmyadmin_loppservice:
-    image: phpmyadmin/phpmyadmin
-    ports:
-      - '8200:80'
+      - db-1
+    links:
+      - db-1
+    networks:
+      - sample_network
+  db-1:
+    image: mariadb:10.5.8
+    container_name: db-1
     restart: always
     environment:
-      PMA_HOST: mysql
-    depends_on:
-      - mysql
-    links:
-      - mysql
-  database:
-    build:
-      context: .
-      dockerfile: ./docker/database/Dockerfile
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci  --innodb-flush-log-at-trx-commit=0
-    environment:
-      - MYSQL_DATABASE=vasterbottenbrevet_se
-      - MYSQL_USER=myuser
-      - MYSQL_PASSWORD=secret
-      - MYSQL_ROOT_PASSWORD=docker
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_ROOT_USER: root
+      MYSQL_DATABASE: loppservice
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: secret
+    networks:
+      - sample_network
+    #    ports:
+    #      - 8087:3306
     volumes:
+      - db1_data:/var/lib/mysql
+      - /docker/loppservice/db/init.sql:/docker-entrypoint-initdb.d/01init.sql
+  db-2:
+    image: mariadb:10.5.8
+    container_name: db-2
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_ROOT_USER: root
+      MYSQL_DATABASE: vasterbottenbrevet_se
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: secret
+    networks:
+      - sample_network
+    #    ports:
+    #      - 8088:3306
+    volumes:
+      - db2_data:/var/lib/mysql
       - ./docker/database/schema_create.sql:/docker-entrypoint-initdb.d/1.sql
       - ./docker/database/schema_demo_data.sql:/docker-entrypoint-initdb.d/3.sql
       - ./docker/database/functions.sql:/docker-entrypoint-initdb.d/2.sql
-    ports:
-      - '3306:3306'
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    ports:
-      - '8080:80'
-    restart: always
+    image: phpmyadmin
+    container_name: phpmyadmin
+    links:
+      - db-1
+      - db-2
     environment:
-      PMA_HOST: database
+      PMA_HOSTS: db-1,db-2
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
     depends_on:
-      - database
-    links:
-      - database
-  brevetapp_gui:
-    build:
-      context: .
-      dockerfile: ./docker/frontend/Dockerfile
-    depends_on:
-      - php-vasterbottenbrevetapp
-    links:
-      - php-vasterbottenbrevetapp
+      - db-2
+      - db-1
+    networks:
+      - sample_network
+    ports:
+      - 8190:80
+#  brevetapp_gui:
+#    build:
+#      context: .
+#      dockerfile: ./docker/frontend/Dockerfile
+#    depends_on:
+#      - php-vasterbottenbrevetapp
+#    links:
+#      - php-vasterbottenbrevetapp
+networks:
+  sample_network:
 volumes:
   working_dir: {}
+  db1_data:
+  db2_data:
