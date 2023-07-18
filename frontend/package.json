@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve --proxy-config",
     "build": "ng build",
+    "buildfordocker": "ng build --configuration=docker",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "startserver": "node mocks/server.js",

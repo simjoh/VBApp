@@ -1,17 +1,12 @@
-FROM node:16.10.0-alpine as builder
+FROM node:19-alpine AS build
+WORKDIR /usr/src/app
+COPY package.json .
+RUN npm install -g npm@9.8.0
+COPY . .
+RUN npm run buildfordocker
 
-WORKDIR /app
+FROM nginx:alpine
 
-COPY ./frontend/ /app
-
-RUN npm install
-
-
-FROM node:16.10.0-alpine
-
-RUN npm install -g serve
-
-COPY --from=builder /app/dist/brevet-frontend /app/dist/brevet-frontend
-
-ENTRYPOINT ["serve", "-s", "build", "-l", "3000", "bash"]
+COPY --from=build /usr/src/app/dist/brevet-frontend* /usr/share/nginx/html/
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 

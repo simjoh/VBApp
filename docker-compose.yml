@@ -17,6 +17,8 @@ services:
     links:
       - db-2
       - app
+    expose:
+      - 8090
     networks:
       - sample_network
   app:
@@ -91,14 +93,25 @@ services:
       - sample_network
     ports:
       - 8190:80
-#  brevetapp_gui:
-#    build:
-#      context: .
-#      dockerfile: ./docker/frontend/Dockerfile
-#    depends_on:
-#      - php-vasterbottenbrevetapp
-#    links:
-#      - php-vasterbottenbrevetapp
+  mailhog:
+    image: mailhog/mailhog
+    logging:
+      driver: 'none'  # disable saving logs
+    ports:
+      - 1025:1025 # smtp server
+      - 8025:8025 # web ui
+  brevetapp_gui:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - php-vasterbottenbrevetapp
+    links:
+      - php-vasterbottenbrevetapp
+    ports:
+      - 85:80
+    networks:
+      - sample_network
 networks:
   sample_network:
 volumes:
