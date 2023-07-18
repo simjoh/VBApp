@@ -19,7 +19,8 @@ COPY ./docker/loppservice/apache/000-default.conf /etc/apache2/sites-available/0
 COPY ./docker/loppservice/enviroment/env.dev /var/www/html/applikation/.env.dev
 
 RUN  chmod 777 -R /var/www/html/storage/ && \
-    chown -R www-data:www-data /var/www/ && \
+     chmod 777 -R /var/www/html/storage/logs/ && \
+     chown -R  www-data:www-data /var/www/ && \
     a2enmod rewrite
 
 FROM php:8.1-apache-buster as production

@@ -2,25 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
+use App\Interfaces\PingInterface;
 
 class PingController extends Controller
 {
+
+    private $pinginterface;
+
+
+    public function __construct(PingInterface $pinginterface)
+    {
+        $this->pinginterface = $pinginterface;
+    }
+
     /**
      * Retrieve system status
      *
-     * @return Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function ping()
     {
-
-        print_r("sssssssssssssssssssss");
-        // Test database connection
-        try {
-           $conn = DB::connection()->getPdo();
-        } catch (\Exception $e) {
-            die("Could not connect to the database.  Please check your configuration. error:" . $e );
-        }
-        return response()->json(['status' => 'Helathy']);
+        $pingval = $this->pinginterface->ping();
+        return response()->json(['status' => $pingval]);
     }
 }
