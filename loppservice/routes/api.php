@@ -19,8 +19,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/ping', function (Request $request) {
-    return 'User ';
+
+
+
+Route::get('/ping', function () {
+    // Matches The "/admin/users" URL
+    return 'ping in group';
 });
 
 Route::prefix('/api')->group(function () {
@@ -29,6 +33,14 @@ Route::prefix('/api')->group(function () {
         // Matches The "/admin/users" URL
         return 'ping in group';
     });
+
+
+
+    Route::get('/pingapikey', ['middleware' => ['apikey',], function () {
+        return 'User ';
+    }]);
+
+
 
     Route::prefix('/pingtest')->group(function () {
 
