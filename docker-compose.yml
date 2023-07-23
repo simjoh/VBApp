@@ -22,12 +22,15 @@ services:
     networks:
       - sample_network
   app:
+    image: vasterbottenbrevet_se_app:latest
     build:
       context: .
       dockerfile: ./loppservice/Dockerfile
       target: dev
     volumes:
-      - ./loppservice:/var/www/html
+      - working_dir2:/var/www/html
+#      - ./loppservice:/var/www/html
+    #  - working_dir2:/var/www/html/
     ports:
       - "8082:80"
     environment:
@@ -100,6 +103,8 @@ services:
     ports:
       - 1025:1025 # smtp server
       - 8025:8025 # web ui
+    networks:
+      sample_network:
   brevetapp_gui:
     build:
       context: ./frontend
@@ -112,9 +117,20 @@ services:
       - 85:80
     networks:
       - sample_network
+  cron:
+    build:
+      context: ./docker/cron
+      dockerfile: Dockerfile
+    links:
+      - app
+    volumes:
+      - working_dir2:/var/www/html/
+    networks:
+      - sample_network
 networks:
   sample_network:
 volumes:
-  working_dir: {}
+  working_dir:
+  working_dir2:
   db1_data:
   db2_data:
