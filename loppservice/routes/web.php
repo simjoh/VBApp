@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\LocaleController;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +16,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+//    echo __('I love programming.');
     return view('welcome');
 });
+
+
+Route::get('lang/{lang}', [LocaleController::class, 'switchLang']);
+
