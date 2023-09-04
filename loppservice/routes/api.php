@@ -1,7 +1,7 @@
 <?php
 
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,37 +20,37 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
+//Route::middleware('throttle:60,1')->group(function () {
 
 
-Route::get('/ping', function () {
-    // Matches The "/admin/users" URL
-    return 'ping in group';
-});
+
 
 Route::prefix('/api')->group(function () {
 
     Route::get('/ping', function () {
         // Matches The "/admin/users" URL
-        return 'ping in group';
+        return 'ping in groupss';
     });
 
 
-
     Route::get('/pingapikey', ['middleware' => ['apikey',], function () {
-        return 'User ';
+        return 'Testar kontroll av apinyckel';
     }]);
 
 
 
-    Route::prefix('/pingtest')->group(function () {
+    Route::prefix('/pingdbtest')->group(function () {
 
         Route::get('/ping', function () {
             // Matches The "/admin/users" URL
-            try {
-                $conn = DB::connection()->getPdo();
-            } catch (\Exception $e) {
-                die("Could not connect to the database.  Please check your configuration. error:" . $e);
-            }
+//            try {
+//                $conn = DB::connection()->getPdo();
+//            } catch (\Exception $e) {
+//                die("Could not connect to the database.  Please check your configuration. error:" . $e);
+//            }
         });
     });
 });
+
+
+//});

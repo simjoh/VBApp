@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\LocaleController;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\CheckoutController;
@@ -17,6 +19,7 @@ use App\Models\Event;
 */
 
 Route::get('/', function () {
+//    echo __('I love programming.');
     return view('welcome');
 })->name('welcome');
 
@@ -34,3 +37,5 @@ Route::get('/checkout/index', [CheckoutController::class, 'index'])->name("check
 Route::post('/checkout/create', [CheckoutController::class, 'create']);
 Route::get('/checkout/success', [CheckoutController::class, 'success']);
 Route::get('/checkout/cancel', [CheckoutController::class, 'cancel']);
+
+Route::get('lang/{lang}', [LocaleController::class, 'switchLang']);
