@@ -8,7 +8,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
 use \Illuminate\Mail\Mailables\Content;
 
-class TestMail extends Mailable
+class PreRegistrationSucessEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -43,7 +43,7 @@ class TestMail extends Mailable
     {
         return new Content(
             view: 'Mail.test-email',
-            with: ['name' => $this->name],
+            with: ['name' => $this->name, 'completeregistrationlink' => 'http://loppservice.se/slutforRegistrering/registrationUid/9a3d2bce-a383-4c08-abff-9845b9fed3a2'],
         );
     }
 }
