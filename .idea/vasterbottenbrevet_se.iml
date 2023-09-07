@@ -10,6 +10,8 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/loppservice/applikation/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/loppservice/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/loppservice/tests/Feature" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/loppservice/tests/Unit" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/miladrahimi/php-jwt" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/selective/basepath" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/ralouphie/getallheaders" />
@@ -287,6 +289,14 @@
       <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/vlucas/phpdotenv" />
       <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/voku/portable-ascii" />
       <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/webmozart/assert" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/doctrine/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/doctrine/dbal" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/doctrine/deprecations" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/doctrine/event-manager" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/laravel/prompts" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/psr/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/psr/clock" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/stripe/stripe-php" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

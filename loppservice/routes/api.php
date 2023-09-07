@@ -1,8 +1,8 @@
 <?php
 
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +14,11 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -28,7 +33,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::prefix('/api')->group(function () {
 
     Route::get('/ping', function () {
-        // Matches The "/admin/users" URL
         return 'ping in groupss';
     });
 
@@ -42,12 +46,6 @@ Route::prefix('/api')->group(function () {
     Route::prefix('/pingdbtest')->group(function () {
 
         Route::get('/ping', function () {
-            // Matches The "/admin/users" URL
-//            try {
-//                $conn = DB::connection()->getPdo();
-//            } catch (\Exception $e) {
-//                die("Could not connect to the database.  Please check your configuration. error:" . $e);
-//            }
         });
     });
 });

@@ -105,18 +105,18 @@ services:
       - 8025:8025 # web ui
     networks:
       sample_network:
-  brevetapp_gui:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    depends_on:
-      - php-vasterbottenbrevetapp
-    links:
-      - php-vasterbottenbrevetapp
-    ports:
-      - 85:80
-    networks:
-      - sample_network
+#  brevetapp_gui:
+#    build:
+#      context: ./frontend
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - php-vasterbottenbrevetapp
+#    links:
+#      - php-vasterbottenbrevetapp
+#    ports:
+#      - 85:80
+#    networks:
+#      - sample_network
   cron:
     build:
       context: ./docker/cron

@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-//        Schema::create('registrations', function (Blueprint $table) {
-//            $table->uuid('registration_uid')->primary();
-//            $table->uuid('course_uid');
+        Schema::create('registrations', function (Blueprint $table) {
+            $table->uuid('registration_uid')->primary();
+            $table->uuid('course_uid');
+//            $table->uuid('adress_uid');
+//            $table->uuid('contactinformation_uid');
 //            $table->string('additional_information',500);
-//            $table->timestamps();
-//        });
+            $table->timestamps();
+        });
     }
 
     /**

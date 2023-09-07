@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Registration;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -14,9 +15,10 @@ class PreRegistrationSuccessEvent
     /**
      * Create a new event instance.
      */
-    public function __construct(string $test)
+    public function __construct(Registration $registration)
     {
         //
+        $this->registration = $registration;
     }
 
     /**
