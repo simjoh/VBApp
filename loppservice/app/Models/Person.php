@@ -24,11 +24,11 @@ class Person extends Model
     {
         return $this->hasOne(Adress::class);
     }
-//
-//    public function contactinformation(): HasOne
-//    {
-//        return $this->hasOne(contactinformation::class);
-//    }
+
+    public function contactinformation(): HasOne
+    {
+        return $this->hasOne(Contactinformation::class);
+    }
 
     protected $dateFormat = 'Y-m-d';
 

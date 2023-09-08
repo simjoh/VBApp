@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class contactinformation extends Model
+class Contactinformation extends Model
 {
     use HasFactory;
     use HasUuids;
@@ -18,6 +18,7 @@ class contactinformation extends Model
         return $this->belongsTo(Person::class);
     }
 
-    protected $fillable = ['tel'];
+    protected $fillable = ['tel','email'];
     protected $primaryKey = 'contactinformation_uid';
+    protected $table = 'contactinformation';
 }

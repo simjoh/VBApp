@@ -12,6 +12,8 @@ class PreRegistrationSuccessEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public Registration $registration;
+
     /**
      * Create a new event instance.
      */
@@ -19,6 +21,7 @@ class PreRegistrationSuccessEvent
     {
         //
         $this->registration = $registration;
+
     }
 
     /**

@@ -13,6 +13,7 @@ use Illuminate\View\View;
 
 use App\Models\Competitor;
 use Ramsey\Uuid\Uuid;
+use function DI\get;
 
 class RegistrationController extends Controller
 {
@@ -27,27 +28,15 @@ class RegistrationController extends Controller
             'first_name' => 'required',
         ]);
 
-//      $competitor = new Competitor();
-//      $competitor->given_name = $request['first_name'];
-//      $competitor->timestamps=false;
-//      $competitor->user_name = '300';
-//      $competitor->role_id = 4;
-//
-//      $competitor->save();
-
-        // Validate and store the blog post...
-
         $count = Registration::count();
-
 
         $reg_uid = Uuid::uuid4();
 
         $registration = new Registration();
         $registration->registration_uid = $reg_uid;
-        // banans uid
+        // banans uid hårdkoda tills vi bygg ut möjlighet att överföra från brevet applikationen
         $registration->course_uid = 'd32650ff-15f8-4df1-9845-d3dc252a7a84';
-        // $registration->additional_information = "testsdsad";
-        //  $registration->person()->create(['person' => $person]);
+        $registration->additional_information = "testsdsad";
         $registration->save();
 
 
@@ -71,13 +60,12 @@ class RegistrationController extends Controller
         $adress->person_person_uid = $person->person_uid;
         $adress->save();
 
-        //$post = /** ... */
+        $regtopublish = Registration::with(['person.adress', 'person.contactinformation'])->find($reg_uid);
 
-//        $dmmmmm = Registration::find($reg_uid);
-//        dd($dmmmmm->person->adress);
+        $regtopublish = Registration::where('registration_uid',$reg_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
 
-
-        event(new PreRegistrationSuccessEvent($registration));
+        //dd($regtopublish->person->adress->adress);
+        event(new PreRegistrationSuccessEvent($regtopublish));
 
         return to_route('checkout');
     }

@@ -14,7 +14,7 @@ class Registration extends Model
 
     protected $table = 'registrations';
     protected $primaryKey = 'registration_uid';
-    protected $fillable = ['course_uid'];
+    protected $fillable = ['course_uid','additional_information'];
 
     /**
      * The primary key associated with the table.

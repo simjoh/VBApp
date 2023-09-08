@@ -5,9 +5,9 @@ namespace App\Mail;
 use App\Models\Registration;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use \Illuminate\Mail\Mailables\Content;
+use Illuminate\Queue\SerializesModels;
 
 class PreRegistrationSucessEmail extends Mailable
 {
@@ -18,9 +18,9 @@ class PreRegistrationSucessEmail extends Mailable
      *
      * @return void
      */
-    public function __construct(private $name)
+    public function __construct(private Registration $registration)
     {
-        //
+
     }
 
     /**
@@ -44,7 +44,7 @@ class PreRegistrationSucessEmail extends Mailable
     {
         return new Content(
             view: 'Mail.preregistration-sucesse-mail-template',
-            with: ['name' => $this->name, 'completeregistrationlink' => 'http://loppservice.se/slutforRegistrering/registrationUid/9a3d2bce-a383-4c08-abff-9845b9fed3a2'],
+            with: ['name' => $this->registration->person->firstname, 'completeregistrationlink' => 'http://vasterbottenbrevet.se/loppservice/slutforRegistrering/registrationUid/'. $this->registration->registration_uid],
         );
     }
 }

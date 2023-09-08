@@ -20,13 +20,8 @@ class PreRegistrationSuccessEventListener
      */
     public function handle(PreRegistrationSuccessEvent $event): void
     {
-        //
-
-      /// dd($event->registration->adress);
-
         Mail::to('receiverinbox@mailhog.local')
-            ->send(new \App\Mail\PreRegistrationSucessEmail("Florian"));
+            ->send(new \App\Mail\PreRegistrationSucessEmail($event->registration));
 
-        print_r($event);
     }
 }
