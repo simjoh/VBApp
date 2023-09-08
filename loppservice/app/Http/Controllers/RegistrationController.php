@@ -3,21 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Events\PreRegistrationSuccessEvent;
-use App\Http\Controllers\Controller;
 use App\Models\Adress;
 use App\Models\Person;
 use App\Models\Registration;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
-
-use App\Models\Competitor;
 use Ramsey\Uuid\Uuid;
-use function DI\get;
 
 class RegistrationController extends Controller
 {
 
+
+    public function complete(Request $request): RedirectResponse
+    {
+        $registration_uid = $request['regsitrationUid'];
+        $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
+//        dd($preregistration);
+        return to_route('checkout');
+    }
+
+
+    public function reserve(Request $request): RedirectResponse
+    {
+        return to_route('checkout');
+    }
 
     /**
      * Show the form to create a new blog post.
@@ -47,7 +56,7 @@ class RegistrationController extends Controller
         $person->firstname = $request['first_name'];
         $person->surname = $request['last_name'];
         $person->birthdate = '2022-03-02';
-       // $person->registration_uid = $reg->registration_uid;
+        // $person->registration_uid = $reg->registration_uid;
         $person->registration_registration_uid = $reg->registration_uid;
         $person->save();
 
@@ -62,7 +71,7 @@ class RegistrationController extends Controller
 
         $regtopublish = Registration::with(['person.adress', 'person.contactinformation'])->find($reg_uid);
 
-        $regtopublish = Registration::where('registration_uid',$reg_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
+        $regtopublish = Registration::where('registration_uid', $reg_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
 
         //dd($regtopublish->person->adress->adress);
         event(new PreRegistrationSuccessEvent($regtopublish));

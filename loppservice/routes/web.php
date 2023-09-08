@@ -32,6 +32,8 @@ Route::get('/events/{uid}/register', function (string $uid) {
 });
 
 Route::post('/events/{uid}/register', [RegistrationController::class, 'create']);
+Route::post('/events/{uid}/reserve', [RegistrationController::class, 'reserve']);
+Route::get('/events/{uid}/registration/{regsitrationUid}/complete', [RegistrationController::class, 'complete']);
 
 Route::get('/checkout/index', [CheckoutController::class, 'index'])->name("checkout");
 Route::post('/checkout/create', [CheckoutController::class, 'create']);
