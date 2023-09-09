@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CompletedRegistrationSuccessEvent;
 use App\Events\PreRegistrationSuccessEvent;
 use App\Models\Adress;
 use App\Models\Person;
@@ -19,6 +20,7 @@ class RegistrationController extends Controller
         $registration_uid = $request['regsitrationUid'];
         $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
 //        dd($preregistration);
+        event(new CompletedRegistrationSuccessEvent($preregistration));
         return to_route('checkout');
     }
 

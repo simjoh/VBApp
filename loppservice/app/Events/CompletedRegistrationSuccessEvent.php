@@ -3,25 +3,24 @@
 namespace App\Events;
 
 use App\Models\Registration;
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class PreRegistrationSuccessEvent
+class CompletedRegistrationSuccessEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
-    public Registration $registration;
 
     /**
      * Create a new event instance.
      */
     public function __construct(Registration $registration)
     {
-        //
         $this->registration = $registration;
-
     }
 
     /**
@@ -32,9 +31,7 @@ class PreRegistrationSuccessEvent
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('completed-registration'),
+            new PrivateChannel('channel-name'),
         ];
     }
 }
-
-

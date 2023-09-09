@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\CompletedRegistrationSuccessEvent;
 use App\Events\PreRegistrationSuccessEvent;
+use App\Listeners\CompletedRegistrationSuccessEventListener;
 use App\Listeners\PreRegistrationSuccessEventListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -23,6 +25,9 @@ class EventServiceProvider extends ServiceProvider
         PreRegistrationSuccessEvent::class => [
             PreRegistrationSuccessEventListener::class,
         ],
+        CompletedRegistrationSuccessEvent::class => [
+            CompletedRegistrationSuccessEventListener::class
+        ]
     ];
 
     /**

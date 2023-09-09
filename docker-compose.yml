@@ -123,6 +123,7 @@ services:
       dockerfile: Dockerfile
     links:
       - app
+      - db-1
     volumes:
       - working_dir2:/var/www/html/
     networks:

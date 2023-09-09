@@ -2,9 +2,13 @@
 
 namespace App\Console;
 
+use App\Console\Commands\CountryUpdate;
+use App\Models\Country;
+use Exception;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class Kernel extends ConsoleKernel
 {
@@ -15,9 +19,15 @@ class Kernel extends ConsoleKernel
     {
         $schedule->exec('echo "Happy New Year!" ')->hourly();
 
-        $schedule->call(function () {
-            error_log('Some message here.');
-        })->everyFiveSeconds();
+        $schedule->command(CountryUpdate::class)
+            ->everyTwoMinutes();
+
+//        $schedule->call(function () {
+//
+//
+//
+//
+//        })->everyTwoMinutes();
     }
 
     /**
@@ -25,7 +35,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }
