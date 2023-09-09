@@ -278,7 +278,7 @@ order by p.finished DESC ) as sa;
 
 
 
--- Loppservice om man vill ha den i samma db tillsvidare ---
+-- Loppservice om man vill ha den i samma db tillsvidare. Ta bort nedan annars. Inget som tillhör vasterbottenbrevet_se nedan heller---
 
 CREATE TABLE `adress` (
   `adress_uid` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
