@@ -18,7 +18,9 @@ Hello {{$name}}!
     proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 
 <a href="{{$completeregistrationlink}}">{{$completeregistrationlink}}</a>
-
+<br>
+<a href="{{$editregistrationdetails}}">{{$editregistrationdetails}}</a>
+<br>
 Slutför på {{$completeregistrationlink}}
 
 <p>Thank you</p>

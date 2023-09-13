@@ -34,4 +34,6 @@ class Person extends Model
 
     protected $table = 'person';
     protected $primaryKey = 'person_uid';
+
+    protected $with = ['adress','contactinformation'];
 }

@@ -12,11 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('countries', function (Blueprint $table) {
-            $table->id();
+            $table->id('country_id');
             $table->string('country_name_en',100);
             $table->string('country_name_sv',100);
-            $table->string('country_code',15)->unique();
+            $table->string('country_code',15);
             $table->string('flag_url',100);
+//            $table->morphs('taggable');
             $table->timestamps();
         });
     }

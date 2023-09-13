@@ -78,15 +78,17 @@
               <div class="sm:col-span-3">
                 <label for="country" class="block text-sm font-medium leading-6 text-gray-900">Country</label>
                 <div class="mt-2">
-                  <select id="country" name="country" autocomplete="country-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                    <option>United States</option>
-                    <option>Canada</option>
-                    <option>Mexico</option>
-                  </select>
+                    <select id="country" name="country" autocomplete="country-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                        <option>Select country</option>
+                        @foreach ($countries as $value => $label)
+                        <option value="{{$value}}" >
+                           {{$label->country_name_en}}
+                        </option>
+                        @endforeach
+                    </select>
                 </div>
               </div>
             </div>
-
           </div>
 <div class="mt-6 flex items-center justify-end gap-x-6">
     <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>

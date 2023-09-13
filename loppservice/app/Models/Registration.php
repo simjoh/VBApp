@@ -26,4 +26,6 @@ class Registration extends Model
     {
         return $this->hasOne(Person::class);
     }
+
+    protected $with = ['person'];
 }

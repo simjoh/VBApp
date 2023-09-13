@@ -44,7 +44,7 @@ class PreRegistrationSucessEmail extends Mailable
     {
         return new Content(
             view: 'Mail.preregistration-sucesse-mail-template',
-            with: ['name' => $this->registration->person->firstname, 'completeregistrationlink' => 'http://localhost:8082/events/' . $this->registration->course_uid . '/registration/' . $this->registration->registration_uid . '/complete'],
+            with: ['name' => $this->registration->person->firstname, 'completeregistrationlink' => 'http://localhost:8082/events/' . $this->registration->course_uid . '/registration/' . $this->registration->registration_uid . '/complete', 'editregistrationdetails' => 'http://localhost:8082/events/' . $this->registration->course_uid . '/registration/' . $this->registration->registration_uid . '/getregitration'],
         );
     }
 }
