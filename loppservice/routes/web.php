@@ -35,7 +35,7 @@ Route::post('/events/{uid}/register', [RegistrationController::class, 'create'])
 Route::post('/events/{uid}/reserve', [RegistrationController::class, 'reserve']);
 Route::get('/events/{uid}/registration/{regsitrationUid}/complete', [RegistrationController::class, 'complete']);
 Route::get('/events/{uid}/registration/{regsitrationUid}/getregitration', [RegistrationController::class, 'existingregistration']);
-Route::put('/events/{uid}/registration/{regsitrationUid}/update', [RegistrationController::class, 'update']);
+Route::put('registration.update', [RegistrationController::class, 'update']);
 
 Route::get('/checkout/index', [CheckoutController::class, 'index'])->name("checkout");
 Route::post('/checkout/create', [CheckoutController::class, 'create']);

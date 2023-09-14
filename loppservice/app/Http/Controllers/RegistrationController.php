@@ -35,8 +35,14 @@ class RegistrationController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
-        // updatera uppgifterna förutom email
-        return to_route('checkout')->with(['countries' => \App\Models\Country::all()->sortByDesc("country_name_en")]);
+       $registration =  Registration::find($request['registration_uid'])->get()->first();
+       $registration->person->firstname = $request['first_name'];
+       $registration->person->surname = $request['last_name'];
+       $registration->person->adress->city = $request['city'];
+       $registration->person->adress->adress = $request['street-address'];
+       $registration->person->adress->postal_code = $request['postal-code'];
+       $registration->person()->save($registration->person);
+        return to_route('registration.success')->with(['text' => 'Your registration is updated']);
     }
 
     public function existingregistration(Request $request)
@@ -76,8 +82,6 @@ class RegistrationController extends Controller
         $person->registration_registration_uid = $reg->registration_uid;
 
 
-
-
         $adress = new Adress();
         $adress->adress_uid = Uuid::uuid4();
         $adress->adress = $request['street-address'];
@@ -94,18 +98,12 @@ class RegistrationController extends Controller
 
 
         $country = Country::find($request['country']);
-
-
         $registration->person()->save($person);
         $person->adress()->save($adress);
         $person->contactinformation()->save($contact);
         $person->adress()->country = $country->country_id;
 
-       // dd($registration);
-       // $regtopublish = Registration::where('registration_uid', $reg_uid)->with(['person.adress' ,'person.contactinformation'])->get()->first();
-
         $user = Registration::find($reg_uid)->get()->first();
-
 
         //dd($regtopublish->person->adress->adress);
         event(new PreRegistrationSuccessEvent($user));
