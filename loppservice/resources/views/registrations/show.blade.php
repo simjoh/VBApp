@@ -1,18 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <title>Laravel</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-
-        <!-- Styles -->
-<script src="https://cdn.tailwindcss.com"></script>
-    </head>
+    @include('base')
     <body class="antialiased">
       <div class="container mx-auto">
       @if ($errors->any())
@@ -88,6 +76,14 @@
                     </select>
                 </div>
               </div>
+
+                <div class="col-span-full">
+                    <label for="about" class="block text-sm font-medium leading-6 text-gray-900">About</label>
+                    <div class="mt-2">
+                        <textarea id="extra-info"  name="extra-info" rows="5"  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"></textarea>
+                    </div>
+<!--                    <p class="mt-3 text-sm leading-6 text-gray-600">Write a few sentences about yourself.</p>-->
+                </div>
             </div>
           </div>
 <div class="mt-6 flex items-center justify-end gap-x-6">

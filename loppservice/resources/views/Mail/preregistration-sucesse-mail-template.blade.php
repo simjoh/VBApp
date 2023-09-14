@@ -1,27 +1,23 @@
-Hello {{$name}}!
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>ItsolutionStuff.com</title>
+    <title>Reservation confirmation</title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
+    <!-- Styles -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-<h1>dddd</h1>
-<p>dddd</p>
+<h2>Thank you for your pres registration to MSR 2024</h2>
 
-<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<p>Please remember to make your final registration payment of ?? SEK by bank transfer no later than the ??st of December. See payment information:<p>
 
-<a href="{{$completeregistrationlink}}">{{$completeregistrationlink}}</a>
+
+
+<a href="{{$completeregistrationlink}}">Follow the link to complete your registration</a>
 <br>
-<a href="{{$editregistrationdetails}}">{{$editregistrationdetails}}</a>
+<a href="{{$editregistrationdetails}}">Follow this link to change your registered information </a>
 <br>
-Slutför på {{$completeregistrationlink}}
 
 <p>Thank you</p>
 </body>

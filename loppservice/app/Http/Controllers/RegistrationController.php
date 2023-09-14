@@ -33,7 +33,7 @@ class RegistrationController extends Controller
         return to_route('checkout');
     }
 
-    public function update(Request $request): RedirectResponse
+    public function update(Request $request)
     {
        $registration =  Registration::find($request['registration_uid'])->get()->first();
        $registration->person->firstname = $request['first_name'];
@@ -41,8 +41,9 @@ class RegistrationController extends Controller
        $registration->person->adress->city = $request['city'];
        $registration->person->adress->adress = $request['street-address'];
        $registration->person->adress->postal_code = $request['postal-code'];
+       $registration->additional_information = $request['extra-info'];
        $registration->person()->save($registration->person);
-        return to_route('registration.success')->with(['text' => 'Your registration is updated']);
+        return view('registrations.success')->with(['text' => 'Your registration is updated']);
     }
 
     public function existingregistration(Request $request)
@@ -59,6 +60,8 @@ class RegistrationController extends Controller
     {
         $validated = $request->validate([
             'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required',
         ]);
 
         $count = Registration::count();
@@ -69,7 +72,7 @@ class RegistrationController extends Controller
         $registration->registration_uid = $reg_uid;
         // banans uid hårdkoda tills vi bygg ut möjlighet att överföra från brevet applikationen
         $registration->course_uid = 'd32650ff-15f8-4df1-9845-d3dc252a7a84';
-        $registration->additional_information = "testsdsad";
+        $registration->additional_information = $request['extra-info'];
         $registration->save();
 
         $reg = Registration::find($reg_uid);
