@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\StartlistController;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegistrationController;
@@ -43,5 +44,7 @@ Route::post('/checkout/create', [CheckoutController::class, 'create']);
 Route::get('/checkout/success', [CheckoutController::class, 'success']);
 Route::get('/checkout/cancel', [CheckoutController::class, 'cancel']);
 Route::post('/checkout/events', [WebhookController::class, 'index']);
+
+Route::get('/startlist/event/{eventuid}/showall', [StartlistController::class, 'startlistFor']);
 
 Route::get('lang/{lang}', [LocaleController::class, 'switchLang']);

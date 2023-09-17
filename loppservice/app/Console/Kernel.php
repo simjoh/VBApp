@@ -20,7 +20,7 @@ class Kernel extends ConsoleKernel
         $schedule->exec('echo "Happy New Year!" ')->hourly();
 
         $schedule->command(CountryUpdate::class)
-            ->everyMinute();
+            ->everyFifteenSeconds();
 
 //        $schedule->call(function () {
 //
