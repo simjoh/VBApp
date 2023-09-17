@@ -17,6 +17,8 @@
 <div class="container mx-auto">
     <form method="post" action="/checkout/create">
         @csrf
+        <input type="hidden" name="registration_uid" value="{{$registration->registration_uid}}">
+
 
         <div class="mt-6 flex items-center justify-end gap-x-6">
             <button type="submit"

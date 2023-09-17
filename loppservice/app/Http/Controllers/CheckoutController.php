@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Registration;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,55 +15,23 @@ class CheckoutController extends Controller
      */
     public function create(Request $request): RedirectResponse
     {
-      $stripeSecretKey = "";
+      \Stripe\Stripe::setApiKey(env("STRIPE_SECRET_KEY"));
 
-      /*
-       * Create products and prices
-       *
+      $line_items = array();
 
-      $stripe = new \Stripe\StripeClient($stripeSecretKey);
-      $product = $stripe->products->create(['name' => 'Final Registration']);
+      $registration = Registration::find($request["registration_uid"]);
 
-      echo $product;
-
-      // Preregistration prod_OZP9ItUvD9HgA2
-      // Full registration prod_OZPCexqDhvEruR
-      // Final registration prod_OZPENSPXjGGtFu  (Pre + Final = full registration)
-
-      $price1 = $stripe->prices->create([
-          'product' => 'prod_OZP9ItUvD9HgA2',
-          'unit_amount' => 50000,
-          'currency' => 'sek',
-      ]);
-      $price2 = $stripe->prices->create([
-          'product' => 'prod_OZPENSPXjGGtFu',
-          'unit_amount' => 250000,
-          'currency' => 'sek',
-      ]);
-      $price3 = $stripe->prices->create([
-          'product' => 'prod_OZPCexqDhvEruR',
-          'unit_amount' => 300000,
-          'currency' => 'sek',
-      ]);
-
-      // Pre price_1NmGUHAA4Elik9x6JFNpqv6A
-      // Final: price_1NmGUIAA4Elik9x6aOWQNmSE
-      // Full: price_1NmGUIAA4Elik9x6Yt4Z4vLM
-      *
-      */
-
-
-        $stripeSecretKey = "";
-      \Stripe\Stripe::setApiKey($stripeSecretKey);
+      if ($registration->reservation) {
+          $line_items = array("price" => "price_1NrHBYLnAzN3QPcUumT5kAA2", "quantity" => 1);
+      } else {
+          $line_items = array("price" => "price_1NrHCELnAzN3QPcU6FPhBD8o", "quantity" => 1);
+      }
 
       $YOUR_DOMAIN = 'http://localhost:8082';
 
       $checkout_session = \Stripe\Checkout\Session::create([
-          'line_items' => [[
-              # Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
-              'price' => 'price_1NmGUHAA4Elik9x6JFNpqv6A',
-              'quantity' => 1,
-          ]],
+          'client_reference_id' => $registration->registration_uid,
+          'line_items' => [$line_items],
           'mode' => 'payment',
           'success_url' => $YOUR_DOMAIN . '/checkout/success',
           'cancel_url' => $YOUR_DOMAIN . '/checkout/cancel',
@@ -73,7 +42,8 @@ class CheckoutController extends Controller
 
     public function index(Request $request)
     {
-        return view('checkout.index'); // , compact('customer'));
+        $registration = Registration::find($request["reg"]);
+        return view('checkout.index')->with(['registration' => $registration]);
     }
 
     public function success(Request $request)

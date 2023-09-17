@@ -43,7 +43,7 @@ Route::get('/checkout/index', [CheckoutController::class, 'index'])->name("check
 Route::post('/checkout/create', [CheckoutController::class, 'create']);
 Route::get('/checkout/success', [CheckoutController::class, 'success']);
 Route::get('/checkout/cancel', [CheckoutController::class, 'cancel']);
-Route::post('/checkout/events', [WebhookController::class, 'index']);
+Route::post('/payments/events', [WebhookController::class, 'index']);
 
 Route::get('/startlist/event/{eventuid}/showall', [StartlistController::class, 'startlistFor']);
 

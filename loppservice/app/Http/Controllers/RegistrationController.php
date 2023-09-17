@@ -27,7 +27,7 @@ class RegistrationController extends Controller
         $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
 //        dd($preregistration);
         event(new CompletedRegistrationSuccessEvent($preregistration));
-        return to_route('checkout');
+        return to_route('checkout', ["reg" => $registration_uid]);
     }
 
 
@@ -82,21 +82,24 @@ class RegistrationController extends Controller
 //        });
 
 
-        if($request->input('save') === 'reserve'){
-            $this->makereservation($request);
-           return to_route('checkout');
-        }
-
         // Skapa en registrering
         $reg_uid = Uuid::uuid4();
         $registration = new Registration();
         $registration->registration_uid = $reg_uid;
-        $registration->course_uid = $event->event_uid;
+        // $registration->course_uid = $event->event_uid;
+        // banans uid hårdkoda tills vi bygg ut möjlighet att överföra från brevet applikationen
+        $registration->course_uid = 'd32650ff-15f8-4df1-9845-d3dc252a7a84';
         $registration->additional_information = $request['extra-info'];
-        $registration->reservation = false;
+        $registration->reservation = $request->input('save') === 'reserve';
         $registration->save();
 
         $reg = Registration::find($reg_uid);
+
+        //if($request->input('save') === 'reserve'){
+        //    $this->makereservation($request);
+        //   return to_route('checkout');
+        //}
+
 
         $person = new Person();
         $person->person_uid = Uuid::uuid4();
@@ -130,11 +133,11 @@ class RegistrationController extends Controller
         $person->contactinformation()->save($contact);
         $person->adress()->country = $country->country_id;
 
-        $user = Registration::find($reg_uid)->get()->first();
+        // $user = Registration::find($reg_uid)->get()->first();
 
-        event(new CompletedRegistrationSuccessEvent($user));
+        // Move to webhook listener event(new CompletedRegistrationSuccessEvent($user));
 
-        return to_route('checkout');
+        return to_route('checkout', ["reg" => $reg->registration_uid]);
     }
 
 //    private function makeAdress(Request $request, Person $person, Country $country): Adress{
@@ -199,10 +202,10 @@ class RegistrationController extends Controller
         $person->contactinformation()->save($contact);
         $person->adress()->country = $country->country_id;
 
-        $user = Registration::find($reg_uid)->get()->first();
+        // $user = Registration::find($reg_uid)->get()->first();
 
         //dd($regtopublish->person->adress->adress);
-        event(new PreRegistrationSuccessEvent($user));
+        // Moved to webhook listener event(new PreRegistrationSuccessEvent($user));
 
     }
 }
