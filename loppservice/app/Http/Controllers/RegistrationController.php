@@ -10,6 +10,7 @@ use App\Models\Country;
 use App\Models\Event;
 use App\Models\Person;
 use App\Models\Registration;
+use App\Models\StartNumberConfig;
 use Exception;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\RedirectResponse;
@@ -26,6 +27,12 @@ class RegistrationController extends Controller
         $registration_uid = $request['regsitrationUid'];
         $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
 //        dd($preregistration);
+
+        // skapa ett startnummer
+
+        // Skapa ett ordernnummer typ
+
+        // skicka event och email
         event(new CompletedRegistrationSuccessEvent($preregistration));
         return to_route('checkout', ["reg" => $registration_uid]);
     }
@@ -61,8 +68,7 @@ class RegistrationController extends Controller
     public function create(Request $request): RedirectResponse
     {
         // kolla att det finns ett event med det uidet
-       $event = Event::find($request['uid'])->get()->first();
-
+       $event = Event::find($request['uid'])->first();
 
 //       if(Registration::count() >= $event->eventconfiguration->max_registrations){
 //          return to_route()
@@ -86,20 +92,15 @@ class RegistrationController extends Controller
         $reg_uid = Uuid::uuid4();
         $registration = new Registration();
         $registration->registration_uid = $reg_uid;
-        // $registration->course_uid = $event->event_uid;
         // banans uid hårdkoda tills vi bygg ut möjlighet att överföra från brevet applikationen
         $registration->course_uid = 'd32650ff-15f8-4df1-9845-d3dc252a7a84';
         $registration->additional_information = $request['extra-info'];
         $registration->reservation = $request->input('save') === 'reserve';
+        $registration->startnumber =  $this->getStartnumber($reg_uid,$event->eventconfiguration->startnumberconfig);
         $registration->save();
 
+//        dd($event->event_uid);
         $reg = Registration::find($reg_uid);
-
-        //if($request->input('save') === 'reserve'){
-        //    $this->makereservation($request);
-        //   return to_route('checkout');
-        //}
-
 
         $person = new Person();
         $person->person_uid = Uuid::uuid4();
@@ -170,6 +171,7 @@ class RegistrationController extends Controller
         $registration->course_uid = 'd32650ff-15f8-4df1-9845-d3dc252a7a84';
         $registration->additional_information = $request['extra-info'];
         $registration->reservation = true;
+        $registration->reservation_valid_until = '2023-12-31';
         $registration->save();
 
         $reg = Registration::find($reg_uid);
@@ -207,5 +209,16 @@ class RegistrationController extends Controller
         //dd($regtopublish->person->adress->adress);
         // Moved to webhook listener event(new PreRegistrationSuccessEvent($user));
 
+    }
+
+
+    private function getStartnumber(string $registration_uid, StartNumberConfig $startNumberConfig): int {
+
+        $max = Registration::where('registration_uid', $registration_uid)->max('startnumber');
+        if($max == $startNumberConfig->begins_at){
+            return  $startNumberConfig->begins_at;
+        } else {
+            return $max + $startNumberConfig->increments;
+        }
     }
 }
