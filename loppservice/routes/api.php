@@ -18,6 +18,7 @@
 
 use App\Models\Country;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
@@ -33,6 +34,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::prefix('/api')->group(function () {
+
+
+    Route::get('migrate', function () {
+        Artisan::call('migrate');
+    });
 
     Route::get('/ping', function () {
 

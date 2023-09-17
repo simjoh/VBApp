@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('description')->nullable(false);
             $table->date('startdate')->nullable(false);
             $table->date('enddate')->nullable(false);
+            $table->boolean('completed');
             $table->timestamps();
         });
     }

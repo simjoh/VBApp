@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('event_configurations', function (Blueprint $table) {
+        Schema::create('eventconfigurations', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('max_regitrations');
+            $table->bigInteger('max_registrations');
             $table->datetime('registration_opens');
             $table->datetime('registration_closes');
+            $table->morphs('eventconfiguration', 'evconf');
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('event_configurations');
+        Schema::dropIfExists('eventconfigurations');
     }
 };

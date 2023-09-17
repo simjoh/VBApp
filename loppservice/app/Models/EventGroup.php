@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class EventGroup extends Model
 {
     use HasFactory;
+
+
+    protected $dateFormat = 'Y-m-d';
 }

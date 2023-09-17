@@ -7,12 +7,14 @@ use App\Events\PreRegistrationSuccessEvent;
 use App\Models\Adress;
 use App\Models\Contactinformation;
 use App\Models\Country;
+use App\Models\Event;
 use App\Models\Person;
 use App\Models\Registration;
 use Exception;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Ramsey\Uuid\Uuid;
 
 class RegistrationController extends Controller
@@ -56,19 +58,28 @@ class RegistrationController extends Controller
     }
 
 
-
-    /**
-     * Show the form to create a new blog post.
-     */
     public function create(Request $request): RedirectResponse
     {
+        // kolla att det finns ett event med det uidet
+       $event = Event::find($request['uid'])->get()->first();
+
+
+//       if(Registration::count() >= $event->eventconfiguration->max_registrations){
+//          return to_route()
+//       }
+
         $count = Registration::count();
 
         $validated = $request->validate([
-            'first_name' => 'required',
+            'first_name' => 'required|string|max:100',
             'last_name' => 'required',
             'email' => 'required',
         ]);
+
+//        Validator::extend('tomany', function($attribute, $value, $parameters) use ($event) {
+//            $photos=Registration::count();
+//            return false;
+//        });
 
 
         if($request->input('save') === 'reserve'){
@@ -76,12 +87,11 @@ class RegistrationController extends Controller
            return to_route('checkout');
         }
 
+        // Skapa en registrering
         $reg_uid = Uuid::uuid4();
-
         $registration = new Registration();
         $registration->registration_uid = $reg_uid;
-        // banans uid hårdkoda tills vi bygg ut möjlighet att överföra från brevet applikationen
-        $registration->course_uid = 'd32650ff-15f8-4df1-9845-d3dc252a7a84';
+        $registration->course_uid = $event->event_uid;
         $registration->additional_information = $request['extra-info'];
         $registration->reservation = false;
         $registration->save();
