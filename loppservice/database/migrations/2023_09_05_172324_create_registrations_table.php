@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('course_uid');
             $table->string('additional_information',500)->nullable();
             $table->boolean('reservation');
+            $table->date('reservation_valid_until')->nullable();
             $table->bigInteger('startnumber')->nullable();
             $table->timestamps();
         });

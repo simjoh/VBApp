@@ -52,7 +52,7 @@ class CheckoutController extends Controller
       */
 
 
-        $stripeSecretKey = "";
+        $stripeSecretKey = "sk_test_51NCDZ7AA4Elik9x6HuKE2aoJbXlSoHi9CQVz7xR25gFULK5m3oH4a0sMdspkGxyz8mWTct5en3visr0sX6dNnwOC00rgk9hVYD";
       \Stripe\Stripe::setApiKey($stripeSecretKey);
 
       $YOUR_DOMAIN = 'http://localhost:8082';

@@ -14,7 +14,10 @@ class Event extends Model
         return $this->morphOne('App\Models\EventConfiguration', 'eventconfiguration');
     }
 
+    protected $fillable = ['event_uid'];
+
     protected $with = ['eventconfiguration'];
     protected $primaryKey = 'event_uid';
     protected $dateFormat = 'Y-m-d';
+
 }
