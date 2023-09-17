@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\WebhookController;
 use App\Models\Event;
 
 /*
@@ -41,5 +42,6 @@ Route::get('/checkout/index', [CheckoutController::class, 'index'])->name("check
 Route::post('/checkout/create', [CheckoutController::class, 'create']);
 Route::get('/checkout/success', [CheckoutController::class, 'success']);
 Route::get('/checkout/cancel', [CheckoutController::class, 'cancel']);
+Route::post('/checkout/events', [WebhookController::class, 'index']);
 
 Route::get('lang/{lang}', [LocaleController::class, 'switchLang']);
