@@ -34,6 +34,11 @@ return new class extends Migration
             $catergoryother->description = 'Other';
             $catergoryother->save();
 
+            $catergoryservice = new Categorie();
+            $catergoryservice->name = 'Service';
+            $catergoryservice->description = 'Event service for participants';
+            $catergoryservice->save();
+
         });
 
     }

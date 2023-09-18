@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Events\CompletedRegistrationSuccessEvent;
-use App\Events\PreRegistrationSuccessEvent;
 use App\Models\Adress;
 use App\Models\Contactinformation;
 use App\Models\Country;
 use App\Models\Event;
+use App\Models\Optional;
 use App\Models\Person;
+use App\Models\Product;
 use App\Models\Registration;
 use App\Models\StartNumberConfig;
 use Illuminate\Http\RedirectResponse;
@@ -86,7 +87,7 @@ class RegistrationController extends Controller
         $registration->course_uid = 'd32650ff-15f8-4df1-9845-d3dc252a7a84';
         $registration->additional_information = $request['extra-info'];
         // sätt reserve eller complete baserat på
-        if($request->input('save') === 'reserve'){
+        if ($request->input('save') === 'reserve') {
             $registration->reservation = true;
             $registration->reservation_valid_until = '2023-12-31';
         }
@@ -114,7 +115,7 @@ class RegistrationController extends Controller
 
         $contact = new Contactinformation();
         $contact->contactinformation_uid = Uuid::uuid4();
-        $contact->tel = '12345';
+        $contact->tel = $request['tel'];
         $contact->email = $request['email'];
 
         $country = Country::find($request['country']);
@@ -122,6 +123,18 @@ class RegistrationController extends Controller
         $person->adress()->save($adress);
         $person->contactinformation()->save($contact);
         $person->adress()->country = $country->country_id;
+
+
+        //ta hand om  extra tillvallen
+
+
+        $optional = new Optional();
+        $optional->registration_uid = $reg->registration_uid;
+        $optional->productID = 1000;
+        $optional->save();
+
+//        dd($request->all());
+
 
         return to_route('checkout', ["reg" => $reg->registration_uid]);
     }

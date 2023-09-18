@@ -70,6 +70,13 @@
                 </div>
               </div>
 
+                <div class="sm:col-span-4">
+                    <label for="tel" class="block text-sm font-medium leading-6 text-gray-900">Tel</label>
+                    <div class="mt-2">
+                        <input type="text" name="tel" id="tel" autocomplete="tel-level2" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                    </div>
+                </div>
+
               <div class="sm:col-span-3">
                 <label for="country" class="block text-sm font-medium leading-6 text-gray-900">Country</label>
                 <div class="mt-2">
@@ -98,7 +105,7 @@
                         <div class="mt-6 space-y-6">
                             <div class="relative flex gap-x-3">
                                 <div class="flex h-6 items-center">
-                                    <input id="pre_event_coffee_ride" name="pre_event_coffee_ride" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                    <input id="pre_event_coffee_ride" name="1000" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 </div>
                                 <div class="text-sm leading-6">
                                     <label for="pre_event_coffee_ride" class="font-medium text-gray-900">Pre-event coffee ride - Umeå Plaza, Saturday 15 June, 10:00.</label>
@@ -106,7 +113,7 @@
                             </div>
                             <div class="relative flex gap-x-3">
                                 <div class="flex h-6 items-center">
-                                    <input id="lunch_box" name="lunch_box" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                    <input id="lunch_box" name="1001" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 </div>
                                 <div class="text-sm leading-6">
                                     <label for="lunch_box" class="font-medium text-gray-900">Lunch box - Baggböle Manor, Sunday 16 June, 15:00.</label>
@@ -114,7 +121,7 @@
                             </div>
                             <div class="relative flex gap-x-3">
                                 <div class="flex h-6 items-center">
-                                    <input id="bag_drop" name="bag_drop" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                    <input id="bag_drop" name="1002" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 </div>
                                 <div class="text-sm leading-6">
                                     <label for="bag_drop" class="font-medium text-gray-900">Bag drop Umeå Plaza - Baggböle Manor, Sunday 16 June, 15:00.</label>
@@ -122,7 +129,7 @@
                             </div>
                             <div class="relative flex gap-x-3">
                                 <div class="flex h-6 items-center">
-                                    <input id="long_term_parking" name="long_term_parking" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                    <input id="long_term_parking" name="1003" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 </div>
                                 <div class="text-sm leading-6">
                                     <label for="long_term_parking" class="font-medium text-gray-900">Long-term parking - Baggböle Manor, Sunday 16 June - Thursday 20 June.</label>
@@ -130,7 +137,7 @@
                             </div>
                             <div class="relative flex gap-x-3">
                                 <div class="flex h-6 items-center">
-                                    <input id="buffet_dinner" name="buffet_dinner" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                    <input id="buffet_dinner" name="1004" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 </div>
                                 <div class="text-sm leading-6">
                                     <label for="buffet_dinner" class="font-medium text-gray-900">Buffet Dinner- Brännland Inn, Sunday 16 June, 19:00.</label>
@@ -138,7 +145,7 @@
                             </div>
                             <div class="relative flex gap-x-3">
                                 <div class="flex h-6 items-center">
-                                    <input id="midsummer" name="midsummer" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                    <input id="midsummer" name="1005" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 </div>
                                 <div class="text-sm leading-6">
                                     <label for="midsummer" class="font-medium text-gray-900">Swedish Midsummer Celebration - Friday 20 June, 12:00.</label>
@@ -155,19 +162,19 @@
                         <p class="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
                         <div class="mt-6 space-y-6">
                             <div class="flex items-center gap-x-3">
-                                <input id="female-core" name="jersey" value="female-core" type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                <input id="female-core" name="jersey" value="1007" type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 <label for="female-core" class="block text-sm font-medium leading-6 text-gray-900">MSR Jersey - Female, Core Fittet, 680 SEK (-25%)</label>
                             </div>
                             <div class="flex items-center gap-x-3">
-                                <input id="female-tor" name="jersey" value="female-tor" type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                <input id="female-tor" name="jersey" value="1008" type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 <label for="female-tor" class="block text-sm font-medium leading-6 text-gray-900">MSR Jersey - Female, Tor, 980 SEK (-25%)</label>
                             </div>
                             <div class="flex items-center gap-x-3">
-                                <input id="male-core" name="jersey" value="male-core" type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                <input id="male-core" name="jersey" value="1009" type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 <label for="male-core" class="block text-sm font-medium leading-6 text-gray-900">MSR Jersey - Male, Core Fittet, 680 SEK (-25%)</label>
                             </div>
                             <div class="flex items-center gap-x-3">
-                                <input id="male-tor" name="jersey" value="male-tor"  type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                <input id="male-tor" name="jersey" value="1010"  type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 <label for="male-tor" class="block text-sm font-medium leading-6 text-gray-900">MSR Jersey - Male, Tor, 980 SEK (-25%)</label>
                             </div>
                         </div>
@@ -178,11 +185,11 @@
                         <p class="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
                         <div class="mt-6 space-y-6">
                             <div class="flex items-center gap-x-3">
-                                <input id="driver" name="carpool" value="driver"  type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                <input id="driver" name="carpool" value="1011"  type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 <label for="driver" class="block text-sm font-medium leading-6 text-gray-900">Driver looking for passengers</label>
                             </div>
                             <div class="flex items-center gap-x-3">
-                                <input id="vehicle" name="carpool"  value="vehicle" type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                <input id="vehicle" name="carpool"  value="1012" type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 <label for="vehicle" class="block text-sm font-medium leading-6 text-gray-900">Passenger looking for vehicle</label>
                             </div>
                         </div>
