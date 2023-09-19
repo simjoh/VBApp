@@ -18,6 +18,7 @@ return new class extends Migration
             $table->boolean('reservation')->default(false);
             $table->date('reservation_valid_until')->nullable();
             $table->bigInteger('startnumber')->nullable();
+            $table->uuid('club_uid')->nullable();
             $table->timestamps();
         });
     }

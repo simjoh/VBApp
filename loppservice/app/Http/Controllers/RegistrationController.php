@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\CompletedRegistrationSuccessEvent;
 use App\Models\Adress;
+use App\Models\Club;
 use App\Models\Contactinformation;
 use App\Models\Country;
 use App\Models\Event;
@@ -96,6 +97,10 @@ class RegistrationController extends Controller
         }
 
         $registration->startnumber = $this->getStartnumber('d32650ff-15f8-4df1-9845-d3dc252a7a84', $event->eventconfiguration->startnumberconfig);
+
+        $club = Club::where('name', $request['club']);
+
+
         $registration->save();
 
         $reg = Registration::find($reg_uid);
@@ -126,6 +131,8 @@ class RegistrationController extends Controller
         $person->adress()->save($adress);
         $person->contactinformation()->save($contact);
         $person->adress()->country = $country->country_id;
+
+
 
 
         //ta hand om  extra tillvallen. väldigt oflexibelt just nu men funkar för det mest initiala
