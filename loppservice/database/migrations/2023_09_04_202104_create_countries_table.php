@@ -18,10 +18,6 @@ return new class extends Migration
             $table->string('country_code',15);
             $table->string('flag_url_svg',200);
             $table->string('flag_url_png',200);
-
-
-
-//            $table->morphs('taggable');
             $table->timestamps();
         });
     }
