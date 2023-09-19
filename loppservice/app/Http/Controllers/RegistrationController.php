@@ -25,22 +25,16 @@ class RegistrationController extends Controller
     {
         $registration_uid = $request['regsitrationUid'];
         $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
-//        dd($preregistration);
+        $preregistration->reservation = false;
+        $preregistration->reservation_valid_until = null;
 
-        // skapa ett startnummer
-
-        // Skapa ett ordernnummer typ
-
-        // skicka event och email
-        event(new CompletedRegistrationSuccessEvent($preregistration));
+        // Skapa ett lösen
         return to_route('checkout', ["reg" => $registration_uid]);
     }
 
 
     public function reserve(Request $request): RedirectResponse
     {
-
-
         return to_route('checkout');
     }
 
@@ -98,8 +92,23 @@ class RegistrationController extends Controller
 
         $registration->startnumber = $this->getStartnumber('d32650ff-15f8-4df1-9845-d3dc252a7a84', $event->eventconfiguration->startnumberconfig);
 
-        $club = Club::where('name', $request['club']);
+       // $club = Club::where('name', $request['club']);
 
+        // Kolla om vi sparat klubben sen tidigare
+        $club =   Club::whereRaw('LOWER(`name`) LIKE ? ',[trim(strtolower($request['club'])).'%'])->first();
+
+        if(!$club){
+            $club_uid =  Uuid::uuid4();
+            $club = new Club();
+            $club->club_uid = $club_uid;
+            $club->name = $request['club'];
+            $club->description = null;
+            $club->official_club = false;
+            $club->save();
+            $registration->club_uid = $club_uid;
+        } else {
+            $registration->club_uid = $club->club_uid;
+        }
 
         $registration->save();
 
@@ -109,7 +118,7 @@ class RegistrationController extends Controller
         $person->person_uid = Uuid::uuid4();
         $person->firstname = $request['first_name'];
         $person->surname = $request['last_name'];
-        $person->birthdate = '2022-03-02';
+        $person->birthdate = $request['year']. "-" . $request['month'] . "-" . $request['day'];
         $person->registration_registration_uid = $reg->registration_uid;
 
 
@@ -133,9 +142,7 @@ class RegistrationController extends Controller
         $person->adress()->country = $country->country_id;
 
 
-
-
-        //ta hand om  extra tillvallen. väldigt oflexibelt just nu men funkar för det mest initiala
+        //ta hand om  extra tillvalen. väldigt oflexibelt just nu men funkar för det mest initiala
 
         $productIds = Product::all('productID')->toArray();;
 

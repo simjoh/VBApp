@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Optional;
 use App\Models\Registration;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -18,9 +19,10 @@ class CompletedRegistrationSuccessEvent
     /**
      * Create a new event instance.
      */
-    public function __construct(Registration $registration)
+    public function __construct(Registration $registration, Optional $optional)
     {
         $this->registration = $registration;
+        $this->optional = $optional;
     }
 
     /**
@@ -31,7 +33,7 @@ class CompletedRegistrationSuccessEvent
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('channel-name'),
+            new PrivateChannel('completed-registration'),
         ];
     }
 }

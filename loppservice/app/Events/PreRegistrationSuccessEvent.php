@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Optional;
 use App\Models\Registration;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -13,14 +14,16 @@ class PreRegistrationSuccessEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public Registration $registration;
+    public Optional $optional;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(Registration $registration)
+    public function __construct(Registration $registration, Optional $optional)
     {
         //
         $this->registration = $registration;
+        $this->optional = $optional;
 
     }
 

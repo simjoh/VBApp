@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\CompletedRegistrationSuccessEvent;
 use App\Events\PreRegistrationSuccessEvent;
+use App\Models\Optional;
 use App\Models\Order;
 use App\Models\Registration;
 use App\Http\Controllers\Controller;
@@ -97,16 +98,17 @@ class WebhookController extends Controller
         $order = Order::firstWhere('payment_intent_id', $session->payment_intent);
         $order->payment_status = $session->payment_status;
         $order->save();
-        
+
         $registration = Registration::find($session->client_reference_id);
         $user = Registration::find($session->client_reference_id)->get()->first();
+        $optionals = Optional::find($session->client_reference_id)->get();
 
         if ($registration->reservation) {
             // Events to be triggered for an reservation
-            event(new PreRegistrationSuccessEvent($user));
+            event(new PreRegistrationSuccessEvent($user, $optionals));
         } else {
             // Events to be triggered for a full registration
-            event(new CompletedRegistrationSuccessEvent($user));
+            event(new CompletedRegistrationSuccessEvent($user,$optionals));
         }
     }
 
