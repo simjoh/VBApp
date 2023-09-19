@@ -45,7 +45,8 @@ class CountryUpdate extends Command
                         $country->country_name_en = $value['name']['common'];
                         $country->country_name_sv = $value['translations']['swe']['common'];
                         $country->country_code = $value['altSpellings'][0];
-                        $country->flag_url = $value['flags']['svg'];
+                        $country->flag_url_svg = $value['flags']['svg'];
+                        $country->flag_url_png = $value['flags']['png'];
                         $country->save();
                     } else {
                         Country::where('country_code', $value['altSpellings'][0])
@@ -53,7 +54,8 @@ class CountryUpdate extends Command
                                 'country_name_en' => $value['name']['common'],
                                 'country_name_sv' => $value['translations']['swe']['common'],
                                 'country_code' => $value['altSpellings'][0],
-                                'flag_url' => $value['flags']['svg']
+                                'flag_url_svg' => $value['flags']['svg'],
+                                'flag_url_png' => $value['flags']['png']
                             ]);
                     }
             }

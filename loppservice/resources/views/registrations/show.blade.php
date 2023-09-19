@@ -185,11 +185,11 @@
                         <p class="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
                         <div class="mt-6 space-y-6">
                             <div class="flex items-center gap-x-3">
-                                <input id="driver" name="carpool" value="1011"  type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                <input id="driver" name="productID" value="1011"  type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 <label for="driver" class="block text-sm font-medium leading-6 text-gray-900">Driver looking for passengers</label>
                             </div>
                             <div class="flex items-center gap-x-3">
-                                <input id="vehicle" name="carpool"  value="1012" type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                                <input id="vehicle" name="productID"  value="1012" type="radio" class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
                                 <label for="vehicle" class="block text-sm font-medium leading-6 text-gray-900">Passenger looking for vehicle</label>
                             </div>
                         </div>

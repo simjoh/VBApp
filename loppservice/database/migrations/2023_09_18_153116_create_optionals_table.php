@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('optionals', function (Blueprint $table) {
             $table->uuid('optional_uid')->primary();
-            $table->uuid('registration_uid')->unique();
+            $table->uuid('registration_uid');
             $table->unsignedBigInteger('productID')->index();
             $table->foreign('productID')->references('productID')->on('products')->onDelete('cascade');;
             $table->timestamps();

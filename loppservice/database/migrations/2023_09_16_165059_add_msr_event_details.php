@@ -27,6 +27,7 @@ return new class extends Migration
         $eventconfiguration->max_registrations = 200;
         $eventconfiguration->registration_opens = '2023-09-01 00:00:00';
         $eventconfiguration->registration_closes = '2024-06-01 00:00:00';
+        $eventconfiguration->resarvation_on_event = true;
         $event->eventconfiguration()->save($eventconfiguration);
 
     }

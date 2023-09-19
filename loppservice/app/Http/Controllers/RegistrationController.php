@@ -52,6 +52,8 @@ class RegistrationController extends Controller
         $registration->person->adress->adress = $request['street-address'];
         $registration->person->adress->postal_code = $request['postal-code'];
         $registration->additional_information = $request['extra-info'];
+        $registration->contactinformation->tel = $request['tel'];
+        $registration->contactinformation->email = $request['email'];
         $registration->person()->save($registration->person);
         $registration->save();
         return view('registrations.success')->with(['text' => 'Your registration is updated']);
@@ -77,6 +79,7 @@ class RegistrationController extends Controller
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
             'email' => 'required|regex:/(.+)@(.+)\.(.+)/i',
+            'email-confirm' => 'required|regex:/(.+)@(.+)\.(.+)/i'
         ]);
 
         // Skapa en registrering
@@ -125,15 +128,32 @@ class RegistrationController extends Controller
         $person->adress()->country = $country->country_id;
 
 
-        //ta hand om  extra tillvallen
+        //ta hand om  extra tillvallen. väldigt oflexibelt just nu men funkar för det mest initiala
 
+        $productIds = Product::all('productID')->toArray();;
 
-        $optional = new Optional();
-        $optional->registration_uid = $reg->registration_uid;
-        $optional->productID = 1000;
-        $optional->save();
+        foreach ($productIds as $product) {
+            if ($request[$product['productID']] == 'on') {
+                $optional = new Optional();
+                $optional->registration_uid = $reg->registration_uid;
+                $optional->productID = $product['productID'];
+                $optional->save();
+            }
 
-//        dd($request->all());
+            if (strval($request['productID']) == strval($product['productID'])) {
+                $optional = new Optional();
+                $optional->registration_uid = $reg->registration_uid;
+                $optional->productID = $product['productID'];
+                $optional->save();
+            }
+
+            if (strval($request['jersey']) == strval($product['productID'])) {
+                $optional = new Optional();
+                $optional->registration_uid = $reg->registration_uid;
+                $optional->productID = $product['productID'];
+                $optional->save();
+            }
+        }
 
 
         return to_route('checkout', ["reg" => $reg->registration_uid]);

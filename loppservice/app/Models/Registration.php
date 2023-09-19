@@ -16,7 +16,11 @@ class Registration extends Model
     protected $primaryKey = 'registration_uid';
     protected $fillable = ['course_uid','additional_information'];
 
-    protected $dateFormat = 'Y-m-d';
+    protected $casts = [
+        'reservation_valid_until' => 'date',
+    ];
+
+//    protected $dateFormat = 'Y-m-d';
 
     /**
      * The primary key associated with the table.

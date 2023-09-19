@@ -16,6 +16,7 @@ return new class extends Migration
             $table->bigInteger('max_registrations');
             $table->datetime('registration_opens');
             $table->datetime('registration_closes');
+            $table->boolean('resarvation_on_event')->default(false);
             $table->morphs('eventconfiguration', 'evconf');
             $table->timestamps();
         });
