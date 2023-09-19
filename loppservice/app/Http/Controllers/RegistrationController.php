@@ -76,7 +76,7 @@ class RegistrationController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
-            'email' => 'required',
+            'email' => 'required|regex:/(.+)@(.+)\.(.+)/i',
         ]);
 
         // Skapa en registrering
