@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Club;
 use App\Models\Country;
 use App\Models\Registration;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ class StartlistController extends Controller
     public function startlistFor(Request $request)
     {
         $course_uid = $request['eventuid'];
-        return view('startlist.show', ['startlista' => Registration::where('course_uid',$course_uid)->get(), 'countries' => Country::all()]);
+        return view('startlist.show', ['startlista' => Registration::where('course_uid',$course_uid)->get(), 'countries' => Country::all(), 'clubs' => Club::all()]);
     }
-    //
+
 }

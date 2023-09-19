@@ -1,4 +1,3 @@
-
 @include('base')
 <div class="container mx-auto">
     <div class="flex flex-col">
@@ -21,11 +20,21 @@
                             <td class="whitespace-nowrap px-6 py-1 font-medium">{{$starlist->startnumber}}</td>
                             @foreach ($countries as $country)
                             @if($country->country_id == $starlist->person->adress->country_id)
-                            <img class="whitespace-nowrap px-6 py-1 inline-block"><img class="float-left" src="{{$country->flag_url_png}}" alt="Contryname" width="20" height="20"> {{$starlist->person->firstname}}</td>
+                           <td> <img class="whitespace-nowrap px-6 py-1 inline-block"><img class="float-left"
+                                                                                       src="{{$country->flag_url_png}}" alt="Contryname"
+                                                                                       width="20" height="20">
+                            {{$starlist->person->firstname}}</td>
                             @endif
                             @endforeach
+
+
                             <td class="whitespace-nowrap px-6 py-1">{{$starlist->person->surname}}</td>
-                            <td class="whitespace-nowrap px-6 py-1">@mdo</td>
+                            @foreach ($clubs as $club)
+                            @if($club->club_uid == $starlist->club_uid)
+                            <td class="whitespace-nowrap px-6 py-1">{{$club->name}}</td>
+                            @endif
+                            @endforeach
+
                         </tr>
                         @endforeach
                         </tbody>
