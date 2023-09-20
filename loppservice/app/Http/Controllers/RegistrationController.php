@@ -172,9 +172,9 @@ class RegistrationController extends Controller
             }
         }
 
-        $optionals = Optional::where('registration_uid',$reg_uid)->get();
-
-        event(new CompletedRegistrationSuccessEvent($reg,$optionals));
+//        $optionals = Optional::where('registration_uid',$reg_uid)->get();
+//
+//        event(new CompletedRegistrationSuccessEvent($reg,$optionals));
         return to_route('checkout', ["reg" => $reg->registration_uid]);
     }
 
