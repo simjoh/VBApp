@@ -88,6 +88,8 @@ class RegistrationController extends Controller
         if ($request->input('save') === 'reserve') {
             $registration->reservation = true;
             $registration->reservation_valid_until = '2023-12-31';
+        } else {
+            $registration->reservation = false;
         }
 
         $registration->startnumber = $this->getStartnumber('d32650ff-15f8-4df1-9845-d3dc252a7a84', $event->eventconfiguration->startnumberconfig);

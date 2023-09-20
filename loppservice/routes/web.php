@@ -39,8 +39,7 @@ Route::get('/events/{uid}/registration/{regsitrationUid}/complete', [Registratio
 Route::get('/events/{uid}/registration/{regsitrationUid}/getregitration', [RegistrationController::class, 'existingregistration']);
 Route::put('registration.update', [RegistrationController::class, 'update']);
 
-Route::get('/checkout/index', [CheckoutController::class, 'index'])->name("checkout");
-Route::post('/checkout/create', [CheckoutController::class, 'create']);
+Route::get('/checkout/create', [CheckoutController::class, 'create'])->name("checkout");
 Route::get('/checkout/success', [CheckoutController::class, 'success']);
 Route::get('/checkout/cancel', [CheckoutController::class, 'cancel']);
 Route::post('/payments/events', [WebhookController::class, 'index']);

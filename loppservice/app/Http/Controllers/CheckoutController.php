@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Registration;
+use App\Models\Optional;
+use App\Models\Product;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
@@ -19,12 +22,20 @@ class CheckoutController extends Controller
 
       $line_items = array();
 
-      $registration = Registration::find($request["registration_uid"]);
+      $registration = Registration::find($request["reg"]);
 
       if ($registration->reservation) {
-          $line_items = array("price" => "price_1NrHBYLnAzN3QPcUumT5kAA2", "quantity" => 1);
+          $line_items = [["price" => "price_1NrHBYLnAzN3QPcUumT5kAA2", "quantity" => 1]];
       } else {
-          $line_items = array("price" => "price_1NrHCELnAzN3QPcU6FPhBD8o", "quantity" => 1);
+          $line_items = [["price" => "price_1NrHCELnAzN3QPcU6FPhBD8o", "quantity" => 1]];
+      }
+
+      $optionals = Optional::where('registration_uid', $registration->registration_uid)->get();
+      foreach ($optionals as $option) {
+          $product = Product::find($option->productID);
+          if ($product->price_id) {
+              array_push($line_items, array("price" => $product->price_id, "quantity" => 1));
+          }
       }
 
       $YOUR_DOMAIN = 'http://localhost:8082';
