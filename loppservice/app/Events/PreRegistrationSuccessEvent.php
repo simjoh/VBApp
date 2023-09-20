@@ -2,10 +2,10 @@
 
 namespace App\Events;
 
-use App\Models\Optional;
 use App\Models\Registration;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -14,12 +14,12 @@ class PreRegistrationSuccessEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public Registration $registration;
-    public Optional $optional;
+    public Collection $optional;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(Registration $registration, Optional $optional)
+    public function __construct(Registration $registration, Collection $optional)
     {
         //
         $this->registration = $registration;
@@ -35,7 +35,7 @@ class PreRegistrationSuccessEvent
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('completed-registration'),
+            new PrivateChannel('reserved-registration'),
         ];
     }
 }

@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-<h2>Thank you for your pres registration to MSR 2024</h2>
+<h2>Thank you for your prege registration to MSR 2024</h2>
 
 <p>Please remember to make your final registration payment of ?? SEK by bank transfer no later than the ??st of December. See payment information:<p>
 

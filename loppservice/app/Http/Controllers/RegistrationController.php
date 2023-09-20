@@ -13,6 +13,7 @@ use App\Models\Person;
 use App\Models\Product;
 use App\Models\Registration;
 use App\Models\StartNumberConfig;
+use App\Rules\EmailEquals;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
@@ -27,7 +28,6 @@ class RegistrationController extends Controller
         $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
         $preregistration->reservation = false;
         $preregistration->reservation_valid_until = null;
-
         // Skapa ett lösen
         return to_route('checkout', ["reg" => $registration_uid]);
     }
@@ -112,6 +112,7 @@ class RegistrationController extends Controller
             $registration->club_uid = $club->club_uid;
         }
 
+
         $registration->save();
 
         $reg = Registration::find($reg_uid);
@@ -171,7 +172,9 @@ class RegistrationController extends Controller
             }
         }
 
+        $optionals = Optional::where('registration_uid',$reg_uid)->get();
 
+        event(new CompletedRegistrationSuccessEvent($reg,$optionals));
         return to_route('checkout', ["reg" => $reg->registration_uid]);
     }
 

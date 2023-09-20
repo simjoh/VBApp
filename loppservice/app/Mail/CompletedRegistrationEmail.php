@@ -2,8 +2,10 @@
 
 namespace App\Mail;
 
+use App\Models\Event;
 use App\Models\Registration;
 use Illuminate\Bus\Queueable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -13,12 +15,14 @@ class CompletedRegistrationEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    private Collection $products;
+
     /**
      * Create a new message instance.
      */
-    public function __construct(private Registration $registration)
+    public function __construct(private Registration $registration, Collection $products, private Event $event, private string $club)
     {
-        //
+        $this->products = $products;
     }
 
     /**
@@ -39,7 +43,7 @@ class CompletedRegistrationEmail extends Mailable
 
         return new Content(
             view: 'Mail.completedregistration-sucess-mail-template',
-            with: ['name' => $this->registration->person->firstname],
+            with: ['club' => $this->club , 'startlistlink' => 'http://localhost:8082/startlist/event/' . $this->registration->course_uid . '/showall', 'registration' => $this->registration, 'adress' => $this->registration->person->adress, 'contact' => $this->registration->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event],
         );
     }
 

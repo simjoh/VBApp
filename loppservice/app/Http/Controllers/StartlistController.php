@@ -13,7 +13,9 @@ class StartlistController extends Controller
     public function startlistFor(Request $request)
     {
         $course_uid = $request['eventuid'];
-        return view('startlist.show', ['startlista' => Registration::where('course_uid',$course_uid)->get(), 'countries' => Country::all(), 'clubs' => Club::all()]);
+        $registrations = Registration::where('course_uid',$course_uid)->get();
+        $registrations->test = "ssssssssssss";
+        return view('startlist.show', ['startlista' => $registrations, 'countries' => Country::all(), 'clubs' => Club::all()]);
     }
 
 }

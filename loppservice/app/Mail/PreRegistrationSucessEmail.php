@@ -2,8 +2,10 @@
 
 namespace App\Mail;
 
+use App\Models\Optional;
 use App\Models\Registration;
 use Illuminate\Bus\Queueable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -18,7 +20,7 @@ class PreRegistrationSucessEmail extends Mailable
      *
      * @return void
      */
-    public function __construct(private Registration $registration)
+    public function __construct(private Registration $registration, Collection $optional)
     {
 
     }
@@ -42,6 +44,9 @@ class PreRegistrationSucessEmail extends Mailable
      */
     public function content()
     {
+
+        $realurl = env('APP_URL');
+
         return new Content(
             view: 'Mail.preregistration-sucesse-mail-template',
             with: ['name' => $this->registration->person->firstname, 'completeregistrationlink' => 'http://localhost:8082/events/' . $this->registration->course_uid . '/registration/' . $this->registration->registration_uid . '/complete', 'editregistrationdetails' => 'http://localhost:8082/events/' . $this->registration->course_uid . '/registration/' . $this->registration->registration_uid . '/getregitration'],

@@ -30,52 +30,26 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 //Route::middleware('throttle:60,1')->group(function () {
 
-
-
-
 Route::prefix('/api')->group(function () {
-
-
-    Route::get('migrate', function () {
-        Artisan::call('migrate');
-    });
-
-    Route::get('/ping', function () {
-
-//        $response = Http::get('https://restcountries.com/v3.1/all')->json();
-//
-//        foreach ($response as $key => $value) {
-//            if (!Country::where('country_code', $value['altSpellings'][0])->exists()) {
-//                $country = new Country();
-//                $country->country_name_en = $value['name']['common'];
-//                $country->country_name_sv = $value['translations']['swe']['common'];
-//                $country->country_code = $value['altSpellings'][0];
-//                $country->flag_url = $value['flags']['svg'];
-//                $country->save();
-//            } else {
-//                Country::where('country_code', $value['altSpellings'][0])
-//                    ->update([
-//                        'country_name_en' => $value['name']['common'],
-//                        'country_name_sv' => $value['translations']['swe']['common'],
-//                        'country_code' => $value['altSpellings'][0],
-//                        'flag_url' => $value['flags']['svg']
-//                    ]);
-//            }
-//        }
-
-        return 'ping in groupss';
-    });
-
 
     Route::get('/pingapikey', ['middleware' => ['apikey',], function () {
         return 'Testar kontroll av apinyckel';
     }]);
 
-
-
     Route::prefix('/pingdbtest')->group(function () {
-
         Route::get('/ping', function () {
+            dd(env('APP_URL'));
+        });
+    });
+
+    Route::prefix('/registration')->group(function () {
+        Route::get('/ping', function () {
+        });
+    });
+
+    Route::prefix('/artisan')->group(function () {
+        Route::get('/migrate', function () {
+            Artisan::call('migrate');
         });
     });
 });
