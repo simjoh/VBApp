@@ -5,8 +5,12 @@ namespace App\Listeners;
 use App\Events\PreRegistrationSuccessEvent;
 use App\Mail\CompletedRegistrationEmail;
 use App\Mail\PreRegistrationSucessEmail;
+use App\Models\Event;
+use App\Models\Optional;
+use App\Models\Product;
 use App\Models\Registration;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class PreRegistrationSuccessEventListener
@@ -24,19 +28,27 @@ class PreRegistrationSuccessEventListener
      */
     public function handle(PreRegistrationSuccessEvent $event): void
     {
-        // sätt reservation till till false om man betalt föregistreringen.
+
         $registration = Registration::find($event->registration->registration_uid);
         $registration->reservation = true;
         $registration->reservation_valid_until = '2023-12-31';
+        $ref_nr = mt_rand(10000, 99999);
+        if (Registration::where('course_uid', $registration->course_uid)->where('ref_nr', $ref_nr)->exists()) {
+            $ref_nr = mt_rand(10000, 99999);
+        }
+        $registration->ref_nr = $ref_nr;
         $registration->save();
         $email_adress = $registration->person->contactinformation->email;
+        $event = Event::find($registration->course_uid)->get()->first();
+        $products = Product::whereIn('productID', Optional::where('registration_uid', $registration->registration_uid)->select('productID')->get()->toArray())->get();
+        $club = DB::table('clubs')->select('name')->where('club_uid', $registration->club_uid)->get()->first();
 
         if (App::isProduction()) {
             Mail::to($email_adress)
-                ->send(new PreRegistrationSucessEmail($event->registration, $event->optional));
+                ->send(new PreRegistrationSucessEmail($registration, $products, $event, $club->name));
         } else {
             Mail::to('receiverinbox@mailhog.local')
-                ->send(new PreRegistrationSucessEmail($event->registration, $event->optional));
+                ->send(new PreRegistrationSucessEmail($registration, $products, $event, $club->name));
         }
     }
 }

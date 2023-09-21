@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\CompletedRegistrationSuccessEvent;
+use App\Events\PreRegistrationSuccessEvent;
 use App\Models\Adress;
 use App\Models\Club;
 use App\Models\Contactinformation;
@@ -174,7 +175,7 @@ class RegistrationController extends Controller
 
 //        $optionals = Optional::where('registration_uid',$reg_uid)->get();
 //
-//        event(new CompletedRegistrationSuccessEvent($reg,$optionals));
+//        event(new PreRegistrationSuccessEvent($reg,$optionals));
         return to_route('checkout', ["reg" => $reg->registration_uid]);
     }
 

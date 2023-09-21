@@ -19,7 +19,8 @@ class StartlistController extends Controller
             ->join('person', 'person.registration_registration_uid', '=', 'registrations.registration_uid')
             ->join('adress', 'adress.person_person_uid', '=', 'person.person_uid')
             ->join('countries', 'countries.country_id', '=', 'adress.country_id')
-            ->select('registrations.*', 'person.*', 'adress.*', 'countries.*', 'club.name AS club_name')
+            ->join('clubs', 'clubs.club_uid', '=', 'registrations.club_uid')
+            ->select('registrations.*', 'person.*', 'adress.*', 'countries.*', 'clubs.name AS club_name')
             ->where('course_uid', $course_uid)
             ->where('order_status', 'paid')
             ->get();

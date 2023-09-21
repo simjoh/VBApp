@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Event;
 use App\Models\Optional;
 use App\Models\Registration;
 use Illuminate\Bus\Queueable;
@@ -20,7 +21,7 @@ class PreRegistrationSucessEmail extends Mailable
      *
      * @return void
      */
-    public function __construct(private Registration $registration, Collection $optional)
+    public function __construct(private Registration $registration, private Collection $products, private Event $event, private string $club)
     {
 
     }
@@ -49,7 +50,7 @@ class PreRegistrationSucessEmail extends Mailable
 
         return new Content(
             view: 'Mail.preregistration-sucesse-mail-template',
-            with: ['name' => $this->registration->person->firstname, 'completeregistrationlink' => 'http://localhost:8082/events/' . $this->registration->course_uid . '/registration/' . $this->registration->registration_uid . '/complete', 'editregistrationdetails' => 'http://localhost:8082/events/' . $this->registration->course_uid . '/registration/' . $this->registration->registration_uid . '/getregitration'],
+            with: ['club' => $this->club , 'startlistlink' => 'http://localhost:8082/startlist/event/' . $this->registration->course_uid . '/showall', 'registration' => $this->registration, 'adress' => $this->registration->person->adress, 'contact' => $this->registration->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event,'completeregistrationlink' => 'http://localhost:8082/events/' . $this->registration->course_uid . '/registration/' . $this->registration->registration_uid . '/complete', 'editregistrationdetails' => 'http://localhost:8082/events/' . $this->registration->course_uid . '/registration/' . $this->registration->registration_uid . '/getregitration'],
         );
     }
 }
