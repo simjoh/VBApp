@@ -15,25 +15,19 @@
                         </tr>
                         </thead>
                         <tbody>
+                        {{$startlista}}
                         @foreach ($startlista as $key => $starlist)
                         <tr class="border-b bg-neutral-100 dark:border-neutral-500 dark:bg-neutral-700">
-                            <td class="whitespace-nowrap py-2 font-medium">{{$starlist->startnumber}}</td>
-                            @foreach ($countries as $country)
-                            @if($country->country_id == $starlist->person->adress->country_id)
-                            <td class="whitespace-nowrap py-2 "><img class="float-left mr-1 pt-1"
-                                                                                      src="{{$country->flag_url_png}}"
-                                                                                      alt="Contryname"
-                                                                                      width="20" height="20">{{$starlist->person->firstname}}
+                            <td class="whitespace-nowrap px-6 py-1 font-medium">{{$starlist->startnumber}}</td>
+                            <td>
+                                <img class="whitespace-nowrap px-6 py-1 inline-block">
+                                <img class="float-left" src="{{$starlist->flag_url}}" alt="Contryname" width="20" height="20">
+                                {{$starlist->firstname}}
                             </td>
-                            @endif
-                            @endforeach
 
-                            <td class="whitespace-nowrap py-1">{{$starlist->person->surname}}{{$starlist->test}}</td>
-                            @foreach ($clubs as $club)
-                            @if($club->club_uid == $starlist->club_uid)
-                            <td class="whitespace-nowrap py-1">{{$club->name}}</td>
-                            @endif
-                            @endforeach
+                            <td class="whitespace-nowrap px-6 py-1">{{$starlist->surname}}</td>
+                            <td class="whitespace-nowrap px-6 py-1">{{$starlist->club_name}}</td>
+
                         </tr>
                         @endforeach
                         </tbody>
