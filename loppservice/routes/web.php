@@ -20,6 +20,10 @@ use App\Models\Event;
 |
 */
 
+//Route::get('login',array('as'=>'login',function(){
+//    return view('login');
+//}));
+
 Route::get('/', function () {
 //    echo __('I love programming.');
     return view('welcome');

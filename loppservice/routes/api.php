@@ -16,17 +16,14 @@
 */
 
 
-use App\Models\Country;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Mail;
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
 
 //Route::middleware('throttle:60,1')->group(function () {
 
@@ -49,7 +46,7 @@ Route::prefix('/api')->group(function () {
 
     Route::prefix('/artisan')->group(function () {
         Route::get('/migrate', function () {
-            Artisan::call('migrate');
+            Artisan::call('migrate' ,["--force" => true ]);
         });
     });
 });

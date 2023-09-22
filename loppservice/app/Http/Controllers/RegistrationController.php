@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\CompletedRegistrationSuccessEvent;
-use App\Events\PreRegistrationSuccessEvent;
 use App\Models\Adress;
 use App\Models\Club;
 use App\Models\Contactinformation;
@@ -14,7 +12,6 @@ use App\Models\Person;
 use App\Models\Product;
 use App\Models\Registration;
 use App\Models\StartNumberConfig;
-use App\Rules\EmailEquals;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
