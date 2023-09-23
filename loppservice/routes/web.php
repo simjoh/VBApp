@@ -1,13 +1,12 @@
 <?php
 
-use App\Http\Controllers\LocaleController;
-use App\Http\Controllers\StartlistController;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\StartlistController;
 use App\Http\Controllers\WebhookController;
 use App\Models\Event;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +33,8 @@ Route::get('/events', function (Event $event) {
     return $event->title;
 });
 Route::get('/events/{uid}/register', function (string $uid) {
-    return view('registrations.show')->with(['countries' => \App\Models\Country::all()->sortByDesc("country_name_en")]); // Event::find($uid)->title;
+
+    return view('registrations.show')->with(['countries' => \App\Models\Country::all()->sortByDesc("country_name_en"), 'years' => range(date('Y'), 1950)]); // Event::find($uid)->title;
 });
 
 Route::post('/events/{uid}/register', [RegistrationController::class, 'create']);

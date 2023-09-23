@@ -47,6 +47,8 @@ Route::prefix('/api')->group(function () {
     Route::prefix('/artisan')->group(function () {
         Route::get('/migrate', function () {
             Artisan::call('migrate' ,["--force" => true ]);
+            Artisan::call('app:country-update');
+
         });
     });
 });

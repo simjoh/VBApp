@@ -6,7 +6,7 @@
 <body>
 <div class="md:container md:mx-auto">
 
-    <h2>Thank you for your prege registration to {{$event->title}} </h2>
+    <h2>Thank you for your registration to {{$event->title}} </h2>
 
     <strong>Ref_nr:</strong>{{$registration->ref_nr}} <br>
     Betalsätt:<br>

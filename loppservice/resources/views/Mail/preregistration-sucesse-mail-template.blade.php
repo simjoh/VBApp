@@ -7,8 +7,7 @@
 <div class="md:container md:mx-auto">
     <h2>Thank you for your prege registration to {{$event->title}} </h2>
 
-    <p>Please remember to make your final registration payment of ?? SEK by bank transfer no later than the ??st of December. See payment information:<p>
-
+    <p> Please remember to make your final registration payment of ?? EUR by bank transfer no later than the {{$registration->reservation_valid_until}}. See payment information :<p>
     <strong>Ref_nr:</strong>{{$registration->ref_nr}} <br>
     Betalsätt:<br>
     Betalning mottagen:<br>
@@ -38,6 +37,7 @@
     <a href="{{$completeregistrationlink}}">Follow the link to complete your registration</a><br>
 
     <a href="{{$startlistlink}}">Link to starting list</a>
+
 
 
     <p>Thank you</p>
