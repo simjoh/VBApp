@@ -20,6 +20,7 @@ COPY ./docker/loppservice/enviroment/env.dev /var/www/html/applikation/.env.dev
 
 RUN  chmod 777 -R /var/www/html/storage/ && \
      chmod 777 -R /var/www/html/storage/logs/ && \
+     chmod 777 -R /var/www/html/resources/images/ && \
      chown -R  www-data:www-data /var/www/ && \
     a2enmod rewrite
 

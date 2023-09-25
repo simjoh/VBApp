@@ -24,10 +24,8 @@
                                 <img class="float-left" src="{{$starlist->flag_url}}" alt="Contryname" width="20" height="20">
                                 {{$starlist->firstname}}
                             </td>
-
                             <td class="whitespace-nowrap px-6 py-1">{{$starlist->surname}}</td>
                             <td class="whitespace-nowrap px-6 py-1">{{$starlist->club_name}}</td>
-
                         </tr>
                         @endforeach
                         </tbody>

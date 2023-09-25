@@ -21,6 +21,7 @@ COPY docker/loppservice/enviroment/env.dev /var/www/html/.env.dev
 RUN php artisan config:cache && \
     php artisan route:cache && \
     chmod 777 -R /var/www/html/storage/ && \
+    chmod 777 -R /var/www/html/resources/images/ && \
     chmod 777 -R /var/www/html/ && \
     chown -R www-data:www-data /var/www/ && \
     a2enmod rewrite

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PreRegistrationSuccessEvent;
 use App\Models\Adress;
 use App\Models\Club;
 use App\Models\Contactinformation;
@@ -14,6 +15,7 @@ use App\Models\Registration;
 use App\Models\StartNumberConfig;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 
 class RegistrationController extends Controller
@@ -45,8 +47,8 @@ class RegistrationController extends Controller
         $registration->person->adress->adress = $request['street-address'];
         $registration->person->adress->postal_code = $request['postal-code'];
         $registration->additional_information = $request['extra-info'];
-        $registration->contactinformation->tel = $request['tel'];
-        $registration->contactinformation->email = $request['email'];
+        $registration->person->contactinformation->tel = $request['tel'];
+        $registration->person->contactinformation->email = $request['email'];
         $registration->person()->save($registration->person);
         $registration->save();
         return view('registrations.success')->with(['text' => 'Your registration is updated']);
@@ -54,7 +56,24 @@ class RegistrationController extends Controller
 
     public function existingregistration(Request $request)
     {
-        return view('registrations.edit')->with(['countries' => \App\Models\Country::all()->sortByDesc("country_name_en"), 'registration' => Registration::find($request['regsitrationUid'])->with(['person'])->get()->first()]);
+
+        $registration = DB::table('registrations')
+            ->join('clubs', 'clubs.club_uid', '=', 'registrations.club_uid')
+            ->join('person', 'person.registration_registration_uid', '=', 'registrations.registration_uid')
+            ->join('adress', 'adress.person_person_uid', '=', 'person.person_uid')
+            ->join('contactinformation', 'contactinformation.person_person_uid', '=', 'person.person_uid')
+            ->join('countries', 'countries.country_id', '=', 'adress.country_id')
+            ->select('registrations.*', 'person.*', 'adress.*', 'countries.*', 'contactinformation.*' , 'clubs.name AS club_name')
+            ->where('registrations.registration_uid', $request['registrationUid'])
+            ->get()->first();
+
+
+        $birthdate = explode("-", $registration->birthdate);
+        $day = $birthdate[2];
+        $month = $birthdate[1];
+        $year = $birthdate[0];
+
+        return view('registrations.edit')->with(['countries' => Country::all()->sortByDesc("country_name_en"), 'years' => range(date('Y'), 1950),'months' => range(date('m'), 31) , 'registration' => $registration,  'day' => $day, 'month' => $month, 'birthyear' => $year]);
     }
 
 
@@ -72,8 +91,12 @@ class RegistrationController extends Controller
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
             'email' => 'required|regex:/(.+)@(.+)\.(.+)/i',
-            'email-confirm' => 'required|regex:/(.+)@(.+)\.(.+)/i'
+            'email-confirm' => 'required|regex:/(.+)@(.+)\.(.+)/i',
+            'year' => 'required',
+            'month' => 'required',
+            'day' => 'required'
         ]);
+
 
         // Skapa en registrering
         $reg_uid = Uuid::uuid4();
@@ -92,13 +115,13 @@ class RegistrationController extends Controller
 
         $registration->startnumber = $this->getStartnumber('d32650ff-15f8-4df1-9845-d3dc252a7a84', $event->eventconfiguration->startnumberconfig);
 
-       // $club = Club::where('name', $request['club']);
+        // $club = Club::where('name', $request['club']);
 
         // Kolla om vi sparat klubben sen tidigare
-        $club =   Club::whereRaw('LOWER(`name`) LIKE ? ',[trim(strtolower($request['club'])).'%'])->first();
+        $club = Club::whereRaw('LOWER(`name`) LIKE ? ', [trim(strtolower($request['club'])) . '%'])->first();
 
-        if(!$club){
-            $club_uid =  Uuid::uuid4();
+        if (!$club) {
+            $club_uid = Uuid::uuid4();
             $club = new Club();
             $club->club_uid = $club_uid;
             $club->name = $request['club'];
@@ -119,7 +142,7 @@ class RegistrationController extends Controller
         $person->person_uid = Uuid::uuid4();
         $person->firstname = $request['first_name'];
         $person->surname = $request['last_name'];
-        $person->birthdate = $request['year']. "-" . $request['month'] . "-" . $request['day'];
+        $person->birthdate = $request['year'] . "-" . $request['month'] . "-" . $request['day'];
         $person->registration_registration_uid = $reg->registration_uid;
 
 
@@ -170,9 +193,9 @@ class RegistrationController extends Controller
             }
         }
 
-//        $optionals = Optional::where('registration_uid',$reg_uid)->get();
+//        $optionals = Optional::where('registration_uid', $reg_uid)->get();
 //
-//        event(new PreRegistrationSuccessEvent($reg,$optionals));
+//        event(new PreRegistrationSuccessEvent($reg, $optionals));
         return to_route('checkout', ["reg" => $reg->registration_uid]);
     }
 

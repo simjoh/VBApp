@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('base')
-<body class="bg-gray-100 antialiased">
+<body class="antialiased">
 <!-- Header -->
 <header class="bg-blue-500 py-4">
     <div class="container sm:p-1 mx-auto">
-        <h1 class="md:text-2xl lg:text-2xl text-center sm:text-left text-white sm:text-sm font-semibold">Midnigthsunrandonne registrations</h1>
+        <img alt="msr logotyp" width="700" height="800"  src ="/logo-2024.svg"/>
     </div>
 </header>
 <!-- Main Content -->
@@ -20,7 +20,18 @@
             </ul>
         </div>
         @endif
-        <h2 class="text-2xl font-semibold mb-4">Fill in your details</h2>
+        <h2 class="text-2xl mb-4">Registration form</h2>
+        <p class="text-left  mb-4">
+            Please fill in the registration form below with your name and date of birth, the address to which your medal from Les
+            Randonneurs Mondiaux will be sent upon completing the randonnée, the mobile number that you’ll be using throughout the event
+            and also any special dietary requirements you may have (gluten free, lactose free, allergies, vegan, vegetarian etc).
+        </p>
+
+        <p class="text-left mb-4">
+            If you are registering a reserved starting place, please enter your start number and check that your personal information
+            and choices are still valid before confirming your registration.
+
+        </p>
         <p class="mt-1 text-sm leading-6 text-gray-600">Use a permanent address where you can receive mail.</p>
         <form method="post" class="grid sm:grid-cols-1 gap-4">
             @csrf
@@ -28,47 +39,59 @@
                 <div class="grid md:grid-cols-2 gap-3 mt-3 sm:grid-cols-1">
                     <div>
                         <label for="first-name" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Firstname</label>
-                        <input type="text" id="first-name" name="first_name" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" autocomplete="given-name" required>
+                        <input type="text" id="first-name" name="first_name"
+                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600"
+                               autocomplete="given-name" required>
                     </div>
                     <div>
                         <label for="last-name" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Last name</label>
-                        <input type="text" id="last-name" name="last_name" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" autocomplete="family-name" required>
+                        <input type="text" id="last-name" name="last_name"
+                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600"
+                               autocomplete="family-name" required>
                     </div>
                 </div>
 
                 <div class="mt-2 w-1/2">
                     <label for="email" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Email</label>
-                    <input id="email" name="email"  type="email" autocomplete="email" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                    <input id="email" name="email" type="email" autocomplete="email"
+                           class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
                 </div>
                 <div class="mt-2 w-1/2">
-                    <label for="email-confirm" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Repaeat your email</label>
-                    <input id="email-confirm" name="email-confirm" type="email" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                    <label for="email-confirm" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Repaeat your
+                        email</label>
+                    <input id="email-confirm" name="email-confirm" type="email"
+                           class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
                 </div>
 
                 <div class="mt-2">
                     <label for="street-adress" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Street adress</label>
-                    <input type="text" name="street-address" id="street-address" autocomplete="street-address" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                    <input type="text" name="street-address" id="street-address" autocomplete="street-address"
+                           class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
                 </div>
 
                 <div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">
                     <div class="mt-2">
                         <label for="postal-code" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Zip/postal code</label>
-                        <input type="text" name="postal-code" id="postal-code" autocomplete="postal-code" class=" w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                        <input type="text" name="postal-code" id="postal-code" autocomplete="postal-code"
+                               class=" w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
                     </div>
                     <div class="mt-2 mb-4">
                         <label for="city" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">City</label>
-                        <input type="text" name="city" id="city" autocomplete="address-level2" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                        <input type="text" name="city" id="city" autocomplete="address-level2"
+                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
                     </div>
                 </div>
 
                 <div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">
                     <div class="mt-2">
                         <label for="tel" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Tel</label>
-                        <input type="text" name="tel" id="tel" autocomplete="tel-level2" autocomplete="tel" class=" w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                        <input type="text" name="tel" id="tel" autocomplete="tel-level2" autocomplete="tel"
+                               class=" w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
                     </div>
                     <div class="mt-2 mb-4">
                         <label for="club" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Club</label>
-                        <input type="text" name="club" id="club"  class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                        <input type="text" name="club" id="club"
+                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
                     </div>
 
                 </div>
@@ -79,7 +102,8 @@
 
                         <div class="mt-2">
                             <label for="year" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">YYYY</label>
-                            <select name="year" id="year" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                            <select name="year" id="year"
+                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
                                 <option>Year</option>
                                 @foreach ($years as $year)
                                 <option value="{{$year}}">
@@ -90,7 +114,8 @@
                         </div>
                         <div class="mt-2">
                             <label for="month" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">MM</label>
-                            <select  name="month" id="month" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                            <select name="month" id="month"
+                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
                                 <option value="">Month</option>
                                 <option value="01">Januray</option>
                                 <option value="02">February</option>
@@ -108,7 +133,8 @@
                         </div>
                         <div class="mt-2">
                             <label for="day" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">DD</label>
-                            <select name="day" id="day" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                            <select name="day" id="day"
+                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
                                 <option value="">Day</option>
                                 <option value="01">01</option>
                                 <option value="02">02</option>
@@ -150,7 +176,9 @@
 
                 <div class="mt-3">
                     <label for="country" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Country</label>
-                    <select id="country" name="country" autocomplete="country-name" class="sm:w-full md:w-1/2 lg:w-1/2 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                    <select id="country" name="country" autocomplete="country-name"
+                            class="sm:w-full md:w-1/2 lg:w-1/2 py-2 border rounded-md focus:outline-none focus:border-blue-600"
+                            required>
                         <option>Select country</option>
                         @foreach ($countries as $country)
                         <option value="{{$country->country_id}}">
@@ -161,10 +189,11 @@
                 </div>
 
 
-
-                <div  class="mt-5 mb-5 md:w-1/2 sm:w-full">
-                    <label for="extra-info" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Special Dietary Requirements</label>
-                    <textarea id="extra-info" name="extra-info" rows="5" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600"></textarea>
+                <div class="mt-5 mb-5 md:w-1/2 sm:w-full">
+                    <label for="extra-info" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Special Dietary
+                        Requirements</label>
+                    <textarea id="extra-info" name="extra-info" rows="5"
+                              class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600"></textarea>
                 </div>
 
                 <fieldset>
@@ -186,7 +215,8 @@
                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="lunch_box" class="font-medium sm:text-sm text-gray-900">Lunch box - Baggböle Manor, Sunday 16 June,
+                                <label for="lunch_box" class="font-medium sm:text-sm text-gray-900">Lunch box - Baggböle Manor, Sunday
+                                    16 June,
                                     15:00.</label>
                             </div>
                         </div>
@@ -196,7 +226,8 @@
                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="bag_drop" class="font-medium sm:text-sm text-gray-900">Bag drop Umeå Plaza - Baggböle Manor, Sunday
+                                <label for="bag_drop" class="font-medium sm:text-sm text-gray-900">Bag drop Umeå Plaza - Baggböle Manor,
+                                    Sunday
                                     16 June, 15:00.</label>
                             </div>
                         </div>
@@ -206,7 +237,8 @@
                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-blue-600">
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="long_term_parking" class="font-medium sm:text-sm text-gray-900">Long-term parking - Baggböle Manor,
+                                <label for="long_term_parking" class="font-medium sm:text-sm text-gray-900">Long-term parking - Baggböle
+                                    Manor,
                                     Sunday 16 June - Thursday 20 June.</label>
                             </div>
                         </div>
@@ -216,7 +248,8 @@
                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-blue-600">
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="buffet_dinner" class="font-medium sm:text-sm text-gray-900">Buffet Dinner- Brännland Inn, Sunday 16
+                                <label for="buffet_dinner" class="font-medium sm:text-sm text-gray-900">Buffet Dinner- Brännland Inn,
+                                    Sunday 16
                                     June, 19:00.</label>
                             </div>
                         </div>
@@ -226,7 +259,8 @@
                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-blue-600">
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="midsummer" class="font-medium sm:text-sm text-gray-900">Swedish Midsummer Celebration - Friday 20
+                                <label for="midsummer" class="font-medium sm:text-sm text-gray-900">Swedish Midsummer Celebration -
+                                    Friday 20
                                     June, 12:00.</label>
                             </div>
                         </div>
@@ -285,8 +319,14 @@
                 </fieldset>
 
                 <div class="grid md:grid-cols-2 gap-3 mt-4 sm:grid-cols-1">
-                    <button type="submit" value="reserve" name="save" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Reserve</button>
-                    <button type="submit" value="Registration" name="save" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Register</button>
+                    <button type="submit" value="reserve" name="save"
+                            class="w-full bg-green-500 text-white py-2 px-4 font-bold rounded-md hover:bg-green-600 focus:outline-none focus:bg-blue-600">
+                        Reserve
+                    </button>
+                    <button type="submit" value="Registration" name="save"
+                            class="w-full bg-green-500 text-white py-2 px-4 font-bold rounded-md hover:bg-green-600 focus:outline-none focus:bg-green-600">
+                        Register
+                    </button>
                 </div>
             </div>
         </form>

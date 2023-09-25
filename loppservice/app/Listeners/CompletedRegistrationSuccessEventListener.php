@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\CompletedRegistrationSuccessEvent;
 use App\Mail\CompletedRegistrationEmail;
+use App\Models\Country;
 use App\Models\Event;
 use App\Models\Optional;
 use App\Models\Product;
@@ -42,13 +43,16 @@ class CompletedRegistrationSuccessEventListener
         $event = Event::find($registration->course_uid)->get()->first();
         $products = Product::whereIn('productID', Optional::where('registration_uid', $registration->registration_uid)->select('productID')->get()->toArray())->get();
         $club = DB::table('clubs')->select('name')->where('club_uid', $registration->club_uid)->get()->first();
+        $country = Country::where('country_id', $registration->person->adress->country_id)->get()->first();
+
+        $startlistlink = env("APP_URL") .'startlist/event/' . $registration->course_uid . '/showall';
 
         if (App::isProduction()) {
             Mail::to($email_adress)
-                ->send(new CompletedRegistrationEmail($registration, $products, $event, $club->name));
+                ->send(new CompletedRegistrationEmail($registration, $products, $event, $club->name, $country->country_name_en, $startlistlink));
         } else {
             Mail::to('receiverinbox@mailhog.local')
-                ->send(new CompletedRegistrationEmail($registration, $products, $event, $club->name));
+                ->send(new CompletedRegistrationEmail($registration, $products, $event, $club->name, $country->country_name_en, $startlistlink));
         }
     }
 }

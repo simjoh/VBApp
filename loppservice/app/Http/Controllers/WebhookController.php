@@ -38,11 +38,11 @@ class WebhookController extends Controller
         } catch(\UnexpectedValueException $e) {
           // Invalid payload
             Log::debug("Stripe webhooks: Invalid payload");
-          return respons('', 400);
+          return response('', 400);
         } catch(\Stripe\Exception\SignatureVerificationException $e) {
           // Invalid signature
             Log::debug("Stripe webhooks: Invalid signature");
-          return respons('', 400);
+          return response('', 400);
         }
 
         switch ($event->type) {
@@ -59,7 +59,7 @@ class WebhookController extends Controller
             $session = $event->data->object;
 
             // Fulfill the purchase
-            $this->fulfill_order($session);
+            $this->fullfill_order($session);
 
             break;
 
@@ -100,15 +100,13 @@ class WebhookController extends Controller
         $order->save();
 
         $registration = Registration::find($session->client_reference_id);
-        $user = Registration::find($session->client_reference_id)->get()->first();
-        $optionals = Optional::find($session->client_reference_id)->get();
-
+        
         if ($registration->reservation) {
             // Events to be triggered for an reservation
-            event(new PreRegistrationSuccessEvent($user, $optionals));
+            event(new PreRegistrationSuccessEvent($registration));
         } else {
             // Events to be triggered for a full registration
-            event(new CompletedRegistrationSuccessEvent($user,$optionals));
+            event(new CompletedRegistrationSuccessEvent($registration));
         }
     }
 
@@ -120,7 +118,7 @@ class WebhookController extends Controller
         $registration = Registration::find($session->client_reference_id);
 
         // Send an email to the customer asking them to retry their order
-        email_customer_about_failed_payment($session, $registration);
+        $this->email_customer_about_failed_payment($session, $registration);
 
     }
 

@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use App\Models\Event;
-use App\Models\Optional;
 use App\Models\Registration;
 use Illuminate\Bus\Queueable;
 use Illuminate\Database\Eloquent\Collection;
@@ -21,7 +20,7 @@ class PreRegistrationSucessEmail extends Mailable
      *
      * @return void
      */
-    public function __construct(private Registration $registration, private Collection $products, private Event $event, private string $club)
+    public function __construct(private Registration $registration, private Collection $products, private Event $event, private string $club, private string $country, private string $startlistlink, private string $completeregistrationlink)
     {
 
     }
@@ -34,7 +33,7 @@ class PreRegistrationSucessEmail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'Midnigth sun randonee event registration',
+            subject: 'Reservation received',
         );
     }
 
@@ -50,7 +49,7 @@ class PreRegistrationSucessEmail extends Mailable
 
         return new Content(
             view: 'Mail.preregistration-sucesse-mail-template',
-            with: ['club' => $this->club , 'startlistlink' => 'http://localhost:8082/startlist/event/' . $this->registration->course_uid . '/showall', 'registration' => $this->registration, 'adress' => $this->registration->person->adress, 'contact' => $this->registration->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event,'completeregistrationlink' => 'http://localhost:8082/events/' . $this->registration->course_uid . '/registration/' . $this->registration->registration_uid . '/complete', 'editregistrationdetails' => 'http://localhost:8082/events/' . $this->registration->course_uid . '/registration/' . $this->registration->registration_uid . '/getregitration'],
+            with: ['country' => $this->country, 'club' => $this->club, 'startlistlink' => $this->startlistlink, 'registration' => $this->registration, 'adress' => $this->registration->person->adress, 'contact' => $this->registration->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event, 'completeregistrationlink' => $this->completeregistrationlink, 'editregistrationdetails' => 'http://localhost:8082/events/' . $this->registration->course_uid . '/registration/' . $this->registration->registration_uid . '/getregitration'],
         );
     }
 }

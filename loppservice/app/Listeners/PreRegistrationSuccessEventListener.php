@@ -3,8 +3,8 @@
 namespace App\Listeners;
 
 use App\Events\PreRegistrationSuccessEvent;
-use App\Mail\CompletedRegistrationEmail;
 use App\Mail\PreRegistrationSucessEmail;
+use App\Models\Country;
 use App\Models\Event;
 use App\Models\Optional;
 use App\Models\Product;
@@ -42,13 +42,19 @@ class PreRegistrationSuccessEventListener
         $event = Event::find($registration->course_uid)->get()->first();
         $products = Product::whereIn('productID', Optional::where('registration_uid', $registration->registration_uid)->select('productID')->get()->toArray())->get();
         $club = DB::table('clubs')->select('name')->where('club_uid', $registration->club_uid)->get()->first();
+        $country = Country::where('country_id', $registration->person->adress->country_id)->get()->first();
+
+        $startlistlink = env("APP_URL") .'startlist/event/' . $registration->course_uid . '/showall';
+        $completeregistrationlink = env("APP_URL") . 'events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/complete';
+
+
 
         if (App::isProduction()) {
             Mail::to($email_adress)
-                ->send(new PreRegistrationSucessEmail($registration, $products, $event, $club->name));
+                ->send(new PreRegistrationSucessEmail($registration, $products, $event, $club->name, $country->country_name_en, $startlistlink,$completeregistrationlink));
         } else {
             Mail::to('receiverinbox@mailhog.local')
-                ->send(new PreRegistrationSucessEmail($registration, $products, $event, $club->name));
+                ->send(new PreRegistrationSucessEmail($registration, $products, $event, $club->name, $country->country_name_en, $startlistlink,$completeregistrationlink));
         }
     }
 }

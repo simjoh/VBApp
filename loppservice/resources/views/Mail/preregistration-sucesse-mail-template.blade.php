@@ -5,24 +5,25 @@
 </head>
 <body>
 <div class="md:container md:mx-auto">
-    <h2>Thank you for your prege registration to {{$event->title}} </h2>
+    <h2>Thank you for your preregistration to {{$event->title}} </h2>
 
-    <p> Please remember to make your final registration payment of ?? EUR by bank transfer no later than the {{$registration->reservation_valid_until}}. See payment information :<p>
-    <strong>Ref_nr:</strong>{{$registration->ref_nr}} <br>
-    Betalsätt:<br>
-    Betalning mottagen:<br>
-    Hemsida: www.vasterbottenbrevet.se<br>
-    Arrangör: Cykelintresset<br>
+    <p>Please remember to make your final registration payment of ?? EUR not later than the
+        {{$registration->reservation_valid_until->format('Y-m-d')}}.
+    <p>
+        <strong>Ref_nr:</strong>{{$registration->ref_nr}} <br>
+        <strong>payment method: </strong> <br>
+        <strong>Payment received:</strong><br>
+        <strong>Homepage:</strong><a href="https://www.midnightsunrandonnee.se">www.midnightsunrandonnee.se</a><br>
+        <strong>Organizer</strong> Cykelintresset<br>
 
     <h2>Registration details</h2>
-    <br>
-    <strong>Startnumber:{{$registration->startnumber}}</strong><br>
+    <strong>Startnumber:</strong>{{$registration->startnumber}}<br>
     <strong>Name:</strong> {{$registration->person->firstname}} {{$registration->person->surname}}<br>
     <strong>Date of birth:</strong> {{$registration->person->birthdate}}<br>
     <strong>Adress:</strong> {{$registration->person->adress->adress}}<br>
     <strong>Zip:</strong> {{$registration->person->adress->postal_code}}<br>
     <strong>City:</strong>{{$registration->person->adress->city}}<br>
-    <strong>Country:</strong>{{$registration->person->adress->country_id}}<br>
+    <strong>Country:</strong>{{$country}}<br>
     <strong>Tel:</strong>{{$registration->person->contactinformation->tel}}<br>
     <strong>Club:</strong> {{$club}}
     <br>
@@ -32,13 +33,18 @@
     {{$optional->description}}<br>
     @endforeach
 
-
-    <p>Payment information</p>
-    <a href="{{$completeregistrationlink}}">Follow the link to complete your registration</a><br>
-
+    <br>
+    <strong>Payment information</strong><br>
+    <a href="{{$completeregistrationlink}}">Follow the link to complete your registration</a>
+    <br>
+    <strong>Current startlist</strong><br>
     <a href="{{$startlistlink}}">Link to starting list</a>
+    <br>
+    <strong>Change your registered information</strong><br>
+    <a href="{{$editregistrationdetails}}">Follow this link to change your registered information </a>
+    <br>
 
-
+    <strong>Other useful resources</strong>
 
     <p>Thank you</p>
 </div>

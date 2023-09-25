@@ -1,14 +1,10 @@
 <?php
 
 namespace App\Console\Commands;
-
 use App\Models\Country;
-use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use function Laravel\Prompts\error;
 
 class CountryUpdate extends Command
 {

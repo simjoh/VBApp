@@ -1,9 +1,6 @@
 <?php
 
 
-
-
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -33,22 +30,31 @@ Route::prefix('/api')->group(function () {
         return 'Testar kontroll av apinyckel';
     }]);
 
-    Route::prefix('/pingdbtest')->group(function () {
-        Route::get('/ping', function () {
-            dd(env('APP_URL'));
-        });
-    });
+    Route::prefix('/integration')->group(function () {
 
-    Route::prefix('/registration')->group(function () {
-        Route::get('/ping', function () {
+        Route::prefix('/registration')->group(function () {
+            Route::get('/registrations/event/{eventUid}/all', function () {
+            });
+            Route::get('/{registrationUid}/registration', function () {
+            });
+        });
+
+        Route::prefix('/event')->group(function () {
+            Route::get('/{eventUid}/event', function () {
+            });
+            Route::get('/events/all', function () {
+            });
         });
     });
 
     Route::prefix('/artisan')->group(function () {
         Route::get('/migrate', function () {
-            Artisan::call('migrate' ,["--force" => true ]);
+            Artisan::call('migrate', ["--force" => true]);
             Artisan::call('app:country-update');
+        });
 
+        Route::get('/command/country/run', function () {
+            Artisan::call('app:country-update');
         });
     });
 });

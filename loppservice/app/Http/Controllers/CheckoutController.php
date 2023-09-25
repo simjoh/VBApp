@@ -38,7 +38,7 @@ class CheckoutController extends Controller
           }
       }
 
-      $YOUR_DOMAIN = 'http://localhost:8082';
+      $YOUR_DOMAIN = env("APP_URL");
 
       $checkout_session = \Stripe\Checkout\Session::create([
           'client_reference_id' => $registration->registration_uid,
