@@ -45,7 +45,7 @@ class CompletedRegistrationSuccessEventListener
         $club = DB::table('clubs')->select('name')->where('club_uid', $registration->club_uid)->get()->first();
         $country = Country::where('country_id', $registration->person->adress->country_id)->get()->first();
 
-        $startlistlink = env("APP_URL") .'startlist/event/' . $registration->course_uid . '/showall';
+        $startlistlink = env("APP_URL") .'/startlist/event/' . $registration->course_uid . '/showall';
 
         if (App::isProduction()) {
             Mail::to($email_adress)

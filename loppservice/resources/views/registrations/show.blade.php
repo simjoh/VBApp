@@ -5,18 +5,28 @@
 <!-- Header -->
 <header class="bg-blue-500 py-4">
     <div class="container sm:p-1 mx-auto">
-        <img alt="msr logotyp" width="700" height="800"  src ="/logo-2024.svg"/>
+        <img alt="msr logotyp" width="700" height="800"  src ="{{ asset('logo-2024.svg') }}"/>
     </div>
 </header>
 <!-- Main Content -->
-<div class="container mx-auto p-4">
+<div class="container mx-auto p-4 font-sans">
     <div class="bg-white p-6 rounded-md shadow-md">
         @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
-                @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
+
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong class="font-bold">Something went wrong</strong>
+                    @foreach ($errors->all() as $error)
+                            <span class="block sm:inline"><li>{{ $error }}</li></span>
+                    @endforeach
+
+                    <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+    <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+  </span>
+                </div>
+
+
             </ul>
         </div>
         @endif
@@ -39,26 +49,25 @@
                 <div class="grid md:grid-cols-2 gap-3 mt-3 sm:grid-cols-1">
                     <div>
                         <label for="first-name" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Firstname</label>
-                        <input type="text" id="first-name" name="first_name"
+                        <input type="text" id="first-name" name="first_name" placeholder="Firstname"
                                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600"
                                autocomplete="given-name" required>
                     </div>
                     <div>
                         <label for="last-name" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Last name</label>
-                        <input type="text" id="last-name" name="last_name"
+                        <input type="text" id="last-name" name="last_name" placeholder="Surname"
                                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600"
                                autocomplete="family-name" required>
                     </div>
                 </div>
 
                 <div class="mt-2 w-1/2">
-                    <label for="email" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Email</label>
+                    <label for="email" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Email Address*</label>
                     <input id="email" name="email" type="email" autocomplete="email"
                            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
                 </div>
                 <div class="mt-2 w-1/2">
-                    <label for="email-confirm" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Repaeat your
-                        email</label>
+                    <label for="email-confirm" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Email Confirmation*</label>
                     <input id="email-confirm" name="email-confirm" type="email"
                            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
                 </div>
@@ -196,110 +205,8 @@
                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600"></textarea>
                 </div>
 
-                <fieldset>
-                    <legend class="text-sm font-medium leading-6 text-gray-900">Included in the entry fee</legend>
-                    <div class="mt-6 space-y-6">
-                        <div class="relative flex gap-x-3">
-                            <div class="flex h-6 items-center">
-                                <input id="pre_event_coffee_ride" name="1000" type="checkbox"
-                                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                            </div>
-                            <div class="text-sm leading-6">
-                                <label for="pre_event_coffee_ride" class="font-medium text-gray-900">Pre-event coffee ride - Umeå
-                                    Plaza, Saturday 15 June, 10:00.</label>
-                            </div>
-                        </div>
-                        <div class="relative flex gap-x-3">
-                            <div class="flex h-6 items-center">
-                                <input id="lunch_box" name="1001" type="checkbox"
-                                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                            </div>
-                            <div class="text-sm leading-6">
-                                <label for="lunch_box" class="font-medium sm:text-sm text-gray-900">Lunch box - Baggböle Manor, Sunday
-                                    16 June,
-                                    15:00.</label>
-                            </div>
-                        </div>
-                        <div class="relative flex gap-x-3">
-                            <div class="flex h-6 items-center">
-                                <input id="bag_drop" name="1002" type="checkbox"
-                                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                            </div>
-                            <div class="text-sm leading-6">
-                                <label for="bag_drop" class="font-medium sm:text-sm text-gray-900">Bag drop Umeå Plaza - Baggböle Manor,
-                                    Sunday
-                                    16 June, 15:00.</label>
-                            </div>
-                        </div>
-                        <div class="relative flex gap-x-3">
-                            <div class="flex h-6 items-center">
-                                <input id="long_term_parking" name="1003" type="checkbox"
-                                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-blue-600">
-                            </div>
-                            <div class="text-sm leading-6">
-                                <label for="long_term_parking" class="font-medium sm:text-sm text-gray-900">Long-term parking - Baggböle
-                                    Manor,
-                                    Sunday 16 June - Thursday 20 June.</label>
-                            </div>
-                        </div>
-                        <div class="relative flex gap-x-3">
-                            <div class="flex h-6 items-center">
-                                <input id="buffet_dinner" name="1004" type="checkbox"
-                                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-blue-600">
-                            </div>
-                            <div class="text-sm leading-6">
-                                <label for="buffet_dinner" class="font-medium sm:text-sm text-gray-900">Buffet Dinner- Brännland Inn,
-                                    Sunday 16
-                                    June, 19:00.</label>
-                            </div>
-                        </div>
-                        <div class="relative flex gap-x-3">
-                            <div class="flex h-6 items-center">
-                                <input id="midsummer" name="1005" type="checkbox"
-                                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-blue-600">
-                            </div>
-                            <div class="text-sm leading-6">
-                                <label for="midsummer" class="font-medium sm:text-sm text-gray-900">Swedish Midsummer Celebration -
-                                    Friday 20
-                                    June, 12:00.</label>
-                            </div>
-                        </div>
-                    </div>
-                </fieldset>
 
-                <fieldset class="mt-5">
-                    <legend class="text-sm font-semibold leading-6 text-gray-900">Not included in the entry fee</legend>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
-                    <div class="mt-6 space-y-6">
-                        <div class="flex items-center gap-x-3">
-                            <input id="female-core" name="jersey" value="1007" type="radio"
-                                   class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                            <label for="female-core" class="block sm:text-sm font-medium leading-6 text-gray-900">MSR Jersey - Female,
-                                Core Fittet, 680 SEK (-25%)</label>
-                        </div>
-                        <div class="flex items-center gap-x-3">
-                            <input id="female-tor" name="jersey" value="1008" type="radio"
-                                   class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                            <label for="female-tor" class="block sm:text-sm font-medium leading-6 text-gray-900">MSR Jersey - Female,
-                                Tor, 980 SEK (-25%)</label>
-                        </div>
-                        <div class="flex items-center gap-x-3">
-                            <input id="male-core" name="jersey" value="1009" type="radio"
-                                   class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                            <label for="male-core" class="block sm:text-sm font-medium leading-6 text-gray-900">MSR Jersey - Male, Core
-                                Fittet, 680 SEK (-25%)</label>
-                        </div>
-                        <div class="flex items-center gap-x-3">
-                            <input id="male-tor" name="jersey" value="1010" type="radio"
-                                   class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
-                            <label for="male-tor" class="block sm:text-sm font-medium leading-6 text-gray-900">MSR Jersey - Male, Tor,
-                                980 SEK (-25%)</label>
-                        </div>
-                    </div>
-                </fieldset>
-
-
-                <fieldset class="mt-5">
+                <fieldset class="mt-5 mb-5">
                     <legend class="text-sm font-semibold leading-6 text-gray-900">Carpool from Europe</legend>
                     <p class="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
                     <div class="mt-6 space-y-6">
@@ -317,6 +224,113 @@
                         </div>
                     </div>
                 </fieldset>
+
+                <fieldset>
+                    <legend class="text-sm font-medium leading-6 text-gray-900">Included in the entry fee</legend>
+                    <div class="mt-6 space-y-6">
+                        <div class="relative flex gap-x-3">
+                            <div class="flex h-6 items-center">
+                                <input id="pre_event_coffee_ride" name="1000" type="checkbox"
+                                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                            </div>
+                            <div class="text-sm leading-6">
+                                <label for="pre_event_coffee_ride" class="font-medium text-gray-900">Pre-event coffee ride - Scandic Plaza</label>
+                            </div>
+                        </div>
+                        <div class="relative flex gap-x-3">
+                            <div class="flex h-6 items-center">
+                                <input id="lunch_box" name="1001" type="checkbox"
+                                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                            </div>
+                            <div class="text-sm leading-6">
+                                <label for="lunch_box" class="font-medium sm:text-sm text-gray-900">Lunch box - Baggböle Manor</label>
+                            </div>
+                        </div>
+                        <div class="relative flex gap-x-3">
+                            <div class="flex h-6 items-center">
+                                <input id="bag_drop" name="1002" type="checkbox"
+                                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                            </div>
+                            <div class="text-sm leading-6">
+                                <label for="bag_drop" class="font-medium sm:text-sm text-gray-900">Bag drop - Baggböle Manor (to Scandic Plaza)</label>
+                            </div>
+                        </div>
+                        <div class="relative flex gap-x-3">
+                            <div class="flex h-6 items-center">
+                                <input id="long_term_parking" name="1003" type="checkbox"
+                                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-blue-600">
+                            </div>
+                            <div class="text-sm leading-6">
+                                <label for="long_term_parking" class="font-medium sm:text-sm text-gray-900">
+                                    Long-term parking - Baggböle Manor</label>
+                            </div>
+                        </div>
+                        <div class="relative flex gap-x-3">
+                            <div class="flex h-6 items-center">
+                                <input id="buffet_dinner" name="1004" type="checkbox"
+                                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-blue-600">
+                            </div>
+                            <div class="text-sm leading-6">
+                                <label for="buffet_dinner" class="font-medium sm:text-sm text-gray-900">Buffet Dinner- Brännland Inn</label>
+                            </div>
+                        </div>
+                        <div class="relative flex gap-x-3">
+                            <div class="flex h-6 items-center">
+                                <input id="midsummer" name="1005" type="checkbox"
+                                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-blue-600">
+                            </div>
+                            <div class="text-sm leading-6">
+                                <label for="midsummer" class="font-medium sm:text-sm text-gray-900">Swedish Midsummer Celebration - Norrmjöle</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="mt-5">
+                    <legend class="text-sm font-semibold leading-6 text-gray-900">Not included in the entry fee</legend>
+                    <p class="mt-1 text-sm leading-6 text-gray-600">These are delivered via SMS to your mobile phone.</p>
+                    <div class="mt-6 space-y-6">
+<!--                        <div class="flex items-center gap-x-3">-->
+<!--                            <input id="female-core" name="jersey" value="1007" type="radio"-->
+<!--                                   class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">-->
+<!--                            <label for="female-core" class="block sm:text-sm font-medium leading-6 text-gray-900">MSR Jersey - Female,-->
+<!--                                Core Fittet, 680 SEK (-25%)</label>-->
+<!--                        </div>-->
+<!--                        <div class="flex items-center gap-x-3">-->
+<!--                            <input id="female-tor" name="jersey" value="1008" type="radio"-->
+<!--                                   class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">-->
+<!--                            <label for="female-tor" class="block sm:text-sm font-medium leading-6 text-gray-900">MSR Jersey - Female,-->
+<!--                                Tor, 980 SEK (-25%)</label>-->
+<!--                        </div>-->
+<!--                        <div class="flex items-center gap-x-3">-->
+<!--                            <input id="male-core" name="jersey" value="1009" type="radio"-->
+<!--                                   class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">-->
+<!--                            <label for="male-core" class="block sm:text-sm font-medium leading-6 text-gray-900">MSR Jersey - Male, Core-->
+<!--                                Fittet, 680 SEK (-25%)</label>-->
+<!--                        </div>-->
+<!--                        <div class="flex items-center gap-x-3">-->
+<!--                            <input id="male-tor" name="jersey" value="1010" type="radio"-->
+<!--                                   class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">-->
+<!--                            <label for="male-tor" class="block sm:text-sm font-medium leading-6 text-gray-900">MSR Jersey - Male, Tor,-->
+<!--                                980 SEK (-25%)</label>-->
+<!--                        </div>-->
+
+
+                        <div class="flex items-center gap-x-3">
+                            <input id="malefemale-grand" name="jersey" value="1007" type="radio"
+                                   class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                            <label for="malefemale-grand" class="block sm:text-sm font-medium leading-6 text-gray-900">GRAND Jersey F/M (87 EUR on webshop): 70 EUR</label>
+                        </div>
+                        <div class="flex items-center gap-x-3">
+                            <input id="malefemale-tor" name="jersey" value="1008" type="radio"
+                                   class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                            <label for="malefemale-tor" class="block sm:text-sm font-medium leading-6 text-gray-900">TOR 3.0 Jersey F/M (107 EUR on webshop): 86 EUR</label>
+                        </div>
+                    </div>
+                </fieldset>
+
+
+
 
                 <div class="grid md:grid-cols-2 gap-3 mt-4 sm:grid-cols-1">
                     <button type="submit" value="reserve" name="save"

@@ -65,33 +65,33 @@ return new class extends Migration {
             $product_preevent_buffe->save();
 
 
-            $product_female_grand = new Product();
-            $product_female_grand->productname = 'MSR Jersey - Female';
-            $product_female_grand->description = 'MSR Jersey - Female, Grand , 680 SEK (-25%)';
-            $product_female_grand->active = true;
-            $product_female_grand->categoryID = 1;
-            $product_female_grand->save();
-
-
-            $product_female_tor = new Product();
-            $product_female_tor->productname = 'MSR Jersey - Female';
-            $product_female_tor->description = 'MSR Jersey - Female, Tor, 980 SEK (-25%)';
-            $product_female_tor->active = true;
-            $product_female_tor->categoryID = 1;
-            $product_female_tor->save();
+//            $product_female_grand = new Product();
+//            $product_female_grand->productname = 'MSR Jersey - Female';
+//            $product_female_grand->description = 'MSR Jersey - Female, Grand , 680 SEK (-25%)';
+//            $product_female_grand->active = true;
+//            $product_female_grand->categoryID = 1;
+//            $product_female_grand->save();
+//
+//
+//            $product_female_tor = new Product();
+//            $product_female_tor->productname = 'MSR Jersey - Female';
+//            $product_female_tor->description = 'MSR Jersey - Female, Tor, 980 SEK (-25%)';
+//            $product_female_tor->active = true;
+//            $product_female_tor->categoryID = 1;
+//            $product_female_tor->save();
 
 
             $product_male_grand = new Product();
-            $product_male_grand->productname = 'MSR Jersey - Male';
-            $product_male_grand->description = 'MSR Jersey - Male, Grand , 680 SEK (-25%)';
+            $product_male_grand->productname = 'MSR Jersey - Jersey F/M GRAND';
+            $product_male_grand->description = 'GRAND Jersey F/M (87 EUR on webshop): 70 EUR';
             $product_male_grand->active = true;
             $product_male_grand->categoryID = 1;
             $product_male_grand->save();
 
 
             $product_male_tor = new Product();
-            $product_male_tor->productname = 'MSR Jersey - Male';
-            $product_male_tor->description = 'MSR Jersey - Male, Tor, 980 SEK (-25%)';
+            $product_male_tor->productname = 'MSR Jersey - Jersey F/M TOR';
+            $product_male_tor->description = 'TOR 3.0 Jersey F/M (107 EUR on webshop): 86 EUR';
             $product_male_tor->active = true;
             $product_male_tor->categoryID = 1;
             $product_male_tor->save();

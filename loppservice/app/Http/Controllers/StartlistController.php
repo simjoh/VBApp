@@ -21,7 +21,7 @@ class StartlistController extends Controller
             ->join('clubs', 'clubs.club_uid', '=', 'registrations.club_uid')
             ->select('registrations.*', 'person.*', 'adress.*', 'countries.*', 'clubs.name AS club_name')
             ->where('course_uid', $course_uid)
-            ->where('order_status', 'paid')
+            ->where('payment_status', 'paid')
             ->get();
 
         return view('startlist.show', ['startlista' => $startlist, 'countries' => Country::all(), 'clubs' => Club::all()]);

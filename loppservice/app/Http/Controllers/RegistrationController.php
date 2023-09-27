@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\PreRegistrationSuccessEvent;
+use App\Enums\Months;
 use App\Models\Adress;
 use App\Models\Club;
 use App\Models\Contactinformation;
@@ -28,7 +28,6 @@ class RegistrationController extends Controller
         $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
         $preregistration->reservation = false;
         $preregistration->reservation_valid_until = null;
-        // Skapa ett lösen
         return to_route('checkout', ["reg" => $registration_uid]);
     }
 
@@ -40,16 +39,45 @@ class RegistrationController extends Controller
 
     public function update(Request $request)
     {
-        $registration = Registration::find($request['registration_uid'])->get()->first();
+        $registration = Registration::where('registration_uid', $request['registration_uid'])->get()->first();
         $registration->person->firstname = $request['first_name'];
         $registration->person->surname = $request['last_name'];
-        $registration->person->adress->city = $request['city'];
-        $registration->person->adress->adress = $request['street-address'];
-        $registration->person->adress->postal_code = $request['postal-code'];
         $registration->additional_information = $request['extra-info'];
         $registration->person->contactinformation->tel = $request['tel'];
         $registration->person->contactinformation->email = $request['email'];
-        $registration->person()->save($registration->person);
+        $registration->person->birthdate = $request['year'] . "-" . $request['month'] . "-" . $request['day'];
+
+        $person = $registration->person;
+        $adress = $person->adress;
+        $adress->adress = $request['street-address'];
+        $adress->postal_code = $request['postal-code'];
+        $adress->city = $request['city'];
+        $person->adress = $adress;
+        $person->adress->save();
+
+        $contact = $person->contactinformation;
+        $contact->tel = $request['tel'];
+        $email = $contact->email;
+        $contact->email = $email;
+        $person->contactinformation->update();
+
+        $club = Club::whereRaw('LOWER(`name`) LIKE ? ', [trim(strtolower($request['club'])) . '%'])->first();
+
+        if (!$club) {
+            $club_uid = Uuid::uuid4();
+            $club = new Club();
+            $club->club_uid = $club_uid;
+            $club->name = $request['club'];
+            $club->description = null;
+            $club->official_club = false;
+            $club->save();
+            $registration->club_uid = $club_uid;
+        } else {
+            $registration->club_uid = $club->club_uid;
+        }
+
+        //$optionals = Optional::where('registration_uid', $registration->registration_uid);
+
         $registration->save();
         return view('registrations.success')->with(['text' => 'Your registration is updated']);
     }
@@ -63,17 +91,23 @@ class RegistrationController extends Controller
             ->join('adress', 'adress.person_person_uid', '=', 'person.person_uid')
             ->join('contactinformation', 'contactinformation.person_person_uid', '=', 'person.person_uid')
             ->join('countries', 'countries.country_id', '=', 'adress.country_id')
-            ->select('registrations.*', 'person.*', 'adress.*', 'countries.*', 'contactinformation.*' , 'clubs.name AS club_name')
+            ->select('registrations.*', 'person.*', 'adress.*', 'countries.*', 'contactinformation.*', 'clubs.name AS club_name')
             ->where('registrations.registration_uid', $request['registrationUid'])
             ->get()->first();
 
+        if ($registration) {
+            $birthdate = explode("-", $registration->birthdate);
+            $day = $birthdate[2];
+            $month = $birthdate[1];
+            $year = $birthdate[0];
+        }
+        $months = array();
+        foreach (Months::cases() as $shape) {
+            $temparr = array(strval(Months::getLabel($shape)['ord']) => Months::getLabel(Months::tryFrom($shape->value))['en']);
+            $months = array_merge($months, $temparr);
+        }
 
-        $birthdate = explode("-", $registration->birthdate);
-        $day = $birthdate[2];
-        $month = $birthdate[1];
-        $year = $birthdate[0];
-
-        return view('registrations.edit')->with(['countries' => Country::all()->sortByDesc("country_name_en"), 'years' => range(date('Y'), 1950),'months' => range(date('m'), 31) , 'registration' => $registration,  'day' => $day, 'month' => $month, 'birthyear' => $year]);
+        return view('registrations.edit')->with(['countries' => Country::all()->sortByDesc("country_name_en"), 'years' => range(date('Y'), 1950), 'days' => range(date('d'), 31), 'months' => $months, 'registration' => $registration, 'day' => $day, 'month' => $month, 'birthyear' => $year]);
     }
 
 
@@ -97,6 +131,9 @@ class RegistrationController extends Controller
             'day' => 'required'
         ]);
 
+        if($this->isExistingregistrationEmailOnCourse($request['email'])){
+            return back()->withErrors(['same' => 'Registration with this email already exists' . " " . $request['email'] . ". Please use another emailadress"])->withInput();
+        }
 
         // Skapa en registrering
         $reg_uid = Uuid::uuid4();
@@ -114,8 +151,6 @@ class RegistrationController extends Controller
         }
 
         $registration->startnumber = $this->getStartnumber('d32650ff-15f8-4df1-9845-d3dc252a7a84', $event->eventconfiguration->startnumberconfig);
-
-        // $club = Club::where('name', $request['club']);
 
         // Kolla om vi sparat klubben sen tidigare
         $club = Club::whereRaw('LOWER(`name`) LIKE ? ', [trim(strtolower($request['club'])) . '%'])->first();
@@ -192,7 +227,6 @@ class RegistrationController extends Controller
                 $optional->save();
             }
         }
-
 //        $optionals = Optional::where('registration_uid', $reg_uid)->get();
 //
 //        event(new PreRegistrationSuccessEvent($reg, $optionals));
@@ -201,12 +235,25 @@ class RegistrationController extends Controller
 
     private function getStartnumber(string $course_uid, StartNumberConfig $startNumberConfig): int
     {
-
         $max = Registration::where('course_uid', $course_uid)->max('startnumber');
         if ($max == null) {
             return $startNumberConfig->begins_at;
         } else {
             return $max + $startNumberConfig->increments;
         }
+    }
+
+    private function isExistingregistrationEmailOnCourse(string $email): bool{
+        $contact = Contactinformation::where('email',$email)->get()->first();
+        if($contact){
+            $regs = Registration::where('course_uid','d32650ff-15f8-4df1-9845-d3dc252a7a84')->get();
+            foreach ($regs as $reg){
+                if($reg->person->contactinformation->email == $email){
+                    break;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

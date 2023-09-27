@@ -44,8 +44,8 @@ class PreRegistrationSuccessEventListener
         $club = DB::table('clubs')->select('name')->where('club_uid', $registration->club_uid)->get()->first();
         $country = Country::where('country_id', $registration->person->adress->country_id)->get()->first();
 
-        $startlistlink = env("APP_URL") .'startlist/event/' . $registration->course_uid . '/showall';
-        $completeregistrationlink = env("APP_URL") . 'events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/complete';
+        $startlistlink = env("APP_URL") .'/startlist/event/' . $registration->course_uid . '/showall';
+        $completeregistrationlink = env("APP_URL") . '/events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/complete';
 
 
 
