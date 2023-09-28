@@ -27,7 +27,7 @@ class CheckoutController extends Controller
       if ($registration->reservation) {
           $line_items = [["price" => "price_1NrHBYLnAzN3QPcUumT5kAA2", "quantity" => 1]];
       } else {
-          $line_items = [["price" => "price_1NrHCELnAzN3QPcU6FPhBD8o", "quantity" => 1]];
+          $line_items = [["price" => "price_1NvK5dLnAzN3QPcUxffzaVi4", "quantity" => 1]];
       }
 
       $optionals = Optional::where('registration_uid', $registration->registration_uid)->get();
