@@ -17,10 +17,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->exec('echo "Happy New Year!" ')->hourly();
 
         $schedule->command(CountryUpdate::class)
-            ->everyFifteenSeconds();
+            ->daily();
 
 //        $schedule->call(function () {
 //
