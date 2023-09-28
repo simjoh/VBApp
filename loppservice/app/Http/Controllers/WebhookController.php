@@ -4,12 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Events\CompletedRegistrationSuccessEvent;
 use App\Events\PreRegistrationSuccessEvent;
+use App\Mail\CompletedRegistrationEmail;
+use App\Models\Country;
+use App\Models\Event;
 use App\Models\Optional;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\Registration;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Log;
 use Ramsey\Uuid\Uuid;
@@ -100,14 +108,18 @@ class WebhookController extends Controller
         $order->save();
 
         $registration = Registration::find($session->client_reference_id);
-        
-        if ($registration->reservation) {
-            // Events to be triggered for an reservation
-            event(new PreRegistrationSuccessEvent($registration));
-        } else {
-            // Events to be triggered for a full registration
-            event(new CompletedRegistrationSuccessEvent($registration));
+
+        $payment_intent = Session::get($session->payment_intent);
+        if($payment_intent == null){
+            if ($registration->reservation) {
+                // Events to be triggered for an reservation
+                event(new PreRegistrationSuccessEvent($registration));
+            } else {
+                // Events to be triggered for a full registration
+                event(new CompletedRegistrationSuccessEvent($registration));
+            }
         }
+        Session::put($session->payment_intent, $session->payment_intent);
     }
 
     private function failed_order($session) {

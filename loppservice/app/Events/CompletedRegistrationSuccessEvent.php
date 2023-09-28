@@ -20,10 +20,9 @@ class CompletedRegistrationSuccessEvent
     /**
      * Create a new event instance.
      */
-    public function __construct(Registration $registration,  Collection $optional)
+    public function __construct(Registration $registration)
     {
         $this->registration = $registration;
-        $this->optional = $optional;
     }
 
     /**

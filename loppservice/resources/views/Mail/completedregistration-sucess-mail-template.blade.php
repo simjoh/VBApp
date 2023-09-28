@@ -34,7 +34,7 @@
     <strong>Username:</strong> {{$registration->startnumber}}<br>
     <strong>Password:</strong> {{$registration->ref_nr}}<br>
 
-    <strong>Current startlist<</strong><br>
+    <strong>Current startlist</strong><br>
     <a href="{{$startlistlink}}">Link to starting list</a><br>
 
 

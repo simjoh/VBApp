@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\Registration;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class CompletedRegistrationSuccessEventListener
@@ -28,6 +29,8 @@ class CompletedRegistrationSuccessEventListener
      */
     public function handle(CompletedRegistrationSuccessEvent $event): void
     {
+        Log::debug("Sending: CompletedRegistrationSuccessEventEmail");
+
         // sätt reservation till till false om man betalt och är klar
         $registration = Registration::find($event->registration->registration_uid);
         $registration->reservation = false;

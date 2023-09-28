@@ -48,6 +48,7 @@ Route::prefix('/api')->group(function () {
     });
 
     Route::prefix('/artisan')->group(function () {
+
         Route::get('/migrate', function () {
             Artisan::call('migrate', ["--force" => true]);
             Artisan::call('app:country-update');
@@ -55,6 +56,16 @@ Route::prefix('/api')->group(function () {
 
         Route::get('/command/country/run', function () {
             Artisan::call('app:country-update');
+        });
+
+        Route::get('/command/cache/run', function () {
+//            Artisan::call('view:cache');
+//            Artisan::call('route:cache');
+           // Artisan::call('event:cache');
+        });
+
+        Route::get('/command/cache/run', function () {
+            Artisan::call('schedule:run');
         });
     });
 });

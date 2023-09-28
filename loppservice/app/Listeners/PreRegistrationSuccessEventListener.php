@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\Registration;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class PreRegistrationSuccessEventListener
@@ -28,6 +29,8 @@ class PreRegistrationSuccessEventListener
      */
     public function handle(PreRegistrationSuccessEvent $event): void
     {
+
+        Log::debug("Sending: PreRegistrationSuccessEventEmail");
 
         $registration = Registration::find($event->registration->registration_uid);
         $registration->reservation = true;
