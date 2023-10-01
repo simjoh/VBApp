@@ -13,7 +13,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        $product_ids = [1007 => 'price_1NsT89LnAzN3QPcU5D1k4YyN', 1008 => 'price_1Nv4bLLnAzN3QPcUMT4zOINi'];
+        $product_ids = [1007 => 'price_1NvLC4LnAzN3QPcU58Hq8vNQ', 1008 => 'price_1NvLC4LnAzN3QPcUpkYI3Iwu'];
 
         $products = Product::all();
         foreach ($products as $key => $value) {

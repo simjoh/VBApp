@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('base')
-<body class="antialiased">
+<body class="antialiased bg-stone-100">
 <!-- Header -->
 <header class="bg-white py-4">
     <div class="container sm:p-1 mx-auto">
-        <img alt="msr logotyp" width="75%" height="800" src="{{ asset('logo-2024.svg') }}"/>
+        <img alt="msr logotyp" width="75%" height="800" src="{{ asset('logo2024.svg') }}"/>
     </div>
 </header>
 <!-- Main Content -->
-<div class="container mx-auto p-4 font-sans">
-    <div class="bg-white p-6 shadow-md">
+<div class="container mx-auto p-0 font-sans">
+    <div class="bg-orange-50 p-4 shadow-md">
         @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
@@ -27,35 +27,33 @@
             d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
   </span>
                 </div>
-
-
             </ul>
         </div>
         @endif
 
 
-        <p class="mb-5">In the 2024 edition of MSR, the number of entries is limited to 200. The registration is open from the 1st of October to the 14th of June.   If you are unsure whether you will have the opportunity to participate, you can reserve a starting place until the 31st of December. The reservation fee is 20 EUR (not refunded or deducted from the registration fee). </p>
+        <p class="mb-5">In the 2024 edition of MSR, the number of entries is limited to 200. The registration is open from the 1st of
+            October to the 14th of June. If you are unsure whether you will have the opportunity to participate, you can reserve a
+            starting place until the 31st of December. The reservation fee is 20 EUR (not refunded or deducted from the registration
+            fee). </p>
 
-        <p class="mb-5 text-orange-500 font-medium">   Please note, all reservations are cancelled automatically on the 1st of January. Make your final registration before New Year's Eve.</p>
+        <p class="mb-5 text-orange-500 font-medium"> Please note, all reservations are cancelled automatically on the 1st of January.
+            Make your final registration before New Year's Eve.</p>
 
-        <p class="mb-5">   If you have decided to participate, you can register immediately. The registration fee is 250 EUR until the 31st of December. Thereafter 300 EUR until the 2nd of June. Then finally 350 EUR for last-minute tickets until the 14th of June. </p>
+        <p class="mb-5">If you have decided to participate, you can register immediately. The registration fee is 250 EUR until the 31st
+            of December. Thereafter 300 EUR until the 2nd of June. Then finally 350 EUR for last-minute tickets until the 14th of
+            June. Registration fees are not refunded however starting places can be resold and transfered until the 2nd of June.</p>
 
-        <p class="mb-5">  Registration fees are not refunded however starting places can be resold and transfered until the 2nd of June. Food for the whole event is ordered on Monday the 3rd of June, including the dinner buffet on Saturday the 15th of June. Excluding emergencies and unforseen circumstances - if you make the decision to withdraw from the event please inform the organiser no later than the 2nd of June. This will help reduce food waste etc in the project.</p>
-
-        <h2 class="text-4xl font-extrabold mt-10 mb-4">Registration form</h2>
         <p class="text-left  mb-4">
             Please fill in the registration form below with your name and date of birth, the address to which your medal from Les
-            Randonneurs Mondiaux will be sent upon completing the randonnée, the mobile number that you’ll be using throughout the event, a permanent email-address where you can receive mail
+            Randonneurs Mondiaux will be sent upon completing the randonnée, the mobile number that you’ll be using throughout the
+            event, a permanent email address
             and also any special dietary requirements you may have (gluten free, lactose free, allergies, vegan, vegetarian etc).
         </p>
 
-        <p class="text-left mb-4">
-            If you are registering a reserved starting place, please enter your start number and check that your personal information
-            and choices are still valid before confirming your registration.
-
-        </p>
-
-        <p>After submitting your entry please check that you have received a confirmation by email. If not check your spam folder and if found there, please change spam filter settings for the address "info@midnightsunrandonnee.se" so you will not miss future emails.</p>
+        <p>After submitting your entry please check that you have received a confirmation by email. If not then check your spam folder
+            and if found there, please change your spam filter settings for the address "info@midnightsunrandonnee.se" so you will not
+            miss future emails.</p>
 
         <form method="post" class="grid sm:grid-cols-1 gap-4">
             @csrf
@@ -91,7 +89,6 @@
                                class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
                     </div>
                 </div>
-
 
                 <div class="mt-2 w-1/2">
                     <label for="tel" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Mobile number</label>
@@ -231,13 +228,13 @@
                         please add your name to the carpool.</p>
                     <div class="mt-6 space-y-1">
                         <div class="flex items-center gap-x-3">
-                            <input id="driver" name="productID" value="1011" type="radio"
+                            <input id="driver" name="productID" value="1009" type="radio"
                                    class="h-4 w-4 border-black text-black focus:ring-gray-600">
                             <label for="driver" class="block sm:text-base font-sm leading-6 text-gray-900">Driver looking for
                                 passengers</label>
                         </div>
                         <div class="flex items-center gap-x-3">
-                            <input id="vehicle" name="productID" value="1012" type="radio"
+                            <input id="vehicle" name="productID" value="1010" type="radio"
                                    class="h-4 w-4 border-black text-black focus:ring-gray-600">
                             <label for="vehicle" class="block sm:text-base font-sm leading-6 text-gray-900">Passenger looking for
                                 vehicle</label>
@@ -337,19 +334,22 @@
 
                 <div class="grid md:grid-cols-2 gap-3 mt-4 sm:grid-cols-1">
                     <button type="submit" value="reserve" name="save"
-                            class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-blue-600">
+                            class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
                         Reserve
                     </button>
                     <button type="submit" value="Registration" name="save"
-                            class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-green-600">
+                            class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
                         Register
                     </button>
                 </div>
-
                 <p class="text-xs mt-10">
-
-                    Please note, the organiser Cykelintresset is under no obligation to refund a participant who for any reason is unable to participate in the event. Entry tickets may however be resold. Emergency roadworks, extreme weather and other unforeseen circumstances may force the organiser to make last minute changes and adjustments to the event, including the course, the checkpoints and services at the checkpoints. The organiser reserves the right to make these changes without compensation to participants. If for some unforseen reason the event cannot take place in June 2024 the event will not be cancelled but instead be postponed until 2025. By registering, you accept the above-mentioned terms and conditions.
-
+                    Please note, the organiser Cykelintresset is under no obligation to refund a participant who for any reason is
+                    unable to participate in the event. Entry tickets may however be resold. Emergency roadworks, extreme weather and
+                    other unforeseen circumstances may force the organiser to make last minute changes and adjustments to the event,
+                    including the course, the checkpoints and services at the checkpoints. The organiser reserves the right to make
+                    these changes without compensation to participants. If for some unforseen reason the event cannot take place in June
+                    2024 the event will not be cancelled but instead be postponed until 2025. By registering, you accept the
+                    above-mentioned terms and conditions.
                 </p>
             </div>
         </form>

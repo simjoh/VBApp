@@ -36,7 +36,6 @@ Route::get('/events', function (Event $event) {
     return $event->title;
 });
 Route::get('/events/{uid}/register', function (string $uid) {
-
    $count = Registration::all()->count();
    if($count >= 200){
        return Redirect::back()->withErrors(['msg' => 'Event is full']);
@@ -58,3 +57,6 @@ Route::post('/payments/events', [WebhookController::class, 'index']);
 Route::get('/startlist/event/{eventuid}/showall', [StartlistController::class, 'startlistFor']);
 
 Route::get('lang/{lang}', [LocaleController::class, 'switchLang']);
+
+
+

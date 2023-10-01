@@ -50,14 +50,14 @@ class PreRegistrationSuccessEventListener
         $startlistlink = env("APP_URL") .'/startlist/event/' . $registration->course_uid . '/showall';
         $completeregistrationlink = env("APP_URL") . '/events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/complete';
 
-
+        $updatedetaillink = env("APP_URL") . '/events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/getregitration';
 
         if (App::isProduction()) {
             Mail::to($email_adress)
-                ->send(new PreRegistrationSucessEmail($registration, $products, $event, $club->name, $country->country_name_en, $startlistlink,$completeregistrationlink));
+                ->send(new PreRegistrationSucessEmail($registration, $products, $event, $club->name, $country->country_name_en, $startlistlink,$completeregistrationlink, $updatedetaillink));
         } else {
             Mail::to('receiverinbox@mailhog.local')
-                ->send(new PreRegistrationSucessEmail($registration, $products, $event, $club->name, $country->country_name_en, $startlistlink,$completeregistrationlink));
+                ->send(new PreRegistrationSucessEmail($registration, $products, $event, $club->name, $country->country_name_en, $startlistlink,$completeregistrationlink,$updatedetaillink));
         }
     }
 }

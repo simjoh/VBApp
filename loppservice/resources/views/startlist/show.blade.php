@@ -1,41 +1,41 @@
 @include('base')
 <body class="antialiased">
-    <div class="md:container md:mx-auto">
+<header class="bg-white py-4">
+    <div class="container sm:p-1 mx-auto">
+        <img class="px-2" alt="msr logotyp" width="75%" height="800" src="{{ asset('logo2024.svg') }}"/>
+    </div>
+</header>
+    <div class="container mx-auto p-0 font-sans">
         <div class="bg-white p-6 shadow-md">
         <!-- Header -->
-        <header class="bg-white py-4">
-            <div class="container sm:p-1 mx-auto">
-                <img alt="msr logotyp" width="75%" height="800" src="{{ asset('logo-2024.svg') }}"/>
-            </div>
-        </header>
+
         <!-- Main Content -->
 
         <div class="flex flex-col">
             <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div class="inline-block min-w-full py-1 sm:px-6 lg:px-8">
                     <div class="overflow-hidden">
-                        <table class="min-w-full text-left text-sm font-light">
+                        <table class="min-w-full text-left text-md font-light">
                             <thead class="border-b bg-white font-medium dark:border-neutral-500 dark:bg-neutral-600">
-                            <tr>
-                                <th scope="col" class="py-1">#</th>
-                                <th scope="col" class="py-1"></th>
-                                <th scope="col" class="py-1">Name</th>
-                                <th scope="col" class="py-1">Club</th>
+                            <tr class="bg-orange-100 border-b-1 border-black">
+                                <th scope="col" class="py-3">#</th>
+                                <th scope="col" class="py-3">Lastname</th>
+                                <th scope="col" class="py-3">Firstname</th>
+                                <th scope="col" class="py-3">Club</th>
+                                <th scope="col" class="py-3">City</th>
+                                <th scope="col" class="py-3">Country</th>
                             </tr>
                             </thead>
 
                             <tbody>
                             @foreach ($startlista as $key => $starlist)
                             <tr class="border-b bg-neutral-100 dark:border-neutral-500 dark:bg-neutral-700 even:bg-white">
-                                <td class="whitespace-nowrap py-1">{{$starlist->startnumber}}</td>
-                                <td>
-                                    <img class="float-left pr-1 w-12 md:w-6" src="{{$starlist->flag_url_png}}" title="{{$starlist->country_name_en}}" alt="{{$starlist->country_name_en}}">
-                                </td>
-                                <td>
-                                    {{$starlist->firstname}}
-                                    {{$starlist->surname}}
-                                </td>
-                                <td class="whitespace-nowrap py-1">{{$starlist->club_name}}</td>
+                                <td class="whitespace-nowrap py-3 px-2">{{$starlist->startnumber}}</td>
+                                <td class="whitespace-nowrap py-3 px-2">{{$starlist->surname}}</td>
+                                <td class="whitespace-nowrap py-3 px-2">{{$starlist->firstname}}</td>
+                                <td class="whitespace-nowrap py-3 px-2">{{$starlist->club_name}}</td>
+                                <td class="whitespace-nowrap py-3 px-2">{{$starlist->city}}</td>
+                                <td class="whitespace-nowrap py-3 px-2"><img class="float-left pr-1 w-12 md:w-6 pt-1" src="{{$starlist->flag_url_png}}" title="{{$starlist->country_name_en}}" alt="{{$starlist->country_name_en}}">{{$starlist->country_name_en}}</td>
                             </tr>
                             @endforeach
                             </tbody>

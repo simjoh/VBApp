@@ -20,7 +20,7 @@ class PreRegistrationSucessEmail extends Mailable
      *
      * @return void
      */
-    public function __construct(private Registration $registration, private Collection $products, private Event $event, private string $club, private string $country, private string $startlistlink, private string $completeregistrationlink)
+    public function __construct(private Registration $registration, private Collection $products, private Event $event, private string $club, private string $country, private string $startlistlink, private string $completeregistrationlink, private string $updatelink)
     {
 
     }
@@ -44,12 +44,9 @@ class PreRegistrationSucessEmail extends Mailable
      */
     public function content()
     {
-
-        $realurl = env('APP_URL');
-
         return new Content(
             view: 'Mail.preregistration-sucesse-mail-template',
-            with: ['country' => $this->country, 'club' => $this->club, 'startlistlink' => $this->startlistlink, 'registration' => $this->registration, 'adress' => $this->registration->person->adress, 'contact' => $this->registration->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event, 'completeregistrationlink' => $this->completeregistrationlink, 'editregistrationdetails' => 'http://localhost:8082/events/' . $this->registration->course_uid . '/registration/' . $this->registration->registration_uid . '/getregitration'],
+            with: ['country' => $this->country, 'club' => $this->club, 'startlistlink' => $this->startlistlink, 'registration' => $this->registration, 'adress' => $this->registration->person->adress, 'contact' => $this->registration->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event, 'completeregistrationlink' => $this->completeregistrationlink, 'updatelink' => $this->updatelink],
         );
     }
 }

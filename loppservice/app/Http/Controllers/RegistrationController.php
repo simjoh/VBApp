@@ -28,7 +28,8 @@ class RegistrationController extends Controller
         $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
         $preregistration->reservation = false;
         $preregistration->reservation_valid_until = null;
-        return to_route('checkout', ["reg" => $registration_uid]);
+        $preregistration->save();
+        return to_route('checkout', ["reg" => $registration_uid, 'completeregistration' => true]);
     }
 
 
@@ -121,6 +122,12 @@ class RegistrationController extends Controller
             exit();
         }
 
+//        $date_now = date("Y-m-d"); // this format is string comparable
+//
+//        if ($date_now != date('Y-m-d','2023-10-01')) {
+//            http_response_code(404);
+//        }
+
         $validated = $request->validate([
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
@@ -131,9 +138,10 @@ class RegistrationController extends Controller
             'day' => 'required'
         ]);
 
-        if($this->isExistingregistrationEmailOnCourse($request['email'])){
+        if ($this->isExistingregistrationEmailOnCourse($request['email'])) {
             return back()->withErrors(['same' => 'Registration with this email already exists' . " " . $request['email'] . ". Please use another emailadress"])->withInput();
         }
+
 
         // Skapa en registrering
         $reg_uid = Uuid::uuid4();
@@ -227,9 +235,9 @@ class RegistrationController extends Controller
                 $optional->save();
             }
         }
-//        $optionals = Optional::where('registration_uid', $reg_uid)->get();
-//
-//        event(new PreRegistrationSuccessEvent($reg, $optionals));
+        //$optionals = Optional::where('registration_uid', $reg_uid)->get();
+        // event(new PreRegistrationSuccessEvent($reg));
+        // event(new CompletedRegistrationSuccessEvent($registration));
         return to_route('checkout', ["reg" => $reg->registration_uid]);
     }
 
@@ -243,12 +251,13 @@ class RegistrationController extends Controller
         }
     }
 
-    private function isExistingregistrationEmailOnCourse(string $email): bool{
-        $contact = Contactinformation::where('email',$email)->get()->first();
-        if($contact){
-            $regs = Registration::where('course_uid','d32650ff-15f8-4df1-9845-d3dc252a7a84')->get();
-            foreach ($regs as $reg){
-                if($reg->person->contactinformation->email == $email){
+    private function isExistingregistrationEmailOnCourse(string $email): bool
+    {
+        $contact = Contactinformation::where('email', $email)->get()->first();
+        if ($contact) {
+            $regs = Registration::where('course_uid', 'd32650ff-15f8-4df1-9845-d3dc252a7a84')->get();
+            foreach ($regs as $reg) {
+                if (strtolower($reg->person->contactinformation->email) == strtolower($email)) {
                     break;
                 }
             }

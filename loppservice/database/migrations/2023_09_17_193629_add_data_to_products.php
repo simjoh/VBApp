@@ -65,22 +65,6 @@ return new class extends Migration {
             $product_preevent_buffe->save();
 
 
-//            $product_female_grand = new Product();
-//            $product_female_grand->productname = 'MSR Jersey - Female';
-//            $product_female_grand->description = 'MSR Jersey - Female, Grand , 680 SEK (-25%)';
-//            $product_female_grand->active = true;
-//            $product_female_grand->categoryID = 1;
-//            $product_female_grand->save();
-//
-//
-//            $product_female_tor = new Product();
-//            $product_female_tor->productname = 'MSR Jersey - Female';
-//            $product_female_tor->description = 'MSR Jersey - Female, Tor, 980 SEK (-25%)';
-//            $product_female_tor->active = true;
-//            $product_female_tor->categoryID = 1;
-//            $product_female_tor->save();
-
-
             $product_male_grand = new Product();
             $product_male_grand->productname = 'MSR Jersey - Jersey F/M GRAND';
             $product_male_grand->description = 'GRAND Jersey F/M (87 EUR on webshop): 70 EUR';
@@ -102,6 +86,7 @@ return new class extends Migration {
             $product_driver_passenger->description = 'Driver looking for passengers)';
             $product_driver_passenger->active = true;
             $product_driver_passenger->categoryID = 4;
+            $product_driver_passenger->save();
 
             $product_passenger_vehicle = new Product();
             $product_passenger_vehicle->productname = 'Passenger looking for vehicle';

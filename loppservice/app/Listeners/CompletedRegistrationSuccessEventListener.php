@@ -35,12 +35,16 @@ class CompletedRegistrationSuccessEventListener
         $registration = Registration::find($event->registration->registration_uid);
         $registration->reservation = false;
         $registration->reservation_valid_until = null;
-        $ref_nr = mt_rand(10000, 99999);
-        if (Registration::where('course_uid', $registration->course_uid)->where('ref_nr', $ref_nr)->exists()) {
+
+        if(!$registration->ref_nr){
             $ref_nr = mt_rand(10000, 99999);
+            if (Registration::where('course_uid', $registration->course_uid)->where('ref_nr', $ref_nr)->exists()) {
+                $ref_nr = mt_rand(10000, 99999);
+            }
+            $registration->ref_nr = $ref_nr;
         }
 
-        $registration->ref_nr = $ref_nr;
+
         $registration->save();
         $email_adress = $registration->person->contactinformation->email;
         $event = Event::find($registration->course_uid)->get()->first();
@@ -49,13 +53,14 @@ class CompletedRegistrationSuccessEventListener
         $country = Country::where('country_id', $registration->person->adress->country_id)->get()->first();
 
         $startlistlink = env("APP_URL") .'/startlist/event/' . $registration->course_uid . '/showall';
+        $updatedetaillink = env("APP_URL") . '/events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/getregitration';
 
         if (App::isProduction()) {
             Mail::to($email_adress)
-                ->send(new CompletedRegistrationEmail($registration, $products, $event, $club->name, $country->country_name_en, $startlistlink));
+                ->send(new CompletedRegistrationEmail($registration, $products, $event, $club->name, $country->country_name_en, $startlistlink, $updatedetaillink));
         } else {
             Mail::to('receiverinbox@mailhog.local')
-                ->send(new CompletedRegistrationEmail($registration, $products, $event, $club->name, $country->country_name_en, $startlistlink));
+                ->send(new CompletedRegistrationEmail($registration, $products, $event, $club->name, $country->country_name_en, $startlistlink, $updatedetaillink));
         }
     }
 }

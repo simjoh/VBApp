@@ -20,7 +20,7 @@ class CompletedRegistrationEmail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(private Registration $registration, Collection $products, private Event $event, private string $club, private string $country,private string $startlistlink)
+    public function __construct(private Registration $registration, Collection $products, private Event $event, private string $club, private string $country,private string $startlistlink,private string $updatelink)
     {
         $this->products = $products;
     }
@@ -43,7 +43,7 @@ class CompletedRegistrationEmail extends Mailable
 
         return new Content(
             view: 'Mail.completedregistration-sucess-mail-template',
-            with: ['country' => $this->country, 'club' => $this->club, 'startlistlink' => $this->startlistlink, 'registration' => $this->registration, 'adress' => $this->registration->person->adress, 'contact' => $this->registration->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event],
+            with: ['country' => $this->country, 'club' => $this->club, 'startlistlink' => $this->startlistlink, 'registration' => $this->registration, 'adress' => $this->registration->person->adress, 'contact' => $this->registration->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event, 'updatelink' => $this->updatelink],
         );
     }
 
