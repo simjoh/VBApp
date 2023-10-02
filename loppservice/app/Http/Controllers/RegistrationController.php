@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Months;
+use App\Events\CompletedRegistrationSuccessEvent;
+use App\Events\PreRegistrationSuccessEvent;
 use App\Models\Adress;
 use App\Models\Club;
 use App\Models\Contactinformation;
@@ -15,6 +17,7 @@ use App\Models\Registration;
 use App\Models\StartNumberConfig;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 
@@ -26,8 +29,6 @@ class RegistrationController extends Controller
     {
         $registration_uid = $request['regsitrationUid'];
         $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
-        $preregistration->reservation = false;
-        $preregistration->reservation_valid_until = null;
         $preregistration->save();
         return to_route('checkout', ["reg" => $registration_uid, 'completeregistration' => true]);
     }
@@ -77,8 +78,6 @@ class RegistrationController extends Controller
             $registration->club_uid = $club->club_uid;
         }
 
-        //$optionals = Optional::where('registration_uid', $registration->registration_uid);
-
         $registration->save();
         return view('registrations.success')->with(['text' => 'Your registration is updated']);
     }
@@ -103,10 +102,14 @@ class RegistrationController extends Controller
             $year = $birthdate[0];
         }
         $months = array();
-        foreach (Months::cases() as $shape) {
-            $temparr = array(strval(Months::getLabel($shape)['ord']) => Months::getLabel(Months::tryFrom($shape->value))['en']);
+        foreach (Months::cases() as $key => $shape) {
+            $VAL = intval($key);
+            $VAL++;
+            $temparr = array($VAL => Months::getLabel(Months::tryFrom($shape->value))['en']);
             $months = array_merge($months, $temparr);
         }
+
+
 
         return view('registrations.edit')->with(['countries' => Country::all()->sortByDesc("country_name_en"), 'years' => range(date('Y'), 1950), 'days' => range(date('d'), 31), 'months' => $months, 'registration' => $registration, 'day' => $day, 'month' => $month, 'birthyear' => $year]);
     }
@@ -138,9 +141,9 @@ class RegistrationController extends Controller
             'day' => 'required'
         ]);
 
-        if ($this->isExistingregistrationEmailOnCourse($request['email'])) {
-            return back()->withErrors(['same' => 'Registration with this email already exists' . " " . $request['email'] . ". Please use another emailadress"])->withInput();
-        }
+//        if ($this->isExistingregistrationEmailOnCourse($request['email'])) {
+//            return back()->withErrors(['same' => 'Registration with this email already exists' . " " . $request['email'] . ". Please use another emailadress"])->withInput();
+//        }
 
 
         // Skapa en registrering
@@ -157,8 +160,6 @@ class RegistrationController extends Controller
         } else {
             $registration->reservation = false;
         }
-
-        $registration->startnumber = $this->getStartnumber('d32650ff-15f8-4df1-9845-d3dc252a7a84', $event->eventconfiguration->startnumberconfig);
 
         // Kolla om vi sparat klubben sen tidigare
         $club = Club::whereRaw('LOWER(`name`) LIKE ? ', [trim(strtolower($request['club'])) . '%'])->first();
@@ -235,9 +236,15 @@ class RegistrationController extends Controller
                 $optional->save();
             }
         }
-        //$optionals = Optional::where('registration_uid', $reg_uid)->get();
-        // event(new PreRegistrationSuccessEvent($reg));
-        // event(new CompletedRegistrationSuccessEvent($registration));
+                 //$optionals = Optional::where('registration_uid', $reg_uid)->get();
+
+
+              //  event(new PreRegistrationSuccessEvent($reg));
+
+               // event(new CompletedRegistrationSuccessEvent($registration));
+
+
+
         return to_route('checkout', ["reg" => $reg->registration_uid]);
     }
 

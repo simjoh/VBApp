@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Registration;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 class CheckoutController extends Controller
@@ -16,6 +17,9 @@ class CheckoutController extends Controller
      */
     public function create(Request $request): RedirectResponse
     {
+        Log::debug("Sending payment reguest" . $request["reg"]);
+
+
         \Stripe\Stripe::setApiKey(env("STRIPE_SECRET_KEY"));
 
         $line_items = array();
@@ -41,7 +45,6 @@ class CheckoutController extends Controller
             }
         }
         //behöver hantera cancel
-        Session::put('finalreg', boolval($request['completeregistration']));
         Session::put('registration', $request["reg"]);
 
         $YOUR_DOMAIN = env("APP_URL");
@@ -50,7 +53,6 @@ class CheckoutController extends Controller
             'client_reference_id' => $registration->registration_uid,
             'line_items' => [$line_items],
             'mode' => 'payment',
-            'metadata' => ["finalregistration" => boolval($request['completeregistration'])],
             'success_url' => $YOUR_DOMAIN . '/checkout/success',
             'cancel_url' => $YOUR_DOMAIN . '/checkout/cancel',
         ]);
@@ -72,19 +74,7 @@ class CheckoutController extends Controller
     public function cancel(Request $request)
     {
         // handle caneled final registration
-        $final = Session::get('finalreg');
-        if ($final) {
-            $registration = Registration::find(Session::get("registration"));
-            $registration->reservation = true;
-            $registration->reservation_valid_until = '2023-12-31';
-            $registration->save();
-        } else {
-            $registration = Registration::find(Session::get("registration"));
-            if($registration){
-                $registration->delete();
-            }
-
-        }
+        Log::debug("User canceled payment" . $request["reg"]);
         return view('checkout.cancel'); // , compact('customer'));
     }
 }

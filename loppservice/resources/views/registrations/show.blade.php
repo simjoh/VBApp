@@ -32,10 +32,9 @@
         @endif
 
 
-        <p class="mb-5">In the 2024 edition of MSR, the number of entries is limited to 200. The registration is open from the 1st of
-            October to the 14th of June. If you are unsure whether you will have the opportunity to participate, you can reserve a
+        <p class="mb-5">If you are unsure whether you will have the opportunity to participate, you can reserve a
             starting place until the 31st of December. The reservation fee is 20 EUR (not refunded or deducted from the registration
-            fee). </p>
+            fee).</p>
 
         <p class="mb-5 text-orange-500 font-medium"> Please note, all reservations are cancelled automatically on the 1st of January.
             Make your final registration before New Year's Eve.</p>
@@ -244,7 +243,7 @@
                 <hr class="h-1 my-8 bg-gray-200 border-0 dark:bg-gray-700">
                 <fieldset>
                     <legend class="text-xl font-semibold leading-6 text-gray-900">Included in the entry fee</legend>
-                    <p class="mt-1 text-base leading-6 text-gray-600">Please look throught the event program and submit your
+                    <p class="mt-1 text-base leading-6 text-gray-600">Please look throught the event program before you submit your
                         choices.</p>
                     <div class="mt-6 space-y-1">
                         <div class="relative flex gap-x-3">

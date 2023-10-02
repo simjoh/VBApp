@@ -59,4 +59,6 @@ Route::get('/startlist/event/{eventuid}/showall', [StartlistController::class, '
 Route::get('lang/{lang}', [LocaleController::class, 'switchLang']);
 
 
-
+Route::get('/profile', function () {
+    // Only authenticated users may access this route...
+})->middleware('auth.basic');

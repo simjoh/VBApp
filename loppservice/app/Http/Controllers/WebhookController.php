@@ -4,22 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Events\CompletedRegistrationSuccessEvent;
 use App\Events\PreRegistrationSuccessEvent;
-use App\Mail\CompletedRegistrationEmail;
-use App\Models\Country;
-use App\Models\Event;
-use App\Models\Optional;
 use App\Models\Order;
-use App\Models\Product;
 use App\Models\Registration;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Session;
-use Illuminate\View\View;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Ramsey\Uuid\Uuid;
 
 class WebhookController extends Controller
@@ -40,52 +28,57 @@ class WebhookController extends Controller
         $event = null;
 
         try {
-          $event = \Stripe\Webhook::constructEvent(
-            $payload, $sig_header, $endpoint_secret
-          );
-        } catch(\UnexpectedValueException $e) {
-          // Invalid payload
+            $event = \Stripe\Webhook::constructEvent(
+                $payload, $sig_header, $endpoint_secret
+            );
+        } catch (\UnexpectedValueException $e) {
+            // Invalid payload
             Log::debug("Stripe webhooks: Invalid payload");
-          return response('', 400);
-        } catch(\Stripe\Exception\SignatureVerificationException $e) {
-          // Invalid signature
+            return response('', 400);
+        } catch (\Stripe\Exception\SignatureVerificationException $e) {
+            // Invalid signature
             Log::debug("Stripe webhooks: Invalid signature");
-          return response('', 400);
+            return response('', 400);
         }
 
         switch ($event->type) {
-        case 'checkout.session.completed':
-            $session = $event->data->object;
+            case 'checkout.session.completed':
+                $session = $event->data->object;
 
-            $this->create_order($session);
+                $this->create_order($session);
 
-            if ($session->payment_status == 'paid') {
+                if ($session->payment_status == 'paid') {
+                    $this->fullfill_order($session);
+                }
+
+            case 'checkout.session.async_payment_succeeded':
+                $session = $event->data->object;
+
+                // Fulfill the purchase
                 $this->fullfill_order($session);
-            }
 
-        case 'checkout.session.async_payment_succeeded':
-            $session = $event->data->object;
+                break;
 
-            // Fulfill the purchase
-            $this->fullfill_order($session);
+            case 'checkout.session.async_payment_failed':
+                $session = $event->data->object;
 
-            break;
+                $this->failed_order($session);
+                break;
 
-        case 'checkout.session.async_payment_failed':
-            $session = $event->data->object;
+            case 'checkout.session.expired':
+                $session = $event->data->object;
+                Log::debug("Stripe webhooks: Session expirered " . $session->client_reference_id);
 
-            $this->failed_order($session);
-            break;
-
-        default:
-            Log::debug("Stripe webhooks: Received unknown event type");
+            default:
+                Log::debug("Stripe webhooks: Received unknown event type");
         }
 
         return response('', 200);
     }
 
     // Create order, payment may still be pending
-    private function create_order($session) {
+    private function create_order($session)
+    {
         $registration = Registration::find($session->client_reference_id);
 
         if (!$registration) {
@@ -102,7 +95,8 @@ class WebhookController extends Controller
     }
 
     // Set after payment fullfilled
-    private function fullfill_order($session) {
+    private function fullfill_order($session)
+    {
         $order = Order::firstWhere('payment_intent_id', $session->payment_intent);
         $order->payment_status = $session->payment_status;
         $order->save();
@@ -110,7 +104,7 @@ class WebhookController extends Controller
         $registration = Registration::find($session->client_reference_id);
 
         $payment_intent = Session::get($session->payment_intent);
-        if($payment_intent == null){
+        if ($payment_intent == null) {
             if ($registration->reservation) {
                 // Events to be triggered for an reservation
                 event(new PreRegistrationSuccessEvent($registration));
@@ -122,7 +116,8 @@ class WebhookController extends Controller
         Session::put($session->payment_intent, $session->payment_intent);
     }
 
-    private function failed_order($session) {
+    private function failed_order($session)
+    {
         $order = Order::firstWhere('payment_intent_id', $session->payment_intent);
         $order->payment_status = $session->payment_status;
         $order->save();
@@ -134,6 +129,7 @@ class WebhookController extends Controller
 
     }
 
-    private function email_customer_about_failed_payment($session, $registration) {
+    private function email_customer_about_failed_payment($session, $registration)
+    {
     }
 }
