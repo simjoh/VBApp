@@ -5,18 +5,18 @@ namespace App\Enums;
 enum Months: string
 {
 
-    case JANUARI = 'January';
-    case FEBRUARI = 'Februari';
-    case MARCH = 'March';
-    case APRIL = 'April';
-    case MAY = 'May';
-    case JUNE = 'June';
-    case JULY = 'July';
-    case AUGUST = 'August';
-    case SEPTEMBER = 'September';
-    case OCTOBER = 'October';
-    case NOVEMBER = 'November';
-    case DECEMBER = 'December';
+    case JANUARI = '1';
+    case FEBRUARI = '2';
+    case MARCH = '3';
+    case APRIL = '4';
+    case MAY = '5';
+    case JUNE = '6';
+    case JULY = '7';
+    case AUGUST = '8';
+    case SEPTEMBER = '9';
+    case OCTOBER = '10';
+    case NOVEMBER = '11';
+    case DECEMBER = '12';
 
 
     public function label(): array
