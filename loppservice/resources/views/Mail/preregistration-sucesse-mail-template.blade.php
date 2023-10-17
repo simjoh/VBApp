@@ -449,7 +449,7 @@
   <p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;line-height: 133%;text-align: left;">{{$optional->description}}</p>
   @endif
   @endforeach
- 
+
   <p style="text-indent: 0pt;text-align: left;"><br /></p>
   <h2 style="padding-left: 10pt;text-indent: 0pt;text-align: left;">MSR Jersey</h2>
 
@@ -458,55 +458,10 @@
   <p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">{{$optional->description}}</p>
   @endif
   @endforeach
-
   <p class="s7" style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">Your digital voucher will
     be sent in a separate email.<br />
   </p>
   <p style="text-indent: 0pt;text-align: left;">&nbsp;</p>
-  <table cellspacing="0" style="border-collapse:collapse;margin-left:6.0245pt">
-    <tr style="height:38pt">
-      <td style="width:227pt">
-        <p class="s5" style="padding-top: 15pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">Login webapp</p>
-      </td>
-      <td style="width:14pt">
-        <p style="text-indent: 0pt;text-align: left;"><br />
-        </p>
-      </td>
-      <td style="width:227pt">
-        <p style="text-indent: 0pt;text-align: left;"><br />
-        </p>
-      </td>
-    </tr>
-    <tr style="height:15pt">
-      <td style="width:227pt;border-bottom-style:solid;border-bottom-width:1pt">
-        <p class="s1" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;"><span class="s1"
-            style="padding-left:5pt;text-indent:0pt;text-align:left">User name:</span></p>
-      </td>
-      <td style="width:14pt">
-        <p style="text-indent: 0pt;text-align: left;"><br />
-        </p>
-      </td>
-      <td style="width:227pt;border-bottom-style:solid;border-bottom-width:1pt">
-        <p class="s1" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;"><span class="s8"
-            style="padding-left:5pt;text-indent:0pt;text-align:left">Password:</span></p>
-      </td>
-    </tr>
-    <tr style="height:22pt">
-      <td
-        style="width:227pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$registration->startnumber}} </p>
-      </td>
-      <td
-        style="width:14pt;border-left-style:solid;border-left-width:1pt;border-right-style:solid;border-right-width:1pt">
-        <p style="text-indent: 0pt;text-align: left;"><br />
-        </p>
-      </td>
-      <td
-        style="width:227pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$registration->ref_nr}}</p>
-      </td>
-    </tr>
-  </table>
   <p class="s9" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">&nbsp;</p>
   <p class="s9" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">&nbsp;</p>
   <p style="text-indent: 0pt;text-align: left;"><br /></p>

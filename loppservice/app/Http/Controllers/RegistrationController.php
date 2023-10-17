@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\Months;
-use App\Events\CompletedRegistrationSuccessEvent;
-use App\Events\PreRegistrationSuccessEvent;
 use App\Models\Adress;
 use App\Models\Club;
 use App\Models\Contactinformation;
@@ -14,23 +11,26 @@ use App\Models\Optional;
 use App\Models\Person;
 use App\Models\Product;
 use App\Models\Registration;
-use App\Models\StartNumberConfig;
+use App\Traits\DaysTrait;
+use App\Traits\MonthsTrait;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
 
 class RegistrationController extends Controller
 {
 
+    use MonthsTrait;
+    use DaysTrait;
 
     public function complete(Request $request): RedirectResponse
     {
         $registration_uid = $request['regsitrationUid'];
         $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
         $preregistration->save();
-        return to_route('checkout', ["reg" => $registration_uid, 'completeregistration' => true]);
+        return to_route('checkout', ["reg" => $registration_uid, 'is_final_registration_on_event' => true]);
     }
 
 
@@ -42,20 +42,24 @@ class RegistrationController extends Controller
     public function update(Request $request)
     {
         $registration = Registration::where('registration_uid', $request['registration_uid'])->get()->first();
+
+        if (!$registration) {
+            http_response_code(404);
+            exit();
+        }
+
         $registration->person->firstname = $request['first_name'];
         $registration->person->surname = $request['last_name'];
         $registration->additional_information = $request['extra-info'];
         $registration->person->contactinformation->tel = $request['tel'];
-        $registration->person->contactinformation->email = $request['email'];
-        $registration->person->birthdate = $request['year'] . "-" . $request['month'] . "-" . $request['day'];
+        $registration->person->birthdate = $request['year'] . "-" . str_pad($request['month'], 2, "0", STR_PAD_LEFT) . "-" . str_pad($request['day'], 2, "0", STR_PAD_LEFT);
 
         $person = $registration->person;
         $adress = $person->adress;
         $adress->adress = $request['street-address'];
         $adress->postal_code = $request['postal-code'];
         $adress->city = $request['city'];
-        $person->adress = $adress;
-        $person->adress->save();
+        $person->adress->update();
 
         $contact = $person->contactinformation;
         $contact->tel = $request['tel'];
@@ -77,9 +81,34 @@ class RegistrationController extends Controller
         } else {
             $registration->club_uid = $club->club_uid;
         }
-
+        $registration->person->update();
         $registration->save();
-        return view('registrations.success')->with(['text' => 'Your registration is updated']);
+
+        $productIds = Product::all('productID')->toArray();
+        $opt = Optional::where('registration_uid', $registration->registration_uid)->get();
+        foreach ($opt as $o) {
+            $o->delete();
+        }
+        // gör mer dynamiskt
+        $productIds = Product::all('productID')->toArray();;
+
+        foreach ($productIds as $product) {
+            if ($request[$product['productID']] == 'on') {
+                $optional = new Optional();
+                $optional->registration_uid = $registration->registration_uid;
+                $optional->productID = $product['productID'];
+                $optional->save();
+            }
+
+            if (strval($request['productID']) == strval($product['productID'])) {
+                $optional = new Optional();
+                $optional->registration_uid = $registration->registration_uid;
+                $optional->productID = $product['productID'];
+                $optional->save();
+            }
+        }
+
+        return view('registrations.updatesuccess')->with(['text' => 'Your registration details is updated']);
     }
 
     public function existingregistration(Request $request)
@@ -95,23 +124,24 @@ class RegistrationController extends Controller
             ->where('registrations.registration_uid', $request['registrationUid'])
             ->get()->first();
 
+        if (!$registration) {
+            http_response_code(404);
+            exit();
+        }
+
         if ($registration) {
             $birthdate = explode("-", $registration->birthdate);
             $day = $birthdate[2];
             $month = $birthdate[1];
             $year = $birthdate[0];
         }
-        $months = array();
-        foreach (Months::cases() as $key => $shape) {
-            $VAL = intval($key);
-            $VAL++;
-            $temparr = array($VAL => Months::getLabel(Months::tryFrom($shape->value))['en']);
-            $months = array_merge($months, $temparr);
-        }
 
+        $optionalsforreg = Optional::where('registration_uid', $registration->registration_uid)->pluck('productID');
 
-
-        return view('registrations.edit')->with(['countries' => Country::all()->sortByDesc("country_name_en"), 'years' => range(date('Y'), 1950), 'days' => range(date('d'), 31), 'months' => $months, 'registration' => $registration, 'day' => $day, 'month' => $month, 'birthyear' => $year]);
+        return view('registrations.edit')->with(['countries' => Country::all()->sortByDesc("country_name_en"), 'years' =>
+            range(date('Y'), 1950), 'days' => $this->daysforSelect(), 'months' => $this->monthsforSelect(),
+            'registration' => $registration, 'day' => $day, 'month' => $month,
+            'birthyear' => $year, 'optionalsforregistration' => $optionalsforreg]);
     }
 
 
@@ -125,12 +155,6 @@ class RegistrationController extends Controller
             exit();
         }
 
-//        $date_now = date("Y-m-d"); // this format is string comparable
-//
-//        if ($date_now != date('Y-m-d','2023-10-01')) {
-//            http_response_code(404);
-//        }
-
         $validated = $request->validate([
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
@@ -141,8 +165,8 @@ class RegistrationController extends Controller
             'day' => 'required'
         ]);
 
-//        if ($this->isExistingregistrationEmailOnCourse($request['email'])) {
-//            return back()->withErrors(['same' => 'Registration with this email already exists' . " " . $request['email'] . ". Please use another emailadress"])->withInput();
+//        if ($this->isExistingregistrationWithTelOnCourse($request['tel'])) {
+//            return back()->withErrors(['same' => 'Registration with this email already exists' . " " . $request['tel'] . ". Please use another phonenumber"])->withInput();
 //        }
 
 
@@ -184,8 +208,8 @@ class RegistrationController extends Controller
 
         $person = new Person();
         $person->person_uid = Uuid::uuid4();
-        $person->firstname = $request['first_name'];
-        $person->surname = $request['last_name'];
+        $person->firstname = Str::of($request['first_name'])->ucfirst();
+        $person->surname = Str::of($request['last_name'])->ucfirst();
         $person->birthdate = $request['year'] . "-" . $request['month'] . "-" . $request['day'];
         $person->registration_registration_uid = $reg->registration_uid;
 
@@ -236,35 +260,21 @@ class RegistrationController extends Controller
                 $optional->save();
             }
         }
-                 //$optionals = Optional::where('registration_uid', $reg_uid)->get();
-
-
-              //  event(new PreRegistrationSuccessEvent($reg));
-
-               // event(new CompletedRegistrationSuccessEvent($registration));
-
-
-
+        //$optionals = Optional::where('registration_uid', $reg_uid)->get();
+        //  event(new PreRegistrationSuccessEvent($reg));
+        // event(new CompletedRegistrationSuccessEvent($registration));
+       // event(new CanceledPaymentEvent($reg->registration_uid, false));
+       // event(new FailedPaymentEvent($registration->registration_uid));
         return to_route('checkout', ["reg" => $reg->registration_uid]);
     }
 
-    private function getStartnumber(string $course_uid, StartNumberConfig $startNumberConfig): int
+    private function isExistingregistrationWithTelOnCourse(string $tel): bool
     {
-        $max = Registration::where('course_uid', $course_uid)->max('startnumber');
-        if ($max == null) {
-            return $startNumberConfig->begins_at;
-        } else {
-            return $max + $startNumberConfig->increments;
-        }
-    }
-
-    private function isExistingregistrationEmailOnCourse(string $email): bool
-    {
-        $contact = Contactinformation::where('email', $email)->get()->first();
+        $contact = Contactinformation::where('tel', $tel)->get()->first();
         if ($contact) {
             $regs = Registration::where('course_uid', 'd32650ff-15f8-4df1-9845-d3dc252a7a84')->get();
             foreach ($regs as $reg) {
-                if (strtolower($reg->person->contactinformation->email) == strtolower($email)) {
+                if (strtolower($reg->person->contactinformation->email) == strtolower($tel)) {
                     break;
                 }
             }

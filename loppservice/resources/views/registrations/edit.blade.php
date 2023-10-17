@@ -56,7 +56,7 @@
 
                 <div class="mt-2 w-1/2">
                     <label for="email" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Email</label>
-                    <input id="email" name="email" type="email" autocomplete="email" value="{{$registration->email}}"
+                    <input id="email" name="email" disabled type="email" autocomplete="email" value="{{$registration->email}}"
                            class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
                 </div>
 

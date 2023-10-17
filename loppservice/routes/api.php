@@ -59,9 +59,9 @@ Route::prefix('/api')->group(function () {
         });
 
         Route::get('/command/cache/run', function () {
-//            Artisan::call('view:cache');
+            Artisan::call('view:cache');
 //            Artisan::call('route:cache');
-           // Artisan::call('event:cache');
+           Artisan::call('event:cache');
         });
 
         Route::get('/command/schedule/run', function () {

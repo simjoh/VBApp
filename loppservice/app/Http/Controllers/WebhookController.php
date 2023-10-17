@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\CompletedRegistrationSuccessEvent;
+use App\Events\FailedPaymentEvent;
 use App\Events\PreRegistrationSuccessEvent;
 use App\Models\Order;
 use App\Models\Registration;
@@ -46,28 +47,41 @@ class WebhookController extends Controller
                 $session = $event->data->object;
 
                 $this->create_order($session);
-
+                $final_reg_payment = filter_var($session->metadata->is_final_registration_on_event, FILTER_VALIDATE_BOOLEAN);
                 if ($session->payment_status == 'paid') {
-                    $this->fullfill_order($session);
+                    if ($final_reg_payment) {
+                        $this->fulfill_final_registration_order($session);
+                    } else {
+                        $this->fullfill_order($session);
+                    }
                 }
+                break;
 
             case 'checkout.session.async_payment_succeeded':
                 $session = $event->data->object;
-
                 // Fulfill the purchase
-                $this->fullfill_order($session);
-
+                $final_reg_payment = filter_var($session->metadata->is_final_registration_on_event, FILTER_VALIDATE_BOOLEAN);
+                if ($final_reg_payment) {
+                    $this->fulfill_final_registration_order($session);
+                } else {
+                    $this->fullfill_order($session);
+                }
                 break;
 
             case 'checkout.session.async_payment_failed':
                 $session = $event->data->object;
-
                 $this->failed_order($session);
                 break;
 
             case 'checkout.session.expired':
                 $session = $event->data->object;
                 Log::debug("Stripe webhooks: Session expirered " . $session->client_reference_id);
+                $this->session_expirered($session);
+                break;
+            case 'payment_intent.canceled':
+                $session = $event->data->object;
+                Log::debug("Stripe webhooks: cancel " . $session);
+                break;
 
             default:
                 Log::debug("Stripe webhooks: Received unknown event type");
@@ -116,6 +130,16 @@ class WebhookController extends Controller
         Session::put($session->payment_intent, $session->payment_intent);
     }
 
+    private function fulfill_final_registration_order($session)
+    {
+        $order = Order::firstWhere('payment_intent_id', $session->payment_intent);
+        $order->payment_status = $session->payment_status;
+        $order->save();
+        $registration = Registration::find($session->client_reference_id);
+        event(new CompletedRegistrationSuccessEvent($registration));
+        Session::put($session->payment_intent, $session->payment_intent);
+    }
+
     private function failed_order($session)
     {
         $order = Order::firstWhere('payment_intent_id', $session->payment_intent);
@@ -129,7 +153,17 @@ class WebhookController extends Controller
 
     }
 
+    private function session_expirered($session)
+    {
+        $registration = Registration::find($session->client_reference_id);
+        $metadata = $session->metadata;
+        Log::debug('Metadata: ' . $metadata);
+    }
+
+
     private function email_customer_about_failed_payment($session, $registration)
     {
+        $metadata = $session->metadata;
+        event(new FailedPaymentEvent($registration->registration_uid, boolval($metadata->is_final_registration_on_event)));
     }
 }

@@ -12,7 +12,6 @@ use App\Models\Registration;
 use App\Models\StartNumberConfig;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class PreRegistrationSuccessEventListener
@@ -79,14 +78,4 @@ class PreRegistrationSuccessEventListener
         }
         return $current_max + $startNumberConfig->increments;
     }
-
-//    private function getStartnumber(string $course_uid, StartNumberConfig $startNumberConfig): int
-//    {
-//        $max = Registration::where('course_uid', $course_uid)->max('startnumber');
-//        if ($max == null) {
-//            return $startNumberConfig->begins_at;
-//        } else {
-//            return $max + $startNumberConfig->increments;
-//        }
-//    }
 }

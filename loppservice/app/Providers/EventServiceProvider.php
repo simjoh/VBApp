@@ -2,14 +2,17 @@
 
 namespace App\Providers;
 
+use App\Events\CanceledPaymentEvent;
 use App\Events\CompletedRegistrationSuccessEvent;
+use App\Events\FailedPaymentEvent;
 use App\Events\PreRegistrationSuccessEvent;
+use App\Listeners\CanceledPaymentEventListener;
 use App\Listeners\CompletedRegistrationSuccessEventListener;
+use App\Listeners\FailedPaymentEventListener;
 use App\Listeners\PreRegistrationSuccessEventListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -28,6 +31,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         CompletedRegistrationSuccessEvent::class => [
             CompletedRegistrationSuccessEventListener::class
+        ],
+        CanceledPaymentEvent::class => [
+            CanceledPaymentEventListener::class
+        ],
+        FailedPaymentEvent::class => [
+            FailedPaymentEventListener::class
         ]
     ];
 
