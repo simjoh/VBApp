@@ -1,3 +1,5 @@
 {
-    "I love programming.": "Svenska."
+    "I love programming.": "Svenska.",
+    "Event has reached the maximum number of registered participants": "Eventet har uppnåt max antal registreringar",
+    "Invalid request": "Begäran är fel"
 }

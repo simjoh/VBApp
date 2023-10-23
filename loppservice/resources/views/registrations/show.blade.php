@@ -331,10 +331,12 @@
                 <hr class="h-1 my-12 bg-gray-900 border-0 dark:bg-gray-700">
 
                 <div class="grid md:grid-cols-2 gap-3 mt-4 sm:grid-cols-1">
+                    @if ($showreservationbutton)
                     <button type="submit" value="reserve" name="save"
                             class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
                         Reserve
                     </button>
+                    @endif
                     <button type="submit" value="Registration" name="save"
                             class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
                         Register

@@ -9,6 +9,11 @@ class Event extends Model
 {
     use HasFactory;
 
+    public function event()
+    {
+        return $this->morphTo();
+    }
+
     public function eventconfiguration()
     {
         return $this->morphOne('App\Models\EventConfiguration', 'eventconfiguration');

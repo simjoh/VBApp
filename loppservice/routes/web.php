@@ -35,14 +35,15 @@ Route::get('/', function () {
 Route::get('/events', function (Event $event) {
     return $event->title;
 });
-Route::get('/events/{uid}/register', function (string $uid) {
-   $count = Registration::all()->count();
-   if($count >= 200){
-       return Redirect::back()->withErrors(['msg' => 'Event is full']);
-   }
-    return view('registrations.show')->with(['countries' => Country::all()->sortByDesc("country_name_en"), 'years' => range(date('Y'), 1950)]); // Event::find($uid)->title;
-});
+//Route::get('/events/{uid}/register', function (string $uid) {
+//   $count = Registration::all()->count();
+//   if($count >= 200){
+//       return Redirect::back()->withErrors(['msg' => 'Event is full']);
+//   }
+//    return view('registrations.show')->with(['countries' => Country::all()->sortByDesc("country_name_en"), 'years' => range(date('Y'), 1950)]); // Event::find($uid)->title;
+//});
 
+Route::get('/events/{uid}/register', [RegistrationController::class, 'index']);
 Route::post('/events/{uid}/register', [RegistrationController::class, 'create']);
 Route::post('/events/{uid}/reserve', [RegistrationController::class, 'reserve']);
 Route::get('/events/{uid}/registration/{regsitrationUid}/complete', [RegistrationController::class, 'complete']);

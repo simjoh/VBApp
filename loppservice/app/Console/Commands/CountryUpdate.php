@@ -30,7 +30,6 @@ class CountryUpdate extends Command
 
         $resp = Http::get('https://restcountries.com/v3.1/all');
         if ($resp->status() == 200) {
-            Log::info($resp->json());
             $response = $resp->json();
 
             foreach ($response as $key => $value) {

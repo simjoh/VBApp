@@ -58,7 +58,7 @@ services:
     #      - 8087:3306
     volumes:
       - db1_data:/var/lib/mysql
-      - /docker/loppservice/db/init.sql:/docker-entrypoint-initdb.d/01init.sql
+      - ./docker/loppservice/db/init.sql:/docker-entrypoint-initdb.d/01init.sql
   db-2:
     image: mariadb:10.5.8
     container_name: db-2

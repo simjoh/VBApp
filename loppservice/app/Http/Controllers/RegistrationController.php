@@ -13,6 +13,7 @@ use App\Models\Product;
 use App\Models\Registration;
 use App\Traits\DaysTrait;
 use App\Traits\MonthsTrait;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,9 +22,35 @@ use Ramsey\Uuid\Uuid;
 
 class RegistrationController extends Controller
 {
-
     use MonthsTrait;
     use DaysTrait;
+    public function index(Request $request)
+    {
+        if (!Str::isUuid($request['uid'])) {
+            return view('registrations.updatesuccess')->with(['text' => __('Invalid request')]);
+        }
+        $event = Event::find($request['uid'])->first();
+
+        if (!$event) {
+            return view('registrations.updatesuccess')->with(['text' => __('Yo try to acesss registration form for non existing event')]);
+        }
+
+        $count = Registration::where('course_uid', $request['uid'])->count();
+        if ($count >= $event->eventconfiguration->max_registrations) {
+            return view('registrations.updatesuccess')->with(['text' => __('Event has reached the maximum number of registered participants')]);
+        }
+
+        if ($event->eventconfiguration->reservationconfig->use_reservation_on_event && Carbon::now()->endOfDay()->lte(Carbon::parse($event->eventconfiguration->reservationconfig->use_reservation_until)->endOfDay()) == true) {
+            $reservationactive = true;
+        } else {
+            $reservationactive = false;
+        }
+
+        return view('registrations.show')->with(['showreservationbutton' => $reservationactive,
+            'countries' => Country::all()->sortByDesc("country_name_en"),
+            'years' => range(date('Y'), 1950)]);
+    }
+
 
     public function complete(Request $request): RedirectResponse
     {
@@ -263,8 +290,8 @@ class RegistrationController extends Controller
         //$optionals = Optional::where('registration_uid', $reg_uid)->get();
         //  event(new PreRegistrationSuccessEvent($reg));
         // event(new CompletedRegistrationSuccessEvent($registration));
-       // event(new CanceledPaymentEvent($reg->registration_uid, false));
-       // event(new FailedPaymentEvent($registration->registration_uid));
+        // event(new CanceledPaymentEvent($reg->registration_uid, false));
+        // event(new FailedPaymentEvent($registration->registration_uid));
         return to_route('checkout', ["reg" => $reg->registration_uid]);
     }
 

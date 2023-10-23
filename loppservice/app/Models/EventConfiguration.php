@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class EventConfiguration extends Model
 {
@@ -19,7 +20,12 @@ class EventConfiguration extends Model
         return $this->morphOne(StartNumberConfig::class, 'startnumberconfig');
     }
 
-    protected $with = ['startnumberconfig'];
+    public function reservationconfig(): HasOne
+    {
+        return $this->hasOne(Reservationconfig::class);
+    }
+
+    protected $with = ['startnumberconfig','reservationconfig'];
 
     protected $table = 'eventconfigurations';
 
