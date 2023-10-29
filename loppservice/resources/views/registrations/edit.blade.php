@@ -164,15 +164,20 @@
                     <div class="mt-6 space-y-1">
                         <div class="flex items-center gap-x-3">
                             <input id="driver" name="productID" value="1009" type="radio"
-                                   class="h-4 w-4 border-black text-black focus:ring-gray-600"  @checked(old('1009', $optionalsforregistration->contains(1009)))>
+                                   class="h-4 w-4 border-black text-black focus:ring-gray-600" {{ $optionalsforregistration->contains(1009)==true ? 'checked': '' }}>
                             <label for="driver" class="block sm:text-base font-sm leading-6 text-gray-900">Driver looking for
                                 passengers</label>
                         </div>
                         <div class="flex items-center gap-x-3">
                             <input id="vehicle" name="productID" value="1010" type="radio"
-                                   class="h-4 w-4 border-black text-black focus:ring-gray-600"  @checked(old('1010', $optionalsforregistration->contains(1010)))>
+                                   class="h-4 w-4 border-black text-black focus:ring-gray-600" {{ $optionalsforregistration->contains(1010)==true ? 'checked': '' }}>
                             <label for="vehicle" class="block sm:text-base font-sm leading-6 text-gray-900">Passenger looking for
                                 vehicle</label>
+                        </div>
+                        <div class="flex items-center gap-x-3">
+                            <input id="no-carpool" name="productID" value="0" type="radio"
+                                   class="h-4 w-4 border-black text-black focus:ring-gray-600" {{$optionalsforregistration->count() == 0 ? 'checked': '' }}>
+                            <label for="no-carpool" class="block sm:text-base font-sm leading-6 text-gray-900">No carpool</label>
                         </div>
                     </div>
                 </fieldset>

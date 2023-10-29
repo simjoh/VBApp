@@ -24,12 +24,14 @@ class RegistrationController extends Controller
 {
     use MonthsTrait;
     use DaysTrait;
+
+
     public function index(Request $request)
     {
         if (!Str::isUuid($request['uid'])) {
             return view('registrations.updatesuccess')->with(['text' => __('Invalid request')]);
         }
-        $event = Event::find($request['uid'])->first();
+        $event = Event::find($request['uid']);
 
         if (!$event) {
             return view('registrations.updatesuccess')->with(['text' => __('Yo try to acesss registration form for non existing event')]);
@@ -192,9 +194,9 @@ class RegistrationController extends Controller
             'day' => 'required'
         ]);
 
-//        if ($this->isExistingregistrationWithTelOnCourse($request['tel'])) {
-//            return back()->withErrors(['same' => 'Registration with this email already exists' . " " . $request['tel'] . ". Please use another phonenumber"])->withInput();
-//        }
+        if ($this->isExistingregistrationWithTelOnCourse($request['tel'])) {
+            return back()->withErrors(['same' => 'A registration with this phonenumber already exists' . " " . $request['tel'] . ". Please use another phonenumber"])->withInput();
+        }
 
 
         // Skapa en registrering
@@ -301,7 +303,7 @@ class RegistrationController extends Controller
         if ($contact) {
             $regs = Registration::where('course_uid', 'd32650ff-15f8-4df1-9845-d3dc252a7a84')->get();
             foreach ($regs as $reg) {
-                if (strtolower($reg->person->contactinformation->email) == strtolower($tel)) {
+                if (strtolower($reg->person->contactinformation->tel) == strtolower($tel)) {
                     break;
                 }
             }

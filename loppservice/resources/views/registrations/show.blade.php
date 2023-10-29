@@ -36,7 +36,7 @@
             starting place until the 31st of December. The reservation fee is 20 EUR (not refunded or deducted from the registration
             fee).</p>
 
-        <p class="mb-5 text-orange-500 font-medium"> Please note, all reservations are cancelled automatically on the 1st of January.
+        <p class="mb-5 text-orange-500 font-medium">When reserving a starting place you will receive an email containing a link which you follow to make your final reservation. Please note, all reservations are cancelled automatically on the 1st of January.
             Make your final registration before New Year's Eve.</p>
 
         <p class="mb-5">If you have decided to participate, you can register immediately. The registration fee is 250 EUR until the 31st
@@ -238,6 +238,11 @@
                             <label for="vehicle" class="block sm:text-base font-sm leading-6 text-gray-900">Passenger looking for
                                 vehicle</label>
                         </div>
+                        <div class="flex items-center gap-x-3">
+                            <input id="vehicle" name="productID" value="no-carpool" type="radio" checked
+                                   class="h-4 w-4 border-black text-black focus:ring-gray-600">
+                            <label for="vehicle" class="block sm:text-base font-sm leading-6 text-gray-900">No carpool</label>
+                        </div>
                     </div>
                 </fieldset>
                 <hr class="h-1 my-8 bg-gray-200 border-0 dark:bg-gray-700">
@@ -325,6 +330,11 @@
                                    class="h-4 w-4 border-black text-black focus:ring-indigo-600">
                             <label for="malefemale-grand" class="block sm:text-base font-sm leading-6 text-gray-900">GRAND Jersey F/M
                                 (87 EUR on webshop -20%): 70 EUR</label>
+                        </div>
+                        <div class="flex items-center gap-x-3">
+                            <input id="no-jersey" name="jersey" value="nojersey" type="radio" checked
+                                   class="h-4 w-4 border-black text-black focus:ring-indigo-600">
+                            <label for="no-jersey" class="block sm:text-base font-sm leading-6 text-gray-900">No jersey</label>
                         </div>
                     </div>
                 </fieldset>
