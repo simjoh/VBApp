@@ -36,7 +36,8 @@
             starting place until the 31st of December. The reservation fee is 20 EUR (not refunded or deducted from the registration
             fee).</p>
 
-        <p class="mb-5 text-orange-500 font-medium">When reserving a starting place you will receive an email containing a link which you follow to make your final reservation. Please note, all reservations are cancelled automatically on the 1st of January.
+        <p class="mb-5 text-orange-500 font-medium">When reserving a starting place you will receive an email containing a link which
+            you follow to make your final reservation. Please note, all reservations are cancelled automatically on the 1st of January.
             Make your final registration before New Year's Eve.</p>
 
         <p class="mb-5">If you have decided to participate, you can register immediately. The registration fee is 250 EUR until the 31st
@@ -360,6 +361,15 @@
                     these changes without compensation to participants. If for some unforseen reason the event cannot take place in June
                     2024 the event will not be cancelled but instead be postponed until 2025. By registering, you accept the
                     above-mentioned terms and conditions.
+                </p>
+
+                <p class="text-xs mt-5">
+                    Addressing the current situation in Ukraine, Les Randonneurs Mondiaux do not list LRM events in Russia and
+                    Belarussia in their public calendar but individual riders from these countries are permitted to participate in LRM
+                    events globally. After long deliberation a divided board of the organiser Cykelintresset has however reached the
+                    decision not to permit cyclists travelling from Russia and Belarussia to participate in MSR 2024. Russian and
+                    Belarusian nationals who are resident in Sweden are exempted from this decision and can participate in MSR 2024. The
+                    project leader for MSR 2024, Florian Kynman, is not a board member and was not part of this decision.
                 </p>
             </div>
         </form>
