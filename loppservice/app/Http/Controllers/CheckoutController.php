@@ -26,18 +26,28 @@ class CheckoutController extends Controller
 
         $line_items = array();
 
-        $registration = Registration::find($request["reg"]);
+         $registration = Registration::find($request["reg"]);
 
-        if ($registration->reservation) {
-            $line_items = [["price" => "price_1NvL3BLnAzN3QPcU8FcaSorF", "quantity" => 1]];
-        } else {
-            $line_items = [["price" => "price_1NvL2CLnAzN3QPcUka5kMIwR", "quantity" => 1]];
+         $line_items = [["price" => $request->price_id, "quantity" => 1]];
+
+        if ($request['is_final_registration_on_event'] != null && $request->boolean('is_final_registration_on_event')) {
+            Log::debug("Sending final registration payment reguest for " . $request["reg"]);
+            $line_items = [["price" => $request->price_id, "quantity" => 1]];
         }
 
-        // den högre summan ska betalas vid slutförande
-        if ($request['is_final_registration_on_event'] != null && !$request->boolean('is_final_registration_on_event')) {
-            $line_items = [["price" => "price_1NvL2CLnAzN3QPcUka5kMIwR", "quantity" => 1]];
-        }
+//        if ($registration->reservation) {
+//            Log::debug("Sending reservation payment reguest for " . $request["reg"]);
+//            $line_items = [["price" => "price_1NvL3BLnAzN3QPcU8FcaSorF", "quantity" => 1]];
+//        } else {
+//            Log::debug("Sending registration payment reguest for " . $request["reg"]);
+//            $line_items = [["price" => "price_1NvL2CLnAzN3QPcUka5kMIwR", "quantity" => 1]];
+//        }
+//
+//        // den högre summan ska betalas vid slutförande
+//        if ($request['is_final_registration_on_event'] != null && $request->boolean('is_final_registration_on_event')) {
+//            Log::debug("Sending final registration payment reguest for " . $request["reg"]);
+//            $line_items = [["price" => "price_1NvL2CLnAzN3QPcUka5kMIwR", "quantity" => 1]];
+//        }
 
 //        if(!App::isProduction()){
 //            $line_items = [["price" => env("STRIPE_TEST_PRODUCT"), "quantity" => 1]];

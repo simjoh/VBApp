@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Registration extends Model
@@ -20,18 +21,10 @@ class Registration extends Model
         'reservation_valid_until' => 'date',
     ];
 
-//    protected $dateFormat = 'Y-m-d';
-
-    /**
-     * The primary key associated with the table.
-     *
-     * @var string
-     */
-
-    public function person(): HasOne
+    public function person(): BelongsTo
     {
-        return $this->hasOne(Person::class);
+        return $this->belongsTo(Person::class);
     }
 
-    protected $with = ['person'];
+    //protected $with = ['person'];
 }

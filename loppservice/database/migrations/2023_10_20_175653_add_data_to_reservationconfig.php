@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Event;
+use App\Models\EventConfiguration;
 use App\Models\Reservationconfig;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

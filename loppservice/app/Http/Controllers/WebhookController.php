@@ -122,7 +122,9 @@ class WebhookController extends Controller
     // Create order, payment may still be pending
     private function create_order($session)
     {
+
         $registration = Registration::find($session->client_reference_id);
+        Log::debug('creating order' . $registration);
         if (!$registration) {
             http_response_code(404);
             exit();

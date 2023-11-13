@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Event;
+use App\Models\Person;
 use App\Models\Registration;
 use Illuminate\Bus\Queueable;
 use Illuminate\Database\Eloquent\Collection;
@@ -20,7 +21,7 @@ class PreRegistrationSucessEmail extends Mailable
      *
      * @return void
      */
-    public function __construct(private Registration $registration, private Collection $products, private Event $event, private string $club, private string $country, private string $startlistlink, private string $completeregistrationlink, private string $updatelink)
+    public function __construct(private Registration $registration, private Collection $products, private Event $event, private string $club, private string $country, private string $startlistlink, private string $completeregistrationlink, private string $updatelink, private Person $person)
     {
 
     }
@@ -46,7 +47,7 @@ class PreRegistrationSucessEmail extends Mailable
     {
         return new Content(
             view: 'Mail.preregistration-sucesse-mail-template',
-            with: ['country' => $this->country, 'club' => $this->club, 'startlistlink' => $this->startlistlink, 'registration' => $this->registration, 'adress' => $this->registration->person->adress, 'contact' => $this->registration->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event, 'completeregistrationlink' => $this->completeregistrationlink, 'updatelink' => $this->updatelink],
+            with: ['country' => $this->country, 'club' => $this->club, 'startlistlink' => $this->startlistlink, 'registration' => $this->registration, 'adress' => $this->person->adress, 'contact' => $this->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event, 'completeregistrationlink' => $this->completeregistrationlink, 'updatelink' => $this->updatelink, 'person' => $this->person],
         );
     }
 }

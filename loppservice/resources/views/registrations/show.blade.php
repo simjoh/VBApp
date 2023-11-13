@@ -217,6 +217,7 @@
                 <div class="mt-5 mb-5 md:w-1/2 sm:w-full">
                     <label for="extra-info" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Special dietary
                         requirements</label>
+                    <p class="mt-1 mb-2 text-base leading-6 text-gray-600">Please let us know if you will have any special requirements concerning the event’s food menu, for instance allergies, gluten or lactose intolerance, vegan or vegetarian meals etc.</p>
                     <textarea id="extra-info" name="extra-info" rows="1"
                               class="sm:w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600"></textarea>
                 </div>
@@ -343,12 +344,12 @@
 
                 <div class="grid md:grid-cols-2 gap-3 mt-4 sm:grid-cols-1">
                     @if ($showreservationbutton)
-                    <button type="submit" value="reserve" name="save"
+                    <button type="submit" value="{{$reservationproduct}}" name="save"
                             class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
                         Reserve
                     </button>
                     @endif
-                    <button type="submit" value="Registration" name="save"
+                    <button type="submit" value="{{$registrationproduct}}" name="save"
                             class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
                         Register
                     </button>

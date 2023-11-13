@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Person extends Model
@@ -15,9 +16,9 @@ class Person extends Model
 
     protected $fillable = ['firstname','surname','registration_uid'];
 
-    public function registrations(): BelongsTo
+    public function registration(): HasMany
     {
-        return $this->belongsTo(Registration::class);
+        return $this->hasMany(Registration::class, 'person_uid');
     }
 
     public function adress(): HasOne
@@ -30,10 +31,12 @@ class Person extends Model
         return $this->hasOne(Contactinformation::class);
     }
 
+
+
     protected $dateFormat = 'Y-m-d';
 
     protected $table = 'person';
     protected $primaryKey = 'person_uid';
 
-    protected $with = ['adress','contactinformation'];
+    protected $with = ['adress','contactinformation', 'registration'];
 }

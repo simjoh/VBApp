@@ -269,7 +269,7 @@
       </td>
       <td
         style="width:227pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$registration->person->firstname}}</p>
+        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$person->firstname}}</p>
       </td>
       <td
         style="width:14pt;border-left-style:solid;border-left-width:1pt;border-right-style:solid;border-right-width:1pt">
@@ -277,7 +277,7 @@
       </td>
       <td
         style="width:227pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$registration->person->surname}}</p>
+        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$person->surname}}</p>
       </td>
     </tr>
     <tr style="height:31pt">
@@ -306,7 +306,7 @@
     <tr style="height:22pt">
       <td
         style="width:227pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$registration->person->birthdate}}</p>
+        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$person->birthdate}}</p>
       </td>
       <td
         style="width:14pt;border-left-style:solid;border-left-width:1pt;border-right-style:solid;border-right-width:1pt">
@@ -315,7 +315,7 @@
       <td
         style="width:227pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
         <p style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;"><a
-            href="mailto:floriank2@gmail.com" class="s4">{{$registration->person->contactinformation->email}}</a></p>
+            href="mailto:floriank2@gmail.com" class="s4">{{$person->contactinformation->email}}</a></p>
       </td>
       <td
         style="width:14pt;border-left-style:solid;border-left-width:1pt;border-right-style:solid;border-right-width:1pt">
@@ -323,7 +323,7 @@
       </td>
       <td
         style="width:227pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$registration->person->contactinformation->tel}}</p>
+        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$person->contactinformation->tel}}</p>
       </td>
     </tr>
     <tr style="height:31pt">
@@ -352,7 +352,7 @@
     <tr style="height:22pt">
       <td
         style="width:227pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$registration->person->adress->adress}}</p>
+        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$person->adress->adress}}</p>
       </td>
       <td
         style="width:14pt;border-left-style:solid;border-left-width:1pt;border-right-style:solid;border-right-width:1pt">
@@ -360,7 +360,7 @@
       </td>
       <td
         style="width:227pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$registration->person->adress->postal_code}}</p>
+        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$person->adress->postal_code}}</p>
       </td>
       <td
         style="width:14pt;border-left-style:solid;border-left-width:1pt;border-right-style:solid;border-right-width:1pt">
@@ -368,7 +368,7 @@
       </td>
       <td
         style="width:227pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$registration->person->adress->city}}</p>
+        <p class="s3" style="padding-top: 5pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">{{$person->adress->city}}</p>
       </td>
     </tr>
     <tr style="height:31pt">
@@ -449,7 +449,7 @@
   <p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;line-height: 133%;text-align: left;">{{$optional->description}}</p>
   @endif
   @endforeach
- 
+
   <p style="text-indent: 0pt;text-align: left;"><br /></p>
   <h2 style="padding-left: 10pt;text-indent: 0pt;text-align: left;">MSR Jersey</h2>
 
