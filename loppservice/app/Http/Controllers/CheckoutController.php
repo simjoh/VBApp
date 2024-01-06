@@ -53,6 +53,7 @@ class CheckoutController extends Controller
 //            $line_items = [["price" => env("STRIPE_TEST_PRODUCT"), "quantity" => 1]];
 //            if(!$request->boolean('is_final_registration_on_event')){
 //                array_push($line_items, array('price' => env('STRIPE_TEST_PRODUCT_JERSEY'),"quantity" => 1));
+//                array_push($line_items, array('price' => 'price_1ORZvfLnAzN3QPcUjEIDAfvB',"quantity" => 1));
 //            }
 //        }
 

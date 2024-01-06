@@ -28,7 +28,8 @@
     "slim/php-view": "^3.1",
     "slim/psr7": "^1.2",
     "slim/slim": "^4.6",
-    "slim/twig-view": "^3.2"
+    "slim/twig-view": "^3.2",
+    "ext-dom": "*"
   },
   "autoload": {
     "psr-4": {

@@ -20,7 +20,7 @@ class StartlistController extends Controller
             ->join('countries', 'countries.country_id', '=', 'adress.country_id')
             ->join('clubs', 'clubs.club_uid', '=', 'registrations.club_uid')
             ->select('registrations.*', 'person.*', 'adress.*', 'countries.*', 'clubs.name AS club_name')
-            ->where('course_uid', $course_uid)
+            ->where('course_uid', $course_uid)->where('reservation',0)
             ->where('payment_status', 'paid')->orderBy("surname")->distinct()
             ->get();
 

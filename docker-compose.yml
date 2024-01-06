@@ -54,8 +54,8 @@ services:
       MYSQL_PASSWORD: secret
     networks:
       - sample_network
-    #    ports:
-    #      - 8087:3306
+    ports:
+      - 3306:3306
     volumes:
       - db1_data:/var/lib/mysql
       - ./docker/loppservice/db/init.sql:/docker-entrypoint-initdb.d/01init.sql

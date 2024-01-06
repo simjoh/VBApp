@@ -32,15 +32,8 @@
         @endif
 
 
-        <p class="mb-5">If you are unsure whether you will have the opportunity to participate, you can reserve a
-            starting place until the 31st of December. The reservation fee is 20 EUR (not refunded or deducted from the registration
-            fee).</p>
 
-        <p class="mb-5 text-orange-500 font-medium">When reserving a starting place you will receive an email containing a link which
-            you follow to make your final reservation. Please note, all reservations are cancelled automatically on the 1st of January.
-            Make your final registration before New Year's Eve.</p>
-
-        <p class="mb-5">If you have decided to participate, you can register immediately. The registration fee is 250 EUR until the 31st
+        <p class="mb-5">The registration fee is 250 EUR until the 31st
             of December. Thereafter 300 EUR until the 2nd of June. Then finally 350 EUR for last-minute tickets until the 14th of
             June. Registration fees are not refunded however starting places can be resold and transfered until the 2nd of June.</p>
 
@@ -225,32 +218,32 @@
                 <hr class="h-1 bg-gray-200 border-0 dark:bg-gray-700">
                 <fieldset class="mt-5 mb-5">
                     <legend class="text-xl font-semibold leading-6 text-gray-900">Carpool from Europe</legend>
-                    <p class="mt-1 text-base leading-6 text-gray-600">If you plan to drive to Umeå and would like to share a ride,
+                    <p class="mt-1 text-base leading-6 text-gray-900">If you plan to drive to Umeå and would like to share a ride,
                         please add your name to the carpool.</p>
                     <div class="mt-6 space-y-1">
                         <div class="flex items-center gap-x-3">
                             <input id="driver" name="productID" value="1009" type="radio"
                                    class="h-4 w-4 border-black text-black focus:ring-gray-600">
-                            <label for="driver" class="block sm:text-base font-sm leading-6 text-gray-900">Driver looking for
+                            <label for="driver" class="block sm:text-base font-sm leading-6 text-gray-600">Driver looking for
                                 passengers</label>
                         </div>
                         <div class="flex items-center gap-x-3">
                             <input id="vehicle" name="productID" value="1010" type="radio"
                                    class="h-4 w-4 border-black text-black focus:ring-gray-600">
-                            <label for="vehicle" class="block sm:text-base font-sm leading-6 text-gray-900">Passenger looking for
+                            <label for="vehicle" class="block sm:text-base font-sm leading-6 text-gray-600">Passenger looking for
                                 vehicle</label>
                         </div>
                         <div class="flex items-center gap-x-3">
                             <input id="vehicle" name="productID" value="no-carpool" type="radio" checked
                                    class="h-4 w-4 border-black text-black focus:ring-gray-600">
-                            <label for="vehicle" class="block sm:text-base font-sm leading-6 text-gray-900">No carpool</label>
+                            <label for="vehicle" class="block sm:text-base font-sm leading-6 text-gray-600">No carpool</label>
                         </div>
                     </div>
                 </fieldset>
                 <hr class="h-1 my-8 bg-gray-200 border-0 dark:bg-gray-700">
                 <fieldset>
                     <legend class="text-xl font-semibold leading-6 text-gray-900">Included in the entry fee</legend>
-                    <p class="mt-1 text-base leading-6 text-gray-600">Please look throught the event program before you submit your
+                    <p class="mt-1 text-base leading-6 text-gray-900">Please look throught the event program before you submit your
                         choices.</p>
                     <div class="mt-6 space-y-1">
                         <div class="relative flex gap-x-3">
@@ -259,7 +252,7 @@
                                        class="h-4 w-4 border-black text-black focus:ring-indigo-600">
                             </div>
                             <div class="text-sm leading-2">
-                                <label for="pre_event_coffee_ride" class="font-sm sm:text-base text-gray-900">Pre-event coffee ride -
+                                <label for="pre_event_coffee_ride" class="font-sm sm:text-base text-gray-600">Pre-event coffee ride -
                                     Scandic Plaza</label>
                             </div>
                         </div>
@@ -270,7 +263,7 @@
 
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="lunch_box" class="font-sm sm:text-base text-gray-900">Lunch box - Baggböle Manor</label>
+                                <label for="lunch_box" class="font-sm sm:text-base text-gray-600">Lunch box - Baggböle Manor</label>
                             </div>
                         </div>
                         <div class="relative flex gap-x-3">
@@ -279,7 +272,7 @@
                                        class="h-4 w-4 border-black text-black focus:ring-indigo-600">
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="bag_drop" class="font-sm sm:text-base text-gray-900">Bag drop - Baggböle Manor (to Scandic
+                                <label for="bag_drop" class="font-sm sm:text-base text-gray-600">Bag drop - Baggböle Manor (to Scandic
                                     Plaza)</label>
                             </div>
                         </div>
@@ -289,7 +282,7 @@
                                        class="h-4 w-4 border-black text-black focus:ring-gray-600">
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="long_term_parking" class="font-sm sm:text-base text-gray-900">
+                                <label for="long_term_parking" class="font-sm sm:text-base text-gray-600">
                                     Long-term parking - Baggböle Manor</label>
                             </div>
                         </div>
@@ -299,7 +292,7 @@
                                        class="h-4 w-4 border-black text-black focus:ring-gray-600">
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="buffet_dinner" class="font-sm sm:text-base text-gray-900">Buffet Dinner- Brännland
+                                <label for="buffet_dinner" class="font-sm sm:text-base text-gray-600">Buffet Dinner- Brännland
                                     Inn</label>
                             </div>
                         </div>
@@ -309,7 +302,7 @@
                                        class="h-4 w-4 border-black text-black focus:ring-gray-600">
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="midsummer" class="font-sm sm:text-base text-gray-900">Swedish Midsummer Celebration -
+                                <label for="midsummer" class="font-sm sm:text-base text-gray-600">Swedish Midsummer Celebration -
                                     Norrmjöle</label>
                             </div>
                         </div>
@@ -318,26 +311,40 @@
                 <hr class="h-1 my-8 bg-gray-200 border-0 dark:bg-gray-700">
                 <fieldset class="mt-5">
                     <legend class="text-xl font-semibold leading-6 text-gray-900">Not included in the entry fee</legend>
-                    <p class="mt-1 text-base leading-6 text-gray-600">Purchase a digital voucher for the MSR jersey at a 20% discount.
+                    <p class="mt-1 text-base leading-6 text-gray-900">Purchase a digital voucher for the MSR jersey at a 20% discount.
                         The voucher can be used as payment on the La Chemise website until the 7th of July.</p>
-                    <div class="mt-6 space-y-1">
+                    <div class="mt-6 space-y-1 mb-6">
                         <div class="flex items-center gap-x-3">
                             <input id="malefemale-tor" name="jersey" value="1008" type="radio"
                                    class="h-4 w-4 border-black text-black focus:ring-indigo-600">
-                            <label for="malefemale-tor" class="block sm:text-base font-sm leading-6 text-gray-900">TOR 3.0 Jersey F/M
+                            <label for="malefemale-tor" class="block sm:text-base font-sm leading-6 text-gray-600">TOR 3.0 Jersey F/M
                                 (107 EUR on webshop -20%): 86 EUR</label>
                         </div>
                         <div class="flex items-center gap-x-3">
                             <input id="malefemale-grand" name="jersey" value="1007" type="radio"
                                    class="h-4 w-4 border-black text-black focus:ring-indigo-600">
-                            <label for="malefemale-grand" class="block sm:text-base font-sm leading-6 text-gray-900">GRAND Jersey F/M
+                            <label for="malefemale-grand" class="block sm:text-base font-sm leading-6 text-gray-600">GRAND Jersey F/M
                                 (87 EUR on webshop -20%): 70 EUR</label>
                         </div>
                         <div class="flex items-center gap-x-3">
                             <input id="no-jersey" name="jersey" value="nojersey" type="radio" checked
                                    class="h-4 w-4 border-black text-black focus:ring-indigo-600">
-                            <label for="no-jersey" class="block sm:text-base font-sm leading-6 text-gray-900">No jersey</label>
+                            <label for="no-jersey" class="block sm:text-base font-sm leading-6 text-gray-600">No jersey</label>
                         </div>
+                    </div>
+
+                    <p class="mt-1 text-base leading-6 text-gray-900 mb-6">Please join us on Saturday the 15th of June, the day before the event, for a pre-booked buffet dinner at Brännland Inn which starts at 17:00. The dinner provides an excellent opportunity to meet participants and make new friends before the event starts.
+                        At the dinner you can also pick up and try on your pre-orded MSR-jersey.</p>
+
+                    <div class="flex items-center gap-x-3">
+                        <input id="buffe_dinner" name="dinner" value="1006" type="radio"
+                               class="h-4 w-4 border-black text-black focus:ring-indigo-600">
+                        <label for="buffe_dinner" class="block sm:text-base font-sm leading-6 text-gray-600">Buffet Dinner - Saturday 15  June: 36 EUR</label>
+                    </div>
+                    <div class="flex items-center gap-x-3">
+                        <input id="no-buffedinner" name="dinner" value="nobuffedinner" type="radio" checked
+                               class="h-4 w-4 border-black text-black focus:ring-indigo-600">
+                        <label for="no-buffedinner" class="block sm:text-base font-sm leading-6 text-gray-600">No buffet Dinner</label>
                     </div>
                 </fieldset>
                 <hr class="h-1 my-12 bg-gray-900 border-0 dark:bg-gray-700">

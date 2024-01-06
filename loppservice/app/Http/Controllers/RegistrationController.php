@@ -47,12 +47,12 @@ class RegistrationController extends Controller
         $collection = collect($event->eventconfiguration->products);
         if ($event->eventconfiguration->reservationconfig->use_reservation_on_event && Carbon::now()->endOfDay()->lte(Carbon::parse($event->eventconfiguration->reservationconfig->use_reservation_until)->endOfDay()) == true) {
             $reservationactive = true;
-            $resevation_product = $collection->where('categoryID', 7)->first();
+            $resevation_product = $collection->where('categoryID', 6)->first();
         } else {
             $reservationactive = false;
         }
         // registrera sig kan man alltid göra
-        $registration_product = $collection->where('categoryID', 6)->first();
+        $registration_product = $collection->where('categoryID', 7)->first();
 
         return view('registrations.show')->with(['showreservationbutton' => $reservationactive,
             'countries' => Country::all()->sortByDesc("country_name_en"),
@@ -60,9 +60,16 @@ class RegistrationController extends Controller
     }
 
 
-    public function complete(Request $request): RedirectResponse
+    public function complete(Request $request)
     {
         $registration_uid = $request['regsitrationUid'];
+
+        $nowDate = Carbon::now();
+        $rerservationvlidto = Carbon::parse('2023-12-31');
+        if($nowDate->gt($rerservationvlidto)){
+            return view('registrations.updatesuccess')->with(['text' => 'Reservation link has expirered. Link was valid until end of 2023-12-31']);
+        }
+
         $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
         $preregistration->save();
         $reg_product = Product::find($request->query('productID'));
@@ -217,7 +224,7 @@ class RegistrationController extends Controller
         // Rimligen är en och samma person bara registrerad en gång per event
         if (Person::where('checksum', $this->hashsumfor($string_to_hash))->exists()) {
             $person = Person::where('checksum', $this->hashsumfor($string_to_hash))->first();
-            if (Person::registration()->where('person_uid', '=')->where('course_uid' , '=', $event->course_uid)->exists()) {
+            if (Person::registration()->where('person_uid', '=')->where('course_uid', '=', $event->course_uid)->exists()) {
                 return back()->withErrors(['same' => 'You already registered on event'])->withInput();
             }
             $adress = $person->adress;
@@ -322,12 +329,21 @@ class RegistrationController extends Controller
                 $optional->save();
             }
 
+            if (strval($request['dinner']) == strval($product['productID'])) {
+                $optional = new Optional();
+                $optional->registration_uid = $reg->registration_uid;
+                $optional->productID = $product['productID'];
+                $optional->save();
+            }
+
             if (strval($request['jersey']) == strval($product['productID'])) {
                 $optional = new Optional();
                 $optional->registration_uid = $reg->registration_uid;
                 $optional->productID = $product['productID'];
                 $optional->save();
             }
+
+
         }
 
 

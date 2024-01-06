@@ -297,6 +297,14 @@
       <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/psr/cache" />
       <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/psr/clock" />
       <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/stripe/stripe-php" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/bacon/bacon-qr-code" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/dasprid/enum" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/laravel/fortify" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/laravel/jetstream" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/livewire/livewire" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/mobiledetect/mobiledetectlib" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/paragonie/constant_time_encoding" />
+      <excludeFolder url="file://$MODULE_DIR$/loppservice/vendor/pragmarx/google2fa" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
