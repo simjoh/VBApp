@@ -224,8 +224,14 @@ class RegistrationController extends Controller
         // Rimligen är en och samma person bara registrerad en gång per event
         if (Person::where('checksum', $this->hashsumfor($string_to_hash))->exists()) {
             $person = Person::where('checksum', $this->hashsumfor($string_to_hash))->first();
-            if (Person::registration()->where('person_uid', '=')->where('course_uid', '=', $event->course_uid)->exists()) {
-                return back()->withErrors(['same' => 'You already registered on event'])->withInput();
+
+            $registrationsforperson = $person->registration;
+            if ($registrationsforperson) {
+                foreach ($registrationsforperson as $x) {
+                    if ($x->course_uid === $request['uid']) {
+                        return back()->withErrors(['same' => 'You already registered on event'])->withInput();
+                    }
+                }
             }
             $adress = $person->adress;
             $adress->adress = $request['street-address'];
@@ -360,140 +366,6 @@ class RegistrationController extends Controller
         }
 
     }
-
-
-//    public function create(Request $request)
-//    {
-//
-//        // kolla att det finns ett event med det uidet
-//        $event = Event::find($request['uid'])->first();
-//
-//        if (!$event) {
-//            http_response_code(404);
-//            exit();
-//        }
-//
-//        $validated = $request->validate([
-//            'first_name' => 'required|string|max:100',
-//            'last_name' => 'required|string|max:100',
-//            'email' => 'required|regex:/(.+)@(.+)\.(.+)/i',
-//            'email-confirm' => 'required|regex:/(.+)@(.+)\.(.+)/i',
-//            'year' => 'required',
-//            'month' => 'required',
-//            'day' => 'required'
-//        ]);
-//
-////        if ($this->isExistingregistrationWithTelOnCourse($request['tel'],  $event->course_uid)) {
-////            return back()->withErrors(['same' => 'A registration with this phonenumber already exists' . " " . $request['tel'] . ". Please use another phonenumber"])->withInput();
-////        }
-//
-//
-//        // Skapa en registrering
-//        $reg_uid = Uuid::uuid4();
-//        $registration = new Registration();
-//        $registration->registration_uid = $reg_uid;
-//        // banans uid hårdkoda tills vi bygg ut möjlighet att överföra från brevet applikationen
-//        $registration->course_uid = $event->event_uid;
-//
-//        $registration->additional_information = $request['extra-info'];
-//
-//        $reg_product = Product::find($request->input('save'));
-//
-//        // sätt reserve eller complete baserat på categori. 7 är reservation och 6 är registrering
-//        if ($reg_product->categoryID === 7) {
-//            $registration->reservation = true;
-//            $registration->reservation_valid_until = $event->reservationconfig->use_reservation_until;
-//        } else {
-//            $registration->reservation = false;
-//        }
-//
-//        // Kolla om vi sparat klubben sen tidigare
-//        $club = Club::whereRaw('LOWER(`name`) LIKE ? ', [trim(strtolower($request['club'])) . '%'])->first();
-//
-//        if (!$club) {
-//            $club_uid = Uuid::uuid4();
-//            $club = new Club();
-//            $club->club_uid = $club_uid;
-//            $club->name = $request['club'];
-//            $club->description = null;
-//            $club->official_club = false;
-//            $club->save();
-//            $registration->club_uid = $club_uid;
-//        } else {
-//            $registration->club_uid = $club->club_uid;
-//        }
-//
-//        $registration->save();
-//        $reg = Registration::find($reg_uid);
-//
-//        $person = new Person();
-//        $person->person_uid = Uuid::uuid4();
-//        $person->firstname = Str::of($request['first_name'])->ucfirst();
-//        $person->surname = Str::of($request['last_name'])->ucfirst();
-//        $person->birthdate = $request['year'] . "-" . $request['month'] . "-" . $request['day'];
-//        $person->registration_registration_uid = $reg->registration_uid;
-//
-//
-//        $adress = new Adress();
-//        $adress->adress_uid = Uuid::uuid4();
-//        $adress->adress = $request['street-address'];
-//        $adress->postal_code = $request['postal-code'];
-//        $adress->country_id = $request['country'];
-//        $adress->city = $request['city'];
-//        $adress->person_person_uid = $person->person_uid;
-//
-//        $contact = new Contactinformation();
-//        $contact->contactinformation_uid = Uuid::uuid4();
-//        $contact->tel = $request['tel'];
-//        $contact->email = $request['email'];
-//
-//        $country = Country::find($request['country']);
-//        $registration->person()->save($person);
-//        $person->adress()->save($adress);
-//        $person->contactinformation()->save($contact);
-//        $person->adress()->country = $country->country_id;
-//
-//
-//        //ta hand om  extra tillvalen. väldigt oflexibelt just nu men funkar för det mest initiala
-//        $productIds = Product::all('productID')->toArray();;
-//
-//        foreach ($productIds as $product) {
-//            if ($request[$product['productID']] == 'on') {
-//                $optional = new Optional();
-//                $optional->registration_uid = $reg->registration_uid;
-//                $optional->productID = $product['productID'];
-//                $optional->save();
-//            }
-//
-//            if (strval($request['productID']) == strval($product['productID'])) {
-//                $optional = new Optional();
-//                $optional->registration_uid = $reg->registration_uid;
-//                $optional->productID = $product['productID'];
-//                $optional->save();
-//            }
-//
-//            if (strval($request['jersey']) == strval($product['productID'])) {
-//                $optional = new Optional();
-//                $optional->registration_uid = $reg->registration_uid;
-//                $optional->productID = $product['productID'];
-//                $optional->save();
-//            }
-//        }
-//
-//        if (App::isProduction()) {
-//            return to_route('checkout', ["reg" => $reg->registration_uid, 'price_id' => $reg_product->price_id]);
-//        } else {
-//            // för att testa betalning localhost med testprodukter
-//            if ($reg_product->categoryID === 7) {
-//                $price = env("STRIPE_TEST_PRODUCT_RESERVATION");
-//            } else {
-//                $price = env("STRIPE_TEST_PRODUCT");
-//            }
-//            return to_route('checkout', ["reg" => $reg->registration_uid, 'price_id' => $price]);
-//        }
-//
-//
-//    }
 
     private function isExistingregistrationWithTelOnCourse(string $tel, string $course_uid): bool
     {

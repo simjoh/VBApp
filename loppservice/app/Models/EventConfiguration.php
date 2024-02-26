@@ -30,8 +30,9 @@ class EventConfiguration extends Model
         return $this->morphMany(Product::class,'productable');
     }
 
-    protected $with = ['startnumberconfig', 'reservationconfig'];
+    protected $with = ['startnumberconfig', 'reservationconfig','products'];
 
     protected $table = 'eventconfigurations';
     protected $dateFormat = 'Y-m-d H:i';
+
 }
