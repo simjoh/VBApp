@@ -125,6 +125,9 @@ return [
         'sv' => 'se',
     ],
 
+
+    'swedish_month' => ['01' =>'Januari','02' => 'Februari','03' => 'Mars','04' => 'April','05' => 'Maj','06' => 'Juni','07' => 'Juli','08' => 'Augusti','09' => 'September', '10' =>'Oktober','11' =>'november','12' =>'December'],
+
     /*
     |--------------------------------------------------------------------------
     | Encryption Key

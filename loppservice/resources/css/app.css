@@ -1,0 +1,9 @@
+   .month-divider {
+        flex-basis: 100%;
+        margin: 10px;
+        padding: 6px 0 4px;
+        background-color: #063359;
+        color: #fff;
+        text-align: center;
+        font-weight: 700;
+    }

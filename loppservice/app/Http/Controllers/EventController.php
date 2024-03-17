@@ -8,12 +8,28 @@ use App\Models\EventConfiguration;
 use App\Models\Product;
 use App\Models\Reservationconfig;
 use App\Models\StartNumberConfig;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Nonstandard\Uuid;
 
 class EventController extends Controller
 {
+
+    public function index(Request $request)
+    {
+        $events = Event::all()
+            ->groupBy(function ($val) {
+                $date = Carbon::parse($val->startdate);
+                $months = Config::get('app.swedish_month');
+                return $months[$date->format('m')] . " " . $date->format('Y');
+            });
+
+        return view('event.show')->with(['allevents' => $events]);
+
+    }
 
     public function all()
     {

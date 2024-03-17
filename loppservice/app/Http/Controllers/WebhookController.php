@@ -287,6 +287,9 @@ class WebhookController extends Controller
     }
 
 
+
+
+
     private function email_customer_about_failed_payment($session, $registration)
     {
         $metadata = $session->metadata;

@@ -11,11 +11,21 @@ class CanceledPaymentEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public string $registration_uid;
+    public bool $is_final_registration_on_event;
+    public bool $isnonparticipantorder;
+
+
     /**
      * Create a new event instance.
      */
-    public function __construct(public string $registration_uid, public  bool $is_final_registration_on_event,public bool $isnonparticipantorder)
+    public function __construct(string $registration_uid, bool $is_final_registration_on_event, bool $isnonparticipantorder)
     {
+        $this->registration_uid = $registration_uid;
+        $this->is_final_registration_on_event = $is_final_registration_on_event;
+        $this->isnonparticipantorder = $isnonparticipantorder;
+        $this->is_final_registration_on_event = $is_final_registration_on_event;
+        $this->registration_uid = $registration_uid;
         //
     }
 

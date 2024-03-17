@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\NoRegisterCheckoutController;
 use App\Http\Controllers\RegistrationController;
@@ -35,20 +36,18 @@ Route::get('/', function () {
 Route::get('/events', function (Event $event) {
     return $event->title;
 });
-//Route::get('/events/{uid}/register', function (string $uid) {
-//   $count = Registration::all()->count();
-//   if($count >= 200){
-//       return Redirect::back()->withErrors(['msg' => 'Event is full']);
-//   }
-//    return view('registrations.show')->with(['countries' => Country::all()->sortByDesc("country_name_en"), 'years' => range(date('Y'), 1950)]); // Event::find($uid)->title;
-//});
 
-Route::get('/events/{uid}/register', [RegistrationController::class, 'index']);
+Route::get('/events' ,[EventController::class, 'index']);
+
+
+
+Route::get('/events/{uid}/register', [RegistrationController::class, 'index'])->name('register');;
 Route::post('/events/{uid}/register', [RegistrationController::class, 'create']);
 Route::post('/events/{uid}/reserve', [RegistrationController::class, 'reserve']);
 Route::get('/events/{uid}/registration/{regsitrationUid}/complete', [RegistrationController::class, 'complete']);
 Route::get('/events/{uid}/registration/{registrationUid}/getregitration', [RegistrationController::class, 'existingregistration']);
 Route::put('registration.update', [RegistrationController::class, 'update']);
+Route::post('registration.create', [RegistrationController::class, 'create']);
 
 Route::get('/checkout/create', [CheckoutController::class, 'create'])->name("checkout");
 Route::get('/checkout/success', [CheckoutController::class, 'success']);

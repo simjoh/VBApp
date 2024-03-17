@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\CompletedRegistrationSuccessEvent;
+use App\Events\CreateParticipantInCyclingAppEvent;
 use App\Mail\CompletedRegistrationEmail;
 use App\Models\Country;
 use App\Models\Event;
@@ -73,6 +74,9 @@ class CompletedRegistrationSuccessEventListener
             Mail::to('receiverinbox@mailhog.local')
                 ->send(new CompletedRegistrationEmail($registration, $products, $event_event, $club->name, $country->country_name_en, $startlistlink, $updatedetaillink,$person));
         }
+
+        event(new CreateParticipantInCyclingAppEvent($event_event->event_uid,$person->person_uid, $registration->registration_uid));
+
     }
 
 

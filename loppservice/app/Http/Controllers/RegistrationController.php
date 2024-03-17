@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CreateParticipantInCyclingAppEvent;
 use App\Models\Adress;
 use App\Models\Club;
 use App\Models\Contactinformation;
@@ -31,6 +32,10 @@ class RegistrationController extends Controller
 
     public function index(Request $request)
     {
+
+        $eventType = $request->query('event_type');
+
+
         if (!Str::isUuid($request['uid'])) {
             return view('registrations.updatesuccess')->with(['text' => __('Invalid request')]);
         }
@@ -47,12 +52,18 @@ class RegistrationController extends Controller
         $collection = collect($event->eventconfiguration->products);
         if ($event->eventconfiguration->reservationconfig->use_reservation_on_event && Carbon::now()->endOfDay()->lte(Carbon::parse($event->eventconfiguration->reservationconfig->use_reservation_until)->endOfDay()) == true) {
             $reservationactive = true;
-            $resevation_product = $collection->where('categoryID', 6)->first();
+            $resevation_product = $collection->where('categoryID', 7)->first();
         } else {
             $reservationactive = false;
         }
         // registrera sig kan man alltid göra
-        $registration_product = $collection->where('categoryID', 7)->first();
+        $registration_product = $collection->where('categoryID', 6)->first();
+
+        if ($eventType === 'BRM') {
+            return view('registrations.brevet')->with(['showreservationbutton' => $reservationactive,
+                'countries' => Country::all()->sortByDesc("country_name_en"), 'event' => $event->event_uid,
+                'years' => range(date('Y'), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID]);
+        }
 
         return view('registrations.show')->with(['showreservationbutton' => $reservationactive,
             'countries' => Country::all()->sortByDesc("country_name_en"),
@@ -66,7 +77,7 @@ class RegistrationController extends Controller
 
         $nowDate = Carbon::now();
         $rerservationvlidto = Carbon::parse('2023-12-31');
-        if($nowDate->gt($rerservationvlidto)){
+        if ($nowDate->gt($rerservationvlidto)) {
             return view('registrations.updatesuccess')->with(['text' => 'Reservation link has expirered. Link was valid until end of 2023-12-31']);
         }
 
@@ -210,6 +221,7 @@ class RegistrationController extends Controller
             http_response_code(404);
             exit();
         }
+
         $validated = $request->validate([
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
@@ -351,6 +363,8 @@ class RegistrationController extends Controller
 
 
         }
+
+
 
 
         if (App::isProduction()) {
