@@ -26,9 +26,9 @@ class CheckoutController extends Controller
 
         $line_items = array();
 
-         $registration = Registration::find($request["reg"]);
+        $registration = Registration::find($request["reg"]);
 
-         $line_items = [["price" => $request->price_id, "quantity" => 1]];
+        $line_items = [["price" => $request->price_id, "quantity" => 1]];
 
         if ($request['is_final_registration_on_event'] != null && $request->boolean('is_final_registration_on_event')) {
             Log::debug("Sending final registration payment reguest for " . $request["reg"]);
@@ -77,7 +77,7 @@ class CheckoutController extends Controller
             ],
             'allow_promotion_codes' => true,
             'success_url' => $YOUR_DOMAIN . '/checkout/success',
-            'cancel_url' => $YOUR_DOMAIN . '/checkout/cancel?registration=' . $registration->registration_uid . '&is_final_registration_on_event=' . $is_final ,
+            'cancel_url' => $YOUR_DOMAIN . '/checkout/cancel?registration=' . $registration->registration_uid . '&is_final_registration_on_event=' . $is_final,
         ]);
 
         return redirect($checkout_session->url);
@@ -91,12 +91,12 @@ class CheckoutController extends Controller
 
     public function success(Request $request)
     {
-        return view('checkout.success'); // , compact('customer'));
+        return view('checkout.success', ['message' => 'Thank you for your registration/reservation. We have sent a confirmation by email to the address you provided in the registration form.', 'checkemailmessage' => 'Please check that you have received an email. If not then check your spam folder and if found there, please change your spam filter settings for the address "info@midnightsunrandonnee.se" so you will not miss future emails.']); // , compact('customer'));
     }
 
     public function cancel(Request $request)
     {
-        event(new CanceledPaymentEvent($request->query('registration'), $request->boolean('is_final_registration_on_event')));
-        return view('checkout.cancel');
+        event(new CanceledPaymentEvent($request->query('registration'), $request->boolean('is_final_registration_on_event'), false));
+        return view('checkout.cancel', ['message' => 'You have caneled payment of your registration/reservation']);
     }
 }

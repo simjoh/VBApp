@@ -2,12 +2,12 @@
 
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\NoRegisterCheckoutController;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\StartlistController;
 use App\Http\Controllers\WebhookController;
-use App\Models\Country;
 use App\Models\Event;
-use App\Models\Registration;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 
@@ -58,6 +58,13 @@ Route::post('/payments/events', [WebhookController::class, 'index']);
 Route::get('/startlist/event/{eventuid}/showall', [StartlistController::class, 'startlistFor']);
 
 Route::get('lang/{lang}', [LocaleController::class, 'switchLang']);
+
+
+Route::get('/event/{uid}/order', [OrderController::class, 'index']);
+Route::post('/event/{uid}/order', [OrderController::class, 'placeorder']);
+Route::get('/optionals/checkout/create', [NoRegisterCheckoutController::class, 'create'])->name("noregistercheckout");
+Route::get('/optionals/checkout/success', [NoRegisterCheckoutController::class, 'success']);
+Route::get('/optionals/checkout/cancel', [NoRegisterCheckoutController::class, 'cancel']);
 
 
 Route::get('/profile', function () {

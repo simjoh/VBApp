@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Contactinformation;
 use App\Models\Event;
-use App\Models\Person;
+use App\Models\NonParticipantOptionals;
 use App\Models\Product;
-use App\Models\Registration;
 use Illuminate\Http\Request;
 
 
@@ -20,31 +18,27 @@ class OrderController extends Controller
         return view('orderform.' . $requestedform, ['event' => $event, 'dinnerproduct' => 1006]);
     }
 
-
     public function placeorder(Request $request)
     {
-
+        $reg_uid = "";
         $requestedform = $request->formname;
-        $event = Event::find($request['uid']);
-
-        $contacts = Contactinformation::where('email', $request['email'])->get();
-        $priceIds = Product::where('productID',$request['save'])->pluck('price_id');
-        $person = Person::find($contacts->person_person_uid);
-
-        if(!$person){
-            // kan vara en deltagare men inte säkert ändå
-
-        } else {
-            // är det en deltagare
-           $registration =  Registration::where('person_uid', $contacts->person_person_uid)->where('course_uid', $event->event_uid);
-
+        $priceIds = Product::where('productID', $request['save'])->pluck('price_id');
+        $course_uid = $request['course_uid'];
+        $product = $request->input('save');
+        if ($product) {
+            $optional = new NonParticipantOptionals();
+            $optional->course_uid = $course_uid;
+            $optional->productID = $product;
+            $optional->firstname = $request['first_name'];
+            $optional->surname = $request['last_name'];
+            $optional->email = $request['email'];
+            $optional->quantity = $request['quantity'];
+            $optional->additional_information = $request['extra-info'];
+            $optional->save();
         }
-
-        if(!$priceIds->count() > 0){
+        if (!$priceIds->count() > 0) {
             return back()->withErrors(['same' => 'tets'])->withInput();
         }
-
-        return to_route('noregistercheckout', ['reg' => $contacts, 'price_ids' => $priceIds->items(), 'noregistrationOrder' => true]);
-
+        return to_route('noregistercheckout', ['registration_uid' => $reg_uid, 'nonparticipantoptional' => $optional->optional_uid, 'price_ids' => $priceIds->toArray(), 'noregistrationOrder' => true, 'quantity' => $request['quantity']]);
     }
 }

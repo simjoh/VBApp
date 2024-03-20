@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Events\CompletedRegistrationSuccessEvent;
 use App\Events\FailedPaymentEvent;
+use App\Events\NonParticipantOrderSuccesEvent;
 use App\Events\PreRegistrationSuccessEvent;
+use App\Models\NonParticipantOptionals;
 use App\Models\Order;
 use App\Models\Registration;
 use Illuminate\Support\Facades\Log;
@@ -47,6 +49,19 @@ class WebhookController extends Controller
                 $session = $event->data->object;
                 Log::debug("$session" . 'session.completed');
 
+                // tex middagar mm
+                if (filter_var($session->metadata->no_participant_order, FILTER_VALIDATE_BOOLEAN)) {
+                    Log::debug('no_participant_order');
+                    if ($this->nocostorder($session)) {
+
+                    } else {
+                        $this->create_non_participant_order($session);
+                        $this->fullfill_non_participant_order($session);
+                    }
+
+                    break;
+                }
+
                 if ($this->nocostorder($session)) {
                     $this->create_no_cost_order($session);
 
@@ -77,6 +92,18 @@ class WebhookController extends Controller
             case 'checkout.session.async_payment_succeeded':
                 $session = $event->data->object;
                 Log::debug("$session" . 'async_payment_succeeded');
+
+                // tex middagar mm
+                if (filter_var($session->metadata->no_participant_order, FILTER_VALIDATE_BOOLEAN)) {
+                    Log::debug('no_participant_order');
+                    if ($this->nocostorder($session)) {
+
+                    } else {
+                        $this->fullfill_non_participant_order($session);
+                    }
+                    break;
+                }
+
 
                 if ($this->nocostorder($session)) {
                     $final_reg_payment = filter_var($session->metadata->is_final_registration_on_event, FILTER_VALIDATE_BOOLEAN);
@@ -137,6 +164,23 @@ class WebhookController extends Controller
         $order->save();
     }
 
+
+    private function create_non_participant_order($session)
+    {
+        $registration = NonParticipantOptionals::find($session->client_reference_id);
+        Log::debug('creating non participant order' . $registration);
+        if (!$registration) {
+            http_response_code(404);
+            exit();
+        }
+        $order = new Order();
+        $order->order_id = Uuid::uuid4();
+        $order->registration_uid = $registration->optional_uid;
+        $order->payment_intent_id = $session->payment_intent;
+        $order->payment_status = $session->payment_status;
+        $order->save();
+    }
+
     private function create_no_cost_order(mixed $session)
     {
         $registration = Registration::find($session->client_reference_id);
@@ -173,17 +217,33 @@ class WebhookController extends Controller
         Session::put($session->payment_intent, $session->payment_intent);
     }
 
+
+    private function fullfill_non_participant_order($session)
+    {
+        $order = Order::firstWhere('payment_intent_id', $session->payment_intent);
+        $order->payment_status = $session->payment_status;
+        $order->save();
+
+        $registration = NonParticipantOptionals::find($session->client_reference_id);
+        $payment_intent = Session::get($session->payment_intent);
+        if ($payment_intent == null) {
+            Log::debug('Send NonParticipantOrderSuccesEvent');
+            event(new NonParticipantOrderSuccesEvent($registration));
+        }
+        Session::put($session->payment_intent, $session->payment_intent);
+    }
+
     // Om man har en kod som ger 0 i kostnad
     private function fullfill_no_cost_order(mixed $session)
     {
         $registration = Registration::find($session->client_reference_id);
-            if ($registration->reservation) {
-                // Events to be triggered for an reservation
-                event(new PreRegistrationSuccessEvent($registration));
-            } else {
-                // Events to be triggered for a full registration
-                event(new CompletedRegistrationSuccessEvent($registration));
-            }
+        if ($registration->reservation) {
+            // Events to be triggered for an reservation
+            event(new PreRegistrationSuccessEvent($registration));
+        } else {
+            // Events to be triggered for a full registration
+            event(new CompletedRegistrationSuccessEvent($registration));
+        }
         Session::put($session->payment_intent, $session->payment_intent);
     }
 

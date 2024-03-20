@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Optional;
-use App\Models\Product;
-use App\Models\Registration;
+use App\Events\CanceledPaymentEvent;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -14,43 +12,44 @@ use Stripe\Stripe;
 class NoRegisterCheckoutController extends Controller
 {
 
-    public function create(Request $request): RedirectResponse {
-
-
-        Log::debug("Sending payment reguest");
-
-        $priceIDS = array();
-
+    public function create(Request $request): RedirectResponse
+    {
+        $this->setApiKey();
         $priceIDS = $request["price_ids"];
-
-        Stripe::setApiKey(env("STRIPE_SECRET_KEY"));
-
         $line_items = array();
 
+        $optional = $request['nonparticipantoptional'];
         foreach ($priceIDS as $option) {
-                array_push($line_items, array("price" => $option, "quantity" => 1));
+            array_push($line_items, array("price" => $option, "quantity" => $request['quantity']));
         }
-
-        $registration = "test";
-
-        //behöver hantera cancel
-        Session::put('registration', $request["reg"]);
         $YOUR_DOMAIN = env("APP_URL");
-        $is_final = $request->boolean('is_final_registration_on_event') == true ? 'true' : 'false';
         $checkout_session = \Stripe\Checkout\Session::create([
-            'client_reference_id' => "test",
+            'client_reference_id' => $optional,
             'line_items' => [$line_items],
             'mode' => 'payment',
             'metadata' => [
-                'is_final_registration_on_event' => $is_final
+                'no_participant_order' => true
             ],
-            'allow_promotion_codes' => true,
-            'success_url' => $YOUR_DOMAIN . '/checkout/success',
-            'cancel_url' => $YOUR_DOMAIN . '/checkout/cancel?registration=' . $registration . '&is_final_registration_on_event=' . $is_final ,
+//            'allow_promotion_codes' => true,
+            'success_url' => $YOUR_DOMAIN . '/optionals/checkout/success',
+            'cancel_url' => $YOUR_DOMAIN . '/optionals/checkout/cancel?nonpaticipantoptional=' . $optional . '&no_participant_order=' . 'true',
         ]);
-
         return redirect($checkout_session->url);
     }
 
-    //
+    public function success(Request $request)
+    {
+        return view('checkout.success', ['message' => 'Thank you for your resevation', 'checkemailmessage' => 'Please check that you have received an email. If not then check your spam folder and if found there, please change your spam filter settings for the address "info@midnightsunrandonnee.se" so you will not miss future emails.']); // , compact('customer'));
+    }
+
+    public function cancel(Request $request)
+    {
+        event(new CanceledPaymentEvent($request->query('nonpaticipantoptional'), false, true));
+        return view('checkout.cancel', ['message' => 'You have caneled payment']);
+    }
+
+    private function setApiKey()
+    {
+        Stripe::setApiKey(env("STRIPE_SECRET_KEY"));
+    }
 }

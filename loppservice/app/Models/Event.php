@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Event extends Model
 {
     use HasFactory;
-   use HasUuids;
+    use HasUuids;
 
     public function event()
     {
@@ -24,8 +24,7 @@ class Event extends Model
     protected $with = ['eventconfiguration'];
     protected $primaryKey = 'event_uid';
     protected $dateFormat = 'Y-m-d';
-   // protected $keyType = "string";
-
+    // protected $keyType = "string";
 
 
 }

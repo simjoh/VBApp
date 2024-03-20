@@ -21,21 +21,24 @@ class CanceledPaymentEventListener
      */
     public function handle(CanceledPaymentEvent $event): void
     {
-        $registration = Registration::find($event->registration_uid);
 
-        if ($registration) {
-            Log::debug("handle cancelation of payment" . $registration->registration_uid);
-            if ($event->is_final_registration_on_event) {
-                Log::debug("handle cancelation of finalregistration payment" . $registration->registration_uid);
-                //go back to reservation
-            } else {
-                Log::debug("handle cancelation of reservation or registration payment" . $registration->registration_uid);
-                // delete reservation
-            }
+        if ($event->isnonparticipantorder) {
+            Log::debug("handle cancelation of nonparticipant payment" . $event->registration_uid);
         } else {
-            Log::debug("cannot find any registration with uid " . $event->registration_uid);
+            $registration = Registration::find($event->registration_uid);
+
+            if ($registration) {
+                Log::debug("handle cancelation of payment" . $registration->registration_uid);
+                if ($event->is_final_registration_on_event) {
+                    Log::debug("handle cancelation of finalregistration payment" . $registration->registration_uid);
+                    //go back to reservation
+                } else {
+                    Log::debug("handle cancelation of reservation or registration payment" . $registration->registration_uid);
+                    // delete reservation
+                }
+            } else {
+                Log::debug("cannot find any registration with uid " . $event->registration_uid);
+            }
         }
-
-
     }
 }

@@ -2,21 +2,25 @@
 
 namespace App\Events;
 
+use App\Models\NonParticipantOptionals;
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class CanceledPaymentEvent
+class NonParticipantOrderSuccesEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(public string $registration_uid, public  bool $is_final_registration_on_event,public bool $isnonparticipantorder)
+    public function __construct(public NonParticipantOptionals $optionals)
     {
-        //
+
     }
 
     /**
