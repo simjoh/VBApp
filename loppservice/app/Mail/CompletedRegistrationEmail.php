@@ -17,12 +17,26 @@ class CompletedRegistrationEmail extends Mailable
     use Queueable, SerializesModels;
 
     private Collection $products;
+    private Registration $registration;
+    private Event $event;
+    private string $club;
+    private string $country;
+    private string $startlistlink;
+    private string $updatelink;
+    private Person $person;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(private Registration $registration, Collection $products, private Event $event, private string $club, private string $country,private string $startlistlink,private string $updatelink, private Person $person)
+    public function __construct(Registration $registration, Collection $products, Event $event, string $club, string $country, string $startlistlink, string $updatelink, Person $person)
     {
+        $this->person = $person;
+        $this->updatelink = $updatelink;
+        $this->startlistlink = $startlistlink;
+        $this->country = $country;
+        $this->club = $club;
+        $this->event = $event;
+        $this->registration = $registration;
         $this->products = $products;
     }
 

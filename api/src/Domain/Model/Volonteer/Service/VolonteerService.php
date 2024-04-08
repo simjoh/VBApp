@@ -203,7 +203,7 @@ class VolonteerService extends ServiceAbstract
         $today = date('Y-m-d');
         $startdate = date('Y-m-d', strtotime($track->getStartDateTime()));
 
-        if ($this->settings['demo'] == 'false') {
+        if ($this->settings['demo'] == 'true') {
             if ($today < $startdate) {
                 throw new BrevetException("You cannot checkin contestant before startdate :  " . $startdate, 6, null);
             }

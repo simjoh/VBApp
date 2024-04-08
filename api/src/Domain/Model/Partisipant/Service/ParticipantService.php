@@ -11,7 +11,9 @@ use App\Domain\Model\Club\Service\ClubService;
 use App\Domain\Model\Competitor\Repository\CompetitorInfoRepository;
 use App\Domain\Model\Competitor\Service\CompetitorInfoService;
 use App\Domain\Model\Competitor\Service\CompetitorService;
+use App\Domain\Model\Country\Repository\CountryRepository;
 use App\Domain\Model\Event\Repository\EventRepository;
+use App\Domain\Model\Loppservice\Rest\LoppservicePersonRepresentation;
 use App\Domain\Model\Partisipant\Participant;
 use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
 use App\Domain\Model\Partisipant\Rest\ParticipantAssembly;
@@ -21,8 +23,10 @@ use App\Domain\Model\Partisipant\Rest\ParticipantRepresentation;
 use App\Domain\Model\Randonneur\Service\RandonneurService;
 use App\Domain\Model\Track\Repository\TrackRepository;
 use App\Domain\Permission\PermissionRepository;
+use Exception;
 use League\Csv\Reader;
 use League\Csv\Statement;
+use Nette\Utils\DateTime;
 use Psr\Container\ContainerInterface;
 
 class ParticipantService extends ServiceAbstract
@@ -38,7 +42,7 @@ class ParticipantService extends ServiceAbstract
                                 ClubRepository                 $clubRepository, PermissionRepository $permissionRepository,
                                 ParticipantInformationAssembly $ciass,
                                 ClubService                    $clubservice,
-                                CompetitorInfoService          $competitorInfoService, CheckpointsService $checkpointsService, RandonneurService $randonneurService)
+                                CompetitorInfoService          $competitorInfoService, CheckpointsService $checkpointsService, RandonneurService $randonneurService, CountryRepository $countryRepository)
     {
         $this->trackRepository = $trackRepository;
         $this->participantRepository = $participantRepository;
@@ -54,6 +58,7 @@ class ParticipantService extends ServiceAbstract
         $this->competitorInfoService = $competitorInfoService;
         $this->checkpointsService = $checkpointsService;
         $this->randonneurservice = $randonneurService;
+        $this->countryrepository = $countryRepository;
     }
 
 
@@ -265,23 +270,17 @@ class ParticipantService extends ServiceAbstract
 
             if (!isset($competitor)) {
                 // createOne
-
                 $competitor = $this->competitorService->createCompetitor($record[1], $record[2], "", $record[12]);
                 if (isset($competitor)) {
                     //  $compInfo = $this->competitorInfoRepository->getCompetitorInfoByCompetitorUid($competitor->getId());
                     // if(!isset($compInfo)){
                     $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParams($record[9], $record[10], $record[5], $record[6], $record[7], $record[8], $competitor->getId());
                     // }
-
-
                 }
             }
-
             $existingParticipant = $this->participantRepository->participantForTrackAndCompetitor($trackUid, $competitor->getId());
 
             if (!isset($existingParticipant)) {
-
-
                 $participant = new Participant();
                 $participant->setCompetitorUid($competitor->getId());
                 $participant->setStartnumber($record[0]);
@@ -317,7 +316,6 @@ class ParticipantService extends ServiceAbstract
 
             if (isset($participantcreated) && isset($competitor)) {
                 // skapa upp inloggning för cyklisten
-
                 $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $record[0], $record[13]);
             }
 
@@ -523,7 +521,7 @@ class ParticipantService extends ServiceAbstract
 
             $participant->setFinished(true);
             // beräkna tiden från första incheckning till nu och sätt tiden
-          //  $participant->setTime(Util::secToHR(Util::calculateSecondsBetween($track->getStartDateTime())));
+            //  $participant->setTime(Util::secToHR(Util::calculateSecondsBetween($track->getStartDateTime())));
             $participant->setTime(Util::calculateSecondsBetween($track->getStartDateTime()));
             $this->participantRepository->updateParticipant($participant);
             return $this->randonneurservice->getChecpointsForRandonneurForAdmin($participant, $track);
@@ -588,10 +586,124 @@ class ParticipantService extends ServiceAbstract
 
     }
 
-    public function updateTime(?string $track_uid, ?string $participant_uid, string $newTime)
+    public function addParticipantOnTrackFromLoppservice(LoppservicePersonRepresentation $loppservicePersonRepresentation, string $track_uid, $loppserviceRegistrationRepresentation, $club): bool
     {
 
-        $this->participantRepository->updateTime($track_uid,$participant_uid, $newTime);
+        try {
+            $this->validateInput($loppserviceRegistrationRepresentation, $track_uid);
+        } catch (BrevetException $brevetException) {
+            throw $brevetException;
+        }
+
+        try {
+            $registration = $loppserviceRegistrationRepresentation->registration;
+            $participant_to_create = $loppserviceRegistrationRepresentation->participant;
+            $contactinformation = $participant_to_create['contactinformation'];
+            $adress = $participant_to_create['adress'];
+
+            $track = $this->trackRepository->getTrackByUid($track_uid);
+            if (!isset($track)) {
+                throw new BrevetException("Track not exists", 5, null);
+            }
+
+            $registration_uid = $registration['registration_uid'];
+
+            if (!isset($registration)) {
+                throw new BrevetException("No registration found", 5, null);
+            }
+
+            $competitor = $this->competitorService->getCompetitorByUid3($participant_to_create['person_uid'], "");
+            if (!isset($competitor)) {
+                $competitorc = $this->competitorService->createCompetitorFromLoppservice($participant_to_create['firstname'], $participant_to_create['surname'], "", $participant_to_create['birthdate'], $participant_to_create['person_uid']);
+                if ($competitorc) {
+                    $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParamsFromLoppservice($contactinformation['email'], $contactinformation['tel'], $adress['adress'], $adress['postal_code'], $adress['city'], $this->countryrepository->countryFor(1)->country_name_sv, $participant_to_create['person_uid']);
+                }
+                $competitor = $competitorc;
+
+            }
+            if (isset($competitor)) {
+                $participant = new Participant();
+                $participant->setCompetitorUid($participant_to_create['person_uid']);
+                $participant->setStartnumber($registration['startnumber']);
+                $participant->setParticipantUid($registration_uid);
+                $participant->setFinished(false);
+                $participant->setTrackUid($track->getTrackUid());
+                $participant->setDnf(false);
+                $participant->setDns(false);
+                $participant->setTime(null);
+                $participant->setStarted(false);
+                $participant->setAcpkod("s");
+
+                if (isset($club)) {
+                    // kolla om klubben finns i databasen annars skapa vi en klubb
+                    $existingClub = $this->clubrepository->getClubByTitle($club['name']);
+                    if (!isset($existingClub)) {
+                        $clubUid = $this->clubrepository->createClub("", $club['name']);
+                        $participant->setClubUid($clubUid);
+                    } else {
+                        $participant->setClubUid($existingClub->getClubUid());
+                    }
+                }
+
+                $participant->setTrackUid($track->getTrackUid());
+                $participant->setRegisterDateTime(new DateTime($registration['created_at']));
+                $participantcreated = $this->participantRepository->createparticipant($participant);
+                if (isset($participantcreated)) {
+
+
+
+                    $this->participantRepository->createTrackCheckpointsFor($participant, $this->trackRepository->checkpoints($track->getTrackUid()));
+                }
+                if (isset($participantcreated) && isset($competitor)) {
+                    // skapa upp inloggning för cyklisten
+                    $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $participant->getStartnumber(), $registration['ref_nr']);
+                }
+            }
+
+            return true;
+        } catch (Exception $e) {
+            throw new BrevetException($e->getLine() . $e->getFile(), 5, null);
+        }
+
+
+    }
+
+    private function validateInput($datatovalidate, $trackuid): bool
+    {
+
+        $participant = $this->participantRepository->participantFor($datatovalidate->registration['registration_uid']);
+        if($participant){
+            throw new BrevetException("An participant already exists withuid " . $datatovalidate->registration['registration_uid'] , 5, null);
+        }
+
+        if (is_null($trackuid)) {
+            throw new BrevetException("Track uid must be set", 5, null);
+        }
+
+        if (is_null($datatovalidate->registration['registration_uid'])) {
+            return false;
+        }
+
+        if (is_null($datatovalidate->participant)) {
+            throw new BrevetException("Participant must be set", 5, null);
+        } else {
+
+            if (!$datatovalidate->participant['adress']) {
+                throw new BrevetException("Email must be provided", 5, null);
+            }
+        }
+
+        if (is_null($datatovalidate->contactinformation)) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public function updateTime(?string $track_uid, ?string $participant_uid, string $newTime)
+    {
+        $this->participantRepository->updateTime($track_uid, $participant_uid, $newTime);
 
     }
 

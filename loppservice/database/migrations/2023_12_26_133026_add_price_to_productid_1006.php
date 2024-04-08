@@ -13,10 +13,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('table', function (Blueprint $table) {
-            $product = Product::find(1006);
-            $product->productable_type = ' ';
-            $product->price_id = 'price_1ORZvfLnAzN3QPcUjEIDAfvB';
-            $product->save();
+
+            if (App::isProduction()) {
+                $product = Product::find(1006);
+                $product->productable_type = ' ';
+                $product->price_id = 'price_1ORZvfLnAzN3QPcUjEIDAfvB';
+                $product->save();
+            }
+
+
         });
     }
 

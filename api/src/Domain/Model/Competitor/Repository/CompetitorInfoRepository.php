@@ -111,6 +111,38 @@ class CompetitorInfoRepository extends BaseRepository
         return null;
     }
 
+    public function creatCompetitorInfoForCompetitorParamsFromLoppservice(string $email, string $phone, string $adress, string $postal_code, string $place, string $country, string $competitor_uid)  {
+        $uid = Uuid::uuid4();
+
+        try {
+            $statement = $this->connection->prepare($this->sqls('createCompetitorInfo'));
+            $statement->bindParam(':uid', $uid);
+            $statement->bindParam(':competitor_uid', $competitor_uid);
+            $statement->bindParam(':email', $email);
+            $statement->bindParam(':phone',$phone);
+            $statement->bindParam(':adress', $adress);
+            $statement->bindParam(':postal_code', $postal_code);
+            $statement->bindParam(':place', $place);
+            $statement->bindParam(':country', $country);
+
+            $status = $statement->execute();
+
+            $competitorInfo = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Competitor\CompetitorInfo::class, null);
+
+            if($status){
+                if($statement->rowCount() > 0){
+                    return $competitorInfo;
+                }
+
+            }
+        } catch (PDOException $e) {
+            echo 'Kunde inte uppdatera competitor_info: ' . $e->getMessage();
+        }
+
+
+        return null;
+    }
+
 
 
 

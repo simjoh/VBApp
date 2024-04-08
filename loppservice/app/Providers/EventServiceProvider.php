@@ -5,12 +5,14 @@ namespace App\Providers;
 use App\Events\CanceledPaymentEvent;
 use App\Events\CompletedRegistrationSuccessEvent;
 use App\Events\CreateParticipantInCyclingAppEvent;
+use App\Events\FailedParticipantTransferEvent;
 use App\Events\FailedPaymentEvent;
 use App\Events\NonParticipantOrderSuccesEvent;
 use App\Events\PreRegistrationSuccessEvent;
 use App\Listeners\CanceledPaymentEventListener;
 use App\Listeners\CompletedRegistrationSuccessEventListener;
 use App\Listeners\CreateParticipantInCyclingAppEventListener;
+use App\Listeners\FailedparticipantTransferEventListener;
 use App\Listeners\FailedPaymentEventListener;
 use App\Listeners\NonParticipantOrderSuccesListener;
 use App\Listeners\PreRegistrationSuccessEventListener;
@@ -47,6 +49,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         NonParticipantOrderSuccesEvent::class => [
             NonParticipantOrderSuccesListener::class
+        ],
+        FailedParticipantTransferEvent::class => [
+            FailedparticipantTransferEventListener::class
         ]
     ];
 

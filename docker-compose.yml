@@ -20,7 +20,7 @@ services:
     expose:
       - 8090
     networks:
-      - sample_network
+    -  sample_network
   app:
     image: vasterbottenbrevet_se_app:latest
     build:
@@ -74,7 +74,7 @@ services:
     #    ports:
     #      - 8088:3306
     volumes:
-      - db2_data:/var/lib/mysql
+      -  db2_data:/var/lib/mysql
       - ./docker/database/schema_create.sql:/docker-entrypoint-initdb.d/1.sql
       - ./docker/database/schema_demo_data.sql:/docker-entrypoint-initdb.d/3.sql
       - ./docker/database/functions.sql:/docker-entrypoint-initdb.d/2.sql

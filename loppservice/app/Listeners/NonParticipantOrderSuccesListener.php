@@ -33,9 +33,8 @@ class NonParticipantOrderSuccesListener
         Log::debug('Handling NonParticipantOrderSuccesEvent ' . $event->optionals->optional_uid);
         $optional = NonParticipantOptionals::find($event->optionals->optional_uid);
         $event_course = Event::find($optional->course_uid)->get()->first();
-
         $product = Product::find($optional->productID);
-        //
+
         if (App::isProduction()) {
             Mail::to($optional->email)
                 ->send(new OrderEmail($optional, $event_course, $product))->subject("Dinner order confirmation");

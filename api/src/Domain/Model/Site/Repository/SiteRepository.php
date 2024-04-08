@@ -82,6 +82,9 @@ class SiteRepository extends BaseRepository
         $adress = $site->getAdress();
         $place = $site->getPlace();
         $logo = $site->getPicture();
+       // print_r(round($site->getLat(),2));
+        $lat = $site->getLat();
+        $lng = $site->getLng();
         $description = $site->getDescription();
         try {
             $statement = $this->connection->prepare($this->sqls('updateSite'));
@@ -90,6 +93,8 @@ class SiteRepository extends BaseRepository
             $statement->bindParam(':description',$description );
             $statement->bindParam(':place', $place);
             $statement->bindParam(':picture', $logo);
+            $statement->bindParam('lat', $lat);
+            $statement->bindParam('lng', $lng);
             $statement->execute();
         } catch (PDOException $e) {
 
@@ -154,8 +159,8 @@ class SiteRepository extends BaseRepository
            // $location = $siteToCreate->getLocation();
             $description = $siteToCreate->getDescription();
             $image = $siteToCreate->getPicture();
-            $lat = $siteToCreate->getLat();
-            $lng = $siteToCreate->getLng();
+            $lat = sprintf('%.7f', $siteToCreate->getLat());
+            $lng = sprintf('%.7f', $siteToCreate->getLng());
             $stmt = $this->connection->prepare($this->sqls('createSite'));
             $stmt->bindParam(':site_uid', $site_uid);
             $stmt->bindParam(':adress',$adress );
@@ -212,7 +217,7 @@ class SiteRepository extends BaseRepository
     {
         $sitesqls['allSites'] = 'select * from site s;';
         $sitesqls['getSiteByUid'] = 'select * from site s where s.site_uid = :site_uid;';
-        $sitesqls['updateSite']  = "UPDATE site SET  place=:place, adress=:adress , description=:description , picture=:picture  WHERE site_uid=:site_uid";
+        $sitesqls['updateSite']  = "UPDATE site SET  place=:place, adress=:adress , description=:description , picture=:picture ,lat=:lat , lng=:lng WHERE site_uid=:site_uid";
         $sitesqls['deleteSite'] = 'delete from site  where site_uid = :site_uid';
         $sitesqls['createSite']  = "INSERT INTO site(site_uid, place, adress, description, location, lat, lng, picture) VALUES (:site_uid, :place, :adress, :description ,:location, :lat, :lng, :picture)";
         $sitesqls['existsByPlaceAndAdress'] = 'select *  from site e where e.place=:place and e.adress=:adress;';

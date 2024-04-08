@@ -43,8 +43,8 @@ export class CompetitorListComponentService {
     this.reloadSubject.next(true);
   }
 
-  async  stamp($event: boolean, s: RandonneurCheckPointRepresentation):Promise<any>{
-   await this.competitorService.stampOnCheckpoint(s);
+  async stamp($event: boolean, s: RandonneurCheckPointRepresentation, lat: any, long:any):Promise<any>{
+   await this.competitorService.stampOnCheckpoint(s, lat, long);
     this.reload()
   }
 

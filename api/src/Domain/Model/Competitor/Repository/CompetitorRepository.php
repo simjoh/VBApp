@@ -64,15 +64,23 @@ class CompetitorRepository extends BaseRepository
 
         $stmt = $this->connection->prepare($this->sqls('competitor_by_uid'));
         $stmt->bindParam(':competitor_uid', $credok['competitor_uid'], PDO::PARAM_STR);
-        $stmt->execute();
-        $competitor = $stmt->fetch();
-        $competitor = new Competitor($competitor['competitor_uid'], $competitor['user_name'], $competitor['given_name'], $competitor['family_name'], '');
-        $competitor->setStartnumber($credok['user_name']);
-        $competitor->setTrackuid($participant->getTrackUid());
-        $competitor->setRoles(array("COMPETITOR"));
+        $status = $stmt->execute();
+        $competitor = $stmt->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Competitor\Competitor::class, null);
 
-        return $competitor;
+        if ($status) {
+            if ($stmt->rowCount() > 0) {
+                $competitor[0]->setStartnumber($credok['user_name']);
+                $competitor[0]->setTrackuid($participant->getTrackUid());
+                $competitor[0]->setRoles(array("COMPETITOR"));
+                return $competitor[0];
+            } else {
+                return null;
+            }
+        }
+
+        return null;
     }
+
 
     public function getCompetitorByNameAndBirthDate(string $givenname, string $familyname, string $birthdate)
     {
@@ -125,6 +133,33 @@ class CompetitorRepository extends BaseRepository
         return new Competitor($uid, $userName, $givenName, $familyName, "");
     }
 
+    public function createCompetitorFromLoppservice(string $givenName, string $familyName, string $userName, string $birthdate, string $person_uid): Competitor
+    {
+        $this->connection->beginTransaction();
+        try {
+            $uid = $person_uid;
+            $role_id = 4;
+            $password = sha1("pass");
+            $stmt = $this->connection->prepare($this->sqls('createCompetitor'));
+            $stmt->bindParam(':familyname', $familyName);
+            $stmt->bindParam(':username', $userName);
+            $stmt->bindParam(':givenname', $givenName);
+            $stmt->bindParam(':birthdate', $birthdate);
+            $stmt->bindParam(':role_id', $role_id);
+            $stmt->bindParam(':uid', $uid);
+            $stmt->bindParam(':password', $uid);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+
+        $this->connection->commit();
+
+        return $this->getCompetitorByUID($person_uid);
+
+
+    }
+
     public function creatCompetitorCredential(string $competitor_uid, string $participant_uid, string $user_name, string $password)
     {
         try {
@@ -148,11 +183,44 @@ class CompetitorRepository extends BaseRepository
 
         $stmt = $this->connection->prepare($this->sqls('competitor_by_uid'));
         $stmt->bindParam(':competitor_uid', $competitor_uid, PDO::PARAM_STR);
-        $stmt->execute();
-        $competitor = $stmt->fetch();
-        $competitor = new Competitor($competitor['competitor_uid'], $competitor['user_name'], $competitor['given_name'], $competitor['family_name'], '');
-        $competitor->setRoles(array("COMPETITOR"));
+        $status = $stmt->execute();
+        $competitor = $stmt->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Competitor\Competitor::class, null);
+
+        if ($status) {
+            if ($stmt->rowCount() > 0) {
+                return $competitor[0];
+            } else {
+                return null;
+            }
+        }
+        $competitor[0]->setRoles(array("COMPETITOR"));
         return $competitor;
+    }
+
+    public function getCompetitorByUID2(string $competitor_uid)
+    {
+
+        try {
+            $stmt = $this->connection->prepare($this->sqls('competitor_by_uid'));
+            $stmt->bindParam(':competitor_uid', $competitor_uid, PDO::PARAM_STR);
+            $status = $stmt->execute();
+
+
+            $competitor = $stmt->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Competitor\Competitor::class, null);
+
+            if ($status) {
+                if ($stmt->rowCount() > 0) {
+                    return $competitor[0];
+                } else {
+                    return null;
+                }
+            }
+            $competitor[0]->setRoles(array("COMPETITOR"));
+
+        } catch (PDOException $e) {
+            echo 'Kunde inte uppdatera competitor_info: ' . $e->getMessage();
+        }
+        return $competitor[0];
     }
 
 

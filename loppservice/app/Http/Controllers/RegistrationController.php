@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\CreateParticipantInCyclingAppEvent;
+use App\Events\CompletedRegistrationSuccessEvent;
 use App\Models\Adress;
 use App\Models\Club;
 use App\Models\Contactinformation;
@@ -52,12 +52,13 @@ class RegistrationController extends Controller
         $collection = collect($event->eventconfiguration->products);
         if ($event->eventconfiguration->reservationconfig->use_reservation_on_event && Carbon::now()->endOfDay()->lte(Carbon::parse($event->eventconfiguration->reservationconfig->use_reservation_until)->endOfDay()) == true) {
             $reservationactive = true;
-            $resevation_product = $collection->where('categoryID', 7)->first();
+            $resevation_product = $event->eventconfiguration->products->where('categoryID', 7)->first();
         } else {
             $reservationactive = false;
         }
         // registrera sig kan man alltid göra
-        $registration_product = $collection->where('categoryID', 6)->first();
+        $registration_product = $event->eventconfiguration->products->where('categoryID', 6)->first();
+
 
         if ($eventType === 'BRM') {
             return view('registrations.brevet')->with(['showreservationbutton' => $reservationactive,
@@ -75,13 +76,15 @@ class RegistrationController extends Controller
     {
         $registration_uid = $request['regsitrationUid'];
 
+        $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
+        $current_event = Event::where('course_uid', $preregistration->course_uid);
+
         $nowDate = Carbon::now();
-        $rerservationvlidto = Carbon::parse('2023-12-31');
+        $rerservationvlidto = Carbon::parse($current_event->eventconfiguration->reservationconfig->use_reservation_until);
         if ($nowDate->gt($rerservationvlidto)) {
-            return view('registrations.updatesuccess')->with(['text' => 'Reservation link has expirered. Link was valid until end of 2023-12-31']);
+            return view('registrations.updatesuccess')->with(['text' => 'Reservation link has expirered. Link was valid until end of ' . $rerservationvlidto]);
         }
 
-        $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
         $preregistration->save();
         $reg_product = Product::find($request->query('productID'));
 
@@ -214,8 +217,8 @@ class RegistrationController extends Controller
 
     public function create(Request $request): RedirectResponse
     {
-        // kolla att det finns ett event med det uidet
-        $event = Event::find($request['uid'])->first();
+
+        $event = Event::where('event_uid', $request['uid'])->get()->first();
 
         if (!$event) {
             http_response_code(404);
@@ -362,21 +365,40 @@ class RegistrationController extends Controller
             }
 
 
+            if (strval($request['medal']) == strval($product['productID'])) {
+                $optional = new Optional();
+                $optional->registration_uid = $reg->registration_uid;
+                $optional->productID = $product['productID'];
+                $optional->save();
+            }
+
+
         }
 
 
-
-
         if (App::isProduction()) {
-            return to_route('checkout', ["reg" => $reg->registration_uid, 'price_id' => $reg_product->price_id]);
-        } else {
-            // för att testa betalning localhost med testprodukter
-            if ($reg_product->categoryID === 7) {
-                $price = env("STRIPE_TEST_PRODUCT_RESERVATION");
+            $use_stripe = env("USE_STRIPE_PAYMENT_INTEGRATION");
+            if ($use_stripe) {
+                return to_route('checkout', ["reg" => $reg->registration_uid, 'price_id' => $reg_product->price_id, 'event_type' => $event->event_type]);
             } else {
-                $price = env("STRIPE_TEST_PRODUCT");
+                event(new CompletedRegistrationSuccessEvent($registration));
+                return to_route('checkoutsuccess', ["reg" => $reg->registration_uid, 'price_id' => $reg_product->price_id, 'event_type' => $event->event_type]);
             }
-            return to_route('checkout', ["reg" => $reg->registration_uid, 'price_id' => $price]);
+        } else {
+            $use_stripe = env("USE_STRIPE_PAYMENT_INTEGRATION");
+            if ($use_stripe) {
+                if ($reg_product->categoryID === 7) {
+                    $price = env("STRIPE_TEST_PRODUCT_RESERVATION");
+                } else {
+                    $price = env("STRIPE_TEST_PRODUCT");
+                }
+                    return to_route('checkout', ["reg" => $reg->registration_uid, 'price_id' => $price, "event_type" => $event->event_type]);
+
+            } else {
+                event(new CompletedRegistrationSuccessEvent($registration));
+                return to_route('checkoutsuccess', ["reg" => $reg->registration_uid, 'price_id' => $reg_product->price_id, 'event_type' => $event->event_type]);
+
+            }
         }
 
     }

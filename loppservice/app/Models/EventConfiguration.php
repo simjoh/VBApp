@@ -11,26 +11,31 @@ class EventConfiguration extends Model
 {
     use HasFactory;
 
-    public function eventconfiguration()
-    {
-        return $this->morphTo();
-    }
-
+    // Define the startnumberconfig relationship
     public function startnumberconfig()
     {
         return $this->morphOne(StartNumberConfig::class, 'startnumberconfig');
     }
 
-    public function reservationconfig(): HasOne
+    // Define the reservationconfig relationship
+    public function reservationconfig()
     {
         return $this->hasOne(Reservationconfig::class);
     }
-    public function products(): MorphMany
+
+    // Define the products relationship using hasMany
+//    public function products()
+//    {
+//
+//        return $this->morphMany(Product::class, 'productable');
+//    }
+
+    public function products()
     {
-        return $this->morphMany(Product::class,'productable');
+        return $this->morphToMany(Product::class, 'productable');
     }
 
-    protected $with = ['startnumberconfig', 'reservationconfig','products'];
+    protected $with = ['startnumberconfig', 'reservationconfig', 'products'];
 
     protected $table = 'eventconfigurations';
     protected $dateFormat = 'Y-m-d H:i';

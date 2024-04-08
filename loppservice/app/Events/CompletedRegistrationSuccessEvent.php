@@ -17,12 +17,15 @@ class CompletedRegistrationSuccessEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public Registration $registration;
+
     /**
      * Create a new event instance.
      */
     public function __construct(Registration $registration)
     {
         $this->registration = $registration;
+
     }
 
     /**

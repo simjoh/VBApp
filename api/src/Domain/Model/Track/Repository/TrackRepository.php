@@ -230,7 +230,6 @@ class TrackRepository extends BaseRepository
         $track_checkpoint_statement->bindParam(':track_uid', $track_uid);
         $track_checkpoint_statement->execute();
         $trackss = $track_checkpoint_statement->fetchAll();
-
         if (!empty($trackss) && $track_checkpoint_statement->rowCount() > 0) {
             $track_checkpoint_uids = [];
             foreach ($trackss as $s => $trc) {

@@ -7,6 +7,7 @@ use App\Http\Controllers\NoRegisterCheckoutController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\StartlistController;
+use App\Http\Controllers\ToolController;
 use App\Http\Controllers\WebhookController;
 use App\Models\Event;
 use Illuminate\Support\Facades\Redirect;
@@ -39,6 +40,9 @@ Route::get('/events', function (Event $event) {
 
 Route::get('/events' ,[EventController::class, 'index']);
 
+Route::get('/tool' ,[ToolController::class, 'index']);
+Route::post('/tool', [ToolController::class, 'run']);
+
 
 
 Route::get('/events/{uid}/register', [RegistrationController::class, 'index'])->name('register');;
@@ -50,7 +54,7 @@ Route::put('registration.update', [RegistrationController::class, 'update']);
 Route::post('registration.create', [RegistrationController::class, 'create']);
 
 Route::get('/checkout/create', [CheckoutController::class, 'create'])->name("checkout");
-Route::get('/checkout/success', [CheckoutController::class, 'success']);
+Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkoutsuccess');
 Route::get('/checkout/cancel', [CheckoutController::class, 'cancel']);
 Route::post('/payments/events', [WebhookController::class, 'index']);
 

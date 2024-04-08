@@ -9,13 +9,17 @@ class Product extends Model
 {
     use HasFactory;
 
-
-    public function product()
+    // Define the productable relationship
+    public function productable()
     {
         return $this->morphTo();
     }
 
-    protected $primaryKey = 'productID';
+    public function productables()
+    {
+        return $this->morphToMany(Productable::class, 'productable');
+    }
 
+    protected $primaryKey = 'productID';
 
 }

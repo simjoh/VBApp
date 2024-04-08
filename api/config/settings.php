@@ -48,6 +48,8 @@ $settings['db'] = [
         PDO::ATTR_PERSISTENT => false,
         // Enable exceptions
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+
+        PDO::ATTR_AUTOCOMMIT => true,
         // Emulate prepared statements
         PDO::ATTR_EMULATE_PREPARES => true,
         // Set default fetch mode to array

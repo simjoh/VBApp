@@ -27,9 +27,7 @@ class ApiKeyValidatorMiddleware
 
 //        $api_key_header = "notsecret_developer_key";
         if ($api_key_header != $api_key) {
-
             $response = (new Response())->withStatus(403);
-
             return $response;
         }
 

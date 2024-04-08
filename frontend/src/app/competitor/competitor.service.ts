@@ -44,9 +44,9 @@ export class CompetitorService {
     ) as Observable<Array<RandonneurCheckPointRepresentation>>;
   }
 
-  async  stampOnCheckpoint(s: RandonneurCheckPointRepresentation): Promise<any>{
+  async stampOnCheckpoint(s: RandonneurCheckPointRepresentation, lat: any, long: any): Promise<any>{
     const link = this.linkService.findByRel(s.links,'relation.randonneur.stamp', HttpMethod.POST)
-    return await this.httpClient.post<any>(link.url, null).pipe(
+    return await this.httpClient.post<any>(link.url + "?lat=" + lat + "&long=" + long, null).pipe(
       map((site: boolean) => {
         return site;
       }),

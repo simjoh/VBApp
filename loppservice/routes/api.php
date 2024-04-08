@@ -14,6 +14,7 @@
 
 
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\ToolController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //Route::middleware('throttle:60,1')->group(function () {
 
 Route::prefix('/api')->group(function () {
+
+
+    Route::get('/ping' , [ToolController::class, 'testappintegration']);
 
     Route::get('/pingapikey', ['middleware' => ['apikey',], function () {
         return 'Testar kontroll av apinyckel';

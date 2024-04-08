@@ -36,7 +36,7 @@ class ClubAction
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new ClubRepresentationTransformer());
         $club = $jsonDecoder->decode($request->getBody()->getContents(), ClubRepresentation::class);
-        print_r($club);
+
         $response->getBody()->write(json_encode($this->clubservice->createClub($request->getAttribute('currentuserUid'), $club, ), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
 

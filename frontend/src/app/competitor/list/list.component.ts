@@ -3,6 +3,7 @@ import {CompetitorListComponentService} from "./competitor-list-component.servic
 import {RandonneurCheckPointRepresentation} from "../../shared/api/api";
 import {BehaviorSubject} from "rxjs";
 import {map} from "rxjs/operators";
+import {GeolocationService} from "../../shared/geolocation.service";
 
 @Component({
   selector: 'brevet-list',
@@ -13,6 +14,8 @@ import {map} from "rxjs/operators";
 })
 export class ListComponent implements OnInit, AfterViewInit {
 
+  lat;
+  long;
 
   checkpoints$ = this.comp.$controls.pipe(
     map((controls) => {
@@ -28,15 +31,29 @@ export class ListComponent implements OnInit, AfterViewInit {
   );
   dnfknapptext: string
 
-  constructor(private comp: CompetitorListComponentService) {
+  constructor(private comp: CompetitorListComponentService, private geolocationService: GeolocationService) {
     this.dnfknapptext = "test";
+  }
+
+  getGeoLocation() {
+    this.geolocationService.getCurrentPosition().subscribe({
+      next: (position) => {
+        console.log('Latitude:', position.coords.latitude);
+        console.log('Longitude:', position.coords.longitude);
+        this.lat = position.coords.latitude
+        this.long = position.coords.longitude;
+      },
+      error: (error) => {
+        console.error('Error getting geolocation:', error);
+      },
+    });
   }
 
 
   async checkin($event: any, s: RandonneurCheckPointRepresentation, kontroller, index) {
-
+    this.getGeoLocation();
     if ($event === true) {
-      await this.comp.stamp($event, s);
+      await this.comp.stamp($event, s, this.lat, this.long);
       localStorage.setItem('nextcheckpoint', JSON.stringify(kontroller.at(index + 1).checkpoint.checkpoint_uid));
       let nextindex = this.nextIndexForward(index, kontroller)
       setTimeout(() => {
@@ -128,6 +145,7 @@ export class ListComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
 
     this.comp.reload();
+    this.getGeoLocation();
   }
 
   ngAfterViewInit(): void {

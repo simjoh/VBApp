@@ -15,11 +15,14 @@ class NonParticipantOrderSuccesEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public NonParticipantOptionals $optionals;
+
     /**
      * Create a new event instance.
      */
-    public function __construct(public NonParticipantOptionals $optionals)
+    public function __construct(NonParticipantOptionals $optionals)
     {
+        $this->optionals = $optionals;
 
     }
 

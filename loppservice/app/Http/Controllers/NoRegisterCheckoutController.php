@@ -28,10 +28,11 @@ class NoRegisterCheckoutController extends Controller
             'line_items' => [$line_items],
             'mode' => 'payment',
             'metadata' => [
-                'no_participant_order' => true
+                'no_participant_order' => true,
+                'event_type' => 'MSR'
             ],
 //            'allow_promotion_codes' => true,
-            'success_url' => $YOUR_DOMAIN . '/optionals/checkout/success',
+            'success_url' => $YOUR_DOMAIN . '/optionals/checkout/success?event_type=MSR',
             'cancel_url' => $YOUR_DOMAIN . '/optionals/checkout/cancel?nonpaticipantoptional=' . $optional . '&no_participant_order=' . 'true',
         ]);
         return redirect($checkout_session->url);

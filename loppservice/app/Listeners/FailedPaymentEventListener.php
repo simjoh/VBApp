@@ -11,10 +11,7 @@ class FailedPaymentEventListener
     /**
      * Create the event listener.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(){}
 
     /**
      * Handle the event.
@@ -34,6 +31,5 @@ class FailedPaymentEventListener
         } else {
             Log::debug("cannot find any registration with uid " . $event->registration_uid);
         }
-        //
     }
 }

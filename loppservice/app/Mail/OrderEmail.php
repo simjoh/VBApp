@@ -18,11 +18,18 @@ class OrderEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public NonParticipantOptionals $optionals;
+    public Event $event;
+    public Product $product;
+
     /**
      * Create a new message instance.
      */
-    public function __construct(public NonParticipantOptionals $optionals, public Event $event, public Product $product)
+    public function __construct(NonParticipantOptionals $optionals, Event $event, Product $product)
     {
+        $this->product = $product;
+        $this->event = $event;
+        $this->optionals = $optionals;
 
     }
 

@@ -53,13 +53,36 @@ class RandonneurAction
 
     public function stamp(ServerRequestInterface $request, ResponseInterface $response){
         //skicka tillbacka checkpoints med ny status
+
+        $latitude = $request->getQueryParams('lat')['lat'];
+        $longitude = $request->getQueryParams('lat')['long'];
+   //   print_r($this->distance($latitude, $longitude, 63.8255104, 20.283392, 'K'));
+
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('track_uid');
         $checkpoint_uid = $route->getArgument('checkpointUid');
         $startnumber = $route->getArgument('startnumber');
-        $response->getBody()->write(json_encode($this->randonneurService->stampOnCheckpoint($track_uid,$checkpoint_uid, $startnumber ,$request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->randonneurService->stampOnCheckpoint($track_uid,$checkpoint_uid, $startnumber ,$request->getAttribute('currentuserUid'), $latitude,$longitude)));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+    }
+
+    function distance($lat1, $lon1, $lat2, $lon2, $unit) {
+
+        $theta = $lon1 - $lon2;
+        $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+        $dist = acos($dist);
+        $dist = rad2deg($dist);
+        $miles = $dist * 60 * 1.1515;
+        $unit = strtoupper($unit);
+
+        if ($unit == "K") {
+            return ($miles * 1.609344);
+        } else if ($unit == "N") {
+            return ($miles * 0.8684);
+        } else {
+            return $miles;
+        }
     }
 
     public function markasDNF(ServerRequestInterface $request, ResponseInterface $response){

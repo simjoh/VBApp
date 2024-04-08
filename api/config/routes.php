@@ -2,10 +2,8 @@
 
 use App\Middleware\ApiKeyValidatorMiddleware;
 use Slim\App;
-use Slim\Psr7\Response;
 use Slim\Routing\RouteCollectorProxy;
-use Slim\Views\PhpRenderer;
-use Slim\Views\Twig;
+
 
 return function (App $app) {
 
@@ -40,7 +38,7 @@ return function (App $app) {
 
     $app->get('/track/track/{trackUid}', \App\Controller\ResultsController::class . ':getTrackOnTrackView')->setName('trackontrack');
     $app->get('/tracker/track/{trackUid}', \App\Controller\ResultsController::class . ':trackrandonneurontrack');
-
+    $app->post('/participant/addparticipant/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':addParticipantOntrack2');
     // User route group
     $app->group('/api', function(RouteCollectorProxy $apps) use ($app) {
 
@@ -134,7 +132,7 @@ return function (App $app) {
         $app->get('/participant/{uid}/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':participantOnTrack');
         $app->put('/participant/{uid}/track/{trackUid}/update', \App\Action\Participant\ParticipantAction::class . ':updateParticipant');
         $app->put('/participant/{uid}/track/{trackUid}/updateTime', \App\Action\Participant\ParticipantAction::class . ':updateTime');
-        $app->post('/participant/addparticipant/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':addParticipantOntrack');
+
      //   $app->post('/participants/{trackUid}/upload', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
         $app->post('/participants/upload/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
         $app->delete('/participant/{uid}/deleteParticipant', \App\Action\Participant\ParticipantAction::class . ':deleteParticipant');

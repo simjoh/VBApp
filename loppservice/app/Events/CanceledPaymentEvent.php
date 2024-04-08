@@ -14,13 +14,15 @@ class CanceledPaymentEvent
     public string $registration_uid;
     public bool $is_final_registration_on_event;
     public bool $isnonparticipantorder;
+    public string $event_type;
 
 
     /**
      * Create a new event instance.
      */
-    public function __construct(string $registration_uid, bool $is_final_registration_on_event, bool $isnonparticipantorder)
+    public function __construct(string $registration_uid, bool $is_final_registration_on_event, bool $isnonparticipantorder, string $event_type)
     {
+        $this->event_type = $event_type;
         $this->registration_uid = $registration_uid;
         $this->is_final_registration_on_event = $is_final_registration_on_event;
         $this->isnonparticipantorder = $isnonparticipantorder;

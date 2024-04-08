@@ -20,17 +20,14 @@ class PreRegistrationSuccessEventListener
     /**
      * Create the event listener.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(){}
 
     /**
      * Handle the event.
      */
     public function handle(PreRegistrationSuccessEvent $event): void
     {
-        $registration = Registration::find($event->registration->registration_uid);
+        $registration = Registration::where('registration_uid',$event->registration->registration_uid);
         $registration->reservation = true;
         $registration->reservation_valid_until = '2023-12-31';
         $ref_nr = mt_rand(10000, 99999);
@@ -41,7 +38,7 @@ class PreRegistrationSuccessEventListener
         $person = Person::find($registration->person_uid);
         $registration->ref_nr = $ref_nr;
         $email_adress = $person->contactinformation->email;
-        $event_event = Event::find($registration->course_uid)->get()->first();
+        $event_event = Event::where('event_uid',$registration->course_uid)->get()->first();
         $products = Product::whereIn('productID', Optional::where('registration_uid', $registration->registration_uid)->select('productID')->get()->toArray())->get();
         $club = DB::table('clubs')->select('name')->where('club_uid', $registration->club_uid)->get()->first();
         $country = Country::where('country_id', $person->adress->country_id)->get()->first();
@@ -53,7 +50,7 @@ class PreRegistrationSuccessEventListener
         $updatedetaillink = env("APP_URL") . '/events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/getregitration';
 
 
-        $registration->startnumber = $this->getStartnumber('d32650ff-15f8-4df1-9845-d3dc252a7a84', $event_event->eventconfiguration->startnumberconfig);
+        $registration->startnumber = $this->getStartnumber($event_event->event_uid, $event_event->eventconfiguration->startnumberconfig);
         $registration->save();
 
 

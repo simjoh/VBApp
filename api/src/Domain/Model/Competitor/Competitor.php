@@ -7,33 +7,34 @@ use JsonSerializable;
 class Competitor implements JsonSerializable
 {
 
-    private string $id;
-    private string $givenname;
-    private string $familyname;
-    private string $username;
+    private ?string $competitor_uid;
+    private string $givenname = "";
+    private string $familyname = "";
+    private string $user_name;
     private string $token;
     private ?int $startnumber;
     private ?string $trackuid;
 
-
     private  $roles = array();
 
+    public function __construct()
+    {
 
-
+    }
 
     /**
      * @param $givenname
      * @param $familyname
      * @param $token
      */
-    public function __construct($id, $username ,$givenname, $familyname, $token)
-    {
-        $this->id = $id;
-        $this->givenname = $givenname;
-        $this->username = $username;
-        $this->familyname = $familyname;
-        $this->token = $token;
-    }
+//    public function __construct($id, $username ,$givenname, $familyname, $token)
+//    {
+//        $this->id = $id;
+//        $this->givenname = $givenname;
+//        $this->username = $username;
+//        $this->familyname = $familyname;
+//        $this->token = $token;
+//    }
 
 
     /**
@@ -41,7 +42,7 @@ class Competitor implements JsonSerializable
      */
     public function getId(): string
     {
-        return $this->id;
+        return $this->competitor_uid;
     }
 
     /**
@@ -65,7 +66,7 @@ class Competitor implements JsonSerializable
      */
     public function getUsername(): string
     {
-        return $this->username;
+        return $this->user_name;
     }
 
     /**

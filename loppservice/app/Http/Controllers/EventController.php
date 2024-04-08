@@ -15,17 +15,26 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Nonstandard\Uuid;
 
+
 class EventController extends Controller
 {
 
     public function index(Request $request)
     {
-        $events = Event::all()
-            ->groupBy(function ($val) {
-                $date = Carbon::parse($val->startdate);
-                $months = Config::get('app.swedish_month');
-                return $months[$date->format('m')] . " " . $date->format('Y');
-            });
+
+        $events = Event::where('event_type', 'BRM')->get()->sortBy("startdate");
+
+
+        foreach ($events as $event) {
+            $event->startlisturl = env("APP_URL") . '/startlist/event/' . $event->event_uid . '/showall';
+        }
+
+        $events = $events->groupBy(function ($val) {
+            $date = Carbon::parse($val->startdate);
+            $months = Config::get('app.swedish_month');
+            return $months[$date->format('m')] . " " . $date->format('Y');
+        });
+
 
         return view('event.show')->with(['allevents' => $events]);
 

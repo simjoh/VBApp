@@ -343,7 +343,13 @@ class ParticipantRepository extends BaseRepository
     public function createparticipant(Participant $participanttoCreate): ?Participant
     {
         try {
-            $participant_uid = Uuid::uuid4();
+            if($participanttoCreate->getParticipantUid() === null){
+                $participant_uid = Uuid::uuid4();
+            } else {
+                $participant_uid = $participanttoCreate->getParticipantUid();
+            }
+
+
             $track_uid = $participanttoCreate->getTrackUid();
             $competitor_uid = $participanttoCreate->getCompetitorUid();
             $startnumber = intval($participanttoCreate->getStartnumber());
@@ -711,7 +717,6 @@ class ParticipantRepository extends BaseRepository
 
     public function createTrackCheckpointsFor(Participant $participant, array $checkpoints)
     {
-
         $participant_uid = $participant->getParticipantUid();
         $passed = false;
         $passed_date_timestamp = null;

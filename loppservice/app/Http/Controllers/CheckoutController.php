@@ -73,11 +73,12 @@ class CheckoutController extends Controller
             'line_items' => [$line_items],
             'mode' => 'payment',
             'metadata' => [
-                'is_final_registration_on_event' => $is_final
+                'is_final_registration_on_event' => $is_final,
+                'event_type' => $request["event_type"]
             ],
             'allow_promotion_codes' => true,
-            'success_url' => $YOUR_DOMAIN . '/checkout/success',
-            'cancel_url' => $YOUR_DOMAIN . '/checkout/cancel?registration=' . $registration->registration_uid . '&is_final_registration_on_event=' . $is_final,
+            'success_url' => $YOUR_DOMAIN . '/checkout/success?event_type=' . $request["event_type"],
+            'cancel_url' => $YOUR_DOMAIN . '/checkout/cancel?registration=' . $registration->registration_uid . '&is_final_registration_on_event=' . $is_final . '&event_type=' . $request['event_type'],
         ]);
 
         return redirect($checkout_session->url);
@@ -91,12 +92,16 @@ class CheckoutController extends Controller
 
     public function success(Request $request)
     {
-        return view('checkout.success', ['message' => 'Thank you for your registration/reservation. We have sent a confirmation by email to the address you provided in the registration form.', 'checkemailmessage' => 'Please check that you have received an email. If not then check your spam folder and if found there, please change your spam filter settings for the address "info@midnightsunrandonnee.se" so you will not miss future emails.']); // , compact('customer'));
+        if($request['event_type'] === 'MSR') {
+            return view('checkout.success', ['message' => 'Thank you for your registration/reservation. We have sent a confirmation by email to the address you provided in the registration form.', 'checkemailmessage' => 'Please check that you have received an email. If not then check your spam folder and if found there, please change your spam filter settings for the address "info@midnightsunrandonnee.se" so you will not miss future emails.']); // , compact('customer'));
+        } else {
+            return view('checkout.brmsuccess', ['message' => 'Tack för din anmälan. Ett bekräftelsemail har skickats till den epostadress du angav i anmälningsformuläret', 'checkemailmessage' => 'Kontrollera att du fått ett mail med uppgifter om din anmälan. Om inte kontrollera om mailet hamnat i skräpposten']);
+        }
     }
 
     public function cancel(Request $request)
     {
-        event(new CanceledPaymentEvent($request->query('registration'), $request->boolean('is_final_registration_on_event'), false));
+        event(new CanceledPaymentEvent($request->query('registration'), $request->boolean('is_final_registration_on_event'), false, $request['event_type']));
         return view('checkout.cancel', ['message' => 'You have caneled payment of your registration/reservation']);
     }
 }

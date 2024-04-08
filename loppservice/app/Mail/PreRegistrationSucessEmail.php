@@ -16,13 +16,32 @@ class PreRegistrationSucessEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    private Registration $registration;
+    private Collection $products;
+    private Event $event;
+    private string $club;
+    private string $country;
+    private string $startlistlink;
+    private string $completeregistrationlink;
+    private string $updatelink;
+    private Person $person;
+
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(private Registration $registration, private Collection $products, private Event $event, private string $club, private string $country, private string $startlistlink, private string $completeregistrationlink, private string $updatelink, private Person $person)
+    public function __construct(Registration $registration, Collection $products, Event $event, string $club, string $country, string $startlistlink, string $completeregistrationlink, string $updatelink, Person $person)
     {
+        $this->person = $person;
+        $this->updatelink = $updatelink;
+        $this->completeregistrationlink = $completeregistrationlink;
+        $this->startlistlink = $startlistlink;
+        $this->country = $country;
+        $this->club = $club;
+        $this->event = $event;
+        $this->products = $products;
+        $this->registration = $registration;
 
     }
 
