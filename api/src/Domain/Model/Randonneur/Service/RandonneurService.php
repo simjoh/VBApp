@@ -113,7 +113,7 @@ class RandonneurService
         //kolla om mindre än 100 meter från kontroll
         $distance = $this->calculateDistancebetweenCordinates($lat, $long, $checkpoint->getSite()->getLat(), $checkpoint->getSite()->getLng(), 'K');
         if ($distance > 0.100) {
-            throw new BrevetException("You must be closer than 100 meters from checkpoint", 7, null);
+            throw new BrevetException("You must be closer than 100 meters from checkpoint", 6, null);
         }
 
         if (!isset($checkpoint)) {
