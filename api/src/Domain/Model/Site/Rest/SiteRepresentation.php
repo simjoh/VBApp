@@ -18,9 +18,6 @@ class SiteRepresentation implements JsonSerializable
     private ?array $links = [];
 
 
-
-
-
     /**
      * @return string
      */
@@ -100,6 +97,7 @@ class SiteRepresentation implements JsonSerializable
     {
         $this->image = $image;
     }
+
     /**
      * @param Link $link
      */
@@ -182,8 +180,8 @@ class SiteRepresentation implements JsonSerializable
     }
 
 
-
-    public function jsonSerialize(): mixed {
-        return (object) get_object_vars($this);
+    public function jsonSerialize(): mixed
+    {
+        return (object)get_object_vars($this);
     }
 }

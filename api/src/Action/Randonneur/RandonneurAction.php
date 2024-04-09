@@ -4,6 +4,7 @@ namespace App\Action\Randonneur;
 
 use App\Domain\Model\Randonneur\Service\RandonneurService;
 use App\Domain\Model\Track\Service\TrackService;
+use PrestaShop\Decimal\DecimalNumber;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -19,58 +20,68 @@ class RandonneurAction
         $this->trackservice = $trackService;
     }
 
-    public function getCheckpoint(ServerRequestInterface $request, ResponseInterface $response){
+    public function getCheckpoint(ServerRequestInterface $request, ResponseInterface $response)
+    {
         //skicka tillbacka checkpoints med ny status
 
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('track_uid');
         $startnumber = $route->getArgument('startnumber');
-        $checkpointforrandoneur =  $this->randonneurService->checkpointsForRandonneur($track_uid,$startnumber, $request->getAttribute('currentuserUid'));
+        $checkpointforrandoneur = $this->randonneurService->checkpointsForRandonneur($track_uid, $startnumber, $request->getAttribute('currentuserUid'));
         $response->getBody()->write(json_encode($checkpointforrandoneur));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
-    public function getCheckpointPreView(ServerRequestInterface $request, ResponseInterface $response){
+    public function getCheckpointPreView(ServerRequestInterface $request, ResponseInterface $response)
+    {
         //skicka tillbacka checkpoints med ny status
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('track_uid');
-        $checkpointforrandoneur =  $this->randonneurService->previewCheckpointsForRandonneur($track_uid, $request->getAttribute('currentuserUid'));
+        $checkpointforrandoneur = $this->randonneurService->previewCheckpointsForRandonneur($track_uid, $request->getAttribute('currentuserUid'));
         $response->getBody()->write(json_encode($checkpointforrandoneur));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
 
-
-    public function getTrack(ServerRequestInterface $request, ResponseInterface $response){
+    public function getTrack(ServerRequestInterface $request, ResponseInterface $response)
+    {
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('track_uid');
         $response->getBody()->write(json_encode($this->trackservice->getTrackByTrackUid($track_uid, $request->getAttribute('currentuserUid'))));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
-    public function stamp(ServerRequestInterface $request, ResponseInterface $response){
+    public function stamp(ServerRequestInterface $request, ResponseInterface $response)
+    {
         //skicka tillbacka checkpoints med ny status
-
         $latitude = $request->getQueryParams('lat')['lat'];
         $longitude = $request->getQueryParams('lat')['long'];
-   //   print_r($this->distance($latitude, $longitude, 63.8255104, 20.283392, 'K'));
+
+
+        if(!isset($latitude)){
+            $latitude = null;
+        }
+
+        if(!isset($longitude)){
+            $longitude = null;
+        }
 
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('track_uid');
         $checkpoint_uid = $route->getArgument('checkpointUid');
         $startnumber = $route->getArgument('startnumber');
-        $response->getBody()->write(json_encode($this->randonneurService->stampOnCheckpoint($track_uid,$checkpoint_uid, $startnumber ,$request->getAttribute('currentuserUid'), $latitude,$longitude)));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        $response->getBody()->write(json_encode($this->randonneurService->stampOnCheckpoint($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'), $latitude, $longitude)));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
-    function distance($lat1, $lon1, $lat2, $lon2, $unit) {
-
+    function distance($lat1, $lon1, $lat2, $lon2, $unit)
+    {
         $theta = $lon1 - $lon2;
-        $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+        $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
         $dist = acos($dist);
         $dist = rad2deg($dist);
         $miles = $dist * 60 * 1.1515;
@@ -85,45 +96,42 @@ class RandonneurAction
         }
     }
 
-    public function markasDNF(ServerRequestInterface $request, ResponseInterface $response){
-        //skicka tillbacka checkpoints med ny status
-        //skicka tillbacka checkpoints med ny status
-        $routeContext = RouteContext::fromRequest($request);
-        $route = $routeContext->getRoute();
-        $track_uid = $route->getArgument('track_uid');
-        $checkpoint_uid = $route->getArgument('checkpointUid');
-        $startnumber = $route->getArgument('startnumber');
-        $response->getBody()->write(json_encode($this->randonneurService->markAsDnf($track_uid,$checkpoint_uid, $startnumber ,$request->getAttribute('currentuserUid'))));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-    }
-
-    public function rollbackStamp(ServerRequestInterface $request, ResponseInterface $response){
-        $routeContext = RouteContext::fromRequest($request);
-        $route = $routeContext->getRoute();
-        $track_uid = $route->getArgument('track_uid');
-        $checkpoint_uid = $route->getArgument('checkpointUid');
-        $startnumber = $route->getArgument('startnumber');
-        //skicka tillbacka checkpoints med ny status
-        $response->getBody()->write(json_encode($this->randonneurService->rollbackStamp($track_uid,$checkpoint_uid, $startnumber ,$request->getAttribute('currentuserUid'))));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
-    }
-
-
-    public function rollbackDNF(ServerRequestInterface $request, ResponseInterface $response){
-        //skicka tillbacka checkpoints med ny status
+    public function markasDNF(ServerRequestInterface $request, ResponseInterface $response)
+    {
         //skicka tillbacka checkpoints med ny status
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('track_uid');
         $checkpoint_uid = $route->getArgument('checkpointUid');
         $startnumber = $route->getArgument('startnumber');
-        $response->getBody()->write(json_encode($this->randonneurService->rollbackDnf($track_uid,$checkpoint_uid, $startnumber ,$request->getAttribute('currentuserUid'))));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        $response->getBody()->write(json_encode($this->randonneurService->markAsDnf($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'))));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+    public function rollbackStamp(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('track_uid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $startnumber = $route->getArgument('startnumber');
+        //skicka tillbacka checkpoints med ny status
+        $response->getBody()->write(json_encode($this->randonneurService->rollbackStamp($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'))));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
 
-
-
+    public function rollbackDNF(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        //skicka tillbacka checkpoints med ny status
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('track_uid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $startnumber = $route->getArgument('startnumber');
+        $response->getBody()->write(json_encode($this->randonneurService->rollbackDnf($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'))));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
 
 
 }

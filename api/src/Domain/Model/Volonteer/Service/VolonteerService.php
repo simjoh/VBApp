@@ -231,18 +231,18 @@ class VolonteerService extends ServiceAbstract
                 }
             }
             if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
-                $this->participantrepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, true);
+                $this->participantrepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, true, null, null);
             } else if (date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {
-                $this->participantrepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, date('Y-m-d H:i:s'), 1, true);
+                $this->participantrepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, date('Y-m-d H:i:s'), 1, true, null, null);
             } else if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
                 if ($this->settings['demo'] == 'false') {
 
                     if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
                         //   throw new BrevetException("Checkpoint is closed. Closing date time: " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())), 6, null);
-                        $this->participantrepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, date('Y-m-d H:i:s'), 1, true);
+                        $this->participantrepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, date('Y-m-d H:i:s'), 1, true, null, null);
                     }
                 } else {
-                    $this->participantrepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, true);
+                    $this->participantrepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, true, null, null);
                 }
 
             } else {
@@ -265,7 +265,7 @@ class VolonteerService extends ServiceAbstract
                     }
                 }
             }
-            $this->participantrepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 1);
+            $this->participantrepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 1,null,null);
             $participant->setDnf(false);
             $participant->setDns(false);
             $participant->setFinished(true);
@@ -279,7 +279,7 @@ class VolonteerService extends ServiceAbstract
             throw new BrevetException("You have to checkin on startcheckpoint before this", 6, null);
         }
 
-        $this->participantrepository->stampOnCheckpoint($participant_uid, $checkpoint_uid, 1, 1);
+        $this->participantrepository->stampOnCheckpoint($participant_uid, $checkpoint_uid, 1, 1,null,null);
         return true;
     }
 }

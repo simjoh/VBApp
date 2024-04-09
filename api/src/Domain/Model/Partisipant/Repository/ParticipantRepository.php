@@ -9,6 +9,7 @@ use App\Domain\Model\Partisipant\ParticipantCheckpoint;
 use Exception;
 use PDO;
 use PDOException;
+use PrestaShop\Decimal\DecimalNumber;
 use Ramsey\Uuid\Uuid;
 
 class ParticipantRepository extends BaseRepository
@@ -343,7 +344,7 @@ class ParticipantRepository extends BaseRepository
     public function createparticipant(Participant $participanttoCreate): ?Participant
     {
         try {
-            if($participanttoCreate->getParticipantUid() === null){
+            if ($participanttoCreate->getParticipantUid() === null) {
                 $participant_uid = Uuid::uuid4();
             } else {
                 $participant_uid = $participanttoCreate->getParticipantUid();
@@ -593,13 +594,25 @@ class ParticipantRepository extends BaseRepository
         return array();
     }
 
-    public function stampOnCheckpoint(string $participant_uid, string $checkpoint_uid, bool $started, bool $volonteercheckin): bool
+    public function stampOnCheckpoint(string $participant_uid, string $checkpoint_uid, bool $started, bool $volonteercheckin, $lat, $lng): bool
     {
         try {
 
             $passed_date_timestamp = date('Y-m-d H:i:s');
-            $lat = null;
-            $lng = null;
+
+            if ($lat) {
+                $lat = new DecimalNumber($lat);
+                $lat = $lat->toPrecision(7);
+            } else {
+                $lat = null;
+            }
+
+            if ($lng) {
+                $lng = new DecimalNumber($lng);
+                $lng = $lng->toPrecision(7);
+            } else {
+                $lng = null;
+            }
             $passed = true;
             $stmt = $this->connection->prepare($this->sqls('updateCheckpoint'));
             $stmt->bindParam(':participant_uid', $participant_uid);
@@ -642,13 +655,27 @@ class ParticipantRepository extends BaseRepository
 
     }
 
-    public function stampOnCheckpointWithTime(string $participant_uid, string $checkpoint_uid, string $datetime, bool $started, bool $volonteercheckin): bool
+    public function stampOnCheckpointWithTime(string $participant_uid, string $checkpoint_uid, string $datetime, bool $started, bool $volonteercheckin, $lat, $lng): bool
     {
         try {
 
             $passed_date_timestamp = $datetime;
-            $lat = null;
-            $lng = null;
+
+            if ($lat) {
+                $lat = new DecimalNumber($lat);
+                $lat = $lat->toPrecision(7);
+            } else {
+                $lat = null;
+            }
+
+            if ($lng) {
+                $lng = new DecimalNumber($lng);
+                $lng = $lng->toPrecision(7);
+            } else {
+                $lng = null;
+            }
+
+
             $passed = true;
             $stmt = $this->connection->prepare($this->sqls('updateCheckpoint'));
             $stmt->bindParam(':participant_uid', $participant_uid);

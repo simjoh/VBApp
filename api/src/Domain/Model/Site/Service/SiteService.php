@@ -21,38 +21,43 @@ class SiteService extends ServiceAbstract
 
     }
 
-    public function allSites(string $currentuserUid): array {
+    public function allSites(string $currentuserUid): array
+    {
         $permissions = $this->getPermissions($currentuserUid);
         $siteArray = $this->siterepository->allSites();
-        return  $this->siteassembly->toRepresentations($siteArray, $permissions);
+        return $this->siteassembly->toRepresentations($siteArray, $permissions);
     }
 
-    public function siteFor(string $siteUid, string $currentuserUid): ?SiteRepresentation {
+    public function siteFor(string $siteUid, string $currentuserUid): ?SiteRepresentation
+    {
         $permissions = $this->getPermissions($currentuserUid);
         $site = $this->siterepository->siteFor($siteUid);
-        if(!isset($site)){
+        if (!isset($site)) {
             return null;
         }
-        return    $this->siteassembly->toRepresentation($site, $permissions);
+        return $this->siteassembly->toRepresentation($site, $permissions);
     }
 
-    public function updateSite(SiteRepresentation $siteRepresentation, string $currentuserUid): SiteRepresentation {
+    public function updateSite(SiteRepresentation $siteRepresentation, string $currentuserUid): SiteRepresentation
+    {
         $permissions = $this->getPermissions($currentuserUid);
         $updatedSite = $this->siterepository->updateSite($this->siteassembly->toSite($siteRepresentation));
-        return  $this->siteassembly->toRepresentation($updatedSite,$permissions);
+        return $this->siteassembly->toRepresentation($updatedSite, $permissions);
     }
 
-    public function deleteSite($siteUid){
+    public function deleteSite($siteUid)
+    {
 
-        if($this->siterepository->siteInUse($siteUid) == true){
-            throw new BrevetException("Unable to delete site. Site in use",6,null);
+        if ($this->siterepository->siteInUse($siteUid) == true) {
+            throw new BrevetException("Unable to delete site. Site in use", 6, null);
         }
 
 
         $this->siterepository->deleteSite($siteUid);
     }
 
-    public function createSite(SiteRepresentation $siteRepresentation){
+    public function createSite(SiteRepresentation $siteRepresentation)
+    {
 
         $exists = $this->siterepository->existsByPlaceAndAdress2(strtolower(str_replace(' ', '', $siteRepresentation->getPlace())), strtolower(str_replace(' ', '', $siteRepresentation->getAdress())));
         if ($exists !== null) {
@@ -66,6 +71,6 @@ class SiteService extends ServiceAbstract
 
     public function getPermissions($user_uid): array
     {
-        return $this->permissionrepository->getPermissionsTodata("SITE",$user_uid);
+        return $this->permissionrepository->getPermissionsTodata("SITE", $user_uid);
     }
 }

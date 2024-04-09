@@ -18,8 +18,7 @@ class Site implements JsonSerializable
     private DecimalNumber $lng;
 
 
-
-    public function __construct(string $site_uid, string $place, $adress, string $description , $location, DecimalNumber $lat, DecimalNumber $lng, string $picture)
+    public function __construct(string $site_uid, string $place, $adress, string $description, $location, DecimalNumber $lat, DecimalNumber $lng, string $picture)
     {
 
         $this->site_uid = $site_uid;
@@ -137,8 +136,9 @@ class Site implements JsonSerializable
         $this->site_uid = $site_uid;
     }
 
-    public function jsonSerialize(): mixed {
-        return (object) get_object_vars($this);
+    public function jsonSerialize(): mixed
+    {
+        return (object)get_object_vars($this);
     }
 
 }

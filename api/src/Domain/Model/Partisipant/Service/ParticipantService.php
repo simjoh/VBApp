@@ -469,16 +469,16 @@ class ParticipantService extends ServiceAbstract
                 }
             }
             if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
-                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0);
+                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, null, null);
             } else if (date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {
-                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0);
+                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, null, null);
             } else if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
 //                if($this->settings['demo'] == 'false'){
 //                    if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
 //                        throw new BrevetException("Checkpoint is closed. Closing date time: " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())), 6, null);
 //                    }
 //                } else {
-                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0);
+                $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, null, null);
 //                }
             } else {
                 throw new BrevetException("Error on checkin", 1, null);
@@ -515,7 +515,7 @@ class ParticipantService extends ServiceAbstract
             }
 //            }
 
-            $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0);
+            $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0,null,null);
             $participant->setDnf(false);
             $participant->setDns(false);
 
@@ -532,7 +532,7 @@ class ParticipantService extends ServiceAbstract
             throw new BrevetException("You have to checkin on startcheckpoint before this", 6, null);
         }
 
-        $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0);
+        $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0, null, null);
         return $this->randonneurservice->getChecpointsForRandonneurForAdmin($participant, $track);
     }
 
