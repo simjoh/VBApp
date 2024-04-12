@@ -309,13 +309,13 @@ class ParticipantService extends ServiceAbstract
 
                     $this->participantRepository->createTrackCheckpointsFor($participant, $this->trackRepository->checkpoints($trackUid));
                 }
-//            $createdParticipants [] = $participant;
-//                $createdParticipants = [];
+
                 array_push($createdParticipants, $participant);
             }
 
             if (isset($participantcreated) && isset($competitor)) {
                 // skapa upp inloggning för cyklisten
+                print_r($record[13]);
                 $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $record[0], $record[13]);
             }
 

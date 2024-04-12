@@ -77,21 +77,23 @@ export class CheckpointComponent implements OnInit {
     }
 
     if (!this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp')) {
-
-      this.confirmationService.confirm({
-        message: 'Do you want want to undo check in',
-        accept: () => {
-          this.checkedin.emit(false);
-          this.chekedinSubject.next(false);
-        }
-      });
+      this.checkedin.emit(false);
+      this.chekedinSubject.next(false);
+      // this.confirmationService.confirm({
+      //   message: 'Do you want want to undo check in',
+      //   accept: () => {
+      //     this.checkedin.emit(false);
+      //     this.chekedinSubject.next(false);
+      //   }
+      // });
     } else {
-      this.confirmationService.confirm({
-        message: 'Do you want want to check in',
-        accept: () => {
-          this.checkedin.emit(true);
-        }
-      });
+      this.checkedin.emit(true);
+      // this.confirmationService.confirm({
+      //   message: 'Do you want want to check in',
+      //   accept: () => {
+      //     this.checkedin.emit(true);
+      //   }
+      // });
     }
   }
 

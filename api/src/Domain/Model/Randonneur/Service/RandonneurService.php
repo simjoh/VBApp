@@ -109,16 +109,6 @@ class RandonneurService
         if (!isset($track)) {
             throw new BrevetException("Track not exists", 5, null);
         }
-        $checkpoint = $this->checkpointService->checkpointFor($checkpoint_uid);
-        //kolla om mindre än 100 meter från kontroll
-        $distance = $this->calculateDistancebetweenCordinates($lat, $long, $checkpoint->getSite()->getLat(), $checkpoint->getSite()->getLng(), 'K');
-        if ($distance > 0.100) {
-            throw new BrevetException("You must be closer than 100 meters from checkpoint", 6, null);
-        }
-
-        if (!isset($checkpoint)) {
-            throw new BrevetException("Checkpoint not exists", 5, null);
-        }
 
         $today = date('Y-m-d');
         $startdate = date('Y-m-d', strtotime($track->getStartDateTime()));
@@ -128,6 +118,20 @@ class RandonneurService
                 throw new BrevetException("You cannot check in before startdate :  " . $startdate, 6, null);
             }
         }
+
+
+
+        $checkpoint = $this->checkpointService->checkpointFor($checkpoint_uid);
+        //kolla om mindre än 100 meter från kontroll
+        $distance = $this->calculateDistancebetweenCordinates($lat, $long, $checkpoint->getSite()->getLat(), $checkpoint->getSite()->getLng(), 'K');
+        if ($distance > 0.100) {
+            throw new BrevetException("You are not within range of the checkpoint", 7, null);
+        }
+
+        if (!isset($checkpoint)) {
+            throw new BrevetException("Checkpoint not exists", 5, null);
+        }
+
 
         $participant = $this->participantRepository->participantOntRackAndStartNumber($track->getTrackUid(), $startnumber);
 
@@ -139,7 +143,7 @@ class RandonneurService
         $isStart = $this->checkpointService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
 
         if ($participant->isDns()) {
-            throw new BrevetException("You have not started in a race ", 6, null);
+            throw new BrevetException("You have not started in a race ", 7, null);
         }
         if ($this->settings['demo'] == 'false') {
             // är det start behöver vi inte göra kontroller då sätts starttiden till loppets starttid
@@ -162,7 +166,7 @@ class RandonneurService
 
             if ($this->settings['demo'] == 'false') {
                 if ($today < $startdate) {
-                    throw new BrevetException("You cannot check in before startdate :  " . $startdate, 6, null);
+                    throw new BrevetException("You cannot check in before startdate :  " . $startdate, 7, null);
                 }
             }
             if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
@@ -189,7 +193,7 @@ class RandonneurService
         if ($isEnd == true) {
 
             if ($participant->isDnf() == true) {
-                throw new BrevetException("You cannot finsish race if dnf is set", 6, null);
+                throw new BrevetException("You cannot finsish race if dnf is set", 7, null);
             }
 
             $countCheckpoints = $this->checkpointService->countCheckpointsForTrack($participant->getTrackUid());
@@ -220,7 +224,7 @@ class RandonneurService
         }
 
         if ($participant->isStarted() == false) {
-            throw new BrevetException("You have to check in on startcheckpoint before this", 6, null);
+            throw new BrevetException("You have to check in on startcheckpoint before this", 7, null);
         }
 
 
@@ -249,7 +253,7 @@ class RandonneurService
 
         if ($this->settings['demo'] == 'false') {
             if ($today < $startdate) {
-                throw new BrevetException("Check in opens on startdate:  " . $startdate, 6, null);
+                throw new BrevetException("Check in opens on startdate:  " . $startdate, 7, null);
             }
         }
 
@@ -261,7 +265,7 @@ class RandonneurService
         }
 
         if ($participant->isStarted() == false) {
-            throw new BrevetException("You must start before you can break the race", 6, null);
+            throw new BrevetException("You must start before you can abandon race", 6, null);
         }
 
         return $this->participantRepository->setDnf($participant->getParticipantUid());
@@ -309,7 +313,7 @@ class RandonneurService
 
         if ($this->settings['demo'] == 'false') {
             if ($today < $startdate) {
-                throw new BrevetException("You cannot set DNS before startdate :  " . $startdate, 6, null);
+                throw new BrevetException("You cannot set DNS before startdate :  " . $startdate, 7, null);
             }
         }
 

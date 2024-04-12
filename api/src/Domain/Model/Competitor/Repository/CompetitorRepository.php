@@ -129,8 +129,7 @@ class CompetitorRepository extends BaseRepository
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
-
-        return new Competitor($uid, $userName, $givenName, $familyName, "");
+        return $this->getCompetitorByUID($uid);
     }
 
     public function createCompetitorFromLoppservice(string $givenName, string $familyName, string $userName, string $birthdate, string $person_uid): Competitor
