@@ -336,7 +336,6 @@ class ParticipantRepository extends BaseRepository
         if ($countlast + $count == $totalcheckpointsfortrack) {
             return true;
         }
-
         return false;
     }
 
@@ -344,13 +343,11 @@ class ParticipantRepository extends BaseRepository
     public function createparticipant(Participant $participanttoCreate): ?Participant
     {
         try {
-            if ($participanttoCreate->getParticipantUid() === null || $participanttoCreate->getParticipantUid() === '') {
+            if ($participanttoCreate->getParticipantUid() === '') {
                 $participant_uid = Uuid::uuid4();
             } else {
                 $participant_uid = $participanttoCreate->getParticipantUid();
             }
-
-
 
             $track_uid = $participanttoCreate->getTrackUid();
             $competitor_uid = $participanttoCreate->getCompetitorUid();

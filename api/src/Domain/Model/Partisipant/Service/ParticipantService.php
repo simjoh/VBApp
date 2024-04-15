@@ -280,9 +280,12 @@ class ParticipantService extends ServiceAbstract
             }
             $existingParticipant = $this->participantRepository->participantForTrackAndCompetitor($trackUid, $competitor->getId());
 
+
             if (!isset($existingParticipant)) {
                 $participant = new Participant();
+
                 $participant->setCompetitorUid($competitor->getId());
+
                 $participant->setStartnumber($record[0]);
                 $participant->setFinished(false);
                 $participant->setTrackUid($track->getTrackUid());
@@ -291,6 +294,7 @@ class ParticipantService extends ServiceAbstract
                 $participant->setTime(null);
                 $participant->setStarted(false);
                 $participant->setAcpkod("s");
+
                 // kolla om klubben finns i databasen annars skapa vi en klubb
                 $existingClub = $this->clubrepository->getClubByTitle($record[4]);
 
@@ -304,7 +308,6 @@ class ParticipantService extends ServiceAbstract
                 $participant->setRegisterDateTime($record[11]);
 
                 $participantcreated = $this->participantRepository->createparticipant($participant);
-
                 if (isset($participantcreated)) {
 
                     $this->participantRepository->createTrackCheckpointsFor($participant, $this->trackRepository->checkpoints($trackUid));
@@ -315,12 +318,10 @@ class ParticipantService extends ServiceAbstract
 
             if (isset($participantcreated) && isset($competitor)) {
                 // skapa upp inloggning för cyklisten
-                print_r($record[13]);
                 $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $record[0], $record[13]);
             }
 
         }
-
 
         return $this->participantassembly->toRepresentations($createdParticipants, $currentUserUid);
 
@@ -515,7 +516,7 @@ class ParticipantService extends ServiceAbstract
             }
 //            }
 
-            $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0,null,null);
+            $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0, null, null);
             $participant->setDnf(false);
             $participant->setDns(false);
 
@@ -651,7 +652,6 @@ class ParticipantService extends ServiceAbstract
                 if (isset($participantcreated)) {
 
 
-
                     $this->participantRepository->createTrackCheckpointsFor($participant, $this->trackRepository->checkpoints($track->getTrackUid()));
                 }
                 if (isset($participantcreated) && isset($competitor)) {
@@ -672,8 +672,8 @@ class ParticipantService extends ServiceAbstract
     {
 
         $participant = $this->participantRepository->participantFor($datatovalidate->registration['registration_uid']);
-        if($participant){
-            throw new BrevetException("An participant already exists withuid " . $datatovalidate->registration['registration_uid'] , 5, null);
+        if ($participant) {
+            throw new BrevetException("An participant already exists withuid " . $datatovalidate->registration['registration_uid'], 5, null);
         }
 
         if (is_null($trackuid)) {

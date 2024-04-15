@@ -45,6 +45,11 @@ class Competitor implements JsonSerializable
         return $this->competitor_uid;
     }
 
+    public function setId(): string
+    {
+        return $this->competitor_uid;
+    }
+
     /**
      * @return string
      */

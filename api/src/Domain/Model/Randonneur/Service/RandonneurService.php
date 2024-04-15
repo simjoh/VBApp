@@ -124,7 +124,7 @@ class RandonneurService
         $checkpoint = $this->checkpointService->checkpointFor($checkpoint_uid);
         //kolla om mindre än 100 meter från kontroll
         $distance = $this->calculateDistancebetweenCordinates($lat, $long, $checkpoint->getSite()->getLat(), $checkpoint->getSite()->getLng(), 'K');
-        if ($distance > 0.100) {
+        if ($distance > 0.300) {
             throw new BrevetException("You are not within range of the checkpoint", 7, null);
         }
 

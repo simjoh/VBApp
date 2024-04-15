@@ -5,7 +5,7 @@ namespace App\Domain\Model\Partisipant;
 class Participant
 {
 
-    private string $participant_uid;
+    private ?string $participant_uid = '';
     private string $track_uid;
     private ?string $competitor_uid;
     private string $startnumber;

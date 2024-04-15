@@ -104,17 +104,17 @@ INSERT INTO `event`(`event_uid`, `title`, `start_date`, `end_date`, `active`, `c
 
 -- Banor som ingår i ett event
 -- BRM
-INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time, active) VALUES ('8a5a0649-6aee-4b64-803e-4f083f746d2d','BRM200K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','200 k ....',200.3,null, true);
-INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`, start_date_time, active) VALUES ('0c9648fd-1664-4526-aaa4-059a01fc079c','BRM300K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','300 k ....',300.3, null, true);
-INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time, active ) VALUES ('8862bd72-f5af-45f5-a377-337f26cbd195','BRM400K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','400 k ....',400.3, null, true);
-INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time, active) VALUES ('06ba3113-d95b-48c9-b0f9-f25bda5dad31','BRM600K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','600 k ....',600.3, null, true);
+INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time, active) VALUES ('8a5a0649-6aee-4b64-803e-4f083f746d2d','BRM200K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','200 k ....',200.3,STR_TO_DATE("07-07-23","%d-%m-%y"), true);
+INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`, start_date_time, active) VALUES ('0c9648fd-1664-4526-aaa4-059a01fc079c','BRM300K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','300 k ....',300.3, STR_TO_DATE("07-05-23","%d-%m-%y"), true);
+INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time, active ) VALUES ('8862bd72-f5af-45f5-a377-337f26cbd195','BRM400K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','400 k ....',400.3, STR_TO_DATE("07-05-24","%d-%m-%y"), true);
+INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time, active) VALUES ('06ba3113-d95b-48c9-b0f9-f25bda5dad31','BRM600K','http://www.banan.strava.com','f6bdbba8-960d-472b-8864-cda48a07eeac','600 k ....',600.3, STR_TO_DATE("07-09-24","%d-%m-%y"), true);
 
 
 
 -- Månskensbrev
-INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time) VALUES ('bf31d141-32c3-4cc9-b497-36d82b060221','Månskensbrevet','http://www.banan.strava.com','62c332d2-72c8-407c-b71c-ca2541d72577','Månstensbrevet k ....',86.3, DATE('2024-09-04'));
+INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time, active) VALUES ('bf31d141-32c3-4cc9-b497-36d82b060221','Månskensbrevet','http://www.banan.strava.com','62c332d2-72c8-407c-b71c-ca2541d72577','Månstensbrevet k ....',86.3, DATE('2024-09-04'), true);
 
-INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time) VALUES ('c9dd3c38-6860-4a0d-bfed-eebff6b8b8a1','BRM 200K Kramfors','http://www.banan.strava.com','dc03677a-51eb-4269-bce1-b7a6a15dd7b3','BRM 200k ....',86.3, DATE('2024-09-04'));
+INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`,start_date_time, active) VALUES ('c9dd3c38-6860-4a0d-bfed-eebff6b8b8a1','BRM 200K Kramfors','http://www.banan.strava.com','dc03677a-51eb-4269-bce1-b7a6a15dd7b3','BRM 200k ....',86.3, DATE('2024-09-04'), true);
 
 
 

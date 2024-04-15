@@ -84,11 +84,9 @@ class CompetitorRepository extends BaseRepository
 
     public function getCompetitorByNameAndBirthDate(string $givenname, string $familyname, string $birthdate)
     {
-
         try {
 
             $statement = $this->connection->prepare($this->sqls('getbynameandbirth'));
-
             $statement->bindParam(':givenname', $givenname);
             $statement->bindParam(':familyname', $familyname);
             $statement->bindParam(':birthdate', $birthdate);
@@ -96,11 +94,12 @@ class CompetitorRepository extends BaseRepository
             $competitor = $statement->fetch();
             $statement->rowCount();
             if ($statement->rowCount() > 0) {
-                return new Competitor($competitor['competitor_uid'], $competitor['user_name'], $competitor['given_name'], $competitor['family_name'], '');
+                $competitor = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Competitor\Competitor::class, null);
+                return $competitor[0];
             }
-
             if (!empty($event)) {
-                return new Competitor($competitor['competitor_uid'], $competitor['user_name'], $competitor['given_name'], $competitor['family_name'], '');
+                $competitor = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Competitor\Competitor::class, null);
+                return $competitor[0];
             }
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
