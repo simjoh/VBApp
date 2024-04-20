@@ -171,7 +171,7 @@ class ResultsController
         foreach ($result as $result) {
             $participants = $this->participantservice->participantsForCompetitor($result['competitor_uid'], '');
             foreach ($participants as $participant) {
-                if ($participant->getCompetitorUid() === $result['competitor_uid']) {
+                if ($participant->getCompetitorUid() === $result['competitor_uid'] && $trackUid === $participant->getTrackUid()) {
                     $result['trackurl'] = $this->settings['path'] . 'track/' . $trackUid . '/participant/' . $participant->getParticipantUid() . '/view';
                 }
             }
