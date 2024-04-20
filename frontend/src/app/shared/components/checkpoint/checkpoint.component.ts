@@ -76,6 +76,7 @@ export class CheckpointComponent implements OnInit {
       alert("Preview mode");
     }
 
+
     if (!this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp')) {
       this.checkedin.emit(false);
       this.chekedinSubject.next(false);

@@ -264,7 +264,7 @@ and pc.passeded_date_time not in (select passeded_date_time from participant_che
 group by c.given_name;
 
 create view v_track_contestant_on_event_and_track AS select * from (
-select p.startnumber , p.started, ev.start_date as eventstart, ev.end_date as eventend, p.competitor_uid , t.title as bana , p.finished,  t.track_uid, p.dns, p.dnf, t.event_uid, p.time, c.given_name, c.family_name, club.title as club, ci.country , s.adress, pc.passeded_date_time, pc.passed from event ev
+select p.startnumber ,pc.participant_uid , p.started, ev.start_date as eventstart, ev.end_date as eventend, p.competitor_uid , t.title as bana , p.finished,  t.track_uid, p.dns, p.dnf, t.event_uid, p.time, c.given_name, c.family_name, club.title as club, ci.country , s.adress, pc.passeded_date_time, pc.passed from event ev
 inner join track t on t.event_uid = ev.event_uid
 inner join participant p on p.track_uid = t.track_uid
 inner join competitors c on c.competitor_uid = p.competitor_uid

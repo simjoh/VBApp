@@ -55,8 +55,8 @@
               label="{{checkinknapptext}}"></button>
     </div>
     <div class="col-12 sm:col-12 lg:col-12">
-      <button (click)="checkin()" [hidden]="checkpoints.active" [disabled]="!checkpoints.active"
-              class="container-fluid p-button-secondary" pButton pRipple label="{{checkinknapptext}}"></button>
+      <p-button   (click)="checkin()" [hidden]="checkpoints.active" [disabled]="!checkpoints.active"
+              class="container-fluid p-button-secondary" pButton pRipple label="{{checkinknapptext}}"></p-button>
     </div>
 
     <!--    <ng-container *ngIf="checkpoints.checkpoint.opens | datetimeBetween : checkpoints.checkpoint.closing">-->

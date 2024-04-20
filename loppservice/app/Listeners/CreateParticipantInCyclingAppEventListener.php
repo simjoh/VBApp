@@ -19,6 +19,7 @@ class CreateParticipantInCyclingAppEventListener
     public function __construct(){}
     public function handle(CreateParticipantInCyclingAppEvent $event): void
     {
+        Log::debug("Handling creatparticiapant");
         $person = Person::find($event->person_uid)->get()->first();
         $registration = Registration::where('registration_uid',$event->registration_uid)->get()->first();
         $event_event = Event::find($registration->course_uid)->get()->first();
@@ -28,7 +29,6 @@ class CreateParticipantInCyclingAppEventListener
             'APIKEY' => env('BREVET_APP_API_KEY'),
         ])->get(env("BREVET_APP_URL") . '/ping');
 
-        Log::debug(json_encode($registration));
         $response = Http::withHeaders([
             'APIKEY' => env('BREVET_APP_API_KEY'),
         ])->post(env("BREVET_APP_URL") . '/participant/addparticipant/track/' . $registration->course_uid, [

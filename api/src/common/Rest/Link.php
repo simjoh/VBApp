@@ -22,6 +22,16 @@ class Link implements JsonSerializable
         $this->url = $url;
     }
 
+    public function getRel(): string
+    {
+        return $this->rel;
+    }
+
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
+
     public function jsonSerialize(): mixed {
         return (object) get_object_vars($this);
     }

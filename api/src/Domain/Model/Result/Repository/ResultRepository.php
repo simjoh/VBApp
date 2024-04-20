@@ -64,7 +64,7 @@ class ResultRepository  extends BaseRepository
         $in  = str_repeat('?,', count($track_uids) - 1) . '?';
 
 
-        $sql = " select revent.startnumber AS ID, revent.bana as Bana, revent.finished as mal,  revent.family_name as Efternamn, revent.given_name as Fornamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista, revent.passeded_date_time as passedtime  from v_track_contestant_on_event_and_track revent where revent.track_uid  IN ($in) order by revent.given_name , revent.given_name;";
+        $sql = " select revent.startnumber AS ID, revent.track_uid as TRACK_UID, revent.bana as Bana, revent.finished as mal,  revent.family_name as Efternamn, revent.given_name as Fornamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista, revent.passeded_date_time as passedtime , revent.competitor_uid as competitor from v_track_contestant_on_event_and_track revent where revent.track_uid  IN ($in) order by revent.given_name , revent.given_name;";
 
         $statement = $this->connection->prepare($sql);
         $statement->execute($track_uids);
@@ -79,9 +79,19 @@ class ResultRepository  extends BaseRepository
         $statement = $this->connection->prepare('select * from  v_track_contestant_on_event_and_track revent  where revent.competitor_uid=:competitor_uid and revent.track_uid=:track_uid');
         $statement->bindParam(':competitor_uid', $competitorUid);
         $statement->bindParam(':track_uid', $trackUid);
-
         $statement->execute();
         $trackinginfo = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $trackinginfo;
+    }
+
+    public function trackParticipant(?string $competitorUid, ?string $trackUid)
+    {
+        $statement = $this->connection->prepare('select * from  participant_checkpoint  revent inner join checkpoint c on c.checkpoint_uid = revent.checkpoint_uid inner join site s on s.site_uid = c.site_uid inner join participant p on p.participant_uid = revent.participant_uid where revent.participant_uid=:participant_uid order by c.distance asc ');
+        $statement->bindParam(':participant_uid', $competitorUid);
+        $statement->execute();
+
+        $trackinginfo = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $trackinginfo;
     }
 
     private function getResultArray($resultset): array {
@@ -266,7 +276,7 @@ class ResultRepository  extends BaseRepository
 
             if($item['mal'] == true){
 
-                    $files['Status'] = 'Finish';
+                    $files['Status'] = 'FIN';
             }
             if($time == null & $item['mal'] == false){
                 $files['Status'] = "";
@@ -278,6 +288,10 @@ class ResultRepository  extends BaseRepository
                     $files['Senaste checkpoint'] = '';
                 }
             }
+            $files['competitor_uid'] = $item['competitor'];
+            $files['track_uid'] = $item['TRACK_UID'];
+
+
 
             array_push($resultArray, $files);
 

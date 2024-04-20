@@ -38,6 +38,8 @@ return function (App $app) {
 
     $app->get('/track/track/{trackUid}', \App\Controller\ResultsController::class . ':getTrackOnTrackView')->setName('trackontrack');
     $app->get('/tracker/track/{trackUid}', \App\Controller\ResultsController::class . ':trackrandonneurontrack');
+    $app->get('/track/{trackUid}/participant/{participantUid}/view', \App\Controller\ResultsController::class . ':gettrackranonneurview')->setName('trackranonneur');
+    $app->get('/track/{trackUid}/participant/{participantUid}/checkpoints', \App\Controller\ResultsController::class . ':gettrackranonneurcheckpoints');
     $app->post('/participant/addparticipant/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':addParticipantOntrack2');
     // User route group
     $app->group('/api', function(RouteCollectorProxy $apps) use ($app) {

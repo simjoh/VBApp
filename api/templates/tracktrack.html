@@ -7,6 +7,10 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
 		  integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="preconnect" href="https://fonts.bunny.net">
+	<link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet"/>
+	<!-- Styles -->
+	<script src="https://cdn.tailwindcss.com"></script>
 	<script type="text/javascript">
         function ajaxFunction(callback) {
             var ajaxRequest;  // The variable that makes Ajax possible!
@@ -144,9 +148,24 @@
                         if (element[key] == "") {
                             text = document.createTextNode(" ");
                         } else {
-                            text = document.createTextNode(element[key]);
+                            if (key === 'Efternamn' || key === 'Förnamn') {
+                                for (key2 in element) {
+                                    if (key2 === 'trackurl') {
+                                        var a = document.createElement('a');
+                                        a.href = element[key2];
+                                        a.title = "http://example.com";
+                                        //a.setAttribute('onclick','click()');
+                                        a.appendChild(document.createTextNode(element[key]));
+                                        cell.appendChild(a);
+                                    }
+                                }
+                            } else {
+                                if (key !== 'competitor_uid' && key !== 'trackurl') {
+                                    text = document.createTextNode(element[key]);
+                                    cell.appendChild(text);
+                                }
+                            }
                         }
-                        cell.appendChild(text);
 
                     }
                 }
@@ -169,7 +188,6 @@
 
         }
 
-
         function sortResult(data) {
 
             data.sort(function (vote1, vote2) {
@@ -186,7 +204,7 @@
                 if (vote1.Efternamn > vote2.Efternamn) return 1;
                 if (vote1.Efternamn < vote2.Efternamn) return -1;
 
-                if (vote1.Status === 'DNF') return  1
+                if (vote1.Status === 'DNF') return 1
 
 
             });
@@ -203,10 +221,14 @@
             let thead = table.createTHead();
             let row = thead.insertRow();
             for (let key of data) {
-                let th = document.createElement("th");
-                let text = document.createTextNode(key);
-                th.appendChild(text);
-                row.appendChild(th);
+                if (key !== 'trackurl' && key !== 'competitor_uid') {
+                    let th = document.createElement("th");
+
+                    let text = document.createTextNode(key);
+                    th.appendChild(text);
+                    row.appendChild(th);
+                }
+
             }
         }
 

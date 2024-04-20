@@ -75,7 +75,7 @@ class TrackAssembly
             array_push($linkArray, new Link("relation.track.undopublisresults", 'PUT', $this->settings['path'] .'publishresults/track/' . $track->getTrackUid(). "?publish=false"));
         }
 
-        array_push($linkArray, new Link("relation.track.tracktrack", 'GET', $this->settings['path'] . 'track/track/' . $track->getTrackUid()));
+        array_push($linkArray, new Link("relation.track.tracktrack", 'GET', $this->settings['path'] . 'tracker/track/' . $track->getTrackUid()));
 
         array_push($linkArray, new Link("self", 'GET', $this->settings['path'] . 'track/' . $track->getTrackUid()));
 

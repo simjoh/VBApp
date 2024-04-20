@@ -67,7 +67,7 @@ class CompletedRegistrationSuccessEventListener
 
         if (App::isProduction()) {
             if ($event_event->event_type === 'BRM') {
-                Log::debug("Sending: MSR CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);
+                Log::debug("Sending: BRM CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);
                 Mail::to($email_adress)
                     ->send(new BRMCompletedRegistrationEmail($registration, $products, $event_event, $club->name, $country->country_name_en, $startlistlink, $updatedetaillink, $person));
             } else {

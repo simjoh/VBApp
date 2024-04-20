@@ -60,7 +60,7 @@ class ResultService
     public function trackRandonneurOnTrack(?string $competitorUid, ?string $trackUid)
     {
 
-        $competitor = $this->competitorRepository->getCompetitorByUID($competitorUid);
+        $competitor = $this->participantRepository->participantFor($competitorUid);
         if($competitor == null){
             throw new BrevetException("Participant not exists", 5, null);
         }
@@ -71,8 +71,10 @@ class ResultService
                 throw new BrevetException("Track not exists", 5, null);
             }
         }
-
-        $this->resultrepo->trackParticipantOnTrack($competitorUid, $trackUid);
+        $arr = array();
+        array_push($arr, $track);
+//        print_r($this->resultrepo->trackParticipantOnTrack($competitorUid, $trackUid));
+        return $this->resultrepo->trackParticipant($competitorUid, $trackUid);
 
     }
 

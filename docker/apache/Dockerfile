@@ -21,7 +21,7 @@ RUN apt-get update && \
 
 RUN docker-php-ext-install  zip && docker-php-ext-enable zip
 
-RUN chmod 777 -R /var/www/html/api/uploads
+
 
 # PHP Configuration
 RUN docker-php-ext-install bcmath bz2 calendar  dba exif gettext iconv intl  soap tidy xsl zip&&\

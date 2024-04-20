@@ -268,8 +268,8 @@ class ParticipantRepository extends BaseRepository
     public function participantsForCompetitor(string $competitor_uid)
     {
         try {
-            $statement = $this->connection->prepare($this->sqls('allParticipants'));
-            $statement->bindParam(':$competitor_uid', $competitor_uid);
+            $statement = $this->connection->prepare($this->sqls('participantsForCompetitor'));
+            $statement->bindParam(':competitor_uid', $competitor_uid);
             $statement->execute();
             $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\Participant::class, null);
 
@@ -861,6 +861,7 @@ class ParticipantRepository extends BaseRepository
     {
         $eventqls['allParticipants'] = 'select * from participant e;';
         $eventqls['participantByUID'] = 'select * from participant e where participant_uid=:participant_uid;';
+        $eventqls['participantsForCompetitor'] = 'select * from participant e where competitor_uid=:competitor_uid;';
         $eventqls['dns'] = 'select *  from participant e where e.track_uid=:track_uid and dns=:dns;';
         $eventqls['dnf'] = 'select *  from participant e where e.track_uid=:track_uid and dnf=:dnf;';
         $eventqls['allParticipantsOnTrack'] = 'select *  from participant e where e.track_uid=:track_uid;';

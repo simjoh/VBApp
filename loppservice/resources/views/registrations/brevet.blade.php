@@ -31,8 +31,10 @@
 	@endif
 
 	<div class="mb-5">
-		<p class="mb-3">Cykelintressets brevet-serie mellan 11 maj och 13 juli. Startavgift per brevet: 100 kr (ej återbetalbar dock överförbar). ACP utfärdar distansmedaljer till respektive distans. Dessa medaljer förbetalas av deltagaren vid anmälan. Medaljerna utdelas dock endast för genomförda och godkända lopp (homologation). </p>
-		<p>Distansmedaljer utfärdas endast för officiella brevet-distanser och inte för kortare så kallade brevet populaire-distanser under 200 km. Tillägg för distansmedalj (inkluderar porto): 150 kr (återbetalas ej vid DNS/DNF).</p>
+		<p class="mb-3">Startavgift per brevet: 100 kr (ej återbetalbar dock överförbar). ACP utfärdar distansmedaljer till respektive
+			distans.</p>
+		<p>Distansmedaljer utfärdas endast för officiella brevet-distanser och inte för brevet populaire-distanser under 200 km. Tillägg
+			för distansmedalj (inkluderar porto): 150 kr (återbetalas ej vid DNS/DNF).</p>
 
 	</div>
 
@@ -41,7 +43,7 @@
 		@method('POST')
 		<input type="text" value="{{$event}}" hidden="hidden" id="uid"
 			   name="uid">
-<!--		<hr class="h-1 my-4 bg-gray-900 border-t border-4 border-black dark:bg-gray-700">-->
+		<!--		<hr class="h-1 my-4 bg-gray-900 border-t border-4 border-black dark:bg-gray-700">-->
 		<div class="mt-2 flex-grow border-t border-4 border-black"></div>
 		<div class="border-gray-900/10 pb-3">
 			<div class="grid md:grid-cols-2 gap-3 mt-3 sm:grid-cols-1">

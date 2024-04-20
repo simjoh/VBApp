@@ -67,7 +67,7 @@ class EventAssembly
             if($site->hasReadPermission()){
                 array_push($linkArray, new Link("self", 'GET', $this->settings['path'] . 'user/' . $event->getEventUid()));
 
-                array_push($linkArray, new Link("relation.event.track", 'GET', $this->settings['path'] . 'track/event/' . $event->getEventUid()));
+                array_push($linkArray, new Link("relation.event.track", 'GET', $this->settings['path'] . 'tracker/event/' . $event->getEventUid()));
             };
         }
 
