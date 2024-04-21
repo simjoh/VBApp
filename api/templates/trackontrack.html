@@ -2,89 +2,79 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Track participant on course</title>
 
 	<!-- Fonts -->
 	<link rel="preconnect" href="https://fonts.bunny.net">
 	<link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet"/>
-	<!-- Styles -->
+	<!-- Tailwind CSS -->
 	<script src="https://cdn.tailwindcss.com"></script>
 
 	<style>
         a {
-            text-decoration: underline
+            text-decoration: underline;
+            color: inherit; /* Use inherited text color for links */
         }
 	</style>
 </head>
-<body>
+<body class="font-sans">
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>d</title>
-	<!-- Fonts -->
-	<link rel="preconnect" href="https://fonts.bunny.net">
-	<link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet"/>
-	<!-- Styles -->
-	<script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body>
-
-<div class="container mx-auto p-0 font-sans">
+<div class="container mx-auto px-4 py-8">
 	<div class="mb-5">
 		<p class="mb-3 text-3xl">{{track.title}}</p>
 	</div>
 
-	<table class="min-w-full text-left text-md font-light">
-		<thead class="border-b text-white bg-white font-medium dark:border-neutral-500 dark:bg-neutral-600">
-		<tr class="bg-gray-700 border-b-1 border-black">
-			<th class="py-3 px-2">ID</th>
-			<th class="py-3 px-2">FÖRNAMN</th>
-			<th class="py-3 px-2">EFTERNAMN</th>
-			<th class="py-3 px-2">KLUBB</th>
-			<th class="py-3 px-2">BANA</th>
-			<th class="py-3 px-2">KONTROLL</th>
-			<th class="py-3 px-2">INCHECKAD TID</th>
-			<th class="py-3 px-2">STATUS</th>
-		</tr>
-		</thead>
-		<tbody>
-		{% for name, entry in participants %}
-		{% if (entry.Status != 'DNS') and (entry.Status != 'DNF') %}
-		<tr class="border-b bg-neutral-100 dark:border-neutral-500 dark:bg-neutral-700 even:bg-white">
-			<td><a class="underline hover:underline decoration-gray-950" href="{{entry.trackurl}}">{{entry.ID}}</a></td>
-			<td>{{entry.Förnamn }}</td>
-			<td>{{entry.Efternamn }}</td>
-			<td>{{entry.Klubb }}</td>
-			<td>{{entry.Bana}}</td>
-			<td>{{entry.Kontroll }}</td>
-			<td>{{entry.Stämplat }}</td>
-			<td>{{entry.Status }}</td>
-		</tr>
-		{% endif %}
-		</tbody>
-		{% endfor %}
-		<tbody>
-		{% for name, entry in participants %}
-		{% if (entry.Status == 'DNS') or (entry.Status == 'DNF') %}
-		<tr class="border-b bg-neutral-300 dark:border-neutral-500 dark:bg-gray-700 even:bg-white">
-			<td>{{ entry.ID}}</td>
-			<td>{{ entry.Förnamn }}</td>
-			<td>{{ entry.Efternamn }}</td>
-			<td>{{ entry.Klubb }}</td>
-			<td>{{ entry.Bana }}</td>
-			<td>{{ entry.Kontroll }}</td>
-			<td>{{ entry.Stämplat }}</td>
-			<td>{{ entry.Status }}</td>
-		</tr>
-		</tbody>
-		{% endif %}
-		{% endfor %}
-	</table>
+	<div class="overflow-x-auto">
+		<table class="min-w-full text-left text-md font-light">
+			<thead class="border-b-2 bg-white dark:border-neutral-500 dark:bg-neutral-600">
+			<tr class="bg-gray-700 border-b-1 border-black text-white">
+				<th class="py-3 px-2">ID</th>
+				<th class="py-3 px-2">FÖRNAMN</th>
+				<th class="py-3 px-2">EFTERNAMN</th>
+				<th class="py-3 px-2">KLUBB</th>
+				<th class="py-3 px-2">BANA</th>
+				<th class="py-3 px-2">KONTROLL</th>
+				<th class="py-3 px-2">INCHECKAD TID</th>
+				<th class="py-3 px-2">STATUS</th>
+			</tr>
+			</thead>
+			<tbody>
+
+			{% for name, entry in participants %}
+			{% if (entry.Status != 'DNS') and (entry.Status != 'DNF') %}
+			<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} dark:border-neutral-500 dark:bg-neutral-700">
+				<td><a class="py-2 px-2 sm:px-3 underline hover:underline decoration-gray-950" href="{{entry.trackurl}}">{{entry.ID}}</a></td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Förnamn}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Efternamn}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Klubb}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Bana}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Kontroll}}</td>
+				<td class="py-2 px-2 sm:px-3">{{ entry.Stämplat  | date('Y-m-d H:i') }}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Status}}</td>
+			</tr>
+			{% endif %}
+			{% endfor %}
+			</tbody>
+			<tbody>
+			{% for name, entry in participants %}
+			{% if (entry.Status == 'DNS') or (entry.Status == 'DNF') %}
+			<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} dark:border-neutral-500 dark:bg-neutral-700">
+				<td><a class="py-2 px-2 sm:px-3 underline hover:underline decoration-gray-950" href="{{entry.trackurl}}">{{entry.ID}}</a></td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Förnamn}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Efternamn}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Klubb}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Bana}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Kontroll}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Stämplat}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Status}}</td>
+			</tr>
+			{% endif %}
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
 </div>
 
-</body>
-</html>
 </body>
 </html>

@@ -2,65 +2,64 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Route details for: {{competitor.given_name }} {{competitor.family_name }}</title>
 
 	<!-- Fonts -->
 	<link rel="preconnect" href="https://fonts.bunny.net">
 	<link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet"/>
-	<!-- Styles -->
+
+	<!-- Tailwind CSS -->
 	<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<div class="container mx-auto p-0 font-sans">
-	<div class="mb-5">
+<body class="font-sans">
+
+<div class="container mx-auto px-4 py-8">
+	<div class="mb-5 text-left">
 		<p class="mt-5 mb-1 font-extrabold text-2xl">{{track.title}}</p>
 		<p class="mb-1">Route details for: {{competitor.given_name }} {{competitor.family_name }}</p>
 	</div>
-	<table class="min-w-full text-left text-md font-light">
-		<thead class="border-b text-white bg-white font-medium dark:border-neutral-500 dark:bg-neutral-600">
-		<tr class="bg-gray-700 border-b-1 border-black">
-			<th class="py-3 px-2">Distans</th>
-			<th class="py-3 px-2">Kontroll</th>
-			<th class="py-3 px-2">Checkin tid</th>
-			<th class="py-3 px-2">Status</th>
-		</tr>
-		</thead>
-		<tbody>
-		{% for entry in trackinginfo %}
-		<tr class="border-b bg-neutral-100 dark:border-neutral-500 dark:bg-neutral-700 even:bg-white">
-			<td>{{ entry.distance }} km</td>
-			<td>{{ entry.place }}</td>
-			<td>{{ entry.passeded_date_time }}</td>
-			{% if loop.index == loop.last and entry.finished and entry.dnf == false and entry.dns == false%}
-			<td>FIN</td>
-			{% else %}
-			{% if entry.dnf == false and entry.dns == false and entry.passeded_date_time is not null%}
-			<td>CHECKED IN</td>
-			{% else %}
-			{% if entry.dns == true %}
-			<td>DNS</td>
-			{% else %}
-			<!--				<td></td>-->
+
+	<div class="overflow-x-auto">
+		<table class="min-w-full text-left text-md font-light">
+			<thead>
+			<tr class="bg-gray-700 border-b-1 border-black">
+				<th class="py-2 px-2 text-white">Distance</th>
+				<th class="py-2 px-2 text-white">Checkpoint</th>
+				<th class="py-2 px-1 text-white sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg">Check-in Time</th>
+				<th class="py-2 px-1 text-white">Status</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for entry in trackinginfo %}
+			<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} border-b dark:border-neutral-500 dark:bg-neutral-700">
+				<td class="py-2 px-1">{{ entry.distance }} km</td>
+				<td class="py-2 px-1">{{ entry.place }}</td>
+				<td class="py-2 px-1 sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg truncate"> {{  entry.passeded_date_time  | date('Y-m-d H:i') }}</td>
+				<td class="py-2 px-1">
+					{% if loop.index == loop.last and entry.finished and entry.dnf == false and entry.dns == false %}
+					FIN
+					{% elseif entry.dnf == false and entry.dns == false and entry.passeded_date_time is not null %}
+					CHECKED IN
+					{% elseif entry.dns == true %}
+					DNS
+					{% elseif entry.dnf == true and entry.dns == false and entry.passeded_date_time is not null %}
+					DNF
+					{% else %}
+					<!-- No status -->
+					{% endif %}
+				</td>
+			</tr>
+			{% if entry.finished == true and loop.index == loop.last %}
+			<tr class="bg-gray-200 border-t border-black dark:border-neutral-500 dark:bg-neutral-700 even:bg-white">
+				<td colspan="3" class="py-2 px-2 text-right"></td>
+				<td class="py-2 px-1">Time: {{ entry.time }}</td>
+			</tr>
 			{% endif %}
-			{% if entry.dnf == true and entry.dns == false and entry.passeded_date_time is not null %}
-			<td>DNF</td>
-			{% else %}
-			<td></td>
-			{% endif %}
-			{% endif %}
-			{% endif %}
-		</tr>
-		{% if entry.finished == true and loop.index == loop.last%}
-		<tr class="border-gray-800 bg-neutral-100 dark:border-neutral-500 dark:bg-neutral-700 even:bg-white">
-			<td></td>
-			<td></td>
-			<td></td>
-			<td>Time {{entry.time}}</td>
-		</tr>
-		{% endif %}
-		</tbody>
-		{% endfor %}
-	</table>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
 </div>
 
 </body>
