@@ -31,11 +31,14 @@
 			</tr>
 			</thead>
 			<tbody>
+
 			{% for entry in trackinginfo %}
 			<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} border-b dark:border-neutral-500 dark:bg-neutral-700">
 				<td class="py-2 px-1">{{ entry.distance }} km</td>
 				<td class="py-2 px-1">{{ entry.place }}</td>
-				<td class="py-2 px-1 sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg truncate"> {{  entry.passeded_date_time  | date('Y-m-d H:i') }}</td>
+				<td class="py-2 px-1 sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg truncate"> {{ entry.passeded_date_time |
+					date('Y-m-d H:i') }}
+				</td>
 				<td class="py-2 px-1">
 					{% if loop.index == loop.last and entry.finished and entry.dnf == false and entry.dns == false %}
 					FIN

@@ -20,7 +20,7 @@ class CreateParticipantInCyclingAppEventListener
     public function handle(CreateParticipantInCyclingAppEvent $event): void
     {
         Log::debug("Handling creatparticiapant");
-        $person = Person::find($event->person_uid)->get()->first();
+        $person = Person::where('person_uid',$event->person_uid)->get()->first();
         $registration = Registration::where('registration_uid',$event->registration_uid)->get()->first();
         $event_event = Event::find($registration->course_uid)->get()->first();
         $club = DB::table('clubs')->select('name')->where('club_uid', $registration->club_uid)->get()->first();

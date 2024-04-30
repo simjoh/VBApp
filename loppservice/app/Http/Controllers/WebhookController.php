@@ -283,11 +283,8 @@ class WebhookController extends Controller
     {
         $registration = Registration::find($session->client_reference_id);
         $metadata = $session->metadata;
-        Log::debug('Metadata: ' . $metadata);
+        Log::debug('Metadata: expirered session ' . $metadata);
     }
-
-
-
 
 
     private function email_customer_about_failed_payment($session, $registration)

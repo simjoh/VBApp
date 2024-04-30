@@ -11,11 +11,16 @@ class FailedPaymentEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public string $registration_uid;
+    public bool $is_final_registration_on_event;
+
     /**
      * Create a new event instance.
      */
-    public function __construct(public string $registration_uid, public bool $is_final_registration_on_event)
+    public function __construct(string $registration_uid, bool $is_final_registration_on_event)
     {
+        $this->is_final_registration_on_event = $is_final_registration_on_event;
+        $this->registration_uid = $registration_uid;
         //
     }
 

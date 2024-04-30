@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\CanceledPaymentEvent;
 use App\Models\Event;
+use App\Models\Person;
 use App\Models\Registration;
 use Illuminate\Support\Facades\Log;
 
@@ -26,8 +27,9 @@ class CanceledPaymentEventListener
         if ($event->isnonparticipantorder) {
             Log::debug("handle cancelation of nonparticipant payment" . $event->registration_uid);
         } else {
-            $registration = Registration::find($event->registration_uid);
-            $current_event = Event::where('course_uid',$registration->course_uid);
+
+            $registration = Registration::where('registration_uid', $event->registration_uid)->get()->first();
+            $current_event = Event::where('event_uid', $registration->course_uid)->get()->first();
 
             if ($registration) {
                 Log::debug("handle cancelation of payment" . $registration->registration_uid);
@@ -37,11 +39,15 @@ class CanceledPaymentEventListener
                     $registration->reservation_valid_until = $current_event->eventconfiguration->reservationconfig->use_reservation_until;
                     $registration->reservation = true;
                     $registration->save();
-
                 } else {
-                    $registration->delete();
+                    $person = Person::where('person_uid', $registration->person_uid)->get()->first();
+                    if (count($person->registration) === 1) {
+                        $registration->delete();
+                        $person->delete();
+                    } else {
+                        $registration->delete();
+                    }
                     Log::debug("handle cancelation of event registration payment" . $registration->registration_uid);
-                    // delete reservation
                 }
             } else {
                 Log::debug("cannot find any registration with uid " . $event->registration_uid);

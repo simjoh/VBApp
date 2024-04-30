@@ -390,4 +390,31 @@ class ResultRepository  extends BaseRepository
     }
 
 
+//SELECT
+//created_at,
+//previous_timestamp,
+//    CASE
+//    WHEN TIMESTAMPDIFF(MINUTE, previous_timestamp, created_at) DIV 60 < 10
+//        THEN CONCAT(
+//            CAST(TIMESTAMPDIFF(MINUTE, previous_timestamp, created_at) DIV 60 AS CHAR),
+//            ':',
+//            LPAD(TIMESTAMPDIFF(MINUTE, previous_timestamp, created_at) MOD 60, 2, '0')
+//        )
+//        ELSE CONCAT(
+//            TIMESTAMPDIFF(MINUTE, previous_timestamp, created_at) DIV 60,
+//            ':',
+//            LPAD(TIMESTAMPDIFF(MINUTE, previous_timestamp, created_at) MOD 60, 2, '0')
+//        )
+//    END AS formatted_time_difference
+//FROM (
+//    SELECT
+//        created_at,
+//        LAG(created_at) OVER (ORDER BY created_at) AS previous_timestamp
+//    FROM
+//        registrations
+//    WHERE
+//        course_uid = 'd32650ff-15f8-4df1-9845-d3dc252a7a84'
+//) AS t;
+
+
 }
