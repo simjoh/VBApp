@@ -8,8 +8,8 @@ class Competitor implements JsonSerializable
 {
 
     private ?string $competitor_uid;
-    private string $givenname = "";
-    private string $familyname = "";
+    private string $given_name = "";
+    private string $family_name = "";
     private string $user_name;
     private string $token;
     private ?int $startnumber;
@@ -55,7 +55,7 @@ class Competitor implements JsonSerializable
      */
     public function getGivenname(): string
     {
-        return $this->givenname;
+        return $this->given_name;
     }
 
     /**
@@ -63,7 +63,7 @@ class Competitor implements JsonSerializable
      */
     public function getFamilyname(): string
     {
-        return $this->familyname;
+        return $this->family_name;
     }
 
     /**

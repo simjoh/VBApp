@@ -31,7 +31,6 @@
 		</div>
 		@endif
 
-
 		<form method="post" class="grid sm:grid-cols-1 gap-4">
 			@csrf
 			<div class="grid md:grid-cols-2 gap-3 mt-4 sm:grid-cols-1">
@@ -40,13 +39,39 @@
 					Run migrate
 				</button>
 
-				<a class="text-white bg-orange-500 hover:bg-blue-800 focus:ring-4 focus:ring-orange-300 font-medium  text-sm px-5 py-2.5 dark:bg-orange-600 dark:hover:bg-orange-600 focus:outline-none dark:focus:ring-orange-800" href="{{ url($callping)}}" class="btn btn-sm btn-primary me-2">
+				<a class="text-white bg-orange-500 hover:bg-blue-800 focus:ring-4 focus:ring-orange-300 font-medium  text-sm px-5 py-2.5 dark:bg-orange-600 dark:hover:bg-orange-600 focus:outline-none dark:focus:ring-orange-800"
+				   href="{{ url($callping)}}" class="btn btn-sm btn-primary me-2">
 					Test av integration med cykelapp
 				</a>
 
 			</div>
 	</div>
 	</form>
+
+	@if (count($events) > 0)
+	<form method="post" action="{{ url($transferurl)}}" class="grid sm:grid-cols-1 gap-4">
+		@csrf
+		<div class="mt-3">
+			<label for="event" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Event</label>
+			<select id="event" name="event" autocomplete="event-name"
+					class="sm:w-full px-3 py-2 md:w-1/2 lg:w-1/2 py-2 border-2 focus:outline-none focus:border-gray-600"
+					required>
+				<option>Select event</option>
+				@foreach ($events as $event)
+				<option value="{{$event->event_uid}}">
+					{{$event->title}}
+				</option>
+				@endforeach
+			</select>
+		</div>
+		<button type="submit" value="sss" name="save"
+				class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
+			Överför till cykelapp
+		</button>
+	</form>
+	@endif
+
+
 </div>
 </div>
 </body>

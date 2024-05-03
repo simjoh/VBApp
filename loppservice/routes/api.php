@@ -31,6 +31,8 @@ Route::prefix('/api')->group(function () {
 
     Route::get('/ping' , [ToolController::class, 'testappintegration']);
 
+    Route::post('/transfer' , [ToolController::class, 'publishToCyclingappIfNotAlreadyRegister']);
+
     Route::get('/pingapikey', ['middleware' => ['apikey',], function () {
         return 'Testar kontroll av apinyckel';
     }]);
@@ -73,7 +75,7 @@ Route::prefix('/api')->group(function () {
 
         Route::get('/command/cache/run', function () {
             Artisan::call('view:cache');
-//            Artisan::call('route:cache');
+            Artisan::call('route:cache');
            Artisan::call('event:cache');
         });
 

@@ -42,6 +42,7 @@ Route::get('/events' ,[EventController::class, 'index']);
 
 Route::get('/tool' ,[ToolController::class, 'index']);
 Route::post('/tool', [ToolController::class, 'run']);
+Route::post('/tool/event/{eventUid}', [ToolController::class, 'publishToCyclingappIfNotAlreadyRegister']);
 
 
 
