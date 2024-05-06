@@ -24,21 +24,47 @@
 		<table class="min-w-full text-left text-md font-light">
 			<thead>
 			<tr class="bg-gray-700 border-b-1 border-black">
-				<th class="py-2 px-2 text-white">Distance</th>
-				<th class="py-2 px-2 text-white">Checkpoint</th>
-				<th class="py-2 px-1 text-white sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg">Check-in Time</th>
+				<th class="py-2 px-2 text-white">Control</th>
+				<th class="py-2 px-2 text-white">Km</th>
+				<th class="py-2 px-2 text-white">Km Total</th>
+				<th class="py-2 px-1 text-white sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg">Check-in</th>
+				<th class="py-2 px-1 text-white">Avg. km/h</th>
+				<th class="py-2 px-1 text-white">Time</th>
+				<th class="py-2 px-1 text-white">Time Total</th>
 				<th class="py-2 px-1 text-white">Status</th>
 			</tr>
 			</thead>
 			<tbody>
 
 			{% for entry in trackinginfo %}
+
+			{% if loop.first %}
+				{% set first_time = entry.passeded_date_time %}
+				{% set prev_time = entry.passeded_date_time %}
+				{% set prev_dist = entry.distance %}
+			{% endif %}
+
+			{% set delta_dist = entry.distance - prev_dist %}
+			{% set delta_time = date(prev_time).diff(entry.passeded_date_time) %}
+			{% if delta_dist > 0 %}
+				{% set speed = delta_dist / (delta_time.a * 24 + delta_time.h + delta_dist.i/60) %}
+			{% endif %}
+
+			{% set prev_dist = entry.distance %}
+			{% set prev_time = entry.passeded_date_time %}
+
+			{% set total_time = first_time.diff(entry.passeded_date_time) %}
+
 			<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} border-b dark:border-neutral-500 dark:bg-neutral-700">
-				<td class="py-2 px-1">{{ entry.distance }} km</td>
 				<td class="py-2 px-1">{{ entry.place }}</td>
-				<td class="py-2 px-1 sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg truncate"> {{ entry.passeded_date_time |
-					date('Y-m-d H:i') }}
+				<td class="py-2 px-1">{{ delta_dist }}</td>
+				<td class="py-2 px-1">{{ entry.distance }}</td>
+				<td class="py-2 px-1 sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg truncate"> 
+					{{ entry.passeded_date_time|date('Y-m-d H:i') }}
 				</td>
+				<td class="py-2 px-1">{{ speed }}</td>
+				<td class="py-2 px-1">{{ delta_time|date('a:H:i') }}</td>
+				<td class="py-2 px-1">{{ total_time|date('a:H:i') }}</td>
 				<td class="py-2 px-1">
 					{% if loop.index == loop.last and entry.finished and entry.dnf == false and entry.dns == false %}
 					FIN
