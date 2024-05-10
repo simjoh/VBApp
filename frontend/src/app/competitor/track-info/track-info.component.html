@@ -2,7 +2,7 @@
   <H5>{{track.title}}</H5>
   {{track.distance | distanceKm}}
 
-  <a target="_blank" href="{{track.linktotrack}}">Route on Strava</a>
+  <a class="linkunde" target="_blank" href="{{track.linktotrack}}">View course route</a>
   <br>
   <p-tag *ngIf="!track.active" severity="warning" styleClass="mr-2 w5" [title]="'Race is no longer active'" value="Brevet not active. You are welcome to particpate in one of our upcomming events"></p-tag>
   <br>

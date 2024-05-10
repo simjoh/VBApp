@@ -6,6 +6,7 @@ import {EventsService} from "../core/events/events.service";
 import {EventType} from "../core/events/aevents";
 import {map, tap} from "rxjs/operators";
 import {Observable} from "rxjs";
+import {environment} from "../../environments/environment";
 
 @Component({
   selector: 'brevet-login',
@@ -18,6 +19,8 @@ export class LoginComponent implements  OnInit{
 
   @ViewChild("form") form: NgForm
   loginModel$ = this.loginComponetService.loginModel$
+
+  prod = environment.production
 
   constructor(private authServiceService: AuthService, private loginComponetService: LoginComponentService, private eventService: EventsService) {
   }

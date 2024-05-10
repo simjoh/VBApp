@@ -14,8 +14,13 @@
 .form-control, .btn {
   min-height: 38px;
   border-radius: 2px;
+  width: 100%;
 }
 .btn {
   font-size: 15px;
   font-weight: bold;
+}
+
+.linkunde {
+  text-decoration: none;
 }

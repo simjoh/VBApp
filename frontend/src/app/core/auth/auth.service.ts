@@ -50,7 +50,7 @@ await loginModel$.pipe(
               return response;
             }),
             catchError((error: HttpErrorResponse) => {
-              this.eventService.nyHändelse(EventType.Error, new AEvent(EventType.Error, "Unable to login"));
+              this.eventService.nyHändelse(EventType.Error, new AEvent(EventType.Error, "Cannot sign in"));
               return of(null);
             })
             ).toPromise().then((data) => {

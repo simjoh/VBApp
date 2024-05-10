@@ -85,21 +85,19 @@ export class MenuComponent implements OnInit{
         })
       }
 
-      if (!this.items.some(item => item.label === 'Logout')) {
-        if (!this.deviceService.isDesktop()){
-          if (this.deviceService.isMobile()  ||  this.deviceService.isTablet()){
-            this.items.push({
-              label: 'Logout',
-              icon: 'pi pi-fw pi-sign-out',
-              styleClass: "lg:hidden",
-              command:()=> this.logout(),
-            })
-          }
-        }
-
-      }
-
-
+      // if (!this.items.some(item => item.label === 'Logout')) {
+      //   if (!this.deviceService.isDesktop()){
+      //     if (this.deviceService.isMobile()  ||  this.deviceService.isTablet()){
+      //       this.items.push({
+      //         label: 'Logout',
+      //         icon: 'pi pi-fw pi-sign-out',
+      //         styleClass: "lg:hidden",
+      //         command:()=> this.logout(),
+      //       })
+      //     }
+      //   }
+      //
+      // }
 
       this.$menuSubject.next(this.items);
 

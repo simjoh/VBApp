@@ -15,10 +15,18 @@
 
      div.p-card .p-card-content {
          padding: 5rem 0;
+         //background: #f3ec4d !important;
+
+     }
+
+     .p-card .p-card-body {
+         padding: 1rem;
+         //background: #f3ec4d !important;
      }
 
      .p-card-footer {
           padding: 0 0 0 0 !important;
+           //background: #f3ec4d;
       }
 
    .p-button.p-button-secondary {
@@ -46,6 +54,11 @@
 
 .p-card .p-card-body {
     padding: 0rem;
+      //background: #f3ec4d !important;
+}
+
+.p-card .p-card-header {
+      //background: #f3ec4d !important;
 }
 
 

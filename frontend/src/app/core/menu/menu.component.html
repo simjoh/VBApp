@@ -1,14 +1,14 @@
 <ng-container *ngIf="($activeUser | async) as user">
-    <p-menubar class="hide" (window:resize)="onResize($event)" [styleClass]="" [autoDisplay]="false" [model]="$menuitems | async">
+    <p-menubar class="hide"  [styleClass]="" [autoDisplay]="false" [model]="$menuitems | async">
       <ng-template  pTemplate="start">
-        <img  src="./assets/cykelintresset_small_logo.svg" height="22"  width="100"  class="mr-2" alt="Cykelintresset i västerbotten">
+        <img  src="./assets/ebrevet-sidhuvud.svg" height="50"  width="100"  class="mr-2" alt="Ebrevet logotyp">
       </ng-template>
       <ng-template pTemplate="end">
         <div class="">
-          <strong>Welcome:</strong>  {{$logedinas | async}}
+<!--          <strong>Welcome:</strong>  {{$logedinas | async}}-->
         </div>
         <div>
-            <a class="ml-2 float-right" href="" (click)="logout()">Log Out</a>
+            <a class="ml-2 float-right text-base text-bold linkunde" href="" (click)="logout()">LOG OUT</a>
         </div>
       </ng-template>
     </p-menubar>
