@@ -284,6 +284,7 @@ class WebhookController extends Controller
         $registration = Registration::find($session->client_reference_id);
         $metadata = $session->metadata;
         Log::debug('Metadata: expirered session ' . $metadata);
+        event(new FailedPaymentEvent($registration->registration_uid, boolval($metadata->is_final_registration_on_event)));
     }
 
 

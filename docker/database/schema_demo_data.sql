@@ -84,9 +84,7 @@ INSERT INTO competitors(competitor_uid, user_name, given_name, family_name, role
 INSERT INTO competitors(competitor_uid, user_name ,given_name, family_name,role_id,password,birthdate) VALUES ('68f06a8c-8f08-45cc-8d20-d5e37ce658ba','200','Johan','Randonnéer',4,sha1('test1'),  DATE('1980-08-15'));
 INSERT INTO competitors(competitor_uid, user_name ,given_name, family_name,role_id,password, birthdate) VALUES ('593edcab-5dcb-4916-829d-08ac536770ad','300','Kalle','Super Randonneur',4, sha1('test2'),DATE('1990-03-04'));
 
-INSERT INTO `competitor_info`(`uid`, `competitor_uid`, `email`, `phone`, `adress`, `postal_code`, `place`, `country`) VALUES ('31a852b0-23ec-4689-b4cf-0c970f9b90fd','2922a6e9-9e32-4832-9575-b3d2eb3011b9','democyklist@test.se','0703158465','cyklistgatan 15', '90100' ,'cykelby', 'sweden');
-
-
+INSERT INTO `competitor_info`(`uid`, `competitor_uid`, `email`, `phone`, `adress`, `postal_code`, `place`, `country`, country_id) VALUES ('31a852b0-23ec-4689-b4cf-0c970f9b90fd','2922a6e9-9e32-4832-9575-b3d2eb3011b9','democyklist@test.se','0703158465','cyklistgatan 15', '90100' ,'cykelby', 'Sweden',145);
 
 -- Utkast bygga banor
 -- Sites text Brännäset

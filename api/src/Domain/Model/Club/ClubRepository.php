@@ -27,7 +27,7 @@ class ClubRepository extends \App\common\Repository\BaseRepository
         try {
         $statement = $this->connection->prepare($this->sqls('allClubs'));
         $statement->execute();
-        $clubs = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Club\Club::class, null);
+        $clubs = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Club::class, null);
         if (empty($clubs)) {
             return null;
         }

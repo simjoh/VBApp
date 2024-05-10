@@ -33,14 +33,38 @@ $settings['error'] = [
 ];
 
 
-// Database settings
+//// Database settings
+//$settings['db'] = [
+//    'driver' => 'mysql',
+//    'host' => 'db-2',
+//    'port' => '3306',
+//    'username' => 'myuser',
+//    'database' => 'vasterbottenbrevet_se',
+//    'password' => 'secret',
+//    'charset' => 'utf8mb4',
+//    'collation' => 'utf8mb4_unicode_ci',
+//    'flags' => [
+//        // Turn off persistent connections
+//        PDO::ATTR_PERSISTENT => false,
+//        // Enable exceptions
+//        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+//
+//        PDO::ATTR_AUTOCOMMIT => true,
+//        // Emulate prepared statements
+//        PDO::ATTR_EMULATE_PREPARES => true,
+//        // Set default fetch mode to array
+//        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+//    ],
+//];
+
+
 $settings['db'] = [
     'driver' => 'mysql',
-    'host' => 'db-2',
+    'host' => 's513.loopia.se',
     'port' => '3306',
-    'username' => 'myuser',
-    'database' => 'vasterbottenbrevet_se',
-    'password' => 'secret',
+    'username' => 'bengt@v308744',
+    'database' => 'vasterbottenbrevet_se_db_1',
+    'password' => 'cykelintresset',
     'charset' => 'utf8mb4',
     'collation' => 'utf8mb4_unicode_ci',
     'flags' => [
@@ -48,13 +72,12 @@ $settings['db'] = [
         PDO::ATTR_PERSISTENT => false,
         // Enable exceptions
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-
-        PDO::ATTR_AUTOCOMMIT => true,
         // Emulate prepared statements
         PDO::ATTR_EMULATE_PREPARES => true,
         // Set default fetch mode to array
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ],
+
 ];
 
 

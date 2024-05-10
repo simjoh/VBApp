@@ -87,6 +87,7 @@ CREATE TABLE competitor_info (
   postal_code varchar (50),
   place varchar (100),
   country varchar(100),
+  country_id int(3)  DEFAULT NULL,
   PRIMARY KEY (uid),
   FOREIGN KEY (competitor_uid) REFERENCES competitors(competitor_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

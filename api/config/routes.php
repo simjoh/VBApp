@@ -21,6 +21,8 @@ return function (App $app) {
     //lägg till ingång för att kunna generera resultat på vb.se
     // Hämtar vyn för en resultat på ett event för ett event och år.
     $app->get('/results/year/{year}/event/{eventUid}', \App\Controller\ResultsController::class . ':getResultView')->setName('result');
+    //
+    $app->get('/results/event/{eventUid}', \App\Controller\ResultsController::class . ':getResultForEvent')->setName('resultonevent');
     // Hämtar själva resultatlistan för ett event.
     $app->get('/resultList/year/{year}/event/{eventUid}', \App\Controller\ResultsController::class . ':getResultList');
     // resultat för en deltagare en person.

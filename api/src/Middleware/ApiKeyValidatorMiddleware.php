@@ -46,7 +46,7 @@ class ApiKeyValidatorMiddleware
     }
 
     private function pathsToIgnore(): array{
-        return array("/api/results/year/", "/api/resultList/year", "/api/resultList/test", "/api/track/event/", "/api/tracker/event", "/results/randonneur/", "/track/track","/tracker/track", "/api/track/");
+        return array("/api/results/year/", "/api/resultList/year", "/api/resultList/test", "/api/track/event/", "/api/tracker/event", "/results/randonneur/", "/track/track","/tracker/track", "/api/track/", '/api/results');
     }
 
 }

@@ -44,6 +44,18 @@ class ResultsController
         ]);
     }
 
+    public function getResultForEvent(ServerRequestInterface $request, ResponseInterface $response, $args)
+    {
+        $view = Twig::fromRequest($request);
+
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $eventUid = $route->getArgument('eventUid');
+        $event = $this->eventservice->eventFor($eventUid, "");
+        $result = $this->resultService->resultsOnEventNew($eventUid);
+        return $view->render($response, 'resultonevent.html', ['event' => json_encode($event), 'results' => $result]);
+    }
+
     public function getTrackView(ServerRequestInterface $request, ResponseInterface $response, $args)
     {
         $view = Twig::fromRequest($request);
@@ -92,7 +104,6 @@ class ResultsController
         $result = $this->resultService->trackRandonneurOnTrack($participant->getParticipantUid(), $tracks->getTrackUid());
 
         $competitor = $this->competitorservice->getCompetitorByUid($participant->getCompetitorUid(), '');
-
         return $view->render($response, 'trackparticipantontrack.html', ['trackinginfo' => $result, 'track' => $tracks, 'competitor' => $competitor,
             'link' => $this->settings['path'] . "tracker/" . "track/" . $args['trackUid'] . '/participant/' . $participant->getParticipantUid() . '/checkpoints'
         ]);

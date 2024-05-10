@@ -48,6 +48,23 @@ class ResultService
         return $result;
     }
 
+    public function resultsOnEventNew(?string $event_uid): ?array {
+
+        $track = $this->trackrepository->tracksbyEvent($event_uid);
+        $showtrackinfo = false;
+
+        if(count($track) > 1){
+            $showtrackinfo = true;
+        }
+
+        $result =   $this->resultrepo->getResultsForEventNew($event_uid, $showtrackinfo);
+
+        if(empty($result)){
+            return array();
+        }
+        return $result;
+    }
+
     public function trackContestants(?string $event_uid, array $tracks): ?array {
         if(empty($tracks)){
             return array();

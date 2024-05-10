@@ -29,8 +29,7 @@ class ClubAssembly
     }
 
 
-    public function toRepresentation(Club $club,  array $permissions): ?ClubRepresentation {
-
+    public function toRepresentation( $club,  array $permissions): ?ClubRepresentation {
         $clubrepr = new ClubRepresentation();
 
         $clubrepr->setClubUid($club->getClubUid());
