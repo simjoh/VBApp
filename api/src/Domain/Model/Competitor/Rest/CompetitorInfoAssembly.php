@@ -16,6 +16,7 @@ class CompetitorInfoAssembly
         $competitorInforeprepresentation->setCountry($competitorInfo->getCountry());
         $competitorInforeprepresentation->setEmail($competitorInfo->getEmail());
         $competitorInforeprepresentation->setPhone($competitorInfo->getPhone());
+        $competitorInforeprepresentation->setCountryId($competitorInfo->getCountryId());
 
         $linkArray = array();
         $competitorInforeprepresentation->setLinks($linkArray);

@@ -11,19 +11,6 @@ class Club
     private ?string $acp_kod = null;
     private string $title;
 
-
-    public function __construct()
-    {
-    }
-
-//
-//    public function __construct(string $club_uid, string $acp_kod, $title)
-//    {
-//        $this->club_uid = $club_uid;
-//        $this->acp_kod = $acp_kod;
-//        $this->title = $title;
-//    }
-
     /**
      * @return string
      */

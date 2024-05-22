@@ -69,6 +69,10 @@ class EventAssembly
 
                 array_push($linkArray, new Link("relation.event.track", 'GET', $this->settings['path'] . 'tracker/event/' . $event->getEventUid()));
             };
+
+            array_push($linkArray, new Link("relation.event.result", 'GET', $this->settings['path'] . 'results/event/' . $event->getEventUid()));
+
+
         }
 
         $eventrepresentation->setLinks($linkArray);

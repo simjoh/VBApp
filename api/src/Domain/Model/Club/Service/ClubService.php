@@ -2,6 +2,7 @@
 
 namespace App\Domain\Model\Club\Service;
 
+use App\common\Rest\Link;
 use App\Domain\Model\Club\ClubRepository;
 use App\Domain\Model\Club\Rest\ClubAssembly;
 use App\Domain\Model\Club\Rest\ClubRepresentation;
@@ -28,9 +29,11 @@ class ClubService
     {
         $permissions = $this->getPermissions($currentuser_id);
         $club = $this->clubrepository->getClubByUId($club_uid);
-        return $this->clubAssembly->toRepresentation($club, $permissions);
+        if ($club != null) {
+            return $this->clubAssembly->toRepresentation($club, []);
+        }
+        return new ClubRepresentation();
     }
-
 
     public function getAllClubs(string $currentuser_id): ?array
     {

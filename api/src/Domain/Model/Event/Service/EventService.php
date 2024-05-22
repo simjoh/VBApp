@@ -51,7 +51,9 @@ class EventService extends ServiceAbstract
 
     public function eventFor(string $event_uid, string $currentUserUid)
     {
+
         $event = $this->eventRepository->eventFor($event_uid);
+
         if (!isset($event)) {
             return null;
         }

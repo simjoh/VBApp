@@ -51,9 +51,36 @@ class ResultsController
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $eventUid = $route->getArgument('eventUid');
+
         $event = $this->eventservice->eventFor($eventUid, "");
+
         $result = $this->resultService->resultsOnEventNew($eventUid);
-        return $view->render($response, 'resultonevent.html', ['event' => json_encode($event), 'results' => $result]);
+        return $view->render($response, 'resultonevent.html', ['event' => $event, 'results' => $result]);
+    }
+
+    public function getResultOnTrack(ServerRequestInterface $request, ResponseInterface $response, $args)
+    {
+        $view = Twig::fromRequest($request);
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $trackUid = $route->getArgument('trackUid');
+        $track = $this->trackService->getTrackByTrackUid($trackUid,'');
+        $event = $this->eventservice->eventFor($track->getEventUid(),'');
+        $result = $this->resultService->resultsOnTrack($trackUid);
+        return $view->render($response, 'resultontrack.html', ['track' => $track, 'event' => $event ,'results' => $result]);
+    }
+
+
+    public function getCompetitorsAllResults(ServerRequestInterface $request, ResponseInterface $response, $args)
+    {
+        $view = Twig::fromRequest($request);
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $competitor_uid = $route->getArgument('competitorUid');
+        $competitor = $this->competitorservice->getCompetitorByUid($competitor_uid,'');
+        $result = '';
+      //  $result = $this->resultService->resultsOnTrack($trackUid);
+        return $view->render($response, 'resultontrack.html', [ 'results' => $result]);
     }
 
     public function getTrackView(ServerRequestInterface $request, ResponseInterface $response, $args)

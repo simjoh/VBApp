@@ -113,19 +113,23 @@ class RandonneurService
         $today = date('Y-m-d');
         $startdate = date('Y-m-d', strtotime($track->getStartDateTime()));
         // Man ska bara kunna göra incheckning om det är samma da eller senare
-        if ($this->settings['demo'] == 'false') {
-            if ($today < $startdate) {
-                throw new BrevetException("You cannot check in before startdate :  " . $startdate, 6, null);
-            }
-        }
-
-
+//        if ($this->settings['demo'] == 'false') {
+//            if ($today < $startdate) {
+//                throw new BrevetException("You cannot check in before startdate :  " . $startdate, 6, null);
+//            }
+//        }
 
         $checkpoint = $this->checkpointService->checkpointFor($checkpoint_uid);
         //kolla om mindre än 100 meter från kontroll
         $distance = $this->calculateDistancebetweenCordinates($lat, $long, $checkpoint->getSite()->getLat(), $checkpoint->getSite()->getLng(), 'K');
         if ($distance > 0.300) {
             throw new BrevetException("You are not within range of the checkpoint", 7, null);
+        }
+
+        if ($this->settings['demo'] == 'false') {
+            if ($today < $startdate) {
+                throw new BrevetException("You cannot check in before startdate :  " . $startdate, 6, null);
+            }
         }
 
         if (!isset($checkpoint)) {
@@ -150,7 +154,7 @@ class RandonneurService
             if ($isStart == false) {
                 // kolla att kontrollern har öppnat
                 if (date('Y-m-d H:i:s') < $checkpoint->getOpens()) {
-                    throw new BrevetException("Checkpoint not open. Opening date time:  " . date("Y-m-d H:i:s", strtotime($checkpoint->getOpens())), 6, null);
+               //     throw new BrevetException("Checkpoint not open. Opening date time:  " . date("Y-m-d H:i:s", strtotime($checkpoint->getOpens())), 6, null);
                 }
             }
             // kolla att kontrollen har stängt
@@ -176,7 +180,7 @@ class RandonneurService
             } else if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
                 if ($this->settings['demo'] == 'false') {
                     if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
-                        throw new BrevetException("Checkpoint is closed. Closing date time: " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())), 6, null);
+                     //   throw new BrevetException("Checkpoint is closed. Closing date time: " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())), 6, null);
                     }
                 } else {
                     $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, $lat, $long);
@@ -199,7 +203,7 @@ class RandonneurService
             $countCheckpoints = $this->checkpointService->countCheckpointsForTrack($participant->getTrackUid());
             $oktofinish = $this->participantRepository->participantHasStampOnAllExceptFinish($track_uid, $checkpoint->getCheckpointUid(), $participant->getParticipantUid(), $countCheckpoints);
 
-//            if($oktofinish == false){
+//            if($oktofinish == false) {
 //                throw new BrevetException("Cannot checkin on finish checkpoint due to missed checkins on one or more checkpoints. Contact race administrator", 6, null);
 //            }
 

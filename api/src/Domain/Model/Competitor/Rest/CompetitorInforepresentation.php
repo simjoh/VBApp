@@ -3,10 +3,9 @@
 namespace App\Domain\Model\Competitor\Rest;
 
 
-use App\Domain\Model\Club\Rest\ClubRepresentation;
 use JsonSerializable;
 
-class CompetitorInforepresentation  implements JsonSerializable
+class CompetitorInforepresentation implements JsonSerializable
 {
 
     private $email;
@@ -14,6 +13,13 @@ class CompetitorInforepresentation  implements JsonSerializable
     private $adress;
     private $place;
     private $country;
+    private $country_id;
+
+
+    /**
+     * @return mixed
+     */
+
     private array $links = [];
 
 
@@ -111,6 +117,19 @@ class CompetitorInforepresentation  implements JsonSerializable
     public function setLinks(array $links): void
     {
         $this->links = $links;
+    }
+
+    public function getCountryId()
+    {
+        return $this->country_id;
+    }
+
+    /**
+     * @param mixed $country_id
+     */
+    public function setCountryId($country_id): void
+    {
+        $this->country_id = $country_id;
     }
 
 

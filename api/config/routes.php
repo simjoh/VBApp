@@ -23,6 +23,7 @@ return function (App $app) {
     $app->get('/results/year/{year}/event/{eventUid}', \App\Controller\ResultsController::class . ':getResultView')->setName('result');
     //
     $app->get('/results/event/{eventUid}', \App\Controller\ResultsController::class . ':getResultForEvent')->setName('resultonevent');
+    $app->get('/results/track/{trackUid}', \App\Controller\ResultsController::class . ':getResultOnTrack')->setName('resultontrack');
     // Hämtar själva resultatlistan för ett event.
     $app->get('/resultList/year/{year}/event/{eventUid}', \App\Controller\ResultsController::class . ':getResultList');
     // resultat för en deltagare en person.

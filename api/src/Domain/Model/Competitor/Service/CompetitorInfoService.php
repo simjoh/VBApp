@@ -11,7 +11,7 @@ use Psr\Container\ContainerInterface;
 class CompetitorInfoService
 {
 
-    public function __construct(ContainerInterface $c,
+    public function __construct(ContainerInterface       $c,
                                 CompetitorInfoRepository $competitorInfoRepository, PermissionRepository $permissionRepository, CompetitorInfoAssembly $competitorInfoAssembly)
     {
 
@@ -24,15 +24,20 @@ class CompetitorInfoService
 
     public function getCompetitorInfoByCompetitorUid(string $competitor_uid, string $currentuser_id): ?CompetitorInforepresentation
     {
+
         $permissions = $this->getPermissions($currentuser_id);
         $competitorInfo = $this->competitorInfoRepository->getCompetitorInfoByCompetitorUid($competitor_uid);
-        return $this->competitorInfoAssembly->toRepresentation($competitorInfo,$permissions);
+        if ($competitorInfo) {
+            return $this->competitorInfoAssembly->toRepresentation($competitorInfo, $permissions);
+        } else {
+            return new CompetitorInforepresentation();
+        }
     }
 
 
     public function getPermissions($user_uid): array
     {
-        return $this->permissionrepoitory->getPermissionsTodata("CLUB",$user_uid);
+        return $this->permissionrepoitory->getPermissionsTodata("CLUB", $user_uid);
     }
 
 }

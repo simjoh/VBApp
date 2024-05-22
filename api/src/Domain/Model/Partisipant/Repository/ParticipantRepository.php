@@ -889,6 +889,8 @@ class ParticipantRepository extends BaseRepository
         $eventqls['deleteParticipantsOnTrack'] = 'delete  from participant e where e.track_uid=:track_uid;';
         $eventqls['deleteParticipantCheckpointOnTrack'] = 'delete from participant_checkpoint e where e.participant_uid=:participant_uid;';
         $eventqls['stampCheckoutOnCheckpoint'] = "UPDATE participant_checkpoint SET  checkedout=:checkedout, checkout_date_time=:checkout_date_time, volonteer_checkout=:volonteer_checkout, lat=:lat, lng=:lng  WHERE participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid;";
+
+
         return $eventqls[$type];
         // TODO: Implement sqls() method.
     }

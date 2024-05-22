@@ -12,7 +12,7 @@ class CompetitorInfo
     private string $postal_code;
     private string $place;
     private string $country;
-
+    private int $country_id;
 
 
     /**
@@ -141,6 +141,16 @@ class CompetitorInfo
     public function setCountry(string $country): void
     {
         $this->country = $country;
+    }
+
+    public function getCountryId(): int
+    {
+        return $this->country_id;
+    }
+
+    public function setCountryId(int $country_id): void
+    {
+        $this->country_id = $country_id;
     }
 
 

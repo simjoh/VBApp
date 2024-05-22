@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Resultat för {{track.title}}</title>
+	<!-- Fonts -->
+	<link rel="preconnect" href="https://fonts.bunny.net">
+	<link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet"/>
+	<!-- Tailwind CSS -->
+	<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="font-sans">
+<div class="container mx-auto px-4 py-8">
+	<div class="mb-5">
+		<p class="mb-3 text-3xl">Arrangemang: {{event.title}}</p>
+		<p class="mb-3 text-3xl">Resultat för {{track.title}}</p>
+	</div>
+	<div class="overflow-x-auto">
+		<table class="min-w-full text-left text-md font-light table-auto">
+			<thead class="border-b-2 bg-white dark:border-neutral-500 dark:bg-neutral-600">
+			<tr class="bg-gray-700 border-b-1 border-black text-white">
+				<th class="py-3 px-2 ">#</th>
+				<th class="py-3 px-2">EFTERNAMN</th>
+				<th class="py-3 px-2">FÖRNAMN</th>
+
+				<th class="py-3 px-2">KLUBB</th>
+				<th class="py-3 px-2">LAND</th>
+				<th class="py-3 px-2 text-right">TID</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for entry in results %}
+			<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} dark:border-neutral-500 dark:bg-neutral-700">
+				<td class="py-2 px-2 sm:px-3"><a class="underline hover:underline decoration-gray-950" href="{{entry.brevetcard}}">{{entry.startnumber}}</a>
+				</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.efternamn}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.fornamn}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.klubb}}</td>
+				{% if entry.flagga%}
+				<td class="py-2 px-2 sm:px-3"><img height="30" width="30" src="{{entry.flagga}}" alt="{{entry.flagga}}"/>
+				</td>
+				{% else %}
+				<td class="py-2 px-2 sm:px-3">
+				</td>
+				{% endif %}
+				{% if entry.dnf == true %}
+
+				<td class="py-2 px-2 sm:px-3 text-right">DNF</td>
+				{% elseif entry.dns == true%}
+				<td class="py-2 px-2 sm:px-3 text-right">DNS</td>
+				{% else %}
+				<td class="py-2 px-2 sm:px-3 text-right">{{entry.tid}}</td>
+				{% endif %}
+			</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+</body>
+</html>

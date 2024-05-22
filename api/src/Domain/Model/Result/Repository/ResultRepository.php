@@ -98,12 +98,11 @@ class ResultRepository extends BaseRepository
         $dnfstatement->execute();
         $dnfresultset = $dnfstatement->fetchAll(PDO::FETCH_ASSOC);
 
-       // $dnfresults = $this->getResultArrayDynamic($dnfresultset, $showtrackinfo);
-     //   $dnsresults = $this->getResultArrayDynamic($dnsresultset, $showtrackinfo);
-       // $resultarray = $this->getResultArrayDynamic($resultset, $showtrackinfo);
+        // $dnfresults = $this->getResultArrayDynamic($dnfresultset, $showtrackinfo);
+        //   $dnsresults = $this->getResultArrayDynamic($dnsresultset, $showtrackinfo);
+        // $resultarray = $this->getResultArrayDynamic($resultset, $showtrackinfo);
         $resultarray = array_merge($resultset, $dnfresultset);
         return array_merge($resultarray, $dnsresultset);
-
 
     }
 
@@ -148,6 +147,30 @@ class ResultRepository extends BaseRepository
 
         $trackinginfo = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $trackinginfo;
+    }
+
+
+    public function resultOnEvent(array $track_uid)
+    {
+        $track_uids = array();
+        foreach ($track_uid as $track) {
+            array_push($track_uids, $track->track_uid);
+        }
+        $in = str_repeat('?,', count($track_uids) - 1) . '?';
+        $statement = $this->connection->prepare("select p.startnumber as  startnumber, t.title, com.given_name as fornamn, cl.title as klubb, p.time as tid, p.dns, p.dnf , com.family_name as efternamn, t.track_uid, p.participant_uid, co.flag_url_svg as flagga  from competitors c inner join participant p on p.competitor_uid = c.competitor_uid inner join competitor_info ci on ci.competitor_uid = c.competitor_uid inner join competitors com on com.competitor_uid = p.competitor_uid inner join club cl on cl.club_uid = p.club_uid left join countries co on co.country_id = ci.country_id inner join track t on t.track_uid = p.track_uid where t.track_uid in ($in) and t.active = false order by com.family_name, com.given_name, t.distance;");
+        $statement->execute($track_uids);
+        $resultset = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $resultset;
+
+    }
+
+    public function resultOnTrack(string $track_uid)
+    {
+        $statement = $this->connection->prepare("select p.startnumber as  startnumber, t.title, com.given_name as fornamn, cl.title as klubb, p.time as tid, p.dns, p.dnf , com.family_name as efternamn, t.track_uid, p.participant_uid, co.flag_url_svg as flagga  from competitors c inner join participant p on p.competitor_uid = c.competitor_uid inner join competitor_info ci on ci.competitor_uid = c.competitor_uid inner join competitors com on com.competitor_uid = p.competitor_uid inner join club cl on cl.club_uid = p.club_uid left join countries co on co.country_id = ci.country_id inner join track t on t.track_uid = p.track_uid where t.track_uid=:track_uid and t.active = false order by com.family_name, com.given_name;");
+        $statement->bindParam(':track_uid', $track_uid);
+        $statement->execute();
+        $resultset = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $resultset;
     }
 
     private function getResultArray($resultset): array
@@ -449,6 +472,8 @@ class ResultRepository extends BaseRepository
         $resultsqls['resultsForYear'] = 'select revent.startnumber AS ID, revent.finished as mal, revent.bana, revent.given_name as Fornamn, revent.family_name as Efternamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista, revent.track_uid  from v_result_for_event_and_track revent where  YEAR(revent.eventstart) >=:year and YEAR(revent.eventend) <=:year and revent.finished = true';
         $resultsqls['dnsYear'] = 'select revent.startnumber AS ID,revent.bana, revent.finished as mal, revent.given_name as Fornamn, revent.family_name as Efternamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista  from v_dns_on_event_and_track revent where YEAR(revent.eventstart) >=:year and YEAR(revent.eventend) <=:year;';
         $resultsqls['dnfYear'] = 'select revent.startnumber AS ID, revent.finished as mal, revent.bana, revent.given_name as Fornamn, revent.family_name as Efternamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista, revent.track_uid  from v_result_for_event_and_track revent where YEAR(revent.eventstart) >=:year and YEAR(revent.eventend) <=:year and revent.finished = false and revent.dnf = true';
+
+
         return $resultsqls[$type];
         // TODO: Implement sqls() method.
     }

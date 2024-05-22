@@ -45,7 +45,7 @@ return function (App $app) {
 
         $error = new \App\common\Exceptions\BrevetExceptionrepresentation();
         $error->setMessage($exception->getMessage());
-        $error->setCode($exception->getCode());
+        $error->setCode($exception->getFile() . $exception->getLine());
 
         $response = $app->getResponseFactory()->createResponse();
         $response->getBody()->write(

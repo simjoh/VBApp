@@ -60,7 +60,7 @@ class CompetitorInfoRepository extends BaseRepository
         $place = $competitorInfo->getPlace();
         $country = $competitorInfo->getCountry();
         try {
-            $statement = $this->connection->prepare($this->sqls('createCompetitorInfo'));
+            $statement = $this->connection->prepare($this->sqls('createCompetitorInfo2'));
 
             $statement->bindParam(':uid', $uid);
             $statement->bindParam(':competitor_uid', $competitor_uid);
@@ -85,7 +85,7 @@ class CompetitorInfoRepository extends BaseRepository
     public function creatCompetitorInfoForCompetitorParams(string $email, string $phone, string $adress, string $postal_code, string $place, string $country, string $competitor_uid)  {
         $uid = Uuid::uuid4();
         try {
-            $statement = $this->connection->prepare($this->sqls('createCompetitorInfo'));
+            $statement = $this->connection->prepare($this->sqls('createCompetitorInfo2'));
 
             $statement->bindParam(':uid', $uid);
             $statement->bindParam(':competitor_uid', $competitor_uid);
@@ -111,11 +111,11 @@ class CompetitorInfoRepository extends BaseRepository
         return null;
     }
 
-    public function creatCompetitorInfoForCompetitorParamsFromLoppservice(string $email, string $phone, string $adress, string $postal_code, string $place, string $country, string $competitor_uid)  {
+    public function creatCompetitorInfoForCompetitorParamsFromLoppservice(string $email, string $phone, string $adress, string $postal_code, string $place, string $country, string $competitor_uid, string $country_id)  {
         $uid = Uuid::uuid4();
 
         try {
-            $statement = $this->connection->prepare($this->sqls('createCompetitorInfo'));
+            $statement = $this->connection->prepare($this->sqls('createCompetitorInfo2'));
             $statement->bindParam(':uid', $uid);
             $statement->bindParam(':competitor_uid', $competitor_uid);
             $statement->bindParam(':email', $email);
@@ -124,6 +124,7 @@ class CompetitorInfoRepository extends BaseRepository
             $statement->bindParam(':postal_code', $postal_code);
             $statement->bindParam(':place', $place);
             $statement->bindParam(':country', $country);
+            $statement->bindParam(':country_id', $country_id);
 
             $status = $statement->execute();
 
@@ -149,7 +150,8 @@ class CompetitorInfoRepository extends BaseRepository
     public function sqls($type)
     {
         $competitorsqls['infobycompetitoruid'] = 'select * from competitor_info where competitor_uid = :competitor_uid;';
-        $competitorsqls['createCompetitorInfo']  = "INSERT INTO competitor_info(uid, competitor_uid, email, phone, adress, postal_code, place,country) VALUES (:uid, :competitor_uid,:email,:phone,:adress, :postal_code, :place, :country)";
+        $competitorsqls['createCompetitorInfo']  = "INSERT INTO competitor_info(uid, competitor_uid, email, phone, adress, postal_code, place,country, country_id) VALUES (:uid, :competitor_uid,:email,:phone,:adress, :postal_code, :place, :country, :country_id)";
+        $competitorsqls['createCompetitorInfo2']  = "INSERT INTO competitor_info(uid, competitor_uid, email, phone, adress, postal_code, place,country, country_id) VALUES (:uid, :competitor_uid,:email,:phone,:adress, :postal_code, :place, :country, :country_id)";
         return $competitorsqls[$type];
     }
 }

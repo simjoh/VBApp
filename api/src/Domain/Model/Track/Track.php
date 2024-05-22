@@ -6,7 +6,7 @@ namespace App\Domain\Model\Track;
 
 class Track
 {
-   private string $track_uid;
+   public string $track_uid;
    private string $title;
    private ?string $heightdifference;
    private string $event_uid;
