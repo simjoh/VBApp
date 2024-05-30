@@ -67,7 +67,7 @@
 				<td class="py-2 px-1">{{ delta_dist }}</td>
 				<td class="py-2 px-1">{{ entry.distance }}</td>
 				<td class="py-2 px-1 sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg truncate">
-					{{ entry.passeded_date_time | date('Y-m-d H:i') }} <!-- https://www.php.net/manual/en/datetime.format.php -->
+					{{ entry.passeded_date_time | date('D j M H:i') }} <!-- https://www.php.net/manual/en/datetime.format.php -->
 				</td>
 				<td class="py-2 px-1">{{ speed }}</td>
 				<td class="py-2 px-1">{{ delta_time | date('%a:%H:%I') }}</td> <!-- https://www.php.net/DateInterval.format -->
