@@ -63,27 +63,39 @@
 
 			{% for entry in trackinginfo %}
 
+            {% if entry.checkout_date_time is null %}
+                {% set checkout  = entry.passeded_date_time %} <!-- DEBUG set this to null when database is updated -->
+                {% set last_time = entry.passeded_date_time %}
+            {% else %}
+                {% set checkout  = entry.checkout_date_time %}
+                {% set last_time = entry.checkout_date_time %}
+            {% endif %}
+
 			{% if loop.first %}
 			{% set first_time = entry.passeded_date_time %}
 			{% set prev_time = entry.passeded_date_time %}
-			{% set prev_time_out = entry.checkout_date_time %}
+
+			{% set prev_time_out = checkout %}
 
 			{% set prev_dist = entry.distance %}
 
 			{% set moving_days = 0 %}
 			{% set moving_hours = 0 %}
 			{% set moving_minutes = 0 %}
+			{% set moving_seconds = 0 %}
 
 			{% set stop_days = 0 %}
 			{% set stop_hours = 0 %}
 			{% set stop_minutes = 0 %}
+			{% set stop_seconds = 0 %}
+
 			{% endif %}
 
 			<!-- total_time = time since start to check in (check out if extended format) -->
 			{% if extended %}
-			{% set total_time = date(first_time).diff(date(entry.checkout_date_time)) %}
+                {% set total_time = date(first_time).diff(date(last_time)) %}
 			{% else %}
-			{% set total_time = date(first_time).diff(date(entry.passeded_date_time)) %}
+                {% set total_time = date(first_time).diff(date(entry.passeded_date_time)) %}
 			{% endif %}
 
 			<!-- delta_dist = distance from previous checkpoint (0 for the checkpoint at distance 0) -->
@@ -99,14 +111,40 @@
 			{% set moving_days = moving_days + delta_time_moving.days %}
 			{% set moving_hours = moving_hours + delta_time_moving.h %}
 			{% set moving_minutes = moving_minutes + delta_time_moving.i %}
+			{% set moving_seconds = moving_seconds + delta_time_moving.s %}
+            {% if moving_seconds >= 60 %} 
+                {% set moving_seconds = moving_seconds - 60 %}
+                {% set moving_minutes = moving_minutes + 1 %}
+            {% endif %}
+            {% if moving_minutes >= 60 %} 
+                {% set moving_minutes = moving_minutes - 60 %}
+                {% set moving_hours = moving_hours + 1 %}
+            {% endif %}
+            {% if moving_hours >= 24 %} 
+                {% set moving_hours = moving_hours - 60 %}
+                {% set moving_days = moving_days + 1 %}
+            {% endif %}
 
 			<!-- stop_time = time stopped at this checkpoint -->
-			{% set stop_time = date(entry.passeded_date_time).diff(date(entry.checkout_date_time)) %}
+			{% set stop_time = date(entry.passeded_date_time).diff(date(last_time)) %}
 
 			<!-- accumulate resting time -->
 			{% set stop_days = stop_days + stop_time.days %}
 			{% set stop_hours = stop_hours + stop_time.h %}
 			{% set stop_minutes = stop_minutes + stop_time.i %}
+			{% set stop_seconds = stop_seconds + stop_time.s %}
+            {% if stop_seconds >= 60 %} 
+                {% set stop_seconds = stop_seconds - 60 %}
+                {% set stop_minutes = stop_minutes + 1 %}
+            {% endif %}
+            {% if stop_minutes >= 60 %} 
+                {% set stop_minutes = stop_minutes - 60 %}
+                {% set stop_hours = stop_hours + 1 %}
+            {% endif %}
+            {% if stop_hours >= 24 %} 
+                {% set stop_hours = stop_hours - 60 %}
+                {% set stop_days = stop_days + 1 %}
+            {% endif %}
 
 			<!-- speed = average speed since previous checkpoint between check-in times -->
 			{% if delta_dist > 0 %}
@@ -139,7 +177,7 @@
 
 			{% set prev_dist = entry.distance %}
 			{% set prev_time = entry.passeded_date_time %}
-			{% set prev_time_out = entry.checkout_date_time %}
+			{% set prev_time_out = checkout %}
 
 			{% if show %}
 
@@ -171,9 +209,9 @@
 				<!-- average moving speed -->
 				<td class="py-2 px-1">{{ "%.1f" | format(speed_moving_avg) }}</td>
 
-				<!-- TODO(missing entry data) check out -->
+				<!-- check out -->
 				<td class="py-2 px-1 sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg truncate">
-					{{ entry.checkout_date_time | date('D j M H:i') }} <!-- https://www.php.net/manual/en/datetime.format.php -->
+                    {{ checkout | date('D j M H:i') }} <!-- https://www.php.net/manual/en/datetime.format.php -->
 				</td>
 
 				<!-- cumulative sum of resting time -->
