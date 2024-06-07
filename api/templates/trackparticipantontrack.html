@@ -60,15 +60,26 @@
 			<tbody>
 
 			{% set show = true %}
+            {% set num_past_checked_in = 0 %}
 
 			{% for entry in trackinginfo %}
 
+            {% set has_checked_in = false %}
+            {% if entry.passeded_date_time is not null %}
+                {% set has_checked_in = true %}
+            {% else %}
+                {% set num_past_checked_in = num_past_checked_in + 1 %}
+            {% endif %}
+
+            {% set has_checked_out = false %}
             {% if entry.checkout_date_time is null %}
                 {% set checkout  = entry.passeded_date_time %} <!-- DEBUG set this to null when database is updated -->
                 {% set last_time = entry.passeded_date_time %}
+                {% set has_checked_out = has_checked_in %} <!-- DEBUG remove this line when database is updated -->
             {% else %}
                 {% set checkout  = entry.checkout_date_time %}
                 {% set last_time = entry.checkout_date_time %}
+                {% set has_checked_out = true %}
             {% endif %}
 
 			{% if loop.first %}
@@ -194,31 +205,59 @@
 
 				<!-- check in -->
 				<td class="py-2 px-1 sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg truncate">
+                    {% if has_checked_in %}
 					{{ entry.passeded_date_time | date('D j M H:i') }} <!-- https://www.php.net/manual/en/datetime.format.php -->
+                    {% endif %}
 				</td>
 
 				<!-- time since previous check out -->
-				<td class="py-2 px-1">{{ delta_time_moving | date('%a:%H:%I') }}</td> <!-- https://www.php.net/DateInterval.format -->
+				<td class="py-2 px-1">
+                    {% if has_checked_in and not loop.first %}
+                    {{ delta_time_moving | date('%a:%H:%I') }} <!-- https://www.php.net/DateInterval.format -->
+                    {% endif %}
+                </td> 
 
 				<!-- speed since previous check out -->
-				<td class="py-2 px-1">{{ "%.1f" | format(speed_moving) }}</td>
+				<td class="py-2 px-1">
+                    {% if has_checked_in and not loop.first %}
+                    {{ "%.1f" | format(speed_moving) }}
+                    {% endif %}
+                </td>
 
 				<!-- cumulative sum of moving time -->
-				<td class="py-2 px-1">{{ "%d:%02d:%02d" | format(moving_days, moving_hours, moving_minutes) }}</td>
+				<td class="py-2 px-1">
+                    {% if has_checked_in and not loop.first %}
+                    {{ "%d:%02d:%02d" | format(moving_days, moving_hours, moving_minutes) }}
+                    {% endif %}
+                </td>
 
 				<!-- average moving speed -->
-				<td class="py-2 px-1">{{ "%.1f" | format(speed_moving_avg) }}</td>
+				<td class="py-2 px-1">
+                    {% if has_checked_in and not loop.first %}
+                    {{ "%.1f" | format(speed_moving_avg) }}
+                    {% endif %}
+                </td>
 
 				<!-- check out -->
 				<td class="py-2 px-1 sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg truncate">
+                    {% if has_checked_out %}
                     {{ checkout | date('D j M H:i') }} <!-- https://www.php.net/manual/en/datetime.format.php -->
+                    {% endif %}
 				</td>
 
 				<!-- cumulative sum of resting time -->
-				<td class="py-2 px-1">{{ "%d:%02d:%02d" | format(stop_days, stop_hours, stop_minutes) }}</td>
+				<td class="py-2 px-1">
+                    {% if has_checked_in and not loop.first %}
+                    {{ "%d:%02d:%02d" | format(stop_days, stop_hours, stop_minutes) }}
+                    {% endif %}
+                </td>
 
 				<!-- average speed since start (including rest) -->
-				<td class="py-2 px-1">{{ "%.1f" | format(speed_avg) }}</td>
+				<td class="py-2 px-1">
+                    {% if has_checked_in and not loop.first %}
+                    {{ "%.1f" | format(speed_avg) }}
+                    {% endif %}
+                </td>
 
 				{% else %}
 
@@ -234,7 +273,11 @@
 
 				<!-- ... shared trailing columns ... -->
 
-				<td class="py-2 px-1">{{ total_time | date('%a:%H:%I') }}</td> <!-- https://www.php.net/DateInterval.format -->
+				<td class="py-2 px-1">
+                    {% if num_past_checked_in <= 1 %}
+                    {{ total_time | date('%a:%H:%I') }} <!-- https://www.php.net/DateInterval.format -->
+                    {% endif %}
+                </td> 
 				<td class="py-2 px-1">
 					{% if entry.passeded_date_time is not null %}
 					{% if loop.last and entry.finished %}
