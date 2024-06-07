@@ -99,4 +99,33 @@ export class VolonteerService {
   private addMessage(message: string, servity: string, summary: string){
     this.messageService.add({key: 'tc', severity:servity, summary: summary, detail: message});
   }
+
+
+
+  public undocheckout(product: any){
+    const link = this.linkService.findByRel(product.link,'relation.volonteer.undocheckout', HttpMethod.PUT)
+    return this.httpClient.put<any>(link.url, null).pipe(
+        map((site: boolean) => {
+          return site;
+        }),
+        tap(event =>   {
+          this.addMessage('Ångrat checkout','success','Success');
+        })
+    ).toPromise();
+  }
+
+
+
+  public checkout(product: any): Promise<boolean>{
+    const link = this.linkService.findByRel(product.link,'relation.volonteer.checkout', HttpMethod.PUT)
+    return this.httpClient.put<any>(link.url, null).pipe(
+        map((site: boolean) => {
+          return site;
+        }),
+        tap(event =>  {
+          this.addMessage('Checkout ok på checkpoint ' + product.adress,'success','Success')
+        })
+    ).toPromise();
+
+  }
 }

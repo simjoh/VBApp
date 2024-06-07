@@ -55,6 +55,8 @@ return function (App $app) {
         $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/markasdnf', \App\Action\Randonneur\RandonneurAction::class . ':markasDNF');
         $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/rollbackdnf', \App\Action\Randonneur\RandonneurAction::class . ':rollbackDNF');
         $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/rollback', \App\Action\Randonneur\RandonneurAction::class . ':rollbackStamp');
+        $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/checkoutFrom', \App\Action\Randonneur\RandonneurAction::class . ':checkoutFrom');
+        $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/undocheckoutFrom', \App\Action\Randonneur\RandonneurAction::class . ':undocheckoutFrom');
 
         // ingångar som används av en volontär
         $app->get('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}', \App\Action\Volonteer\VolonteerAction::class . ':getCheckpoint');
@@ -64,6 +66,8 @@ return function (App $app) {
         $app->post('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}/randonneur/{uid}/dnf', \App\Action\Volonteer\VolonteerAction::class . ':markasDNF');
         $app->put('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}/randonneur/{uid}/rollbackdnf', \App\Action\Volonteer\VolonteerAction::class . ':rollbackDNF');
         $app->put('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}/randonneur/{uid}/rollback', \App\Action\Volonteer\VolonteerAction::class . ':rollbackStamp');
+        $app->put('/volonteer/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/checkoutfrom', \App\Action\Volonteer\VolonteerAction::class . ':checkoutFrom');
+        $app->put('/volonteer/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/undocheckoutfrom', \App\Action\Volonteer\VolonteerAction::class . ':undocheckoutFrom');
 
         // Ingångar för administratörer
         // skapa banor och läsa banor

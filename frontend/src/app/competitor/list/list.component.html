@@ -3,9 +3,9 @@
 <brevet-track-info></brevet-track-info>
 
 <ng-container *ngIf="checkpoints$ | async as kontroller">
-  <ng-container *ngFor="let s of kontroller; index as i">
-    <brevet-checkpoint (checkedin)="checkin($event,s,kontroller,i)" (dnf)="dnf($event,s)"  [checkpoints]="s"
-                       [start]="i === 0"
+  <ng-container *ngFor="let s of kontroller; index as i; let first = first ;let last = last;">
+    <brevet-checkpoint (checkedin)="checkin($event,s,kontroller,i)" (dnf)="dnf($event,s)" (checkedout)="checkout($event,s,kontroller,i)"  [checkpoints]="s"
+                       [start]="i === 0" [firstCheckpoint]="first" [lastCheckpoint]="last"
                        [nextIsSecret]="nextISSceret(i < kontroller.length && i >= 0 ? kontroller[i + 1] : kontroller[i])"
                        [finsih]="i + 1 === kontroller.length"
                        [distance]="s.checkpoint.distance" [distancetonext]="s.checkpoint.distance | distanceBetween: i + 1 === kontroller.length ?  s.checkpoint.distance : kontroller[i  + 1].checkpoint.distance : true">

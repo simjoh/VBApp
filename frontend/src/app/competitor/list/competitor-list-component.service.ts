@@ -53,6 +53,16 @@ export class CompetitorListComponentService {
     this.reload();
   }
 
+  async checkout($event: any, s: RandonneurCheckPointRepresentation): Promise<any>{
+    await this.competitorService.checkout(s);
+    this.reload();
+  }
+
+  async undocheckout($event: any, s: RandonneurCheckPointRepresentation): Promise<any>{
+    await this.competitorService.undocheckout(s);
+    this.reload();
+  }
+
 
   async setDnf($event: any, s: RandonneurCheckPointRepresentation): Promise<any>{
     if ($event === true){

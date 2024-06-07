@@ -202,6 +202,7 @@ class ResultsController
         $trackArray = array();
 
         array_push($trackArray, $track);
+
         $result = $this->resultService->trackContestants($track->getEventUid(), $trackArray);
 
         $preparedarray = array();
@@ -215,6 +216,8 @@ class ResultsController
             }
             array_push($preparedarray, $result);
         }
+
+
         return $view->render($response, 'trackontrack.html', ['participants' => $preparedarray,
             'link' => $this->settings['path'] . "tracker/" . "track/" . $args['trackUid']
         ]);

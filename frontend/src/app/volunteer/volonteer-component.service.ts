@@ -111,6 +111,7 @@ export class VolonteerComponentService {
       stats.countpassed = rand.filter((obj) => obj.passed === true).length;
       stats.notPassed = rand.filter((obj) => obj.passed === false).length;
       stats.dnf = rand.filter((obj) => obj.dnf === true).length;
+      stats.checkedout = rand.filter((obj) => obj.has_checkouted === true).length;
    //   stats.dns = rand.filter((obj) => obj.dns === true).length;
       if (!stats.dns){
           stats.dns = 0;
@@ -118,6 +119,10 @@ export class VolonteerComponentService {
       if (!stats.dnf){
         stats.dnf = 0
       }
+        if (!stats.checkedout){
+            stats.checkedout = 0
+        }
+
       const dnfochdns = stats.dns + stats.dnf;
       stats.percentageoff = stats.countpassed - dnfochdns / rand.length * 100;
       stats.percentageoff = Math.floor((100 * stats.countpassed - dnfochdns) / rand.length);
@@ -169,12 +174,29 @@ export class VolonteerComponentService {
       this.valdkontroll(product.checkpointUid);
     });
   }
+
+
+
+    async undocheckout(product: any) {
+        await this.volonteerService.undocheckout(product).then((status) => {
+            this.valdkontroll(product.checkpointUid);
+        });
+    }
+
+
+
+    async checkout(product: any) {
+        await this.volonteerService.checkout(product).then((status) => {
+            this.valdkontroll(product.checkpointUid);
+        });
+    }
 }
 
 
 export class Statistics {
   countpassed: number;
   notPassed: number;
+  checkedout: number;
   dnf: number;
   dns: number;
   percentageoff: number

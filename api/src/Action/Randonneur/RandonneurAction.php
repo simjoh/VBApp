@@ -4,7 +4,6 @@ namespace App\Action\Randonneur;
 
 use App\Domain\Model\Randonneur\Service\RandonneurService;
 use App\Domain\Model\Track\Service\TrackService;
-use PrestaShop\Decimal\DecimalNumber;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -61,11 +60,11 @@ class RandonneurAction
         $longitude = $request->getQueryParams('lat')['long'];
 
 
-        if(!isset($latitude)){
+        if (!isset($latitude)) {
             $latitude = null;
         }
 
-        if(!isset($longitude)){
+        if (!isset($longitude)) {
             $longitude = null;
         }
 
@@ -77,6 +76,18 @@ class RandonneurAction
         $response->getBody()->write(json_encode($this->randonneurService->stampOnCheckpoint($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'), $latitude, $longitude)));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
+
+    public function checkoutFrom(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('track_uid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $startnumber = $route->getArgument('startnumber');
+        $response->getBody()->write(json_encode($this->randonneurService->checkoutFromCheckpoint($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'))));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+    }
+
 
     function distance($lat1, $lon1, $lat2, $lon2, $unit)
     {
@@ -120,10 +131,20 @@ class RandonneurAction
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    public function undocheckoutFrom(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('track_uid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $startnumber = $route->getArgument('startnumber');
+        $response->getBody()->write(json_encode($this->randonneurService->undoCheckoutFrom($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'))));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
 
     public function rollbackDNF(ServerRequestInterface $request, ResponseInterface $response)
     {
-        //skicka tillbacka checkpoints med ny status
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('track_uid');
@@ -132,6 +153,4 @@ class RandonneurAction
         $response->getBody()->write(json_encode($this->randonneurService->rollbackDnf($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'))));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
-
-
 }

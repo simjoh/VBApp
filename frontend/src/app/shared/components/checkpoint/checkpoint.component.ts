@@ -6,116 +6,174 @@ import {map} from "rxjs/operators";
 import {ConfirmationService} from 'primeng/api';
 
 @Component({
-  selector: 'brevet-checkpoint',
-  templateUrl: './checkpoint.component.html',
-  styleUrls: ['./checkpoint.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [ConfirmationService]
+	selector: 'brevet-checkpoint',
+	templateUrl: './checkpoint.component.html',
+	styleUrls: ['./checkpoint.component.scss'],
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	providers: [ConfirmationService]
 })
 export class CheckpointComponent implements OnInit {
 
 
-  checkinknapptext: string;
-  dnfknapptext: string
+	checkinknapptext: string;
+	checkoutknapptext: string;
+	dnfknapptext: string
 
-  chekedinSubject = new BehaviorSubject(false);
-  checkedin$ = this.chekedinSubject.asObservable().pipe(
-    map((val) => {
-      if (val === false) {
-        this.checkinknapptext = 'CHECK IN'
-      } else {
-        this.checkinknapptext = 'UNDO CHECK IN'
-      }
-      return val;
-    })
-  );
+	chekedinSubject = new BehaviorSubject(false);
+	checkedin$ = this.chekedinSubject.asObservable().pipe(
+		map((val) => {
+			if (val === false) {
+				this.checkinknapptext = 'CHECK IN'
+			} else {
+				if (this.lastCheckpoint){
+					this.checkinknapptext = 'FINISH'
+				} else {
+					this.checkinknapptext = 'CHECKED IN'
+				}
 
-  dnfSubject = new BehaviorSubject(false);
-  isdnf$ = this.dnfSubject.asObservable().pipe(
-    map((val) => {
-      if (val === true) {
-        this.dnfknapptext = 'UNDO DNF'
-      } else {
-        this.dnfknapptext = 'DNF'
-      }
-      return val;
-    })
-  );
+			}
+			return val;
+		})
+	);
 
-  @Input() checkpoints: RandonneurCheckPointRepresentation
-  @Input() start: boolean
-  @Input() finsih: boolean
-  @Input() distance: any
-  @Input() distancetonext: any
-  @Input() preview: boolean
-  @Input() nextIsSecret: boolean
+	checkotSubject = new BehaviorSubject(false);
+	checkedout$ = this.checkotSubject.asObservable().pipe(
+		map((val) => {
+			if (val === false) {
+				this.checkoutknapptext = 'CHECK OUT'
+			} else {
+				this.checkoutknapptext = 'UNDO CHECK OUT'
+			}
+			return val;
+		})
+	);
 
+	knapptextcheckout$ = this.checkedout$.pipe(
+		map((val) => {
+			if (val === false) {
 
-  @Output() checkedin = new EventEmitter<any>();
-  @Output() dnf = new EventEmitter<any>();
+				return 'CHECK OUT'
+			} else {
 
-  constructor(private linkservice: LinkService, private confirmationService: ConfirmationService) {
-  }
-
-
-  ngOnInit(): void {
-
-    if (this.preview === true) {
-      this.chekedinSubject.next(false)
-      this.dnfSubject.next(false)
-    } else {
-      this.chekedinSubject.next(this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp') === false)
-      this.dnfSubject.next(this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.dnf') === false)
-    }
-
-  }
-
-  checkin() {
-
-    if (this.preview === true) {
-      alert("Preview mode");
-    }
+				return 'UNDO CHECK OUT'
+			}
+		}));
 
 
-    if (!this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp')) {
-      this.checkedin.emit(false);
-      this.chekedinSubject.next(false);
-      // this.confirmationService.confirm({
-      //   message: 'Do you want want to undo check in',
-      //   accept: () => {
-      //     this.checkedin.emit(false);
-      //     this.chekedinSubject.next(false);
-      //   }
-      // });
-    } else {
-      this.checkedin.emit(true);
-      // this.confirmationService.confirm({
-      //   message: 'Do you want want to check in',
-      //   accept: () => {
-      //     this.checkedin.emit(true);
-      //   }
-      // });
-    }
-  }
+	dnfSubject = new BehaviorSubject(false);
+	isdnf$ = this.dnfSubject.asObservable().pipe(
+		map((val) => {
+			if (val === true) {
+				this.dnfknapptext = 'UNDO DNF'
+			} else {
+				this.dnfknapptext = 'DNF'
+			}
+			return val;
+		})
+	);
 
-  setdnf() {
-
-    if (this.preview === true) {
-      alert("Preview mode");
-    }
-    if (this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.dnf')) {
-      //  this.dnfSubject.next(true);
-      this.dnf.emit(true);
-    } else {
-      // this.dnfSubject.next(false);
-      this.dnf.emit(false);
-    }
-  }
+	@Input() checkpoints: RandonneurCheckPointRepresentation
+	@Input() start: boolean
+	@Input() finsih: boolean
+	@Input() distance: any
+	@Input() distancetonext: any
+	@Input() preview: boolean
+	@Input() nextIsSecret: boolean
+	@Input() lastCheckpoint: boolean
+	@Input() firstCheckpoint: boolean
 
 
-  trimWhitespaces(s: string) {
-    return s.replace('/ /gi', "")
-  }
+	@Output() checkedin = new EventEmitter<any>();
+	@Output() checkedout = new EventEmitter<any>();
+	@Output() dnf = new EventEmitter<any>();
+
+	constructor(private linkservice: LinkService, private confirmationService: ConfirmationService) {
+	}
+
+
+	ngOnInit(): void {
+
+		if (this.preview === true) {
+			this.chekedinSubject.next(false)
+			this.dnfSubject.next(false)
+			this.checkotSubject.next(false);
+		} else {
+			this.chekedinSubject.next(this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp') === false)
+			this.dnfSubject.next(this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.dnf') === false)
+			this.checkotSubject.next(this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.checkout') === false)
+		}
+
+	}
+
+	checkin() {
+
+		if (this.preview === true) {
+			alert("Preview mode");
+		}
+
+
+		if (!this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp')) {
+			this.checkedin.emit(false);
+			this.chekedinSubject.next(false);
+			// this.confirmationService.confirm({
+			//   message: 'Do you want want to undo check in',
+			//   accept: () => {
+			//     this.checkedin.emit(false);
+			//     this.chekedinSubject.next(false);
+			//   }
+			// });
+		} else {
+			this.checkedin.emit(true);
+			// this.confirmationService.confirm({
+			//   message: 'Do you want want to check in',
+			//   accept: () => {
+			//     this.checkedin.emit(true);
+			//   }
+			// });
+		}
+	}
+
+	checkout() {
+		if (!this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp') && this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.checkout')) {
+			this.checkedout.emit(true);
+			this.checkotSubject.next(true);
+			// this.confirmationService.confirm({
+			//   message: 'Do you want want to undo check in',
+			//   accept: () => {
+			//     this.checkedin.emit(false);
+			//     this.chekedinSubject.next(false);
+			//   }
+			// });
+		} else {
+			this.checkedout.emit(false);
+			this.checkotSubject.next(false);
+			// this.confirmationService.confirm({
+			//   message: 'Do you want want to check in',
+			//   accept: () => {
+			//     this.checkedin.emit(true);
+			//   }
+			// });
+		}
+	}
+
+	setdnf() {
+
+		if (this.preview === true) {
+			alert("Preview mode");
+		}
+		if (this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.dnf')) {
+			//  this.dnfSubject.next(true);
+			this.dnf.emit(true);
+		} else {
+			// this.dnfSubject.next(false);
+			this.dnf.emit(false);
+		}
+	}
+
+
+	trimWhitespaces(s: string) {
+		return s.replace('/ /gi', "")
+	}
 
 
 }

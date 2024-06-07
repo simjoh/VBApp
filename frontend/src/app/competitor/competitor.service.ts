@@ -69,6 +69,31 @@ export class CompetitorService {
     ).toPromise()
   }
 
+
+    async checkout(s: RandonneurCheckPointRepresentation):Promise<any>{
+        const link = this.linkService.findByRel(s.links,'relation.randonneur.checkout', HttpMethod.PUT)
+        return await this.httpClient.put<any>( link.url, null).pipe(
+            map((event: boolean) => {
+                return event;
+            }),
+            tap(event =>   {
+                //  this.addMessage('Rollback checkin succeed','success','Success');
+            })
+        ).toPromise()
+    }
+
+    async undocheckout(s: RandonneurCheckPointRepresentation):Promise<any>{
+        const link = this.linkService.findByRel(s.links,'relation.randonneur.undocheckout', HttpMethod.PUT)
+        return await this.httpClient.put<any>( link.url, null).pipe(
+            map((event: boolean) => {
+                return event;
+            }),
+            tap(event =>   {
+                //  this.addMessage('Rollback checkin succeed','success','Success');
+            })
+        ).toPromise()
+    }
+
   async markAsDNF(s: RandonneurCheckPointRepresentation): Promise<any>{
     const link = this.linkService.findByRel(s.links,'relation.randonneur.dnf', HttpMethod.PUT)
 

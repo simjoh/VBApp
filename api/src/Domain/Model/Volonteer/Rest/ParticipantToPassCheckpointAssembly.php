@@ -5,6 +5,7 @@ namespace App\Domain\Model\Volonteer\Rest;
 
 use App\common\Rest\Link;
 use App\Domain\Model\CheckPoint\Service\CheckpointsService;
+use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
 use App\Domain\Model\User\Repository\UserRepository;
 use App\Domain\Model\Volonteer\ParticipantToPassCheckpoint;
 use App\Domain\Permission\PermissionRepository;
@@ -14,11 +15,12 @@ use Psr\Container\ContainerInterface;
 class ParticipantToPassCheckpointAssembly
 {
 
-    public function __construct(ContainerInterface $c ,PermissionRepository $permissionRepository,CheckpointsService $checkpointService, UserRepository $userRepository)
+    public function __construct(ContainerInterface $c ,PermissionRepository $permissionRepository,CheckpointsService $checkpointService, UserRepository $userRepository,ParticipantRepository $participantRepository)
     {
         $this->permissionrepository = $permissionRepository;
         $this->checkpointService = $checkpointService;
         $this->userrepository = $userRepository;
+        $this->participantrepository = $participantRepository;
         $this->settings = $c->get('settings');
     }
 
@@ -30,6 +32,7 @@ class ParticipantToPassCheckpointAssembly
         }
         $trackarrayReprs = array();
         foreach ($participantToPassCheckpointArray as $x =>  $participantToPassCheckpoint) {
+
             array_push($trackarrayReprs, (object) $this->toRepresentation($participantToPassCheckpoint,$permissions, $currentUserUid));
         }
         return $trackarrayReprs;
@@ -57,6 +60,8 @@ class ParticipantToPassCheckpointAssembly
         $participantToPassCheckpointRepresentation->setStarted($participantToPassCheckpoint->isStarted());
         $participantToPassCheckpointRepresentation->setVolonteerCheckin($participantToPassCheckpoint->isVolonteerCheckin());
 
+        $hasCheckout = $this->participantrepository->hasCheckedOut($participantToPassCheckpoint->getParticipantUid(),  $participantToPassCheckpoint->getCheckPointUId());
+        $participantToPassCheckpointRepresentation->setHasCheckouted($hasCheckout);
         // bygg på med lite länkar
         $linkArray = array();
       //  foreach ($permissions as $x =>  $site) {
@@ -66,6 +71,12 @@ class ParticipantToPassCheckpointAssembly
                 } else {
                     array_push($linkArray, new Link("relation.volonteer.rollbackstamp", 'PUT', $this->settings['path'] . 'volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/rollback'));
                 }
+
+        if (!$hasCheckout) {
+            array_push($linkArray, new Link("relation.volonteer.checkout", 'PUT', $this->settings['path'] .'volonteer/' . $participantToPassCheckpoint->getParticipantUid() .'/track/'  . $participantToPassCheckpoint->getTrackUid(). "/startnumber/" . $participantToPassCheckpoint->getStartnumber() .  '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid().  '/checkoutfrom'));
+        } else {
+            array_push($linkArray, new Link("relation.volonteer.undocheckout", 'PUT', $this->settings['path'] . 'volonteer/' . $participantToPassCheckpoint->getParticipantUid() .'/track/' . $participantToPassCheckpoint->getTrackUid(). "/startnumber/" . $participantToPassCheckpoint->getStartnumber() .  '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid().  '/undocheckoutfrom'));
+        }
 
         if(!$participantToPassCheckpoint->isDnf()){
             array_push($linkArray, new Link("relation.volonteer.setdnf", 'PUT', $this->settings['path'] . 'volonteer/track/' . $participantToPassCheckpoint->getTrackUid(). '/checkpoint/' . $participantToPassCheckpoint->getCheckpointUid(). '/randonneur/' . $participantToPassCheckpoint->getParticipantUid(). '/dnf'));

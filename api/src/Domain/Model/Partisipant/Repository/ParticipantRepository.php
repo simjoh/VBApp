@@ -201,6 +201,8 @@ class ParticipantRepository extends BaseRepository
             if (empty($result)) {
                 return false;
             }
+
+
             return true;
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
@@ -242,6 +244,29 @@ class ParticipantRepository extends BaseRepository
         }
         return true;
     }
+
+    public function hasCheckedOut(string $participant_uid, string $checkpoint_uid): bool
+    {
+
+        try {
+            $statement = $this->connection->prepare($this->sqls('hasCheckout'));
+            $statement->bindParam(':participant_uid', $participant_uid);
+            $statement->bindParam(':checkpoint_uid', $checkpoint_uid);
+            $statement->execute();
+            $result = $statement->fetch();
+
+            if (isset($result['checkout_date_time'])) {
+                return true;
+            }
+
+
+            return false;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+        return false;
+    }
+
 
 
     public function participantsbyTrackAndClub(string $track_uid, $club_uid)
@@ -627,31 +652,44 @@ class ParticipantRepository extends BaseRepository
         return true;
     }
 
-    public function stampCheckoutOnCheckpoint(string $participant_uid, string $checkpoint_uid, bool $started, bool $volonteercheckout): bool
+
+    public function checkoutFromCheckpoint(string $participant_uid, string $checkpoint_uid, bool $started, bool $volonteercheckin): bool
     {
-
-
         try {
+            $checkout_date_timestamp = date('Y-m-d H:i:s');
 
-            $checkout_date_time = date('Y-m-d H:i:s');
-            $lat = null;
-            $lng = null;
             $passed = true;
-            $stmt = $this->connection->prepare($this->sqls('stampCheckoutOnCheckpoint'));
+            $stmt = $this->connection->prepare($this->sqls('updateCheckpointWithCheckout'));
             $stmt->bindParam(':participant_uid', $participant_uid);
             $stmt->bindParam(':checkpoint_uid', $checkpoint_uid);
-            $stmt->bindParam(':checkedout', $passed, PDO::PARAM_BOOL);
-            $stmt->bindParam(':checkout_date_time', $checkout_date_time);
-            $stmt->bindParam(':volonteer_checkout', $volonteercheckout, PDO::PARAM_BOOL);
-            $stmt->bindParam(':lat', $lat);
-            $stmt->bindParam(':lng', $lng);
+            $stmt->bindParam(':checkout_date_time', $checkout_date_timestamp);
+            $stmt->bindParam(':volonteer_checkin', $volonteercheckin, PDO::PARAM_BOOL);
             $stmt->execute();
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
         return true;
-
     }
+
+
+    public function checkoutFromCheckpointWithTime(string $participant_uid, string $checkpoint_uid, bool $started, bool $volonteercheckin, string $datetime): bool
+    {
+        try {
+            $checkout_date_timestamp = $datetime;
+
+            $passed = true;
+            $stmt = $this->connection->prepare($this->sqls('updateCheckpointWithCheckout'));
+            $stmt->bindParam(':participant_uid', $participant_uid);
+            $stmt->bindParam(':checkpoint_uid', $checkpoint_uid);
+            $stmt->bindParam(':checkout_date_time', $checkout_date_timestamp);
+            $stmt->bindParam(':volonteer_checkin', $volonteercheckin, PDO::PARAM_BOOL);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+        return true;
+    }
+
 
     public function stampOnCheckpointWithTime(string $participant_uid, string $checkpoint_uid, string $datetime, bool $started, bool $volonteercheckin, $lat, $lng): bool
     {
@@ -699,6 +737,7 @@ class ParticipantRepository extends BaseRepository
             $lat = null;
             $lng = null;
             $passed = 0;
+            $checkout_date_time = null;
             $volonteer_checkin = 0;
             $stmt = $this->connection->prepare($this->sqls('updateCheckpoint'));
             $stmt->bindParam(':participant_uid', $participant_uid);
@@ -712,6 +751,55 @@ class ParticipantRepository extends BaseRepository
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
+        return true;
+    }
+
+
+    public function rollbackStampAndCheckout(string $participant_uid, string $checkpoint_uid): bool
+    {
+
+        try {
+            $passed_date_timestamp = null;
+            $lat = null;
+            $lng = null;
+            $passed = 0;
+            $checkout_date_time = null;
+            $volonteer_checkin = 0;
+            $stmt = $this->connection->prepare($this->sqls('undocheckinandchecnout'));
+            $stmt->bindParam(':participant_uid', $participant_uid);
+            $stmt->bindParam(':checkpoint_uid', $checkpoint_uid);
+            $stmt->bindParam(':passed', $passed, PDO::PARAM_BOOL);
+            $stmt->bindParam(':passed_date_time', $passed_date_timestamp);
+            $stmt->bindParam(':checkout_date_time', $checkout_date_time);
+            $stmt->bindParam(':volonteer_checkin', $volonteer_checkin, PDO::PARAM_BOOL);
+            $stmt->bindParam(':lat', $lat);
+            $stmt->bindParam(':lng', $lng);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+        return true;
+    }
+
+
+
+    public function undoCheckout(string $participant_uid, string $checkpoint_uid): bool
+    {
+
+
+        try {
+            $passed_date_timestamp = null;
+            $volonteer_checkin = 1;
+            $stmt = $this->connection->prepare($this->sqls('updateCheckpointWithCheckout'));
+            $stmt->bindParam(':participant_uid', $participant_uid);
+            $stmt->bindParam(':checkpoint_uid', $checkpoint_uid);
+            $stmt->bindParam(':checkout_date_time', $passed_date_timestamp);
+            $stmt->bindParam(':volonteer_checkin', $volonteer_checkin, PDO::PARAM_BOOL);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+
         return true;
     }
 
@@ -878,11 +966,14 @@ class ParticipantRepository extends BaseRepository
         $eventqls['stampOnCheckpoint'] = 'INSERT INTO participant_checkpoint(participant_uid ,checkpoint_uid, passed, passeded_date_time, lat, lng) VALUES (:participant_uid ,:checkpoint_uid, :passed,:passed_date_time,:lat,:lng)';
         $eventqls['createParticipantCheckpoint'] = 'INSERT INTO participant_checkpoint(participant_uid ,checkpoint_uid, passed, passeded_date_time, lat, lng) VALUES (:participant_uid ,:checkpoint_uid, :passed,:passed_date_time,:lat,:lng)';
         $eventqls['updateCheckpoint'] = "UPDATE participant_checkpoint SET  passed=:passed, passeded_date_time=:passed_date_time, volonteer_checkin=:volonteer_checkin, lat=:lat, lng=:lng  WHERE participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid;";
+        $eventqls['updateCheckpointWithCheckout'] = "UPDATE participant_checkpoint SET checkout_date_time=:checkout_date_time, volonteer_checkin=:volonteer_checkin WHERE participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid;";
+        $eventqls['undocheckinandchecnout'] = "UPDATE participant_checkpoint SET  passed=:passed, passeded_date_time=:passed_date_time, checkout_date_time=:checkout_date_time ,volonteer_checkin=:volonteer_checkin, lat=:lat, lng=:lng  WHERE participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid;";
         $eventqls['setDnf'] = "UPDATE participant SET  dnf=:dnf WHERE participant_uid=:participant_uid;";
         $eventqls['setDns'] = "UPDATE participant SET  dns=:dns WHERE participant_uid=:participant_uid;";
         $eventqls['participanCheckpointByParticipantUidAndCheckpointUid'] = 'select *  from participant_checkpoint e where e.participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid;';
         $eventqls['hasStampOnCheckpoint'] = 'select passed from participant_checkpoint e where e.participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid and passed = true;';
         $eventqls['hasDnf'] = 'select dnf from participant e where e.participant_uid=:participant_uid and dnf = true;';
+        $eventqls['hasCheckout'] = 'select checkout_date_time  from participant_checkpoint e where e.participant_uid=:participant_uid and e.checkpoint_uid=:checkpoint_uid and checkout_date_time  is not null;';
         $eventqls['participantHasStampOnAllExceptFinish'] = 'SELECT count(s.checkpoint_uid) FROM v_partisipant_to_pass_checkpoint s inner join track_checkpoint tc on s.checkpoint_uid = tc.checkpoint_uid  where s.passed = 1 and s.started = 1 and s.dnf = 0 and s.track_uid=:track_uid and s.checkpoint_uid !=:finishcheckpoint  and s.participant_uid =:participant_uid;';
         $eventqls['participantHasNotStampOnLastCheckpoint'] = 'SELECT count(s.checkpoint_uid) FROM v_partisipant_to_pass_checkpoint s  where s.passed = 0 and s.started = 1 and s.dnf = 0  and s.track_uid=:track_uid and s.checkpoint_uid=:finishcheckpoint  and s.participant_uid =:participant_uid;';
         $eventqls['hasAnyoneStartedOnTrack'] = 'select * from participant e where e.track_uid=:track_uid and e.started = true or e.dns = true or e.dnf = true or e.finished = true or e.time != null;';

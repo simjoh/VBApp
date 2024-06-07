@@ -30,6 +30,8 @@ export class ListComponent implements OnInit, AfterViewInit {
 			return controls;
 		})
 	);
+
+
 	dnfknapptext: string
 
 	constructor(private comp: CompetitorListComponentService, private geolocationService: GeolocationService) {
@@ -71,6 +73,27 @@ export class ListComponent implements OnInit, AfterViewInit {
 		}
 		if ($event === true) {
 			await this.comp.stamp($event, s, this.lat, this.long);
+		//	localStorage.setItem('nextcheckpoint', JSON.stringify(kontroller.at(index + 1).checkpoint.checkpoint_uid));
+			let nextindex = this.nextIndexForward(index, kontroller)
+			// setTimeout(() => {
+			// 	console.log(kontroller.at(nextindex.checkpoint.checkpoint_uid));
+			// 	this.scroll(nextindex.checkpoint.checkpoint_uid);
+			// }, 2000);
+		} else {
+			await this.comp.rollbackStamp($event, s);
+			// let nextindex = this.nextIndexBackward(index, kontroller)
+			// setTimeout(() => {
+			// 	this.scroll(nextindex.checkpoint.checkpoint_uid);
+			// }, 2000);
+			//
+			// localStorage.setItem('nextcheckpoint', JSON.stringify(kontroller.at(nextindex).checkpoint.checkpoint_uid));
+		}
+	}
+
+	async checkout($event: any, s: RandonneurCheckPointRepresentation, kontroller, index)
+	{
+		if ($event === true) {
+			await this.comp.checkout($event, s);
 			localStorage.setItem('nextcheckpoint', JSON.stringify(kontroller.at(index + 1).checkpoint.checkpoint_uid));
 			let nextindex = this.nextIndexForward(index, kontroller)
 			setTimeout(() => {
@@ -78,16 +101,19 @@ export class ListComponent implements OnInit, AfterViewInit {
 				this.scroll(nextindex.checkpoint.checkpoint_uid);
 			}, 2000);
 		} else {
-			await this.comp.rollbackStamp($event, s);
+			await this.comp.undocheckout($event, s);
 			let nextindex = this.nextIndexBackward(index, kontroller)
 			setTimeout(() => {
 				this.scroll(nextindex.checkpoint.checkpoint_uid);
 			}, 2000);
-
-			localStorage.setItem('nextcheckpoint', JSON.stringify(kontroller.at(nextindex).checkpoint.checkpoint_uid));
+			localStorage.setItem('nextcheckpoint', JSON.stringify(kontroller.at(index).checkpoint.checkpoint_uid));
 		}
+
 	}
 
+	async undocheckout($event: any, s: RandonneurCheckPointRepresentation, kontroller: Array<RandonneurCheckPointRepresentation>, i: number) {
+		await this.comp.undocheckout($event, s);
+	}
 
 	private nextIndexBackward(index, kontroller): RandonneurCheckPointRepresentation {
 		if (index === 0) {
@@ -168,4 +194,6 @@ export class ListComponent implements OnInit, AfterViewInit {
 	ngAfterViewInit(): void {
 		this.scroll(null)
 	}
+
+
 }
