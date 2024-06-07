@@ -122,6 +122,7 @@ export interface ParticipantToPassCheckpointRepresentation {
   familyName: string;
   passed: boolean;
   passededDateTime?: string;
+  has_checkouted: boolean;
   volonteer_checkin: boolean;
   dnf: boolean;
   link: [];

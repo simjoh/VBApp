@@ -89,6 +89,29 @@ class VolonteerAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    public function checkoutFrom(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('track_uid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $startnumber = $route->getArgument('startnumber');
+        $response->getBody()->write(json_encode($this->volonteerService->checkoutFromCheckpoint($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'))));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+    }
+
+
+    public function undocheckoutFrom(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('track_uid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $startnumber = $route->getArgument('startnumber');
+        $response->getBody()->write(json_encode($this->volonteerService->undoCheckoutFrom($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'))));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
 
 
 

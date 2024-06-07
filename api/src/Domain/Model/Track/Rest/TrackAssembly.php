@@ -63,6 +63,7 @@ class TrackAssembly
         $linkArray = array();
 
         $participants = $this->participantRepository->participantsOnTrack($track->getTrackUid());
+
         if(count($participants) == 0 || $participants == null){
             array_push($linkArray, new Link("relation.track.delete", 'DELETE', $this->settings['path'] .'track/' . $track->getTrackUid()));
         }
@@ -77,7 +78,7 @@ class TrackAssembly
 
         array_push($linkArray, new Link("relation.track.tracktrack", 'GET', $this->settings['path'] . 'tracker/track/' . $track->getTrackUid()));
 
-        array_push($linkArray, new Link("self", 'GET', $this->settings['path'] . 'track/' . $track->getTrackUid()));
+       // array_push($linkArray, new Link("self", 'GET', $this->settings['path'] . 'track/' . $track->getTrackUid()));
         // resultat
         array_push($linkArray, new Link("relation.track.result", 'GET', $this->settings['path'] . 'results/track/' . $track->getTrackUid()));
 

@@ -18,6 +18,7 @@ export class CheckpointComponent implements OnInit {
 
 
 	checkinknapptext: string;
+	checkoutknapptext: string;
 	dnfknapptext: string
 
 	chekedinSubject = new BehaviorSubject(false);
@@ -44,14 +45,40 @@ export class CheckpointComponent implements OnInit {
 		})
 	);
 
+	checkotSubject = new BehaviorSubject(false);
+	checkedout$ = this.checkotSubject.asObservable().pipe(
+		map((val) => {
+			if (val === true) {
+				this.checkoutknapptext = 'CHECK OUT'
+			} else {
+				this.checkoutknapptext = 'UNDO CHECK OUT'
+			}
+			return val;
+		})
+	);
+
+	knapptextcheckout$ = this.checkedout$.pipe(
+		map((val) => {
+			if (val === false) {
+
+				return 'CHECK OUT'
+			} else {
+
+				return 'UNDO CHECK OUT'
+			}
+		}));
+
 	@Input() checkpoints: RandonneurCheckPointRepresentation
 	@Input() start: boolean
 	@Input() finsih: boolean
 	@Input() distance: any
 	@Input() distancetonext: any
 	@Input() nextIsSecret: boolean
+	@Input() lastCheckpoint: boolean
+	@Input() firstCheckpoint: boolean
 
 	@Output() checkedin = new EventEmitter<any>();
+	@Output() checkedout = new EventEmitter<any>();
 	@Output() dnf = new EventEmitter<any>();
 
 	constructor(private linkservice: LinkService, private confirmationService: ConfirmationService) {
@@ -61,6 +88,8 @@ export class CheckpointComponent implements OnInit {
 	ngOnInit(): void {
 		this.chekedinSubject.next(this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp') === false)
 		this.dnfSubject.next(this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.dnf') === false)
+		this.checkotSubject.next(this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.checkout') === true)
+
 	}
 
 	checkin() {
@@ -95,6 +124,30 @@ export class CheckpointComponent implements OnInit {
 			this.dnf.emit(false);
 		}
 	}
+
+	checkout() {
+		if (!this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.stamp') && this.linkservice.exists(this.checkpoints.links, 'relation.randonneur.checkout')) {
+			this.checkedout.emit(true);
+			this.checkotSubject.next(true);
+			// this.confirmationService.confirm({
+			//   message: 'Do you want want to undo check in',
+			//   accept: () => {
+			//     this.checkedin.emit(false);
+			//     this.chekedinSubject.next(false);
+			//   }
+			// });
+		} else {
+			this.checkedout.emit(false);
+			this.checkotSubject.next(false);
+			// this.confirmationService.confirm({
+			//   message: 'Do you want want to check in',
+			//   accept: () => {
+			//     this.checkedin.emit(true);
+			//   }
+			// });
+		}
+	}
+
 
 
 }

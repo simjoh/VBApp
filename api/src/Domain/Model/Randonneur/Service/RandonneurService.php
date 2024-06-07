@@ -68,14 +68,16 @@ class RandonneurService
                 $stamptime = "";
                 $stamped = $this->participantRepository->hasStampOnCheckpoint($participant->getParticipantUid(), $checkpoint->getCheckPointUId());
                 $hasDnf = $this->participantRepository->hasDnf($participant->getParticipantUid());
-                $participant_checkpoint = $this->participantRepository->stampTimeOnCheckpoint($participant->getParticipantUid(), $checkpoint->getCheckPointUId());
+                $hasCheckout = $this->participantRepository->hasCheckedOut($participant->getParticipantUid(),  $checkpoint->getCheckPointUId());
 
+                $participant_checkpoint = $this->participantRepository->stampTimeOnCheckpoint($participant->getParticipantUid(), $checkpoint->getCheckPointUId());
                 if ($participant_checkpoint != null) {
                     if ($participant_checkpoint->getPassededDateTime() != null) {
                         $stamptime = $participant_checkpoint->getPassededDateTime();
                     }
                 }
-                array_push($randonneurcheckpoints, $this->randonneurCheckpointAssembly->toRepresentation($checkpoint, $stamped, $track_uid, $current_user_uid, $startnumber, $hasDnf, false, $stamptime));
+
+                array_push($randonneurcheckpoints, $this->randonneurCheckpointAssembly->toRepresentation($checkpoint, $stamped, $track_uid, $current_user_uid, $startnumber, $hasDnf, false, $stamptime, $hasCheckout));
             }
 
             return $randonneurcheckpoints;
@@ -100,6 +102,47 @@ class RandonneurService
             array_push($randonneurcheckpoints, $this->randonneurCheckpointAssembly->toRepresentationPreview($checkpoint, $stamped, $hasDnf));
         }
         return $randonneurcheckpoints;
+    }
+
+    public function checkoutFromCheckpoint(?string $track_uid, $checkpoint_uid, string $startnumber)
+    {
+
+        $track = $this->trackrepository->getTrackByUid($track_uid);
+        if (!isset($track)) {
+            throw new BrevetException("Track not exists", 5, null);
+        }
+
+        $checkpoint = $this->checkpointService->checkpointFor($checkpoint_uid);
+        if (!isset($checkpoint)) {
+            throw new BrevetException("Checkpoint not exists", 5, null);
+        }
+
+        $participant = $this->participantRepository->participantOntRackAndStartNumber($track->getTrackUid(), $startnumber);
+
+        if (!isset($participant)) {
+            throw new BrevetException("Cannot find participant", 5, null);
+        }
+
+        $isStart = $this->checkpointService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
+
+        if ($participant->isDns()) {
+            throw new BrevetException("You have not started in a race ", 7, null);
+        }
+        return $this->participantRepository->checkoutFromCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0);
+    }
+
+    public function undoCheckoutFrom(?string $track_uid, ?string $checkpoint_uid, ?string $startnumber, $getAttribute): bool
+    {
+        $track = $this->trackrepository->getTrackByUid($track_uid);
+        if (!isset($track)) {
+            throw new BrevetException("Track not exists", 5, null);
+        }
+        $checkpoint = $this->checkpointService->checkpointFor($checkpoint_uid);
+        if (!isset($checkpoint)) {
+            throw new BrevetException("Checkpoint not exists", 5, null);
+        }
+        $participant = $this->participantRepository->participantOntRackAndStartNumber($track->getTrackUid(), $startnumber);
+        return $this->participantRepository->undoCheckout($participant->getParticipantUid(), $checkpoint_uid);
     }
 
     public function stampOnCheckpoint(?string $track_uid, $checkpoint_uid, string $startnumber, string $current_useruid, $lat, $long): bool
@@ -136,9 +179,7 @@ class RandonneurService
             throw new BrevetException("Checkpoint not exists", 5, null);
         }
 
-
         $participant = $this->participantRepository->participantOntRackAndStartNumber($track->getTrackUid(), $startnumber);
-
 
         if (!isset($participant)) {
             throw new BrevetException("Cannot find participant", 5, null);
@@ -154,36 +195,42 @@ class RandonneurService
             if ($isStart == false) {
                 // kolla att kontrollern har öppnat
                 if (date('Y-m-d H:i:s') < $checkpoint->getOpens()) {
-               //     throw new BrevetException("Checkpoint not open. Opening date time:  " . date("Y-m-d H:i:s", strtotime($checkpoint->getOpens())), 6, null);
+                    //     throw new BrevetException("Checkpoint not open. Opening date time:  " . date("Y-m-d H:i:s", strtotime($checkpoint->getOpens())), 6, null);
                 }
             }
             // kolla att kontrollen har stängt
             if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
                 //  throw new BrevetException("Checkpoint is closed. Closing date time: " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())), 6, null);
             }
+
         }
 
         // kolla om start eller mål
 
-
         if ($isStart == true) {
-
             if ($this->settings['demo'] == 'false') {
                 if ($today < $startdate) {
                     throw new BrevetException("You cannot check in before startdate :  " . $startdate, 7, null);
                 }
             }
+
             if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, $lat, $long);
+                $this->participantRepository->checkoutFromCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, 1, 0, $track->getStartDateTime());
             } else if (date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, $lat, $long);
+                // kan vara intressant att veta när man verkligen startade
+                $this->participantRepository->checkoutFromCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0);
             } else if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
                 if ($this->settings['demo'] == 'false') {
                     if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
-                     //   throw new BrevetException("Checkpoint is closed. Closing date time: " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())), 6, null);
+                        //   throw new BrevetException("Checkpoint is closed. Closing date time: " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())), 6, null);
                     }
+                    $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, $lat, $long);
+                    $this->participantRepository->checkoutFromCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, 1, 0, $track->getStartDateTime());
                 } else {
                     $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, $lat, $long);
+                    $this->participantRepository->checkoutFromCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, 1, 0, $track->getStartDateTime());
                 }
             } else {
                 throw new BrevetException("Error on check in", 1, null);
@@ -217,6 +264,7 @@ class RandonneurService
             }
 
             $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0, $lat, $long);
+            $this->participantRepository->checkoutFromCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0);
             $participant->setDnf(false);
             $participant->setDns(false);
 
@@ -230,7 +278,6 @@ class RandonneurService
         if ($participant->isStarted() == false) {
             throw new BrevetException("You have to check in on startcheckpoint before this", 7, null);
         }
-
 
         $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0, $lat, $long);
         return true;
@@ -364,6 +411,7 @@ class RandonneurService
             $participant->setFinished(false);
             $participant->setTime(null);
             $this->participantRepository->updateParticipant($participant);
+            $this->participantRepository->undoCheckout($participant->getParticipantUid(), $checkpoint_uid);
             return true;
         }
 

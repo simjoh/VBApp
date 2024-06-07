@@ -590,6 +590,12 @@ class ParticipantService extends ServiceAbstract
     public function addParticipantOnTrackFromLoppservice(LoppservicePersonRepresentation $loppservicePersonRepresentation, string $track_uid, $loppserviceRegistrationRepresentation, $club): bool
     {
 
+
+
+        if ($track_uid == 'd32650ff-15f8-4df1-9845-d3dc252a7a84') {
+            $track_uid = '0beda5d8-bbce-42d1-b7b6-4405a2e03db9';
+        }
+
         try {
             $this->validateInput($loppserviceRegistrationRepresentation, $track_uid);
         } catch (BrevetException $brevetException) {
@@ -616,9 +622,9 @@ class ParticipantService extends ServiceAbstract
             $competitor = $this->competitorService->getCompetitorByUid3($participant_to_create['person_uid'], "");
             if (!isset($competitor)) {
                 $competitorc = $this->competitorService->createCompetitorFromLoppservice($participant_to_create['firstname'], $participant_to_create['surname'], "", $participant_to_create['birthdate'], $participant_to_create['person_uid']);
-              //  if ($competitorc) {
-                $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParamsFromLoppservice($contactinformation['email'], $contactinformation['tel'], $adress['adress'], $adress['postal_code'], $adress['city'], $this->countryrepository->countryFor($adress['country_id'])->country_name_sv, $participant_to_create['person_uid'],$adress['country_id'] );
-               // }
+                //  if ($competitorc) {
+                $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParamsFromLoppservice($contactinformation['email'], $contactinformation['tel'], $adress['adress'], $adress['postal_code'], $adress['city'], $this->countryrepository->countryFor($adress['country_id'])->country_name_sv, $participant_to_create['person_uid'], $adress['country_id']);
+                // }
                 $competitor = $competitorc;
 
             }
@@ -659,7 +665,7 @@ class ParticipantService extends ServiceAbstract
                     $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $participant->getStartnumber(), $registration['ref_nr']);
                 }
             }
-
+         //   $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParamsFromLoppservice($contactinformation['email'], $contactinformation['tel'], $adress['adress'], $adress['postal_code'], $adress['city'], $this->countryrepository->countryFor($adress['country_id'])->country_name_sv, $participant_to_create['person_uid'], $adress['country_id']);
             return true;
         } catch (Exception $e) {
             throw new BrevetException($e->getLine() . $e->getFile(), 5, null);

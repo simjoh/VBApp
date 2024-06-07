@@ -186,6 +186,8 @@ CREATE TABLE participant_checkpoint (
     checkpoint_uid char(36) NOT NULL,
     passed BOOLEAN DEFAULT false,
     passeded_date_time DATETIME,
+    checkout_date_time DATETIME,
+    checkin_date_time DATETIME,
     volonteer_checkin BOOLEAN DEFAULT false,
     lat DECIMAL(10,8),
     lng DECIMAL(11,8),

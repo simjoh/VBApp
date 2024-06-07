@@ -19,6 +19,9 @@ class ParticipantToPassCheckpointRepresentation  implements JsonSerializable
     private bool $started;
     private ?string $passededDateTime = "";
     private bool $volonteer_checkin;
+    private bool $has_checkouted;
+
+
 
 
     private bool $dnf;
@@ -250,6 +253,16 @@ class ParticipantToPassCheckpointRepresentation  implements JsonSerializable
     public function setVolonteerCheckin(bool $volonteer_checkin): void
     {
         $this->volonteer_checkin = $volonteer_checkin;
+    }
+
+    public function isHasCheckouted(): bool
+    {
+        return $this->has_checkouted;
+    }
+
+    public function setHasCheckouted(bool $has_checkouted): void
+    {
+        $this->has_checkouted = $has_checkouted;
     }
 
     public function jsonSerialize(): mixed

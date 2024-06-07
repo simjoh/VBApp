@@ -2,6 +2,7 @@
 
 namespace App\Action\Participant;
 
+use App\common\Exceptions\BrevetException;
 use App\Domain\Model\Loppservice\Rest\LoppserviceParticipantTranformer;
 use App\Domain\Model\Loppservice\Rest\LoppservicePersonRepresentation;
 use App\Domain\Model\Loppservice\Rest\LoppserviceRegistrationRepresentation;
@@ -198,6 +199,8 @@ class ParticipantAction
 
     public function addParticipantOntrack2(ServerRequestInterface $request, ResponseInterface $response)
     {
+
+
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('trackUid');
