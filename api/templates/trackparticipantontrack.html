@@ -53,11 +53,18 @@
 				{% endif %}
 
 				<th class="py-2 px-1 text-white">Time Total</th> <!-- cumulative sum of time -->
-				<th class="py-2 px-1 text-white">Status</th>
+                <!--<th class="py-2 px-1 text-white">Status</th>-->
 				<th class="py-2 px-1 text-white" onClick="window.print()">{{ source('print.svg') }}</th>
 			</tr>
 			</thead>
 			<tbody>
+
+            {% set last_seen_at_loop_index = 0 %}
+            {% for entry in trackinginfo %}
+                {% if entry.passeded_date_time is not null %}
+                    {% set last_seen_at_loop_index = loop.index %}
+                {% endif %}
+            {% endfor %}
 
 			{% set show = true %}
             {% set num_past_checked_in = 0 %}
@@ -132,7 +139,7 @@
                 {% set moving_hours = moving_hours + 1 %}
             {% endif %}
             {% if moving_hours >= 24 %} 
-                {% set moving_hours = moving_hours - 60 %}
+                {% set moving_hours = moving_hours - 24 %}
                 {% set moving_days = moving_days + 1 %}
             {% endif %}
 
@@ -153,7 +160,7 @@
                 {% set stop_hours = stop_hours + 1 %}
             {% endif %}
             {% if stop_hours >= 24 %} 
-                {% set stop_hours = stop_hours - 60 %}
+                {% set stop_hours = stop_hours - 24 %}
                 {% set stop_days = stop_days + 1 %}
             {% endif %}
 
@@ -192,7 +199,7 @@
 
 			{% if show %}
 
-			<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} border-b dark:border-neutral-500 dark:bg-neutral-700">
+			<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} border-b">
 
 				<!-- ... shared leading columns ... -->
 				<td class="py-2 px-1">{{ entry.place }}</td>
@@ -278,6 +285,9 @@
                     {{ total_time | date('%a:%H:%I') }} <!-- https://www.php.net/DateInterval.format -->
                     {% endif %}
                 </td> 
+
+                <!-- status -->
+                <!--
 				<td class="py-2 px-1">
 					{% if entry.passeded_date_time is not null %}
 					{% if loop.last and entry.finished %}
@@ -288,30 +298,49 @@
 					{% else %}
 					{% if entry.dns %}
 					DNS
-					{% set show = false %} <!-- hide remaining rows -->
 					{% elseif entry.dnf %}
 					DNF
-					{% set show = false %} <!-- hide remaining rows -->
 					{% else %}
-					<!-- no status -->
 					{% endif %}
 					{% endif %}
 				</td>
-				<td class="py-2 px-1"></td>
+                -->
+                {% if entry.dnf and loop.index == last_seen_at_loop_index %}
+					{% set show = false %}
+                {% endif %}
+                {% if entry.dns %}
+                    {% set show = false %}
+                {% endif %}
+
+                <!-- printer / icon column -->
+				<td class="py-2 px-1">
+                    {% if entry.dns %}
+                        <img src="/app/api/uploads/dns.svg">
+                    {% elseif loop.last and entry.finished %}
+                        <img src="/app/api/uploads/fin.svg">
+                    {% elseif entry.dnf and loop.index == last_seen_at_loop_index %}
+                        <img src="/app/api/uploads/dnf.svg">
+                    {% elseif has_checked_in %}
+                        <img src="/app/api/uploads/ck.svg">
+                    {% endif %}
+                </td>
 
 			</tr>
 
 			{% endif %}
 
 			{% if entry.finished and loop.last %}
-			<tr class="bg-gray-200 border-t border-black dark:border-neutral-500 dark:bg-neutral-700 even:bg-white">
+			<tr class="bg-gray-200 border-t border-black even:bg-white">
 				{% if extended %}
-					<td colspan="12" class="py-2 px-2 text-right"></td>
+					<td colspan="11" class="py-2 px-2 text-right"></td>
 				{% else %}
-					<td colspan="7" class="py-2 px-2 text-right"></td>
+					<td colspan="6" class="py-2 px-2 text-right"></td>
 				{% endif %}
-				<td class="py-2 px-1">Time: {{ entry.time }}</td>
-				<td class="py-2 px-1"></td>
+				<td class="py-2 px-1">{{ entry.time }}</td>
+
+                <!-- printer / icon column -->
+				<td class="py-2 px-1">
+                </td>
 			</tr>
 			{% endif %}
 
