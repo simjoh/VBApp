@@ -1,75 +1,113 @@
+<div class="sm:col-12 lg:col-12 col-12">
+	<p-table #dt1 [globalFilterFields]="['startNumber', 'familyName', 'givenName', 'passed']" *ngIf="randonneurs | async as randonneurs"
+			 sortMode="multiple" responsiveLayout="stack" [paginator]="true" [rows]="20" [showCurrentPageReport]="true"
+			 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+			 [rowsPerPageOptions]="[20,40,60,80,100,120]" [value]="randonneurs.randonnerurs"
+			 styleClass="p-datatable-sm p-datatable-gridlines">
+		<ng-template pTemplate="caption">
+			<div class="col-12 sm:col-12"><strong pTooltip="Vald kontroll"
+												  tooltipPosition="top">{{ randonneurs.choosenControl }}</strong>
 
-  <div class="sm:col-12 lg:col-12 col-12">
-    <p-table   #dt1  [globalFilterFields]="['startNumber', 'familyName', 'givenName', 'passed']"  *ngIf="randonneurs | async as randonneurs" sortMode="multiple" responsiveLayout="stack" [paginator]="true" [rows]="20" [showCurrentPageReport]="true"    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [rowsPerPageOptions]="[20,40,60,80,100,120]" [value]="randonneurs.randonnerurs" styleClass="p-datatable-sm p-datatable-gridlines" >
-      <ng-template pTemplate="caption">
-        <div  class="col-12 sm:col-12" ><strong  pTooltip="Vald kontroll" tooltipPosition="top">{{randonneurs.choosenControl}}</strong>
+				<div class="p-input-icon-left ml-auto float-lg-right float-sm-right">
+					<i class="pi pi-search"></i>
+					<input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
+						   placeholder="Sök deltagare"/>
+				</div>
+			</div>
+			<div class="sm:col-8">
+				<p-badge class="lg:hidden" pTooltip="Antal som passerat vald kontroll: {{randonneurs.choosenControl}}"
+						 tooltipPosition="top" [value]="randonneurs.statistics.countpassed" severity="success"
+						 styleClass="ml-2"></p-badge>
+				<p-badge class="lg:hidden" pTooltip="Antal som brutit" tooltipPosition="top" [value]="randonneurs.statistics.dnf"
+						 severity="danger" styleClass="ml-2"></p-badge>
+				<!--                <p-knob class="lg:hidden" pTooltip="Andel som passerat" [(ngModel)]="randonneurs.statistics.percentageoff" size="28"  valueTemplate="{value}%"></p-knob>-->
+			</div>
+		</ng-template>
+		<ng-template pTemplate="header">
+			<tr>
+				<th colspan="1"><strong>Checked in:</strong>
+					<p-badge pTooltip="Antal som passerat vald kontroll: {{randonneurs.choosenControl}}" tooltipPosition="top"
+							 [value]="randonneurs.statistics.countpassed" severity="success" styleClass="ml-2"></p-badge>
+				</th>
+				<th colspan="2"><strong>DNF:</strong>
+					<p-badge pTooltip="Antal som brutit" tooltipPosition="top" [value]="randonneurs.statistics.dnf" severity="danger"
+							 styleClass="ml-2"></p-badge>
+				</th>
+				<th colspan="2"><strong>Checked out:</strong>
+					<p-badge pTooltip="Antal som checkat ut" tooltipPosition="top" [value]="randonneurs.statistics.checkedout"
+							 severity="success" styleClass="ml-2"></p-badge>
+				</th>
+				<th class="justify-content-center" colspan="2">
+					<p-knob pTooltip="Andel av startande som inte brutit och har har passerat: {{randonneurs.choosenControl}}"
+							tooltipPosition="top" [(ngModel)]="randonneurs.statistics.percentageoff" size="50"
+							valueTemplate="{value}%"></p-knob>
+				</th>
+				<!--          <p-chart type="bar" [data]="randonneurs.statistics.percentageoff" [options]="horizontalOptions"></p-chart>-->
+			</tr>
+			<tr class="sticky-top">
+				<th class="lg:w-1" pSortableColumn="startNumber">Startnummer
+					<p-sortIcon field="startNumber"></p-sortIcon>
+				</th>
+				<th class="lg:w-2" pSortableColumn="familyName">Efternamn
+					<p-sortIcon field="familyName"></p-sortIcon>
+				</th>
+				<th class="lg:w-1" pSortableColumn="givenName">Förnamn
+					<p-sortIcon field="givenName"></p-sortIcon>
+				</th>
+				<th class="lg:w-2" pSortableColumn="passededDateTime">Tid
+					<p-sortIcon field="passededDateTime"></p-sortIcon>
 
-          <div class="p-input-icon-left ml-auto float-lg-right float-sm-right">
-            <i class="pi pi-search"></i>
-            <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Sök deltagare" />
-          </div>
-        </div>
+				</th>
+				<th class="lg:w-1" pSortableColumn="passed">Passerat
+					<p-sortIcon field="passed"></p-sortIcon>
 
-        <div class="sm:col-8">
-          <p-badge class="lg:hidden" pTooltip="Antal som passerat vald kontroll: {{randonneurs.choosenControl}}" tooltipPosition="top" [value]="randonneurs.statistics.countpassed" severity="success" styleClass="ml-2"></p-badge>
-          <p-badge class="lg:hidden" pTooltip="Antal som brutit" tooltipPosition="top" [value]="randonneurs.statistics.dnf" severity="danger" styleClass="ml-2"></p-badge>
-          <!--                <p-knob class="lg:hidden" pTooltip="Andel som passerat" [(ngModel)]="randonneurs.statistics.percentageoff" size="28"  valueTemplate="{value}%"></p-knob>-->
-        </div>
-      </ng-template>
-      <ng-template pTemplate="header" >
-        <tr>
-          <th colspan="1"><strong>Checked in:</strong>   <p-badge  pTooltip="Antal som passerat vald kontroll: {{randonneurs.choosenControl}}" tooltipPosition="top" [value]="randonneurs.statistics.countpassed" severity="success" styleClass="ml-2"></p-badge></th>
-          <th colspan="2"> <strong>DNF:</strong> <p-badge pTooltip="Antal som brutit" tooltipPosition="top" [value]="randonneurs.statistics.dnf" severity="danger" styleClass="ml-2"></p-badge></th>
-			<th colspan="2"> <strong>Checked out:</strong> <p-badge pTooltip="Antal som checkat ut" tooltipPosition="top" [value]="randonneurs.statistics.checkedout" severity="success" styleClass="ml-2"></p-badge></th>
-          <th class="justify-content-center" colspan="2"> <p-knob pTooltip="Andel av startande som inte brutit och har har passerat: {{randonneurs.choosenControl}}" tooltipPosition="top"  [(ngModel)]="randonneurs.statistics.percentageoff" size="50" valueTemplate="{value}%"></p-knob></th>
-<!--          <p-chart type="bar" [data]="randonneurs.statistics.percentageoff" [options]="horizontalOptions"></p-chart>-->
+					<p-columnFilter pTooltip="Filtrera på passerade" tooltipPosition="top" type="boolean"
+									field="passed"></p-columnFilter>
+				</th>
+
+				<th class="lg:w-1"></th>
 
 
-        </tr>
-        <tr  class="sticky-top">
-          <th class="lg:w-1" pSortableColumn="startNumber">Startnummer<p-sortIcon field="startNumber"></p-sortIcon></th>
-          <th class="lg:w-2" pSortableColumn="familyName">Efternamn<p-sortIcon field="familyName"></p-sortIcon></th>
-          <th class="lg:w-1" pSortableColumn="givenName">Förnamn<p-sortIcon field="givenName"></p-sortIcon></th>
-          <th class="lg:w-2" pSortableColumn="passededDateTime">Tid<p-sortIcon field="passededDateTime"></p-sortIcon>
+				<th class="lg:w-1" pSortableColumn="dnf">DNF
+					<p-sortIcon field="dnf"></p-sortIcon>
+					<span>
 
-          </th>
-          <th class="lg:w-1" pSortableColumn="passed">Passerat<p-sortIcon field="passed"></p-sortIcon>
-
-            <p-columnFilter pTooltip="Filtrera på passerade" tooltipPosition="top"  type="boolean" field="passed"></p-columnFilter>
-          </th>
-
-			<th class="lg:w-1"></th>
-
-
-          <th class="lg:w-1"  pSortableColumn="dnf">DNF<p-sortIcon field="dnf"></p-sortIcon>
-            <span>
-
-            <p-columnFilter  pTooltip="Filtrera på DNF" tooltipPosition="top"  type="boolean" field="dnf"></p-columnFilter>
+            <p-columnFilter pTooltip="Filtrera på DNF" tooltipPosition="top" type="boolean" field="dnf"></p-columnFilter>
             </span>
-
-            </th>
-        </tr>
-      </ng-template>
-      <ng-template *ngIf="randonneurs.randonnerurs.length > 0"   pTemplate="body" let-product>
-        <tr [ngClass]="{'passed': product.passed === true, 'dnf': product.dnf === true,'dns': product.dns === true}">
-          <td><strong>{{product.startNumber}}</strong> </td>
-          <td><strong>{{product.familyName}}</strong></td>
-          <td><strong>{{product.givenName}}</strong></td>
-          <td>{{product.passededDateTime |  dateTimePrettyPrint}} {{product.volonteer_checkin === true && product.passed === true ? 'Volonteer': ''}}</td>
-          <td><button pTooltip="Checka in startnr: {{product.startNumber}} " tooltipPosition="top" pButton [disabled]="product.dnf || product.has_checkouted"  (click)="checkin(product, $event)" type="button" label="{{product.passed === true ? 'Undo checkin': 'Check in'}}" class="p-button-secondary  container-fluid">
-		  </button></td>
-			<td><button pTooltip="Check out  startnumber: {{product.startNumber}} " tooltipPosition="top" pButton [disabled]="product.dnf || product.passed === false"  (click)="checkout(product, $event)" type="button" label="{{product.has_checkouted === true ? 'Undo checkout': 'Check out'}}" class="p-button-secondary  container-fluid"></button></td>
-          <td><button pTooltip="Markera att deltagaren avser att bryta" tooltipPosition="top" pButton  (click)="setdnf(product, $event)" pRipple type="button" label="{{product.dnf === true ? 'Undo': 'DNF'}}" class="p-button-outlined p-button-danger container-fluid"></button></td>
-
-        </tr>
-      </ng-template>
-      <ng-template  pTemplate="paginatorleft">
-        <p-button type="button"  styleClass="p-button-text"></p-button>
-      </ng-template>
-    </p-table>
-  </div>
-
-  <p-confirmPopup></p-confirmPopup>
+				</th>
+			</tr>
+		</ng-template>
+		<ng-template *ngIf="randonneurs.randonnerurs.length > 0" pTemplate="body" let-product>
+			<tr [ngClass]="{'passed': product.passed === true, 'dnf': product.dnf === true,'dns': product.dns === true}">
+				<td><strong>{{ product.startNumber }}</strong></td>
+				<td><strong>{{ product.familyName }}</strong></td>
+				<td><strong>{{ product.givenName }}</strong></td>
+				<td>{{ product.passededDateTime |  dateTimePrettyPrint }} {{ product.volonteer_checkin === true && product.passed === true ? 'Volonteer' : '' }}</td>
+				<td>
+					<button pTooltip="Checka in startnr: {{product.startNumber}} " tooltipPosition="top" pButton
+							[disabled]="product.dnf || product.has_checkouted" (click)="checkin(product, $event)" type="button"
+							label="{{product.passed === true ? 'UNDO CHECKIN': 'CHECKIN'}}" class="p-button-secondary  container-fluid">
+					</button>
+				</td>
+				<td>
+					<button pTooltip="Check out  startnumber: {{product.startNumber}} " tooltipPosition="top" pButton
+							[disabled]="product.dnf || product.passed === false" (click)="checkout(product, $event)" type="button"
+							label="{{product.has_checkouted === true ? 'UNDO CHECKOUT': 'Check out'}}"
+							class="p-button-secondary  container-fluid"></button>
+				</td>
+				<td>
+					<button pTooltip="Markera att deltagaren avser att bryta" tooltipPosition="top" pButton
+							(click)="setdnf(product, $event)" pRipple type="button" label="{{product.dnf === true ? 'Undo': 'DNF'}}"
+							class="p-button-outlined p-button-danger container-fluid"></button>
+				</td>
+			</tr>
+		</ng-template>
+		<ng-template pTemplate="paginatorleft">
+			<p-button type="button" styleClass="p-button-text"></p-button>
+		</ng-template>
+	</p-table>
+</div>
+<p-confirmPopup></p-confirmPopup>
 
 <!--    <p-confirmDialog [breakpoints]="{'960px': '25vw', '640px': '100vw'}" [style]="{width: '50vw'}">-->
 <!--    Content-->
