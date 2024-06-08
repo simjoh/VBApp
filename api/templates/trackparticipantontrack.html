@@ -66,16 +66,12 @@
                 {% endif %}
             {% endfor %}
 
-			{% set show = true %}
-            {% set num_past_checked_in = 0 %}
-
 			{% for entry in trackinginfo %}
+
 
             {% set has_checked_in = false %}
             {% if entry.passeded_date_time is not null %}
                 {% set has_checked_in = true %}
-            {% else %}
-                {% set num_past_checked_in = num_past_checked_in + 1 %}
             {% endif %}
 
             {% set has_checked_out = false %}
@@ -90,120 +86,115 @@
             {% endif %}
 
 			{% if loop.first %}
-			{% set first_time = entry.passeded_date_time %}
-			{% set prev_time = entry.passeded_date_time %}
-
-			{% set prev_time_out = checkout %}
-
-			{% set prev_dist = entry.distance %}
-
-			{% set moving_days = 0 %}
-			{% set moving_hours = 0 %}
-			{% set moving_minutes = 0 %}
-			{% set moving_seconds = 0 %}
-
-			{% set stop_days = 0 %}
-			{% set stop_hours = 0 %}
-			{% set stop_minutes = 0 %}
-			{% set stop_seconds = 0 %}
-
+                {% set first_time = entry.passeded_date_time %}
+                {% set prev_time  = entry.passeded_date_time %}
+                {% set prev_time_out = checkout %}
+                {% set prev_checkpoint_dist = entry.distance %}
+                {% set prev_dist = entry.distance %}
+                {% set moving_days    = 0 %}
+                {% set moving_hours   = 0 %}
+                {% set moving_minutes = 0 %}
+                {% set moving_seconds = 0 %}
+                {% set stop_days    = 0 %}
+                {% set stop_hours   = 0 %}
+                {% set stop_minutes = 0 %}
+                {% set stop_seconds = 0 %}
 			{% endif %}
 
-			<!-- total_time = time since start to check in (check out if extended format) -->
-			{% if extended %}
-                {% set total_time = date(first_time).diff(date(last_time)) %}
-			{% else %}
-                {% set total_time = date(first_time).diff(date(entry.passeded_date_time)) %}
-			{% endif %}
+            {% set checkpoint_dist = entry.distance - prev_checkpoint_dist %}
+            {% set prev_checkpoint_dist = entry.distance %}
 
-			<!-- delta_dist = distance from previous checkpoint (0 for the checkpoint at distance 0) -->
-			{% set delta_dist = entry.distance - prev_dist %}
+            {% if has_checked_in %}
+                <!-- total_time = time since start to check in (check out if extended format) -->
+    			{% if extended %}
+                    {% set total_time = date(first_time).diff(date(last_time)) %}
+    			{% else %}
+                    {% set total_time = date(first_time).diff(date(entry.passeded_date_time)) %}
+    			{% endif %}
+                <!-- delta_time = time difference between consecutive check-in times -->
+                {% set delta_time = date(prev_time).diff(date(entry.passeded_date_time)) %}
+                <!-- delta_time_moving = time difference from check-out to check-in = moving time since previous checkpoint -->
+                {% set delta_time_moving = date(prev_time_out).diff(date(entry.passeded_date_time)) %}
+                <!-- accumulate moving time -->
+                {% set moving_days    = moving_days    + delta_time_moving.days %}
+                {% set moving_hours   = moving_hours   + delta_time_moving.h %}
+                {% set moving_minutes = moving_minutes + delta_time_moving.i %}
+                {% set moving_seconds = moving_seconds + delta_time_moving.s %}
+                {% if moving_seconds >= 60 %} 
+                    {% set moving_seconds = moving_seconds - 60 %}
+                    {% set moving_minutes = moving_minutes + 1 %}
+                {% endif %}
+                {% if moving_minutes >= 60 %} 
+                    {% set moving_minutes = moving_minutes - 60 %}
+                    {% set moving_hours = moving_hours + 1 %}
+                {% endif %}
+                {% if moving_hours >= 24 %} 
+                    {% set moving_hours = moving_hours - 24 %}
+                    {% set moving_days = moving_days + 1 %}
+                {% endif %}
+                <!-- delta_dist = distance from previous checkpoint (0 for the checkpoint at distance 0) -->
+                {% set delta_dist = entry.distance - prev_dist %}
+                {% if delta_dist > 0 %}
+                    <!-- speed = average speed since previous checkpoint between check-in times -->
+                    {% if delta_time.days * 24 + delta_time.h + delta_time.i/60 != 0 %}
+                        {% set speed = delta_dist / (delta_time.days * 24 + delta_time.h + delta_time.i/60) %}
+                    {% else %}
+                        {% set speed = null %} {# or you can assign a different value based on your requirements #}
+                    {% endif %}
+                    <!-- speed_moving = moving speed since previous checkpoint -->
+                    {% if delta_time_moving.days * 24 + delta_time_moving.h + delta_time_moving.i/60 != 0 %}
+                        {% set speed_moving = delta_dist / (delta_time_moving.days * 24 + delta_time_moving.h + delta_time_moving.i/60) %}
+                    {% else %}
+                        {% set speed_moving = null %} {# or you can assign a different value based on your requirements #}
+                    {% endif %}
+                    <!-- speed_moving_avg = average moving speed since start -->
+                    {% if moving_days + moving_hours + moving_minutes > 0 %}
+                        {% set speed_moving_avg = entry.distance / (moving_days * 24 + moving_hours + moving_minutes / 60) %}
+                    {% else %}
+                        {% set speed_moving_avg = null %}
+                    {% endif %}
+                {% endif %}
+                <!-- speed_avg = speed since start (including rest) -->
+                {% if total_time.days + total_time.h + total_time.i > 0 %}
+                    {% set speed_avg = entry.distance / (total_time.days * 24 + total_time.h + total_time.i/60) %}
+                {% endif %}
 
-			<!-- delta_time = time difference between consecutive check-in times -->
-			{% set delta_time = date(prev_time).diff(date(entry.passeded_date_time)) %}
-
-			<!-- delta_time_moving = time difference from check-out to check-in = moving time since previous checkpoint -->
-			{% set delta_time_moving = date(prev_time_out).diff(date(entry.passeded_date_time)) %}
-
-			<!-- accumulate moving time -->
-			{% set moving_days = moving_days + delta_time_moving.days %}
-			{% set moving_hours = moving_hours + delta_time_moving.h %}
-			{% set moving_minutes = moving_minutes + delta_time_moving.i %}
-			{% set moving_seconds = moving_seconds + delta_time_moving.s %}
-            {% if moving_seconds >= 60 %} 
-                {% set moving_seconds = moving_seconds - 60 %}
-                {% set moving_minutes = moving_minutes + 1 %}
+                {% set prev_dist = entry.distance %}
+                {% set prev_time = entry.passeded_date_time %}
+            {% else %}
+                {% set total_time = date(first_time).diff(date("now")) %}
             {% endif %}
-            {% if moving_minutes >= 60 %} 
-                {% set moving_minutes = moving_minutes - 60 %}
-                {% set moving_hours = moving_hours + 1 %}
-            {% endif %}
-            {% if moving_hours >= 24 %} 
-                {% set moving_hours = moving_hours - 24 %}
-                {% set moving_days = moving_days + 1 %}
-            {% endif %}
 
-			<!-- stop_time = time stopped at this checkpoint -->
-			{% set stop_time = date(entry.passeded_date_time).diff(date(last_time)) %}
+            {% if has_checked_out %} 
+                <!-- stop_time = time stopped at this checkpoint -->
+                {% set stop_time = date(entry.passeded_date_time).diff(date(last_time)) %}
+                <!-- accumulate resting time -->
+                {% set stop_days    = stop_days    + stop_time.days %}
+                {% set stop_hours   = stop_hours   + stop_time.h %}
+                {% set stop_minutes = stop_minutes + stop_time.i %}
+                {% set stop_seconds = stop_seconds + stop_time.s %}
+                {% if stop_seconds >= 60 %} 
+                    {% set stop_seconds = stop_seconds - 60 %}
+                    {% set stop_minutes = stop_minutes + 1 %}
+                {% endif %}
+                {% if stop_minutes >= 60 %} 
+                    {% set stop_minutes = stop_minutes - 60 %}
+                    {% set stop_hours = stop_hours + 1 %}
+                {% endif %}
+                {% if stop_hours >= 24 %} 
+                    {% set stop_hours = stop_hours - 24 %}
+                    {% set stop_days = stop_days + 1 %}
+                {% endif %}
 
-			<!-- accumulate resting time -->
-			{% set stop_days = stop_days + stop_time.days %}
-			{% set stop_hours = stop_hours + stop_time.h %}
-			{% set stop_minutes = stop_minutes + stop_time.i %}
-			{% set stop_seconds = stop_seconds + stop_time.s %}
-            {% if stop_seconds >= 60 %} 
-                {% set stop_seconds = stop_seconds - 60 %}
-                {% set stop_minutes = stop_minutes + 1 %}
-            {% endif %}
-            {% if stop_minutes >= 60 %} 
-                {% set stop_minutes = stop_minutes - 60 %}
-                {% set stop_hours = stop_hours + 1 %}
-            {% endif %}
-            {% if stop_hours >= 24 %} 
-                {% set stop_hours = stop_hours - 24 %}
-                {% set stop_days = stop_days + 1 %}
+                {% set prev_time_out = checkout %}
             {% endif %}
 
-			<!-- speed = average speed since previous checkpoint between check-in times -->
-			{% if delta_dist > 0 %}
-			{% if delta_time.days * 24 + delta_time.h + delta_time.i/60 != 0 %}
-			{% set speed = delta_dist / (delta_time.days * 24 + delta_time.h + delta_time.i/60) %}
-			{% else %}
-			{% set speed = null %} {# or you can assign a different value based on your requirements #}
-			{% endif %}
-			{% endif %}
-
-			<!-- speed_avg = speed since start (including rest) -->
-			{% if total_time.days + total_time.h + total_time.i > 0 %}
-			{% set speed_avg = entry.distance / (total_time.days * 24 + total_time.h + total_time.i/60) %}
-			{% endif %}
-
-			<!-- speed_moving = moving speed since previous checkpoint -->
-			<!-- speed_moving_avg = average moving speed since start -->
-			{% if delta_dist > 0 %}
-			{% if delta_time_moving.days * 24 + delta_time_moving.h + delta_time_moving.i/60 != 0 %}
-			{% set speed_moving = delta_dist / (delta_time_moving.days * 24 + delta_time_moving.h + delta_time_moving.i/60) %}
-			{% else %}
-			{% set speed_moving = null %} {# or you can assign a different value based on your requirements #}
-			{% endif %}
-			{% if moving_days + moving_hours + moving_minutes > 0 %}
-			{% set speed_moving_avg = entry.distance / (moving_days * 24 + moving_hours + moving_minutes / 60) %}
-			{% else %}
-			{% set speed_moving_avg = null %}
-			{% endif %}
-			{% endif %}
-
-			{% set prev_dist = entry.distance %}
-			{% set prev_time = entry.passeded_date_time %}
-			{% set prev_time_out = checkout %}
-
-			{% if show %}
 
 			<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} border-b">
 
 				<!-- ... shared leading columns ... -->
 				<td class="py-2 px-1">{{ entry.place }}</td>
-				<td class="py-2 px-1">{{ "%.0f" | format(delta_dist) }}</td>
+				<td class="py-2 px-1">{{ "%.0f" | format(checkpoint_dist) }}</td>
 				<td class="py-2 px-1">{{ "%.0f" | format(entry.distance) }}</td>
 
 				{% if extended %}
@@ -213,56 +204,68 @@
 				<!-- check in -->
 				<td class="py-2 px-1 sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg truncate">
                     {% if has_checked_in %}
-					{{ entry.passeded_date_time | date('D j M H:i') }} <!-- https://www.php.net/manual/en/datetime.format.php -->
+                        {{ entry.passeded_date_time | date('D j M H:i') }} <!-- https://www.php.net/manual/en/datetime.format.php -->
                     {% endif %}
 				</td>
 
 				<!-- time since previous check out -->
 				<td class="py-2 px-1">
                     {% if has_checked_in and not loop.first %}
-                    {{ delta_time_moving | date('%a:%H:%I') }} <!-- https://www.php.net/DateInterval.format -->
+                        {% if delta_time_moving.days > 0 %}
+                            {{ delta_time_moving | date('%a:%H:%I') }} <!-- https://www.php.net/DateInterval.format -->
+                        {% else %}
+                            {{ delta_time_moving | date('%h:%I') }} 
+                        {% endif %}
                     {% endif %}
                 </td> 
 
 				<!-- speed since previous check out -->
 				<td class="py-2 px-1">
                     {% if has_checked_in and not loop.first %}
-                    {{ "%.1f" | format(speed_moving) }}
+                        {{ "%.1f" | format(speed_moving) }}
                     {% endif %}
                 </td>
 
 				<!-- cumulative sum of moving time -->
 				<td class="py-2 px-1">
                     {% if has_checked_in and not loop.first %}
-                    {{ "%d:%02d:%02d" | format(moving_days, moving_hours, moving_minutes) }}
+                        {% if moving_days > 0 %}
+                            {{ "%d:%02d:%02d" | format(moving_days, moving_hours, moving_minutes) }}
+                        {% else %}
+                            {{ "%d:%02d" | format(moving_hours, moving_minutes) }}
+                        {% endif %}
                     {% endif %}
                 </td>
 
 				<!-- average moving speed -->
 				<td class="py-2 px-1">
                     {% if has_checked_in and not loop.first %}
-                    {{ "%.1f" | format(speed_moving_avg) }}
+                        {{ "%.1f" | format(speed_moving_avg) }}
                     {% endif %}
                 </td>
 
 				<!-- check out -->
 				<td class="py-2 px-1 sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg truncate">
                     {% if has_checked_out %}
-                    {{ checkout | date('D j M H:i') }} <!-- https://www.php.net/manual/en/datetime.format.php -->
+                        {{ checkout | date('D j M H:i') }} <!-- https://www.php.net/manual/en/datetime.format.php -->
                     {% endif %}
 				</td>
 
 				<!-- cumulative sum of resting time -->
 				<td class="py-2 px-1">
                     {% if has_checked_in and not loop.first %}
-                    {{ "%d:%02d:%02d" | format(stop_days, stop_hours, stop_minutes) }}
+                        {% if stop_days > 0 %}
+                            {{ "%d:%02d:%02d" | format(stop_days, stop_hours, stop_minutes) }}
+                        {% else %}
+                            {{ "%d:%02d" | format(stop_hours, stop_minutes) }}
+                        {% endif %}
                     {% endif %}
                 </td>
 
 				<!-- average speed since start (including rest) -->
 				<td class="py-2 px-1">
                     {% if has_checked_in and not loop.first %}
-                    {{ "%.1f" | format(speed_avg) }}
+                        {{ "%.1f" | format(speed_avg) }}
                     {% endif %}
                 </td>
 
@@ -274,43 +277,27 @@
 					{{ entry.passeded_date_time | date('D j M H:i') }} <!-- https://www.php.net/manual/en/datetime.format.php -->
 				</td>
 				<td class="py-2 px-1">{{ "%.1f" | format(speed) }}</td>
-				<td class="py-2 px-1">{{ delta_time | date('%a:%H:%I') }}</td> <!-- https://www.php.net/DateInterval.format -->
+				<td class="py-2 px-1">
+                    {% if delta_time.days > 0 %}
+                        {{ delta_time | date('%a:%H:%I') }}
+                    {% else %}
+                        {{ delta_time | date('%h:%I') }}
+                    {% endif %}
+                </td> 
 
 				{% endif %}
 
 				<!-- ... shared trailing columns ... -->
 
 				<td class="py-2 px-1">
-                    {% if num_past_checked_in <= 1 %}
-                    {{ total_time | date('%a:%H:%I') }} <!-- https://www.php.net/DateInterval.format -->
+                    {% if (loop.index == last_seen_at_loop_index + 1 and not entry.dnf) or (has_checked_in and loop.index <= last_seen_at_loop_index) %}
+                        {% if total_time.days > 0 %}
+                            {{ total_time | date('%a:%H:%I') }}
+                        {% else %}
+                            {{ total_time | date('%h:%I') }}
+                        {% endif %}
                     {% endif %}
                 </td> 
-
-                <!-- status -->
-                <!--
-				<td class="py-2 px-1">
-					{% if entry.passeded_date_time is not null %}
-					{% if loop.last and entry.finished %}
-					FIN
-					{% else %}
-					CHECKED IN
-					{% endif %}
-					{% else %}
-					{% if entry.dns %}
-					DNS
-					{% elseif entry.dnf %}
-					DNF
-					{% else %}
-					{% endif %}
-					{% endif %}
-				</td>
-                -->
-                {% if entry.dnf and loop.index == last_seen_at_loop_index %}
-					{% set show = false %}
-                {% endif %}
-                {% if entry.dns %}
-                    {% set show = false %}
-                {% endif %}
 
                 <!-- printer / icon column -->
 				<td class="py-2 px-1">
@@ -322,20 +309,22 @@
                         <img src="/app/api/uploads/dnf.svg">
                     {% elseif has_checked_in %}
                         <img src="/app/api/uploads/ck.svg">
+                    {% elseif loop.index < last_seen_at_loop_index %}
+                        <img src="/app/api/uploads/no-ck.svg">
                     {% endif %}
                 </td>
 
 			</tr>
 
-			{% endif %}
-
 			{% if entry.finished and loop.last %}
 			<tr class="bg-gray-200 border-t border-black even:bg-white">
 				{% if extended %}
-					<td colspan="11" class="py-2 px-2 text-right"></td>
+					<td colspan="11" class="py-2 px-2 text-right">
 				{% else %}
-					<td colspan="6" class="py-2 px-2 text-right"></td>
+					<td colspan="6" class="py-2 px-2 text-right">
 				{% endif %}
+                    Homologated time:
+                    </td>
 				<td class="py-2 px-1">{{ entry.time }}</td>
 
                 <!-- printer / icon column -->
