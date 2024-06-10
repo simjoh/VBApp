@@ -76,14 +76,21 @@
 
             {% set has_checked_out = false %}
             {% if entry.checkout_date_time is null %}
-                {% set checkout  = entry.passeded_date_time %} <!-- DEBUG set this to null when database is updated -->
-                {% set last_time = entry.passeded_date_time %}
-                {% set has_checked_out = has_checked_in %} <!-- DEBUG remove this line when database is updated -->
+                {% if loop.index == last_seen_at_loop_index %}
+                    {% set checkout  = date("now") %} 
+                    {% set has_checked_out = false %} 
+                {% elseif loop.index < last_seen_at_loop_index %}
+                    {% set checkout = entry.passeded_date_time %}
+                    {% set has_checked_out = true %}
+                {% else %}
+                    {% set checkout = entry.passeded_date_time %}
+                    {% set has_checked_out = false %}
+                {% endif %}
             {% else %}
-                {% set checkout  = entry.checkout_date_time %}
-                {% set last_time = entry.checkout_date_time %}
+                {% set checkout = entry.checkout_date_time %}
                 {% set has_checked_out = true %}
             {% endif %}
+            {% set last_time = checkout %}
 
 			{% if loop.first %}
                 {% set first_time = entry.passeded_date_time %}
@@ -161,11 +168,6 @@
 
                 {% set prev_dist = entry.distance %}
                 {% set prev_time = entry.passeded_date_time %}
-            {% else %}
-                {% set total_time = date(first_time).diff(date("now")) %}
-            {% endif %}
-
-            {% if has_checked_out %} 
                 <!-- stop_time = time stopped at this checkpoint -->
                 {% set stop_time = date(entry.passeded_date_time).diff(date(last_time)) %}
                 <!-- accumulate resting time -->
@@ -187,8 +189,9 @@
                 {% endif %}
 
                 {% set prev_time_out = checkout %}
+            {% else %}
+                {% set total_time = date(first_time).diff(date("now")) %}
             {% endif %}
-
 
 			<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} border-b">
 
@@ -211,11 +214,7 @@
 				<!-- time since previous check out -->
 				<td class="py-2 px-1">
                     {% if has_checked_in and not loop.first %}
-                        {% if delta_time_moving.days > 0 %}
-                            {{ delta_time_moving | date('%a:%H:%I') }} <!-- https://www.php.net/DateInterval.format -->
-                        {% else %}
-                            {{ delta_time_moving | date('%h:%I') }} 
-                        {% endif %}
+                        {{ "%d:%02d" | format(delta_time_moving.days * 24 + delta_time_moving.h, delta_time_moving.i) }} 
                     {% endif %}
                 </td> 
 
@@ -229,11 +228,7 @@
 				<!-- cumulative sum of moving time -->
 				<td class="py-2 px-1">
                     {% if has_checked_in and not loop.first %}
-                        {% if moving_days > 0 %}
-                            {{ "%d:%02d:%02d" | format(moving_days, moving_hours, moving_minutes) }}
-                        {% else %}
-                            {{ "%d:%02d" | format(moving_hours, moving_minutes) }}
-                        {% endif %}
+                        {{ "%d:%02d" | format(moving_days * 24 + moving_hours, moving_minutes) }}
                     {% endif %}
                 </td>
 
@@ -254,11 +249,7 @@
 				<!-- cumulative sum of resting time -->
 				<td class="py-2 px-1">
                     {% if has_checked_in and not loop.first %}
-                        {% if stop_days > 0 %}
-                            {{ "%d:%02d:%02d" | format(stop_days, stop_hours, stop_minutes) }}
-                        {% else %}
-                            {{ "%d:%02d" | format(stop_hours, stop_minutes) }}
-                        {% endif %}
+                        {{ "%d:%02d" | format(stop_days * 24 + stop_hours, stop_minutes) }}
                     {% endif %}
                 </td>
 
@@ -278,11 +269,7 @@
 				</td>
 				<td class="py-2 px-1">{{ "%.1f" | format(speed) }}</td>
 				<td class="py-2 px-1">
-                    {% if delta_time.days > 0 %}
-                        {{ delta_time | date('%a:%H:%I') }}
-                    {% else %}
-                        {{ delta_time | date('%h:%I') }}
-                    {% endif %}
+                    {{ "%d:%02d" | format(delta_time.days * 24 + delta_time.h, delta_time.i) }}
                 </td> 
 
 				{% endif %}
@@ -291,11 +278,7 @@
 
 				<td class="py-2 px-1">
                     {% if (loop.index == last_seen_at_loop_index + 1 and not entry.dnf) or (has_checked_in and loop.index <= last_seen_at_loop_index) %}
-                        {% if total_time.days > 0 %}
-                            {{ total_time | date('%a:%H:%I') }}
-                        {% else %}
-                            {{ total_time | date('%h:%I') }}
-                        {% endif %}
+                        {{ "%d:%02d" | format(total_time.days * 24 + total_time.h, total_time.i) }}
                     {% endif %}
                 </td> 
 
@@ -307,7 +290,9 @@
                         <img src="/app/api/uploads/fin.svg">
                     {% elseif entry.dnf and loop.index == last_seen_at_loop_index %}
                         <img src="/app/api/uploads/dnf.svg">
-                    {% elseif has_checked_in %}
+                    {% elseif has_checked_in and not has_checked_out %}
+                        <img src="/app/api/uploads/stop.svg">
+                    {% elseif has_checked_out %}
                         <img src="/app/api/uploads/ck.svg">
                     {% elseif loop.index < last_seen_at_loop_index %}
                         <img src="/app/api/uploads/no-ck.svg">
@@ -316,16 +301,54 @@
 
 			</tr>
 
-			{% if entry.finished and loop.last %}
+			{% if loop.last %}
 			<tr class="bg-gray-200 border-t border-black even:bg-white">
 				{% if extended %}
-					<td colspan="11" class="py-2 px-2 text-right">
+                <td colspan="11" class="py-2 px-2 text-right">
 				{% else %}
-					<td colspan="6" class="py-2 px-2 text-right">
+                <td colspan="6" class="py-2 px-2 text-right">
 				{% endif %}
+                {% if entry.finished %}
                     Homologated time:
-                    </td>
-				<td class="py-2 px-1">{{ entry.time }}</td>
+                {% elseif not entry.dnf and not entry.dns %}
+                    Time left:
+                {% endif %}
+                </td>
+				<td class="py-2 px-1">
+                {% if entry.finished %}
+                    {{ entry.time }}
+                {% elseif not entry.dnf and not entry.dns %}
+                    {% set time_limit_minutes = 0 %}
+                    {% if track.distance >= 1200 %}
+                        {% set time_limit_hours = 90 %}
+                    {% elseif track.distance >= 1000 %}
+                        {% set time_limit_hours = 75 %}
+                    {% elseif track.distance >= 600 %}
+                        {% set time_limit_hours = 40 %}
+                    {% elseif track.distance >= 400 %}
+                        {% set time_limit_hours = 27 %}
+                    {% elseif track.distance >= 300 %}
+                        {% set time_limit_hours = 20 %}
+                    {% elseif track.distance >= 200 %}
+                        {% set time_limit_hours = 13 %}
+                        {% set time_limit_minutes = 30 %}
+                    {% else %}
+                        {% set time_limit_hours = 0 %}
+                    {% endif %}
+                    {% set time_limit_hours = 40 %}
+                    {% set hours_left = time_limit_hours - total_time.days * 24 - total_time.h %}
+                    {% set minutes_left = time_limit_minutes - total_time.i %}
+                    {% if minutes_left < 0 %}
+                        {% set minutes_left = minutes_left + 60 %}
+                        {% set hours_left = hours_left - 1 %}
+                    {% endif %}
+                    {% if time_limit_hours == 0 %}
+                        ??:??
+                    {% else %}
+                        {{ "%d:%02d" | format(hours_left, minutes_left) }}
+                    {% endif %}
+                {% endif %}
+                </td>
 
                 <!-- printer / icon column -->
 				<td class="py-2 px-1">
