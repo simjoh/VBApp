@@ -79,7 +79,7 @@
                 {% if loop.index == last_seen_at_loop_index %}
                     {% set checkout  = date("now") %} 
                     {% set has_checked_out = false %} 
-                {% elseif loop.index < last_seen_at_loop_index %}
+                {% elseif loop.index < last_seen_at_loop_index and has_checked_in %}
                     {% set checkout = entry.passeded_date_time %}
                     {% set has_checked_out = true %}
                 {% else %}
