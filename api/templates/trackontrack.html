@@ -20,58 +20,72 @@
 </head>
 <body class="font-sans">
 
-<div class="container mx-auto px-4 py-8">
+<div class="lg:container mx-auto px-4 py-8">
 	<div class="mb-5">
 		<p class="mb-3 text-3xl">{{track.title}}</p>
 	</div>
-
 	<div class="overflow-x-auto">
 		<table class="min-w-full text-left text-md font-light">
 			<thead class="border-b-2 bg-white dark:border-neutral-500 dark:bg-neutral-600">
 			<tr class="bg-gray-700 border-b-1 border-black text-white">
-				<th class="py-3 px-2">#</th>
-				<th class="py-3 px-2">FÖRNAMN</th>
-				<th class="py-3 px-2">EFTERNAMN</th>
-				<th class="py-3 px-2">KLUBB</th>
-				<th class="py-3 px-2">BANA</th>
-				<th class="py-3 px-2">KONTROLL</th>
-				<th class="py-3 px-2">INCHECKAD TID</th>
+				<th class="py-3 px-2">ID</th>
+				<th class="py-3 px-2">SURNAME</th>
+				<th class="py-3 px-2">FIRSTNAME</th>
+				<th class="py-3 px-2">CLUB</th>
+				<th class="py-3 px-2">TRACK</th>
+				<th class="py-3 px-2">CHECKPOINT</th>
+				<th class="py-3 px-2">TIME</th>
 				<th class="py-3 px-2">STATUS</th>
 			</tr>
 			</thead>
 			<tbody>
+			{% for name, entry in participants %}
+			<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} dark:border-neutral-500 dark:bg-neutral-700">
+				<td><a class="py-2 px-2 sm:px-3 underline hover:underline decoration-gray-950"
+					   href="{{entry.trackurl}}">{{entry.ID}}</a></td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Efternamn}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Förnamn}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Klubb}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Bana}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Kontroll}}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Stämplat | date('Y-m-d H:i') }}</td>
+				{% if entry.Status != 'DNF' and entry.Status != 'DNS' and entry.Status != 'FIN'%}
+				<td class="py-2 px-2 sm:px-3"><img src="/app/api/uploads/ck.svg"></td>
+				{% endif %}
+				{% if (entry.Status == 'DNF')%}
+				<td class="py-2 px-2 sm:px-3"><img src="/app/api/uploads/dnf.svg"></td>
+				{% endif %}
+				{% if (entry.Status == 'FIN')%}
+				<td class="py-2 px-2 sm:px-3"><img src="/app/api/uploads/fin.svg"></td>
+				{% endif %}
+				{% if (entry.Status == 'DNS')%}
+				<td class="py-2 px-2 sm:px-3"><img src="/app/api/uploads/dns.svg"></td>
+				{% endif %}
 
-			{% for name, entry in participants %}
-			{% if (entry.Status != 'DNS') and (entry.Status != 'DNF') %}
-			<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} dark:border-neutral-500 dark:bg-neutral-700">
-				<td><a class="py-2 px-2 sm:px-3 underline hover:underline decoration-gray-950" href="{{entry.trackurl}}">{{entry.ID}}</a></td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Förnamn}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Efternamn}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Klubb}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Bana}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Kontroll}}</td>
-				<td class="py-2 px-2 sm:px-3">{{ entry.Stämplat  | date('Y-m-d H:i') }}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Status}}</td>
 			</tr>
-			{% endif %}
 			{% endfor %}
 			</tbody>
-			<tbody>
-			{% for name, entry in participants %}
-			{% if (entry.Status == 'DNS') or (entry.Status == 'DNF') %}
-			<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} dark:border-neutral-500 dark:bg-neutral-700">
-				<td><a class="py-2 px-2 sm:px-3 underline hover:underline decoration-gray-950" href="{{entry.trackurl}}">{{entry.ID}}</a></td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Förnamn}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Efternamn}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Klubb}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Bana}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Kontroll}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Stämplat}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Status}}</td>
-			</tr>
-			{% endif %}
-			{% endfor %}
-			</tbody>
+			<!--			<tbody>-->
+			<!--						{% for name, entry in participants %}-->
+			<!--						{% if (entry.Status == 'DNS') or (entry.Status == 'DNF') %}-->
+			<!--						<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} dark:border-neutral-500 dark:bg-neutral-700">-->
+			<!--							<td><a class="py-2 px-2 sm:px-3 underline hover:underline decoration-gray-950" href="{{entry.trackurl}}">{{entry.ID}}</a></td>-->
+			<!--							<td class="py-2 px-2 sm:px-3">{{entry.Förnamn}}</td>-->
+			<!--							<td class="py-2 px-2 sm:px-3">{{entry.Efternamn}}</td>-->
+			<!--							<td class="py-2 px-2 sm:px-3">{{entry.Klubb}}</td>-->
+			<!--							<td class="py-2 px-2 sm:px-3">{{entry.Bana}}</td>-->
+			<!--							<td class="py-2 px-2 sm:px-3">{{entry.Kontroll}}</td>-->
+			<!--							<td class="py-2 px-2 sm:px-3">{{entry.Stämplat}}</td>-->
+			<!--							{% if (entry.Status == 'DNS')%}-->
+			<!--							<td class="py-2 px-2 sm:px-3"><img src="/app/api/uploads/dns.svg"></td>-->
+			<!--							{% endif %}-->
+			<!--							{% if (entry.Status == 'DNF')%}-->
+			<!--							<td class="py-2 px-2 sm:px-3"><img src="/app/api/uploads/dnf.svg"></td>-->
+			<!--							{% endif %}-->
+			<!--						</tr>-->
+			<!--						{% endif %}-->
+			<!--						{% endfor %}-->
+			<!--			</tbody>-->
 		</table>
 	</div>
 </div>

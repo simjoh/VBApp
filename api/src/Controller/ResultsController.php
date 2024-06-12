@@ -218,7 +218,7 @@ class ResultsController
         }
 
 
-        return $view->render($response, 'trackontrack.html', ['participants' => $preparedarray,
+        return $view->render($response, 'trackontrack.html', [ 'track' => $track,'participants' => $preparedarray,
             'link' => $this->settings['path'] . "tracker/" . "track/" . $args['trackUid']
         ]);
 

@@ -120,7 +120,7 @@ class ResultRepository extends BaseRepository
         $in = str_repeat('?,', count($track_uids) - 1) . '?';
 
 
-        $sql = "select revent.startnumber AS ID, revent.track_uid as TRACK_UID, revent.bana as Bana, revent.finished as mal,  revent.family_name as Efternamn, revent.given_name as Fornamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista, revent.passeded_date_time as passedtime , revent.competitor_uid as competitor from v_track_contestant_on_event_and_track revent where revent.track_uid  IN ($in) order by revent.given_name , revent.given_name;";
+        $sql = "select revent.startnumber AS ID, revent.track_uid as TRACK_UID, revent.bana as Bana, revent.finished as mal,  revent.family_name as Efternamn, revent.given_name as Fornamn,revent.club as Klubb,revent.time as Tid, revent.dnf as DNF, revent.DNS as DNS, revent.adress as Sista, revent.passeded_date_time as passedtime , revent.competitor_uid as competitor from v_track_contestant_on_event_and_track revent where revent.track_uid  IN ($in) order by revent.family_name , revent.given_name;";
 
         $statement = $this->connection->prepare($sql);
         $statement->execute($track_uids);
