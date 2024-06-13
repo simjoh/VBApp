@@ -20,22 +20,22 @@
 </head>
 <body class="font-sans">
 
-<div class="lg:container mx-auto px-4 py-8">
+<div class="lg:container mx-auto lg:px-4 py-8">
 	<div class="mb-5">
-		<p class="mb-3 text-3xl">{{track.title}}</p>
+		<p class="mb-3 font-extrabold text-2xl">{{track.title}}</p>
 	</div>
 	<div class="overflow-x-auto">
 		<table class="min-w-full text-left text-md font-light">
 			<thead class="border-b-2 bg-white dark:border-neutral-500 dark:bg-neutral-600">
-			<tr class="bg-gray-700 border-b-1 border-black text-white">
-				<th class="py-3 px-2">ID</th>
-				<th class="py-3 px-2">SURNAME</th>
-				<th class="py-3 px-2">FIRSTNAME</th>
-				<th class="py-3 px-2">CLUB</th>
-				<th class="py-3 px-2">TRACK</th>
-				<th class="py-3 px-2">CHECKPOINT</th>
-				<th class="py-3 px-2">TIME</th>
-				<th class="py-3 px-2">STATUS</th>
+			<tr class="bg-gray-700 border-b-1 border-black">
+				<th class="py-3 px-2 text-white">ID</th>
+				<th class="py-3 px-2 text-white">Surname</th>
+				<th class="py-3 px-2 text-white">First Name</th>
+				<th class="py-3 px-2 text-white">Club</th>
+				<th class="py-3 px-2 text-white">Course</th>
+				<th class="py-3 px-2 text-white">Checkpoint</th>
+				<th class="py-3 px-2 text-white">Time</th>
+				<th class="py-3 px-2 text-white">Status</th>
 			</tr>
 			</thead>
 			<tbody>
@@ -48,7 +48,7 @@
 				<td class="py-2 px-2 sm:px-3">{{entry.Klubb}}</td>
 				<td class="py-2 px-2 sm:px-3">{{entry.Bana}}</td>
 				<td class="py-2 px-2 sm:px-3">{{entry.Kontroll}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Stämplat | date('Y-m-d H:i') }}</td>
+				<td class="py-2 px-2 sm:px-3">{{entry.Stämplat | date('D j M H:i') }}</td>
 				{% if entry.Status != 'DNF' and entry.Status != 'DNS' and entry.Status != 'FIN'%}
 				<td class="py-2 px-2 sm:px-3"><img src="/app/api/uploads/ck.svg"></td>
 				{% endif %}
