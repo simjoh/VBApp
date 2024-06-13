@@ -93,7 +93,7 @@ class ResultsController
         $event = $this->eventservice->eventFor($eventUid, "");
         $tracks = $this->trackService->tracksForEvent("", $eventUid);
         return $view->render($response, 'trackonevent.html', [
-            'link' => $this->settings['path'] . "tracker/" . "event/" . $args['eventUid'], 'event' => json_encode($event === null ? "" : $event), 'tracks' => $tracks
+            'link' => $this->settings['path'] . "tracker/" . "event/" . $args['eventUid'], 'event' => $event, 'tracks' => $tracks
         ]);
     }
 
