@@ -118,6 +118,7 @@
     			{% else %}
                     {% set total_time = date(first_time).diff(date(entry.passeded_date_time)) %}
     			{% endif %}
+                {% set has_started = date(last_time) > date(first_time) %}
                 <!-- delta_time = time difference between consecutive check-in times -->
                 {% set delta_time = date(prev_time).diff(date(entry.passeded_date_time)) %}
                 <!-- delta_time_moving = time difference from check-out to check-in = moving time since previous checkpoint -->
@@ -277,7 +278,7 @@
 				<!-- ... shared trailing columns ... -->
 
 				<td class="py-2 px-1">
-                    {% if (loop.index == last_seen_at_loop_index + 1 and not entry.dnf) or (has_checked_in and loop.index <= last_seen_at_loop_index) %}
+                    {% if (loop.index == last_seen_at_loop_index + 1 and not entry.dnf and has_started) or (has_checked_in and loop.index <= last_seen_at_loop_index) %}
                         {{ "%d:%02d" | format(total_time.days * 24 + total_time.h, total_time.i) }}
                     {% endif %}
                 </td> 
@@ -350,6 +351,8 @@
                     {% endif %}
                     {% if time_limit_hours == 0 %}
                         ??:??
+                    {% elseif not has_started %}
+                        {{ "%d:%02d" | format(time_limit_hours, time_limit_minutes) }}
                     {% else %}
                         {{ "%d:%02d" | format(hours_left, minutes_left) }}
                     {% endif %}
