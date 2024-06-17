@@ -77,7 +77,11 @@
             {% set has_checked_out = false %}
             {% if entry.checkout_date_time is null %}
                 {% if loop.index == last_seen_at_loop_index %}
-                    {% set checkout  = date("now") %} 
+                    {% if entry.dnf %}
+                        {% set checkout = entry.passeded_date_time %}
+                    {% else %}
+                        {% set checkout  = date("now") %} 
+                    {% endif %}
                     {% set has_checked_out = false %} 
                 {% elseif loop.index < last_seen_at_loop_index and has_checked_in %}
                     {% set checkout = entry.passeded_date_time %}
@@ -118,7 +122,7 @@
     			{% else %}
                     {% set total_time = date(first_time).diff(date(entry.passeded_date_time)) %}
     			{% endif %}
-                {% set has_started = date(last_time) > date(first_time) %}
+                {% set has_started = date(first_time) < date() %}
                 <!-- delta_time = time difference between consecutive check-in times -->
                 {% set delta_time = date(prev_time).diff(date(entry.passeded_date_time)) %}
                 <!-- delta_time_moving = time difference from check-out to check-in = moving time since previous checkpoint -->
