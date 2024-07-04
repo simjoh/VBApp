@@ -492,7 +492,8 @@ CREATE TABLE `events` (
   `enddate` date NOT NULL,
   `completed` tinyint(1) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (event_uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `events` (`event_uid`, `title`, `description`, `startdate`, `enddate`, `completed`, `created_at`, `updated_at`) VALUES
