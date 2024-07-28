@@ -24,9 +24,9 @@
 				<th class="py-3 px-2">Surname</th>
 				<th class="py-3 px-2">First name</th>
 				<th class="py-3 px-2">Club</th>
-				<th class="py-3 px-2">Country</th>
-				<th class="py-3 px-2">Time</th>
-				<th class="py-3 px-2">Status</th>
+				<th class="py-3 px-2 w-10">Country</th>
+				<th class="py-3 px-2 text-right pr-4 w-5">Time</th>
+				<th class="py-3 px-2 w-5">Status</th>
 			</tr>
 			</thead>
 			<tbody>
@@ -45,13 +45,20 @@
 				</td>
 				{% endif %}
 
-				<td class="py-2 px-2 sm:px-3">{{entry.tid}}</td>
+				<td class="py-2 px-2 sm:px-3 text-right">{{entry.tid}}</td>
 				{% if entry.dnf == true %}
 				<td class="py-2 px-2 sm:px-3 text-right"><img src="/app/api/uploads/dnf.svg"></td>
 				{% elseif entry.dns == true%}
 				<td class="py-2 px-2 sm:px-3 text-right"><img src="/app/api/uploads/dns.svg"></td>
 				{% else %}
-					<td class="py-2 px-2 sm:px-3 text-right"><img src="/app/api/uploads/fin.svg"></td>
+
+				{% if entry.tid %}
+				<td class="py-2 px-2 sm:px-3 text-right"><img src="/app/api/uploads/fin.svg"></td>
+				{% else %}
+				<td class="py-2 px-2 sm:px-3">
+				</td>
+				{% endif %}
+
 				{% endif %}
 			</tr>
 			{% endfor %}

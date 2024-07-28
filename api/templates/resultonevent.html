@@ -24,8 +24,9 @@
 				<th class="py-3 px-2">FÖRNAMN</th>
 				<th class="py-3 px-2">KLUBB</th>
 				<th class="py-3 px-2">BANA</th>
-				<th class="py-3 px-2">LAND</th>
-				<th class="py-3 px-2 pr-5 text-right">TID</th>
+				<th class="py-3 px-2 w-10">LAND</th>
+				<th class="py-3 px-2 text-right pr-4 w-5">TID</th>
+				<th class="py-3 px-2 w-5">STATUS</th>
 			</tr>
 			</thead>
 			<tbody>
@@ -45,12 +46,19 @@
 				<td class="py-2 px-2 sm:px-3">
 				</td>
 				{% endif %}
-				{% if entry.dnf == true %}
-				<td class="py-2 px-2 sm:px-3 text-right">DNF</td>
-				{% elseif entry.dns == true%}
-				<td class="py-2 px-2 sm:px-3 text-right">DNS</td>
-				{% else %}
 				<td class="py-2 px-2 sm:px-3 text-right">{{entry.tid}}</td>
+				{% if entry.dnf == true %}
+				<td class="py-2 px-2 sm:px-3 text-right"><img src="/app/api/uploads/dnf.svg"></td>
+				{% elseif entry.dns == true%}
+				<td class="py-2 px-2 sm:px-3 text-right"><img src="/app/api/uploads/dns.svg"></td>
+				{% else %}
+				{% if entry.tid %}
+					<td class="py-2 px-2 sm:px-3 text-right"><img src="/app/api/uploads/fin.svg"></td>
+				{% else %}
+				<td class="py-2 px-2 sm:px-3">
+				</td>
+				{% endif %}
+
 				{% endif %}
 			</tr>
 			{% endfor %}
