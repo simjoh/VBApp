@@ -63,11 +63,14 @@
                 </div>
               </div>
               <div class="row">
-                <div class="lg:col-10">
+                <div class="lg:col-8">
                 </div>
                 <div class="lg:col-2">
                   <div (click)="editTotalTime(track.participant)"  *ngIf="track.participant.time"><p-tag styleClass="" icon="pi pi-pencil" severity="success" value="Sluttid: {{track.participant.time}}"></p-tag></div>
                 </div>
+				  <div class="lg:col-2">
+					  <div (click)="editbrevenr(track.participant)"  *ngIf="track.participant.time"><p-tag styleClass="" icon="pi pi-pencil" severity="info" value="brevetnr: {{track.participant.brevenr}}"></p-tag></div>
+				  </div>
               </div>
                 <div class="row">
                   <div class="lg:col-10">

@@ -276,6 +276,23 @@ class ParticipantAction
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+
+
+    public function addbrevetnumber(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $currentuserUid = $request->getAttribute('currentuserUid');
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $params = $request->getQueryParams();
+        $participant_uid = $route->getArgument('uid');
+        $brevenumber = $params["brevenr"];
+        $this->participantService->updateParticipantwithbrevenumber($participant_uid, $brevenumber);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+
+
+
     function moveUploadedFile($directory, UploadedFile $uploadedFile)
     {
         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);

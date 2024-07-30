@@ -17,6 +17,7 @@ import { ParticipantListComponent } from './participant-list/participant-list.co
 import { ParticipantTableComponent } from './participant-table/participant-table.component';
 import { ParticipantCheckpointTableComponent } from './participant-checkpoint-table/participant-checkpoint-table.component';
 import { EditTimeDialogComponent } from './edit-time-dialog/edit-time-dialog.component';
+import { EditBrevenrDialogComponent } from './edit-brevenr-dialog/edit-brevenr-dialog.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { EditTimeDialogComponent } from './edit-time-dialog/edit-time-dialog.com
     ParticipantListComponent,
     ParticipantTableComponent,
     ParticipantCheckpointTableComponent,
-    EditTimeDialogComponent
+    EditTimeDialogComponent,
+    EditBrevenrDialogComponent
   ],
   imports: [
     ParticipantRoutingModule,

@@ -5,6 +5,7 @@ import {ParticipantInformationRepresentation, ParticipantRepresentation} from ".
 import {BehaviorSubject, interval} from "rxjs";
 import {DialogService} from "primeng/dynamicdialog";
 import {EditTimeDialogComponent} from "../edit-time-dialog/edit-time-dialog.component";
+import {EditBrevenrDialogComponent} from "../edit-brevenr-dialog/edit-brevenr-dialog.component";
 
 @Component({
   selector: 'brevet-participant-table',
@@ -127,6 +128,30 @@ export class ParticipantTableComponent implements OnInit {
       if (newTime) {
         participant.time = newTime
         this.participantComponentService.updateTime(participant);
+        this.participantComponentService.reload();
+      }
+    });
+  }
+
+
+  editbrevenr(participant: ParticipantRepresentation) {
+    console.log(participant.brevenr);
+    const ref = this.dialogService.open(EditBrevenrDialogComponent, {
+
+
+
+
+
+      data: {
+        brevenr: participant.brevenr
+      },
+      header: 'Lägg till brevenr',
+    });
+
+    ref.onClose.subscribe((brevenr: string) => {
+      if (brevenr) {
+        participant.brevenr = brevenr
+        this.participantComponentService.addbrevenr(participant);
         this.participantComponentService.reload();
       }
     });

@@ -160,7 +160,7 @@ class ResultRepository extends BaseRepository
             array_push($track_uids, $track->track_uid);
         }
         $in = str_repeat('?,', count($track_uids) - 1) . '?';
-        $statement = $this->connection->prepare("select p.startnumber as  startnumber, t.title, com.given_name as fornamn, cl.title as klubb, p.time as tid, p.dns, p.dnf , com.family_name as efternamn, t.track_uid, p.participant_uid, co.flag_url_svg as flagga  from competitors c inner join participant p on p.competitor_uid = c.competitor_uid inner join competitor_info ci on ci.competitor_uid = c.competitor_uid inner join competitors com on com.competitor_uid = p.competitor_uid inner join club cl on cl.club_uid = p.club_uid left join countries co on co.country_id = ci.country_id inner join track t on t.track_uid = p.track_uid where t.track_uid in ($in) and t.active = false order by com.family_name, com.given_name, t.distance;");
+        $statement = $this->connection->prepare("select p.startnumber as  startnumber, t.title, com.given_name as fornamn, cl.title as klubb, p.time as tid, p.dns, p.dnf , com.family_name as efternamn, t.track_uid, p.participant_uid, co.flag_url_svg as flagga, p.brevenr   from competitors c inner join participant p on p.competitor_uid = c.competitor_uid inner join competitor_info ci on ci.competitor_uid = c.competitor_uid inner join competitors com on com.competitor_uid = p.competitor_uid inner join club cl on cl.club_uid = p.club_uid left join countries co on co.country_id = ci.country_id inner join track t on t.track_uid = p.track_uid where t.track_uid in ($in) and t.active = false order by com.family_name, com.given_name, t.distance;");
         $statement->execute($track_uids);
         $resultset = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $resultset;
@@ -169,7 +169,7 @@ class ResultRepository extends BaseRepository
 
     public function resultOnTrack(string $track_uid)
     {
-        $statement = $this->connection->prepare("select p.startnumber as  startnumber, t.title, com.given_name as fornamn, cl.title as klubb, p.time as tid, p.dns, p.dnf , com.family_name as efternamn, t.track_uid, p.participant_uid, co.flag_url_svg as flagga  from competitors c inner join participant p on p.competitor_uid = c.competitor_uid inner join competitor_info ci on ci.competitor_uid = c.competitor_uid inner join competitors com on com.competitor_uid = p.competitor_uid inner join club cl on cl.club_uid = p.club_uid left join countries co on co.country_id = ci.country_id inner join track t on t.track_uid = p.track_uid where t.track_uid=:track_uid and t.active = false order by com.family_name, com.given_name;");
+        $statement = $this->connection->prepare("select p.startnumber as  startnumber, t.title, com.given_name as fornamn, cl.title as klubb, p.time as tid, p.dns, p.dnf , com.family_name as efternamn, t.track_uid, p.participant_uid, co.flag_url_svg as flagga, p.brevenr  from competitors c inner join participant p on p.competitor_uid = c.competitor_uid inner join competitor_info ci on ci.competitor_uid = c.competitor_uid inner join competitors com on com.competitor_uid = p.competitor_uid inner join club cl on cl.club_uid = p.club_uid left join countries co on co.country_id = ci.country_id inner join track t on t.track_uid = p.track_uid where t.track_uid=:track_uid and t.active = false order by com.family_name, com.given_name;");
         $statement->bindParam(':track_uid', $track_uid);
         $statement->execute();
         $resultset = $statement->fetchAll(PDO::FETCH_ASSOC);

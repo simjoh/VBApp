@@ -461,6 +461,7 @@ class ParticipantRepository extends BaseRepository
 
         $participant_uid = $participant_uid;
         $brevenr = $brevenr;
+        print_r($brevenr);
         try {
             $stmt = $this->connection->prepare($this->sqls('updateBrevenr'));
             $stmt->bindParam(':participant_uid', $participant_uid);
@@ -947,6 +948,10 @@ class ParticipantRepository extends BaseRepository
     }
 
 
+
+
+
+
     public function sqls($type)
     {
         $eventqls['allParticipants'] = 'select * from participant e;';
@@ -987,6 +992,7 @@ class ParticipantRepository extends BaseRepository
         return $eventqls[$type];
         // TODO: Implement sqls() method.
     }
+
 
 
 }
