@@ -106,6 +106,17 @@ export class ParticipantService {
 
   }
 
+
+  async addbrevenr(participant: ParticipantRepresentation) {
+    const link = this.linkService.findByRel(participant.links, 'relation.participant.addbrevenr', HttpMethod.PUT)
+    return await this.httpClient.put(link.url + '?brevenr=' + participant.brevenr, null).pipe(
+        catchError(err => {
+          return throwError(err);
+        })
+    ).toPromise()
+
+  }
+
   async rollbackDnf(participant: ParticipantRepresentation) {
     const link = this.linkService.findByRel(participant.links, 'relation.participant.rollbackdnf', HttpMethod.PUT)
     return await this.httpClient.put(link.url, null).pipe(

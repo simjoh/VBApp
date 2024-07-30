@@ -127,4 +127,11 @@ async updateTime(participant: ParticipantRepresentation) {
 
       })
   }
+
+
+    async addbrevenr(participant: ParticipantRepresentation) {
+        await this.participantService.addbrevenr(participant).then(() => {
+
+        })
+    }
 }

@@ -591,7 +591,6 @@ class ParticipantService extends ServiceAbstract
     {
 
 
-
         if ($track_uid == 'd32650ff-15f8-4df1-9845-d3dc252a7a84') {
             $track_uid = '0beda5d8-bbce-42d1-b7b6-4405a2e03db9';
         }
@@ -665,7 +664,7 @@ class ParticipantService extends ServiceAbstract
                     $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $participant->getStartnumber(), $registration['ref_nr']);
                 }
             }
-         //   $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParamsFromLoppservice($contactinformation['email'], $contactinformation['tel'], $adress['adress'], $adress['postal_code'], $adress['city'], $this->countryrepository->countryFor($adress['country_id'])->country_name_sv, $participant_to_create['person_uid'], $adress['country_id']);
+            //   $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParamsFromLoppservice($contactinformation['email'], $contactinformation['tel'], $adress['adress'], $adress['postal_code'], $adress['city'], $this->countryrepository->countryFor($adress['country_id'])->country_name_sv, $participant_to_create['person_uid'], $adress['country_id']);
             return true;
         } catch (Exception $e) {
             throw new BrevetException($e->getLine() . $e->getFile(), 5, null);
@@ -711,6 +710,15 @@ class ParticipantService extends ServiceAbstract
     {
         $this->participantRepository->updateTime($track_uid, $participant_uid, $newTime);
 
+    }
+
+    public function updateParticipantwithbrevenumber($participant_uid, $brevenr)
+    {
+        $participant = $this->participantRepository->participantFor($participant_uid);
+        if ($participant === null) {
+            throw new  BrevetException('Finns inget deltagare som matchar', 5, null);
+        }
+        $this->participantRepository->updateBrevenr($brevenr, $participant_uid);
     }
 
 

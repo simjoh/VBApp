@@ -44,6 +44,7 @@ class ParticipantAssembly
         $participantrepresentation->setDns($participant->isDns());
         $participantrepresentation->setDnf($participant->isDnf());
         $participantrepresentation->setStarted($participant->isStarted());
+        $participantrepresentation->setBrevenr($participant->getBrevenr());
         $participantrepresentation->setFinished($participant->isFinished());
 
         $linkArray = array();
@@ -69,7 +70,7 @@ class ParticipantAssembly
 
         if ($participant->isFinished() === true) {
             array_push($linkArray, new Link("relation.participant.updatetime", 'PUT', $this->settings['path'] . 'participant/' . $participant->getParticipantUid() . '/track/' . $participant->getTrackUid() . '/updateTime'));
-
+            array_push($linkArray, new Link("relation.participant.addbrevenr", 'PUT', $this->settings['path'] . 'participant/' . $participant->getParticipantUid() . '/track/' . $participant->getTrackUid() . '/addbrevetnumber'));
         }
 //                break;
 //            }
