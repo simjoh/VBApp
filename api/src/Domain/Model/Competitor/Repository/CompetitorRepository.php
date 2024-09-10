@@ -133,18 +133,20 @@ class CompetitorRepository extends BaseRepository
         return $this->getCompetitorByUID($uid);
     }
 
-    public function createCompetitorFromLoppservice(string $givenName, string $familyName, string $userName, string $birthdate, string $person_uid): Competitor
+    public function createCompetitorFromLoppservice(string $givenName, string $familyName, string $userName, string $birthdate, string $person_uid, $gender): Competitor
     {
         $this->connection->beginTransaction();
         try {
             $uid = $person_uid;
             $role_id = 4;
+            $intgender = intval($gender);
             $password = sha1("pass");
             $stmt = $this->connection->prepare($this->sqls('createCompetitor'));
             $stmt->bindParam(':familyname', $familyName);
             $stmt->bindParam(':username', $userName);
             $stmt->bindParam(':givenname', $givenName);
             $stmt->bindParam(':birthdate', $birthdate);
+            $stmt->bindParam(':gender', $intgender);
             $stmt->bindParam(':role_id', $role_id);
             $stmt->bindParam(':uid', $uid);
             $stmt->bindParam(':password', $uid);
@@ -252,7 +254,7 @@ class CompetitorRepository extends BaseRepository
         $competitorsqls['participant_credential'] = 'select * from competitor_credential where user_name = :user_name and password = :password';
         $competitorsqls['delete_credential'] = 'delete from competitor_credential where participant_uid=:participant_uid and competitor_uid=:competitor_uid';
         $competitorsqls['getbynameandbirth'] = 'select * from competitors where given_name=:givenname and family_name=:familyname and birthdate=:birthdate;';
-        $competitorsqls['createCompetitor'] = "INSERT INTO competitors(competitor_uid, user_name, given_name, family_name, role_id, password, birthdate) VALUES (:uid, :username, :givenname, :familyname, :role_id, :password , :birthdate)";
+        $competitorsqls['createCompetitor'] = "INSERT INTO competitors(competitor_uid, user_name, given_name, family_name, role_id, password, birthdate, gender) VALUES (:uid, :username, :givenname, :familyname, :role_id, :password , :birthdate, :gender)";
         $competitorsqls['createCompetitorCredential'] = "INSERT INTO competitor_credential(credential_uid, competitor_uid, participant_uid, user_name, password) VALUES (:uid, :competitor_uid, :participant_uid, :user_name, :password)";
         return $competitorsqls[$type];
 
