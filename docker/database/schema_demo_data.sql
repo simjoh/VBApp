@@ -80,9 +80,9 @@ INSERT INTO user_role(role_id, user_uid) VALUES (2,'e3b78c98-ffe5-4877-8491-2584
 INSERT INTO user_role(role_id, user_uid) VALUES (2,'e3b78c98-ffe5-4877-8491-258413c772e9');
 
 -- Cyklister
-INSERT INTO competitors(competitor_uid, user_name, given_name, family_name, role_id,password, birthdate) VALUES ('2922a6e9-9e32-4832-9575-b3d2eb3011b9','100','Pelle','Cyklist',4,sha1('test'), DATE('1973-06-15'));
-INSERT INTO competitors(competitor_uid, user_name ,given_name, family_name,role_id,password,birthdate) VALUES ('68f06a8c-8f08-45cc-8d20-d5e37ce658ba','200','Johan','Randonnéer',4,sha1('test1'),  DATE('1980-08-15'));
-INSERT INTO competitors(competitor_uid, user_name ,given_name, family_name,role_id,password, birthdate) VALUES ('593edcab-5dcb-4916-829d-08ac536770ad','300','Kalle','Super Randonneur',4, sha1('test2'),DATE('1990-03-04'));
+INSERT INTO competitors(competitor_uid, user_name, given_name, family_name, role_id,password, birthdate, gender) VALUES ('2922a6e9-9e32-4832-9575-b3d2eb3011b9','100','Pelle','Cyklist',4,sha1('test'), DATE('1973-06-15'),2);
+INSERT INTO competitors(competitor_uid, user_name ,given_name, family_name,role_id,password,birthdate,gender) VALUES ('68f06a8c-8f08-45cc-8d20-d5e37ce658ba','200','Johan','Randonnéer',4,sha1('test1'),  DATE('1980-08-15'),2);
+INSERT INTO competitors(competitor_uid, user_name ,given_name, family_name,role_id,password, birthdate,gender) VALUES ('593edcab-5dcb-4916-829d-08ac536770ad','300','Kalle','Super Randonneur',4, sha1('test2'),DATE('1990-03-04'),2);
 
 INSERT INTO `competitor_info`(`uid`, `competitor_uid`, `email`, `phone`, `adress`, `postal_code`, `place`, `country`, country_id) VALUES ('31a852b0-23ec-4689-b4cf-0c970f9b90fd','2922a6e9-9e32-4832-9575-b3d2eb3011b9','democyklist@test.se','0703158465','cyklistgatan 15', '90100' ,'cykelby', 'Sweden',145);
 
@@ -177,7 +177,7 @@ INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passe
 INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`,`volonteer_checkin`,lat, lng) VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81259','c0a8e4a4-a37a-4e9d-b59e-112519b4abc0',false,null,false,null, null);
 
 -- Fixa inloggning
-INSERT INTO `competitor_credential`(`credential_uid`, `competitor_uid`, `participant_uid`, `user_name`, `password`) VALUES ('8cdee576-1de3-454e-90f9-33d7c2c070ce','2922a6e9-9e32-4832-9575-b3d2eb3011b9','b3f68992-c5c7-4c31-bad5-78a93b53f28f','100',sha1('test'))
+INSERT INTO `competitor_credential`(`credential_uid`, `competitor_uid`, `participant_uid`, `user_name`, `password`) VALUES ('8cdee576-1de3-454e-90f9-33d7c2c070ce','2922a6e9-9e32-4832-9575-b3d2eb3011b9','b3f68992-c5c7-4c31-bad5-78a93b53f28f','100',sha1('test'));
 
 
 -- Klubbar

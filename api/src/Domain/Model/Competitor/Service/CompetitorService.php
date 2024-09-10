@@ -66,10 +66,10 @@ class CompetitorService
         return $this->repository->createCompetitor($givenName, $familyName, $userName, $birthdate);
     }
 
-    public function createCompetitorFromLoppservice(string $givenName, string $familyName, string $userName, string $birthdate, string $person_uid): Competitor
+    public function createCompetitorFromLoppservice(string $givenName, string $familyName, string $userName, string $birthdate, string $person_uid, string $gender ): Competitor
     {
 
-        return $this->repository->createCompetitorFromLoppservice($givenName, $familyName, $userName, $birthdate, $person_uid);
+        return $this->repository->createCompetitorFromLoppservice($givenName, $familyName, $userName, $birthdate, $person_uid, $gender);
     }
 
     public function createCredentialFor(string $getId, string $getParticipantUid, string $int, string $int1)

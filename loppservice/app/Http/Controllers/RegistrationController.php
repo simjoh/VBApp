@@ -15,6 +15,7 @@ use App\Models\Registration;
 use App\Traits\DaysTrait;
 use App\Traits\HashTrait;
 use App\Traits\MonthsTrait;
+use App\Traits\GenderTrait;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,7 @@ class RegistrationController extends Controller
     use MonthsTrait;
     use DaysTrait;
     use HashTrait;
+    use GenderTrait;
 
 
     public function index(Request $request)
@@ -62,13 +64,13 @@ class RegistrationController extends Controller
 
         if ($eventType === 'BRM') {
             return view('registrations.brevet')->with(['showreservationbutton' => $reservationactive,
-                'countries' => Country::all()->sortBy("country_name_en"), 'event' => $event->event_uid,
-                'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID]);
+                'countries' => Country::all()->sortByDesc("country_name_en"), 'event' => $event->event_uid,
+                'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID, 'genders' => $this->gendersSv()]);
         }
 
         return view('registrations.show')->with(['showreservationbutton' => $reservationactive,
-            'countries' => Country::all()->sortBy("country_name_en"),
-            'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID]);
+            'countries' => Country::all()->sortByDesc("country_name_en"),
+            'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID, 'genders' => $this->gendersEn()]);
     }
 
 
@@ -120,6 +122,7 @@ class RegistrationController extends Controller
         $person->checksum = $this->hashsumfor($string_to_hash);
         $person->firstname = $request['first_name'];
         $person->surname = $request['last_name'];
+        $person->gender = $request['gender'];
         $person->contactinformation->tel = $request['tel'];
         $person->birthdate = $request['year'] . "-" . str_pad($request['month'], 2, "0", STR_PAD_LEFT) . "-" . str_pad($request['day'], 2, "0", STR_PAD_LEFT);
 
@@ -265,6 +268,7 @@ class RegistrationController extends Controller
 
         } else {
             $person = new Person();
+            $person->gender = $request['gender'];
             $person->person_uid = Uuid::uuid4();
             $person->firstname = Str::of($request['first_name'])->ucfirst();
             $person->surname = Str::of($request['last_name'])->ucfirst();

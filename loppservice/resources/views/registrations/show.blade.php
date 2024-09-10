@@ -86,6 +86,20 @@
                                class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
                     </div>
                 </div>
+				<div class="mt-3">
+					<label for="gender" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Gender</label>
+					<select id="gender" name="gender" autocomplete="gender-name"
+							class="sm:w-full px-3 py-2 md:w-1/2 lg:w-1/2 py-2 border-2 focus:outline-none focus:border-gray-600"
+							required>
+						<option>Select gender</option>
+						@foreach ($genders as $key => $gender)
+						<option value="{{$key}}">
+							{{$gender}}
+						</option>
+						@endforeach
+					</select>
+				</div>
+
                 <div class="mt-3">
                     <label for="country" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Country</label>
                     <select id="country" name="country" autocomplete="country-name"
