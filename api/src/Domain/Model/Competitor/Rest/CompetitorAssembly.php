@@ -9,6 +9,10 @@ use Psr\Container\ContainerInterface;
 class CompetitorAssembly
 {
 
+
+    private $permissinrepository;
+    private $settings;
+
     public function __construct(ContainerInterface $c, PermissionRepository $permissionRepository)
     {
         $this->permissinrepository = $permissionRepository;
@@ -16,19 +20,20 @@ class CompetitorAssembly
     }
 
 
-    public function toRepresentations(array $eventsArray, string $currentUserUid): array {
+    public function toRepresentations(array $eventsArray, string $currentUserUid): array
+    {
 
         $permissions = $this->getPermissions($currentUserUid);
 
         $competitors = array();
-        foreach ($eventsArray as $x =>  $competitor) {
-            array_push($competitors, (object) $this->toRepresentation($competitor,$permissions));
+        foreach ($eventsArray as $x => $competitor) {
+            array_push($competitors, (object)$this->toRepresentation($competitor, $permissions));
         }
         return $competitors;
     }
 
-    public function toRepresentation(Competitor $competitor,  array $permissions): CompetitorRepresentation {
-
+    public function toRepresentation(Competitor $competitor, array $permissions): CompetitorRepresentation
+    {
 
 
         $competitorrepresentation = new CompetitorRepresentation();
@@ -47,7 +52,7 @@ class CompetitorAssembly
 
     public function getPermissions($user_uid): array
     {
-        return $this->permissinrepository->getPermissionsTodata("TRACK",$user_uid);
+        return $this->permissinrepository->getPermissionsTodata("TRACK", $user_uid);
     }
 
 }

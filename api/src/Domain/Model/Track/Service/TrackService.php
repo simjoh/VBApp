@@ -33,6 +33,14 @@ class TrackService extends ServiceAbstract
 
     private $trackRepository;
     private $checkpointService;
+    private $permissionrepository;
+    private $trackAssembly;
+    private $settings;
+    private $siteRepository;
+    private $eventRepository;
+    private $checkpointRepository;
+    private $participantRepository;
+    private $rusaTimeTrackPlannerService;
 
     public function __construct(ContainerInterface    $c,
                                 TrackRepository       $trackRepository,

@@ -9,6 +9,10 @@ use Psr\Container\ContainerInterface;
 
 class EventInformationAssembly
 {
+    private $permissinrepository;
+    private $settings;
+    private $eventAssembly;
+    private $trackAssembly;
 
     public function __construct(PermissionRepository $permissionRepository, ContainerInterface $c, EventAssembly $eventAssembly, TrackAssembly $trackAssembly)
     {

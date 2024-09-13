@@ -17,6 +17,13 @@ use Slim\Views\Twig;
 class ResultsController
 {
 
+    private $settings;
+    private $resultService;
+    private $eventservice;
+    private $trackService;
+    private $participantservice;
+    private $competitorservice;
+
     public function __construct(ContainerInterface $c, ResultService $resultService, EventService $eventService, TrackService $trackService, ParticipantService $participantservice, CompetitorService $competitorService)
     {
         $this->settings = $c->get('settings');

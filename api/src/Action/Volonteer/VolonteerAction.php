@@ -12,6 +12,8 @@ use Slim\Routing\RouteContext;
 
 class VolonteerAction
 {
+
+    private $volonteerService;
     public function __construct(ContainerInterface $c, VolonteerService $volonteerService)
     {
         $this->volonteerService = $volonteerService;

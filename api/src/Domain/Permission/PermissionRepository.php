@@ -9,6 +9,9 @@ use PDOException;
 class PermissionRepository extends BaseRepository
 {
 
+
+
+    private $permissionssqls;
     /**
      * Constructor.
      *

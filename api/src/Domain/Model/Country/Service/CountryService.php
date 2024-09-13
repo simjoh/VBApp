@@ -10,6 +10,9 @@ use Psr\Container\ContainerInterface;
 class CountryService extends ServiceAbstract
 {
 
+    private $countryrepository;
+    private $permissionrepository;
+
     public function __construct(ContainerInterface $c, CountryRepository $countryRepository, PermissionRepository $permissionRepository)
     {
         $this->countryrepository = $countryRepository;

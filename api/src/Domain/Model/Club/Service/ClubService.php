@@ -12,6 +12,11 @@ use Psr\Container\ContainerInterface;
 class ClubService
 {
 
+    private $clubrepository;
+    private $permissionrepoitory;
+    private $clubAssembly;
+    private $settings;
+
     public function __construct(ContainerInterface   $c,
                                 ClubRepository       $clubRepository,
                                 PermissionRepository $permissionRepository,

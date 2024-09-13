@@ -11,6 +11,10 @@ use App\Domain\Model\User\User;
 class AuthenticationService
 {
 
+    private $competitorrepository;
+    private $repository;
+
+
     public function __construct(UserRepository $repository, CompetitorRepository $competitorRepository)
     {
         $this->repository = $repository;

@@ -13,6 +13,11 @@ use Psr\Container\ContainerInterface;
 class EventAssembly
 {
 
+    private $permissinrepository;
+    private $settings;
+    private $participantRepository;
+    private $trackRepository;
+
     public function __construct(PermissionRepository $permissionRepository, ContainerInterface $c, ParticipantRepository $participantRepository, TrackRepository $trackRepository)
     {
         $this->permissinrepository = $permissionRepository;

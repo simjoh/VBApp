@@ -13,16 +13,18 @@ use Ramsey\Uuid\Uuid;
 class CompetitorRepository extends BaseRepository
 {
 
+    public ParticipantRepository $participantrepository;
+    public PDO $connection;
     /**
      * Constructor.
      *
      * @param PDO $connection The database connection
      */
-    public function __construct(PDO $connection, ParticipantRepository $participantRepository)
+    public function __construct(PDO $connection, ParticipantRepository $participantRepositoryy)
     {
         parent::__construct($connection);
         $this->connection = $connection;
-        $this->participantRepository = $participantRepository;
+        $this->participantrepository = $participantRepositoryy;
     }
 
 

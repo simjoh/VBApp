@@ -11,6 +11,8 @@ class ClubAssembly
 {
 
 
+    private $permissinrepository;
+    private $settings;
 
     public function __construct(PermissionRepository $permissionRepository, ContainerInterface $c)
     {

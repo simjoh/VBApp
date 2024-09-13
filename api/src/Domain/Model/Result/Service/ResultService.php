@@ -13,6 +13,13 @@ use Psr\Container\ContainerInterface;
 class ResultService
 {
 
+    private $settings;
+    private $resultrepo;
+    private $trackrepository;
+    private $eventrepoitory;
+    private $participantRepository;
+    private $competitorRepository;
+
     public function __construct(ContainerInterface    $c,
                                 ResultRepository      $resultrepository,
                                 TrackRepository       $trackRepository,

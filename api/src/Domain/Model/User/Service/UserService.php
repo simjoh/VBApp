@@ -20,6 +20,11 @@ class UserService extends  ServiceAbstract
      * @var UserRepository
      */
     private UserRepository $repository;
+    private $permissionrepository;
+    private $userAssembly;
+    private $userRoleRepository;
+    private $userInfoRepository;
+    private $userInfoAssembly;
 
     public function __construct(UserRepository $repository,
                                 PermissionRepository $permissionRepository,

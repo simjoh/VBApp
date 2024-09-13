@@ -12,6 +12,8 @@ use Psr\Container\ContainerInterface;
 class ParticipantInformationAssembly
 {
 
+    private $permissinrepository;
+    private $settings;
     public function __construct(ContainerInterface $c, PermissionRepository $permissionRepository)
     {
         $this->permissinrepository = $permissionRepository;

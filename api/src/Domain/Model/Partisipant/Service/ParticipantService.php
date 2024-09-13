@@ -32,6 +32,22 @@ use Psr\Container\ContainerInterface;
 class ParticipantService extends ServiceAbstract
 {
 
+    private $trackRepository;
+    private $participantRepository;
+    private $participantassembly;
+    private $eventrepository;
+    private $competitorService;
+    private $competitorInfoRepository;
+    private $clubrepository;
+    private $permissionrepoitory;
+    private $competitorInformationAssembly;
+    private $clubService;
+    private $competitorInfoService;
+    private $checkpointsService;
+    private $randonneurservice;
+    private $countryrepository;
+    private $settings;
+
     public function __construct(ContainerInterface             $c,
                                 TrackRepository                $trackRepository,
                                 ParticipantRepository          $participantRepository,

@@ -10,6 +10,10 @@ use App\Domain\Permission\PermissionRepository;
 class RusaResponseAssembler
 {
 
+    private $permissinrepository;
+    private $siteservice;
+    private $eventassembly;
+
     public function __construct(PermissionRepository $permissionRepository, SiteService $siteService, EventAssembly $eventAssembly)
     {
         $this->permissinrepository = $permissionRepository;

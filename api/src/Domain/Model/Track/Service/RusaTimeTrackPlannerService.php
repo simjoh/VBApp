@@ -16,6 +16,14 @@ use stdClass;
 class RusaTimeTrackPlannerService
 {
 
+    private $settings;
+    private $siteRepository;
+    private $eventRepository;
+    private $checkpointRepository;
+    private $participantRepository;
+    private $rusatimeClient;
+    private $rusaresponseAssembler;
+
     public function __construct(ContainerInterface    $c,
                                 SiteRepository        $siteRepository,
                                 EventRepository       $eventRepository,

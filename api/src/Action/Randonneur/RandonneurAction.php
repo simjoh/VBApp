@@ -12,6 +12,8 @@ use Slim\Routing\RouteContext;
 class RandonneurAction
 {
 
+    private $randonneurService;
+    private $trackservice;
 
     public function __construct(ContainerInterface $c, RandonneurService $randonneurService, TrackService $trackService)
     {

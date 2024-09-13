@@ -11,6 +11,8 @@ class ParticipantCheckpoint
     private  $passeded_date_time;
     private ?string $lat;
     private ?string $lng;
+    private bool $volonteer_checkin;
+    private $checkout_date_time;
 
     /**
      * @return string

@@ -12,6 +12,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class PingAction extends BaseAction
 {
     private $pingservice;
+    private $settings;
 
 
     public function __construct(PingService $pingservice, ContainerInterface $c)

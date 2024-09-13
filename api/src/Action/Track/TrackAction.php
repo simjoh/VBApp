@@ -26,6 +26,7 @@ class TrackAction
 {
 
     private TrackService $trackService;
+    private $settings;
 
     public function __construct(ContainerInterface $c, TrackService $trackService)
     {

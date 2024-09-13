@@ -15,6 +15,7 @@ class CheckpointsService extends ServiceAbstract
 {
     private $checkpointRepository;
     private $siteservice;
+    private $permissionrepository;
 
     public function __construct(ContainerInterface $c,
                                 CheckpointRepository $checkpointRepository,

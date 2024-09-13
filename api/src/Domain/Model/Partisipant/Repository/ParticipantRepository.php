@@ -15,6 +15,7 @@ use Ramsey\Uuid\Uuid;
 class ParticipantRepository extends BaseRepository
 {
 
+
     /**
      * Constructor.
      *
@@ -22,6 +23,7 @@ class ParticipantRepository extends BaseRepository
      */
     public function __construct(PDO $connection)
     {
+        parent::__construct($connection);
         $this->connection = $connection;
         $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }

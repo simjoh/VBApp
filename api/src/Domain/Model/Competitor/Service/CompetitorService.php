@@ -11,6 +11,9 @@ use App\Domain\Model\User\Repository\UserRepository;
 class CompetitorService
 {
 
+
+    private $repository;
+    private $competitorAssembly;
     /**
      * The constructor.
      *

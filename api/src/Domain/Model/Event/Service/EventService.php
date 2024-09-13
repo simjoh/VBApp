@@ -20,6 +20,17 @@ use Psr\Container\ContainerInterface;
 class EventService extends ServiceAbstract
 {
 
+    private $eventRepository;
+    private $permissinrepository;
+    private $eventAssembly;
+    private $eventInformationAssembly;
+    private $trackservice;
+    private $checkpointsService;
+    private $participantService;
+    private $trackInformationAssembly;
+    private $statisticsRepository;
+
+
     public function __construct(ContainerInterface       $c, EventRepository $eventRepository,
                                 PermissionRepository     $permissionRepository,
                                 EventAssembly            $eventAssembly,

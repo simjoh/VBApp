@@ -14,8 +14,15 @@ class Competitor implements JsonSerializable
     private string $token;
     private ?int $startnumber;
     private ?string $trackuid;
+    private int $role_id;
+    private ?string $password;
+    private $birthdate;
 
-    private  $roles = array();
+
+
+
+
+    private $roles = array();
 
     public function __construct()
     {
@@ -111,7 +118,7 @@ class Competitor implements JsonSerializable
      */
     public function getStartnumber(): ?int
     {
-        if(isset($this->startnumber)){
+        if (isset($this->startnumber)) {
             return $this->startnumber;
         }
 
@@ -142,10 +149,51 @@ class Competitor implements JsonSerializable
         $this->trackuid = $trackuid;
     }
 
-
-    public function jsonSerialize(): mixed {
-        return (object) get_object_vars($this);
+    public function getRoleId(): int
+    {
+        return $this->role_id;
     }
+
+    public function setRoleId(int $role_id): void
+    {
+        $this->role_id = $role_id;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(?string $password): void
+    {
+        $this->password = $password;
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getBirthdate()
+    {
+        return $this->birthdate;
+    }
+
+    /**
+     * @param mixed $birthdate
+     */
+    public function setBirthdate($birthdate): void
+    {
+        $this->birthdate = $birthdate;
+    }
+
+
+
+    public function jsonSerialize(): mixed
+    {
+        return (object)get_object_vars($this);
+    }
+
+
 
 
 }

@@ -16,6 +16,7 @@ class SitesAction
 {
 
     private $siteservice;
+    private $settings;
 
     public function __construct(ContainerInterface $c, SiteService $siteService)
     {

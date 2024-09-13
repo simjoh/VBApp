@@ -12,6 +12,10 @@ use Psr\Container\ContainerInterface;
 class SiteAssembly
 {
 
+    private $permissinrepository;
+    private $settings;
+    private $siterepository;
+
     public function __construct(ContainerInterface $c, PermissionRepository $permissionRepository, SiteRepository $siterepository)
     {
         $this->permissinrepository = $permissionRepository;

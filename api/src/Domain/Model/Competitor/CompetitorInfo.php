@@ -12,7 +12,7 @@ class CompetitorInfo
     private string $postal_code;
     private string $place;
     private string $country;
-    private int $country_id;
+    private ?int $country_id;
 
 
     /**

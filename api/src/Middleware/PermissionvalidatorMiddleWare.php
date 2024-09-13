@@ -18,8 +18,13 @@ class PermissionvalidatorMiddleWare
 {
 
     private $key;
+    private $cs;
+    private $path;
+    private $permissionrepository;
+    private $routeCollector;
 
-    public function __construct(ContainerInterface $c, RouteCollectorInterface $routeCollector ,PermissionRepository $permissionRepository)
+
+    public function __construct(ContainerInterface $c, RouteCollectorInterface $routeCollector, PermissionRepository $permissionRepository)
     {
         $this->key = $c->get('settings')['secretkey'];
         $this->cs = $c;
@@ -29,7 +34,8 @@ class PermissionvalidatorMiddleWare
     }
 
 
-    public function __invoke(Request $request, RequestHandler $handler): Response {
+    public function __invoke(Request $request, RequestHandler $handler): Response
+    {
 
 
         $token = $request->getHeaderLine("TOKEN");
@@ -47,25 +53,25 @@ class PermissionvalidatorMiddleWare
 
         $permissions = $this->permissionrepository->getPermissionsFor($claims['id']);
 
-        if(empty($permissions) && !Arrays::get($claims['roles'], 'isCompetitor') && !Arrays::get($claims['roles'], 'isVolonteer')){
+        if (empty($permissions) && !Arrays::get($claims['roles'], 'isCompetitor') && !Arrays::get($claims['roles'], 'isVolonteer')) {
 
             return (new Response())->withStatus(401);
         }
 
 
-        if((Arrays::get($claims['roles'], 'isUser')) || (Arrays::get($claims['roles'], 'isAdmin')) || (Arrays::get($claims['roles'], 'isSuperuser'))) {
+        if ((Arrays::get($claims['roles'], 'isUser')) || (Arrays::get($claims['roles'], 'isAdmin')) || (Arrays::get($claims['roles'], 'isSuperuser'))) {
 
             $request = $request->withAttribute('currentuserUid', $claims['id']);
             return $handler->handle($request);
         };
 
-        if((Arrays::get($claims['roles'], 'isDeveloper'))) {
+        if ((Arrays::get($claims['roles'], 'isDeveloper'))) {
             $request = $request->withAttribute('currentuserUid', $claims['id']);
             return $handler->handle($request);
         };
 
-        if((Arrays::get($claims['roles'], 'isCompetitor'))) {
-            if(Strings::startsWith($request->getRequestTarget(), $this->path ."randonneur/") === True  ){
+        if ((Arrays::get($claims['roles'], 'isCompetitor'))) {
+            if (Strings::startsWith($request->getRequestTarget(), $this->path . "randonneur/") === True) {
                 $request = $request->withAttribute('currentuserUid', $claims['id']);
                 return $handler->handle($request);
             } else {
@@ -74,7 +80,7 @@ class PermissionvalidatorMiddleWare
             }
         }
 
-        if((Arrays::get($claims['roles'], 'isVolonteer'))) {
+        if ((Arrays::get($claims['roles'], 'isVolonteer'))) {
 
             $request = $request->withAttribute('currentuserUid', $claims['id']);
             return $handler->handle($request);

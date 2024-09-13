@@ -6,5 +6,5 @@ export const environment = {
   mock_login: false,
   mockbackendurl: '',
   pictureurl: '../../../../../../api/uploads',
-  http_url: 'https://vasterbottenbrevet.se'
+  http_url: 'https://ebrevet.org'
 };

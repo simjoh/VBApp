@@ -20,6 +20,8 @@ use Slim\Routing\RouteContext;
 class ParticipantAction
 {
 
+    private $participantService;
+    private $settings;
     public function __construct(ContainerInterface $c, ParticipantService $participantService)
     {
         $this->participantService = $participantService;

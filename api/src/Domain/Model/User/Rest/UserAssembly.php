@@ -10,6 +10,10 @@ use App\Domain\Permission\PermissionRepository;
 class UserAssembly
 {
 
+    private $permissinrepository;
+    private $userinforepository;
+    private $userInfoAssembly;
+
     public function __construct(PermissionRepository $permissionRepository,
                                 UserInfoRepository $userInfoRepository, UserInfoAssembly $userInfoAssembly)
     {

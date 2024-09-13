@@ -9,6 +9,8 @@ use Psr\Http\Message\ResponseInterface;
 class RusaTimeRestClient
 {
 
+    private $rusaurl;
+    private $client;
     public function __construct(string $rusaurl = '')
     {
         $this->rusaurl = $rusaurl;

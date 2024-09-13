@@ -12,6 +12,8 @@ use App\Domain\Permission\PermissionRepository;
 class SiteService extends ServiceAbstract
 {
     private $siterepository;
+    private $permissionrepository;
+    private $siteassembly;
 
     public function __construct(SiteRepository $siterepository, PermissionRepository $permissionRepository, SiteAssembly $siteAssembly)
     {

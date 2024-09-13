@@ -18,6 +18,14 @@ use Psr\Container\ContainerInterface;
 class RandonneurService
 {
 
+    private $repository;
+    private $participantRepository;
+    private $checkpointService;
+    private $trackrepository;
+    private $randonneurCheckpointAssembly;
+    private $trackAssembly;
+    private $eventrepository;
+    private $settings;
 
     public function __construct(CompetitorRepository         $repository,
                                 ParticipantRepository        $participantRepository,

@@ -17,6 +17,8 @@ use Slim\Routing\RouteContext;
 class ClubAction
 {
 
+    private $clubservice;
+
     public function __construct(ContainerInterface $c, ClubService $clubService){
 
         $this->clubservice = $clubService;

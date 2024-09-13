@@ -9,6 +9,7 @@ use Psr\Container\ContainerInterface;
 class RandonneurCheckpointAssembly
 {
 
+    private $settings;
     public function __construct(ContainerInterface $c)
     {
         $this->settings = $c->get('settings');

@@ -11,6 +11,11 @@ use Psr\Container\ContainerInterface;
 class CompetitorInfoService
 {
 
+    private $settings;
+    private $competitorInfoRepository;
+    private $permissionrepoitory;
+    private $competitorInfoAssembly;
+
     public function __construct(ContainerInterface       $c,
                                 CompetitorInfoRepository $competitorInfoRepository, PermissionRepository $permissionRepository, CompetitorInfoAssembly $competitorInfoAssembly)
     {

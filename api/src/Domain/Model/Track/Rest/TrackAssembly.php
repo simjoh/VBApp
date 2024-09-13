@@ -12,6 +12,11 @@ use Psr\Container\ContainerInterface;
 class TrackAssembly
 {
 
+    private $permissinrepository;
+    private $settings;
+    private $checkpointService;
+    private $participantRepository;
+
     public function __construct(PermissionRepository $permissionRepository,CheckpointsService $checkpointService, ParticipantRepository $participantRepository, ContainerInterface $c)
     {
         $this->permissinrepository = $permissionRepository;

@@ -2,12 +2,16 @@
 
 namespace App\Domain\Model\Club;
 
+use App\common\Repository\BaseRepository;
 use PDO;
 use PDOException;
 use Ramsey\Uuid\Uuid;
 
-class ClubRepository extends \App\common\Repository\BaseRepository
+class ClubRepository extends BaseRepository
 {
+
+
+
 
 
     /**

@@ -9,6 +9,8 @@ use App\Domain\Permission\PermissionRepository;
 class TrackMetricAssembly
 {
 
+    private $permissinrepository;
+
     public function __construct(PermissionRepository $permissionRepository)
     {
         $this->permissinrepository = $permissionRepository;
