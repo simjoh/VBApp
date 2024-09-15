@@ -13,9 +13,9 @@ use App\Models\Person;
 use App\Models\Product;
 use App\Models\Registration;
 use App\Traits\DaysTrait;
+use App\Traits\GenderTrait;
 use App\Traits\HashTrait;
 use App\Traits\MonthsTrait;
-use App\Traits\GenderTrait;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -181,6 +181,39 @@ class RegistrationController extends Controller
             }
         }
 
+//        $result = DB::connection('vbapp')->select('SELECT * FROM competitors  WHERE competitor_uid = ?', ['2922a6e9-9e32-4832-9575-b3d2eb3011b9']);
+//        if (count($result) > 0) {
+//            $data = [
+//                'given_name' => $person->firstname,
+//                'family_name' => $person->surname,
+//                'birthdate' => $person->birthdate,
+//            ];
+//            $affectedRows = DB::connection('vbapp')->table('competitors')->where('competitor_uid', '2922a6e9-9e32-4832-9575-b3d2eb3011b9')->update($data);
+//            if ($affectedRows > 0) {
+//
+//                $competitor_info_data = [
+//                    'email' => $adress->email,
+//                    'adress' => $adress->adress,
+//                    'postal_code' => $adress->postal_code,
+//                    'place' => $adress->city,
+//                    'cuntry_id' => $adress->country_id,
+//                ];
+//
+//                $info = DB::connection('vbapp')->select('SELECT * FROM competitor_info  WHERE competitor_uid = ?', ['2922a6e9-9e32-4832-9575-b3d2eb3011b9']);
+//                if (count($info) > 0) {
+//                    $affectedRows = DB::connection('vbapp')->table('competitor_info')->where('competitor_uid', '2922a6e9-9e32-4832-9575-b3d2eb3011b9')->update($competitor_info_data);
+//                } else {
+//                    $competitor_info_data['competitor_uid'] = '2922a6e9-9e32-4832-9575-b3d2eb3011b9';
+//                    $affectedRows = DB::connection('vbapp')->table('competitor_info')->insert($competitor_info_data);
+//                }
+//
+//                echo "Record updated successfully.";
+//            } else {
+//                echo "No record found to update.";
+//            }
+//        }
+
+
         return view('registrations.updatesuccess')->with(['text' => 'Your registration details is updated']);
     }
 
@@ -209,12 +242,13 @@ class RegistrationController extends Controller
             $year = $birthdate[0];
         }
 
+
         $optionalsforreg = Optional::where('registration_uid', $registration->registration_uid)->pluck('productID');
 
         return view('registrations.edit')->with(['countries' => Country::all()->sortByDesc("country_name_en"), 'years' =>
             range(date('Y'), 1950), 'days' => $this->daysforSelect(), 'months' => $this->monthsforSelect(),
             'registration' => $registration, 'day' => $day, 'month' => $month,
-            'birthyear' => $year, 'optionalsforregistration' => $optionalsforreg]);
+            'birthyear' => $year, 'optionalsforregistration' => $optionalsforreg, 'genders' => $this->gendersEn()]);
     }
 
 
@@ -396,7 +430,7 @@ class RegistrationController extends Controller
                 } else {
                     $price = env("STRIPE_TEST_PRODUCT");
                 }
-                    return to_route('checkout', ["reg" => $reg->registration_uid, 'price_id' => $price, "event_type" => $event->event_type]);
+                return to_route('checkout', ["reg" => $reg->registration_uid, 'price_id' => $price, "event_type" => $event->event_type]);
 
             } else {
                 event(new CompletedRegistrationSuccessEvent($registration));

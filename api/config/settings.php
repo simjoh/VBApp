@@ -81,7 +81,7 @@ $settings['db'] = [
 //];
 
 
-$settings['genders'] = ["1"=>"Kvinna", "2", 'Man'];
+$settings['genders'] = ["1"=> ['sv'=> 'Kvinna', 'en' => 'Female'], "2" => ['sv' => 'Man', 'en' => 'Male']];
 
 $settings['secretkey'] = "12345678901234567890123456789012";
 

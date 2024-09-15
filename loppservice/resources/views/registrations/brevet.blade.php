@@ -101,7 +101,6 @@
 				</div>
 			</div>
 		</div>
-
 		<div class="mt-3">
 			<label for="gender" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Kön</label>
 			<select id="gender" name="gender" autocomplete="gender-name"
