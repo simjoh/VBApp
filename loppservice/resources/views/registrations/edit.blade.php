@@ -112,6 +112,8 @@
                             </select>
                         </div>
 
+
+
                         <div class="mt-2">
                             <label for="month" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">MM</label>
                             <select name="month" id="month"
@@ -142,16 +144,29 @@
                     </div>
                 </div>
 
+
+				<div class="mt-5 mb-5 md:w-1/2 sm:w-full">
+
+					<label for="gender" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Gender</label>
+					<select name="gender" id="gender"
+							class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+						<option>Gender</option>
+						@foreach ($genders as $key => $gender)
+						@if ($key == $registration->gender)
+						<option value="{{ $key }}" selected>{{ $gender }}</option>
+						@else
+						<option value="{{ $key }}">{{ $gender }}</option>
+						@endif
+						@endforeach
+					</select>
+
+
+				</div>
+
                 <div class="mt-5 mb-5 md:w-1/2 sm:w-full">
                     <label for="extra-info" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Special Dietary
                         Requirements</label>
-<!--                    <textarea id="extra-info" name="extra-info" rows="1"-->
-<!--                              class="sm:w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600">-->
-<!---->
-<!---->
-<!--                    </textarea>-->
-
-                    <input type="text" name="extra-info" id="extra-info"  value=" {{$registration->additional_information}}"
+					<input type="text" name="extra-info" id="extra-info"  value=" {{$registration->additional_information}}"
                            class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
 
 
