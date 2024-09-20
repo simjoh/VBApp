@@ -1,12 +1,12 @@
 @include('base')
 <body>
 <header class="bg-white py-4">
-	<div class="container sm:p-1 mx-auto">
-		<img class="px-2" alt="msr logotyp" width="75%" height="800" src="{{ asset('cykelintresset.svg') }}"/>
-	</div>
+<!--	<div class="container sm:p-1 mx-auto">-->
+<!--		<img class="px-2" alt="msr logotyp" width="75%" height="800" src="{{ asset('cykelintresset.svg') }}"/>-->
+<!--	</div>-->
 </header>
 <div class="container mx-auto p-0 font-sans">
-	<div class="text-2xl font-bold">{{$event->title}} &nbsp; {{$event->startdate}}</div>
+	<div class="text-2xl font-bold">{{$event->title}} &nbsp;</div>
 	<div class="flex flex-col">
 		<div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
 			<div class="inline-block min-w-full py-1 sm:px-6 lg:px-8">

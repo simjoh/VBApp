@@ -3,12 +3,11 @@
 @include('base')
 <body class="antialiased">
 <header class="bg-white py-4">
-	<div class="container sm:p-1 mx-auto">
-		<img alt="brm logotyp" width="75%" height="800" src="{{ asset('cykelintresset.svg') }}"/>
-	</div>
+<!--	<div class="container sm:p-1 mx-auto">-->
+<!--		<img alt="brm logotyp" width="75%" height="800" src="{{ asset('cykelintresset.svg') }}"/>-->
+<!--	</div>-->
 </header>
-<div class="container mx-auto p-0 font-sans">
-
+<div class="mx-auto p-0 font-sans">
 
 	@if ($errors->any())
 	<div class="alert alert-danger">
@@ -30,13 +29,13 @@
 	</div>
 	@endif
 
-	<div class="mb-5">
-		<p class="mb-3">Startavgift per brevet: 100 kr (ej återbetalbar dock överförbar). ACP utfärdar distansmedaljer till respektive
-			distans.</p>
-		<p>Distansmedaljer utfärdas endast för officiella brevet-distanser och inte för brevet populaire-distanser under 200 km. Tillägg
-			för distansmedalj (inkluderar porto): 150 kr (återbetalas ej vid DNS/DNF).</p>
-
-	</div>
+<!--	<div class="mb-5">-->
+<!--		<p class="mb-3">Startavgift per brevet: 100 kr (ej återbetalbar dock överförbar). ACP utfärdar distansmedaljer till respektive-->
+<!--			distans.</p>-->
+<!--		<p>Distansmedaljer utfärdas endast för officiella brevet-distanser och inte för brevet populaire-distanser under 200 km. Tillägg-->
+<!--			för distansmedalj (inkluderar porto): 150 kr (återbetalas ej vid DNS/DNF).</p>-->
+<!---->
+<!--	</div>-->
 
 	<form method="post" action="{{url('registration.create')}}" class="grid sm:grid-cols-1 gap-4">
 		@csrf

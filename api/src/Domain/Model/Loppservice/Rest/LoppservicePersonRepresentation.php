@@ -18,6 +18,7 @@ class LoppservicePersonRepresentation implements JsonSerializable {
     public LoppserviceAdressRepresentation $address;
     public LoppserviceContactinformationRepresentation $contactinformation;
     public array $registration;
+    public string $response_uid;
 
     public function __construct() {
 

@@ -61,7 +61,7 @@ class CompetitorRepository extends BaseRepository
             return null;
         }
 
-        $participant = $this->participantRepository->participantFor($credok['participant_uid']);
+        $participant = $this->participantrepository->participantFor($credok['participant_uid']);
 
 
         $stmt = $this->connection->prepare($this->sqls('competitor_by_uid'));

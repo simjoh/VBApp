@@ -154,7 +154,7 @@
 	</style>
 </head>
 <body>
-<h1 style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">Super Randonné Series</h1>
+<!--<h1 style="padding-top: 4pt;padding-left: 4pt;text-indent: 0pt;text-align: left;">Super Randonné Series</h1>-->
 <p style="text-indent: 0pt;text-align: left;">
 	<br />
 </p>
@@ -225,13 +225,13 @@
 	</tr>
 	<tr style="height:36pt">
 		<td style="width:227pt">
-			<a href="mailto:info@midnightsunrandonne.se" class="s4">info@vasterbottenbrevet.se</a>
+			<a href="mailto:info@ebrevet.org" class="s4">info@ebrevet.se</a>
 		</td>
 		<td style="width:14pt">
 			<p style="text-indent: 0pt;text-align: left;"></p>
 		</td>
 		<td style="width:227pt">
-			<a href="http://www.midnightsunrandonnee.se/" class="s4">www.vasterbottenbrevet.se</a>
+			<a href="http://www.ebrevet.org/" class="s4">www.ebrevet.org</a>
 		</td>
 	</tr>
 	<tr style="height:38pt">

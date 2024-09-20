@@ -29,6 +29,8 @@ class CreateParticipantInCyclingAppEventListener
             'APIKEY' => env('BREVET_APP_API_KEY'),
         ])->get(env("BREVET_APP_URL") . '/ping');
 
+        $responseUid = Uuid::uuid4();
+
         $response = Http::withHeaders([
             'APIKEY' => env('BREVET_APP_API_KEY'),
         ])->post(env("BREVET_APP_URL") . '/participant/addparticipant/track/' . $registration->course_uid, [
@@ -36,34 +38,34 @@ class CreateParticipantInCyclingAppEventListener
             'registration' => $registration,
             'event_uid' => $event_event->event_uid,
             'club' => $club,
-            'response_uid' => Uuid::uuid4()
+            'response_uid' => $responseUid
         ]);
 
         if ($response->successful()) {
             $responseData = json_decode($response->getBody(), true);
             Log::debug($responseData);
                 $published = new PublishedEvents();
-                $published->publishedevent_uid = $responseData['response_uid'];
-                $published->registration_uid = $responseData['registration_uid'];
+                $published->publishedevent_uid = Uuid::uuid4();
+                $published->registration_uid = $event->registration_uid;
                 $published->type = "eventregistration";
                 $published->save();
-            Log::debug("Transferring of participant detail was succesfylly transferred to cycling app " . "registration_uid:" .  $responseData['registration_uid']);
+            Log::debug("Transferring of participant detail was succesfylly transferred to cycling app " . "registration_uid:" .  $event->registration_uid);
         } else {
             $errorCode = $response->status();
             $errorMessage = json_decode($response->getBody(), true);
             if (!ErrorEvents::where('publishedevent_uid', $errorMessage['response_uid'])->exists()) {
                 $error = new ErrorEvents();
                 $error->errorevent_uid = Uuid::uuid4();
-                $error->publishedevent_uid = $errorMessage['response_uid'];
-                $error->registration_uid = $errorMessage['registration_uid'];
+                $error->publishedevent_uid = Uuid::uuid4();
+                $error->registration_uid = $event->registration_uid;
                 $error->type = "eventregistration";
                 $error->save();
-                event(new FailedParticipantTransferEvent($errorMessage['registration_uid'], $error->errorevent_uid));
+                event(new FailedParticipantTransferEvent($event->registration_uid, $error->errorevent_uid));
             } else {
                 $error =ErrorEvents::where('publishedevent_uid', $errorMessage['response_uid'])->get();
-                event(new FailedParticipantTransferEvent($errorMessage['registration_uid'], $error->errorevent_uid));
+                event(new FailedParticipantTransferEvent($event->registration_uid, $error->errorevent_uid));
             }
-            Log::debug("Error transfering participant in app with registration_uid: " . $errorMessage['registration_uid'] . ' ' . ' With error ' . $errorCode);
+            Log::debug("Error transfering participant in app with registration_uid: " . $event->registration_uid . ' ' . ' With error ' . $errorCode);
         }
     }
 }
