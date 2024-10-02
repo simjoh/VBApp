@@ -62,13 +62,13 @@ class RegistrationController extends Controller
 
         if ($eventType === 'BRM') {
             return view('registrations.brevet')->with(['showreservationbutton' => $reservationactive,
-                'countries' => Country::all()->sortByDesc("country_name_en"), 'event' => $event->event_uid,
-                'years' => range(date('Y'), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID]);
+                'countries' => Country::all()->sortBy("country_name_en"), 'event' => $event->event_uid,
+                'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID]);
         }
 
         return view('registrations.show')->with(['showreservationbutton' => $reservationactive,
-            'countries' => Country::all()->sortByDesc("country_name_en"),
-            'years' => range(date('Y'), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID]);
+            'countries' => Country::all()->sortBy("country_name_en"),
+            'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID]);
     }
 
 

@@ -2,14 +2,9 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('base')
 <body class="antialiased bg-stone-100">
-<!-- Header -->
-<header class="bg-white py-4">
-    <div class="container sm:p-1 mx-auto">
-        <img alt="msr logotyp" width="75%" height="800" src="{{ asset('logo2024.svg') }}"/>
-    </div>
-</header>
+
 <!-- Main Content -->
-<div class="container mx-auto p-0 font-sans">
+<div class="mx-auto p-0 font-sans">
     <div class="bg-orange-50 p-4 shadow-md">
         @if ($errors->any())
         <div class="alert alert-danger">
@@ -31,26 +26,8 @@
         </div>
         @endif
 
-
-
-        <p class="mb-5">The registration fee is 250 EUR until the 31st
-            of December. Thereafter 300 EUR until the 2nd of June. Then finally 350 EUR for last-minute tickets until the 14th of
-            June. Registration fees are not refunded however starting places can be resold and transfered until the 2nd of June.</p>
-
-        <p class="text-left  mb-4">
-            Please fill in the registration form below with your name and date of birth, the address to which your medal from Les
-            Randonneurs Mondiaux will be sent upon completing the randonnée, the mobile number that you’ll be using throughout the
-            event, a permanent email address
-            and also any special dietary requirements you may have (gluten free, lactose free, allergies, vegan, vegetarian etc).
-        </p>
-
-        <p>After submitting your entry please check that you have received a confirmation by email. If not then check your spam folder
-            and if found there, please change your spam filter settings for the address "info@midnightsunrandonnee.se" so you will not
-            miss future emails.</p>
-
         <form method="post" class="grid sm:grid-cols-1 gap-4">
             @csrf
-
             <hr class="h-1 my-4 bg-gray-900 border-0 dark:bg-gray-700">
             <div class="border-gray-900/10 pb-3">
                 <div class="grid md:grid-cols-2 gap-3 mt-3 sm:grid-cols-1">
@@ -206,9 +183,10 @@
 
                 </div>
 
+				<hr class="h-1 mb-4 mt-8 bg-gray-200 border-0 dark:bg-gray-700">
 
-                <div class="mt-5 mb-5 md:w-1/2 sm:w-full">
-                    <label for="extra-info" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Special dietary
+                <div class="mt-5 mb-2 md:w-full sm:w-full">
+                    <label for="extra-info" class="block text-gray-900 font-semibold text-xl sm:leading-10">Special dietary
                         requirements</label>
                     <p class="mt-1 mb-2 text-base leading-6 text-gray-600">Please let us know if you will have any special requirements concerning the event’s food menu, for instance allergies, gluten or lactose intolerance, vegan or vegetarian meals etc.</p>
                     <textarea id="extra-info" name="extra-info" rows="1"
@@ -292,7 +270,7 @@
                                        class="h-4 w-4 border-black text-black focus:ring-gray-600">
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="buffet_dinner" class="font-sm sm:text-base text-gray-600">Buffet Dinner- Brännland
+                                <label for="buffet_dinner" class="font-sm sm:text-base text-gray-600">Pre-ride meal - Brännland
                                     Inn</label>
                             </div>
                         </div>
@@ -302,7 +280,7 @@
                                        class="h-4 w-4 border-black text-black focus:ring-gray-600">
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="midsummer" class="font-sm sm:text-base text-gray-600">Swedish Midsummer Celebration -
+                                <label for="midsummer" class="font-sm sm:text-base text-gray-600">Swedish midsummer celebration -
                                     Norrmjöle</label>
                             </div>
                         </div>
@@ -311,20 +289,19 @@
                 <hr class="h-1 my-8 bg-gray-200 border-0 dark:bg-gray-700">
                 <fieldset class="mt-5">
                     <legend class="text-xl font-semibold leading-6 text-gray-900">Not included in the entry fee</legend>
-                    <p class="mt-1 text-base leading-6 text-gray-900">Purchase a digital voucher for the MSR jersey at a 20% discount.
-                        The voucher can be used as payment on the La Chemise website until the 7th of July.</p>
+                    <p class="mt-1 text-base leading-6 text-gray-900">Purchase a digital voucher for the MSR jersey at a 20% discount.</p>
                     <div class="mt-6 space-y-1 mb-6">
                         <div class="flex items-center gap-x-3">
                             <input id="malefemale-tor" name="jersey" value="1008" type="radio"
                                    class="h-4 w-4 border-black text-black focus:ring-indigo-600">
-                            <label for="malefemale-tor" class="block sm:text-base font-sm leading-6 text-gray-600">TOR 3.0 Jersey F/M
-                                (107 EUR on webshop -20%): 86 EUR</label>
+                            <label for="malefemale-tor" class="block sm:text-base font-sm leading-6 text-gray-600">TOR 3.0 jersey F/M
+                                (107 EUR in webshop -20%): 86 EUR</label>
                         </div>
                         <div class="flex items-center gap-x-3">
                             <input id="malefemale-grand" name="jersey" value="1007" type="radio"
                                    class="h-4 w-4 border-black text-black focus:ring-indigo-600">
-                            <label for="malefemale-grand" class="block sm:text-base font-sm leading-6 text-gray-600">GRAND Jersey F/M
-                                (87 EUR on webshop -20%): 70 EUR</label>
+                            <label for="malefemale-grand" class="block sm:text-base font-sm leading-6 text-gray-600">GRAND jersey F/M
+                                (87 EUR in webshop -20%): 70 EUR</label>
                         </div>
                         <div class="flex items-center gap-x-3">
                             <input id="no-jersey" name="jersey" value="nojersey" type="radio" checked
@@ -333,56 +310,40 @@
                         </div>
                     </div>
 
-                    <p class="mt-1 text-base leading-6 text-gray-900 mb-6">Please join us on Saturday the 15th of June, the day before the event, for a pre-booked buffet dinner at Brännland Inn which starts at 17:00. The dinner provides an excellent opportunity to meet participants and make new friends before the event starts.
+                    <p class="mt-1 text-base leading-6 text-gray-900 mb-6">Please join us on Saturday the 14th of June, the day before the event, for a pre-booked buffet dinner at Brännland Inn which starts at 17:00. The dinner provides an excellent opportunity to meet participants and make new friends before the event starts.
                         At the dinner you can also pick up and try on your pre-orded MSR-jersey.</p>
 
                     <div class="flex items-center gap-x-3">
                         <input id="buffe_dinner" name="dinner" value="1006" type="radio"
                                class="h-4 w-4 border-black text-black focus:ring-indigo-600">
-                        <label for="buffe_dinner" class="block sm:text-base font-sm leading-6 text-gray-600">Buffet Dinner - Saturday 15  June: 36 EUR</label>
+                        <label for="buffe_dinner" class="block sm:text-base font-sm leading-6 text-gray-600">Buffet dinner - Saturday the 14th  June: 38 EUR</label>
                     </div>
                     <div class="flex items-center gap-x-3">
                         <input id="no-buffedinner" name="dinner" value="nobuffedinner" type="radio" checked
                                class="h-4 w-4 border-black text-black focus:ring-indigo-600">
-                        <label for="no-buffedinner" class="block sm:text-base font-sm leading-6 text-gray-600">No buffet Dinner</label>
+                        <label for="no-buffedinner" class="block sm:text-base font-sm leading-6 text-gray-600">No buffet dinner</label>
                     </div>
                 </fieldset>
-                <hr class="h-1 my-12 bg-gray-900 border-0 dark:bg-gray-700">
+                <hr class="h-1 my-5 bg-gray-900 border-0 dark:bg-gray-700">
 
-                <div class="grid md:grid-cols-2 gap-3 mt-4 sm:grid-cols-1">
+                <div class="grid md:grid-cols-1 gap-3 mt-4 sm:grid-cols-1">
                     @if ($showreservationbutton)
                     <button type="submit" value="{{$reservationproduct}}" name="save"
                             class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
-                        Reserve
+                        RESERVE
                     </button>
                     @endif
-                    <button type="submit" value="{{$registrationproduct}}" name="save"
+
+                    <button disabled type="submit" value="{{$registrationproduct}}" name="save"
                             class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
-                        Register
+                        REGISTER - OPENS 15 OCTOBER
                     </button>
                 </div>
-                <p class="text-xs mt-10">
-                    Please note, the organiser Cykelintresset is under no obligation to refund a participant who for any reason is
-                    unable to participate in the event. Entry tickets may however be resold. Emergency roadworks, extreme weather and
-                    other unforeseen circumstances may force the organiser to make last minute changes and adjustments to the event,
-                    including the course, the checkpoints and services at the checkpoints. The organiser reserves the right to make
-                    these changes without compensation to participants. If for some unforseen reason the event cannot take place in June
-                    2024 the event will not be cancelled but instead be postponed until 2025. By registering, you accept the
-                    above-mentioned terms and conditions.
-                </p>
-
-                <p class="text-xs mt-5">
-                    Addressing the current situation in Ukraine, Les Randonneurs Mondiaux do not list LRM events in Russia and
-                    Belarussia in their public calendar but individual riders from these countries are permitted to participate in LRM
-                    events globally. After long deliberation a divided board of the organiser Cykelintresset has however reached the
-                    decision not to permit cyclists travelling from Russia and Belarussia to participate in MSR 2024. Russian and
-                    Belarusian nationals who are resident in Sweden are exempted from this decision and can participate in MSR 2024. The
-                    project leader for MSR 2024, Florian Kynman, is not a board member and was not part of this decision.
-                </p>
             </div>
         </form>
     </div>
 </div>
+
 </body>
 
 </html>
