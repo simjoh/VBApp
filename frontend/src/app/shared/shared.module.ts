@@ -18,7 +18,6 @@ import {RippleModule} from "primeng/ripple";
 import {RadioButtonModule} from "primeng/radiobutton";
 import {DialogModule} from "primeng/dialog";
 import {DialogService, DynamicDialogModule} from "primeng/dynamicdialog";
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {InputTextModule} from "primeng/inputtext";
 import {TooltipModule} from "primeng/tooltip";
 import {MessageModule} from "primeng/message";
