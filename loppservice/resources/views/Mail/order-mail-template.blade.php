@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<title>order recieved</title>
+	<title>Order recieved</title>
 	<style type="text/css">
         * {
             margin: 0;
@@ -53,7 +53,6 @@
             font-style: normal;
             font-weight: normal;
             text-decoration: none;
-            font-size: 12pt;
         }
 
         .s4 {
@@ -170,36 +169,79 @@
 </div>
 
 <div class="info">
-	<p>Date of payment: 2024-03-19</p>
-	<p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">Quantity: {{$optionals->quantity}}</p>
-	<p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">Amount Received: {{36 * $optionals->quantity}}
-		€</p>
-	<p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">Paid by: {{$optionals->firstname}}
-		{{$optionals->surname}}</p>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+		<tbody>
+		<tr>
+			<td class="s3"><strong>DINNER BUFFET</strong></td>
+		</tr>
+		<tr>
+			<td class="s3">Address: Brännland Inn, Brännland 35,
+				Umeå
+			</td>
+		</tr>
+		<tr>
+			<td class="s3">Date/Time: Saturday 14th June, 17:00 - 20:00</td>
+		</tr>
+		<tr>
+			<td class="s3">Casual Attire. Free parking.</td>
+		</tr>
+		<tr>
+			<td class="s3">Hosted by: Randonneurs Laponia</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class="s3">For payment of: {{$product-&gt;productname}}</td>
+		</tr>
+		<tr>
+			<td class="s3">Date of payment:</td>
+		</tr>
+		<tr>
+			<td class="s3">Quantity: {{$optionals-&gt;quantity}}</td>
+		</tr>
+		<tr>
+			<td class="s3">Amount Received: {{38 * $optionals-&gt;quantity}}
+				€
+			</td>
+		</tr>
+		<tr>
+			<td class="s3">Paid by: {{$optionals-&gt;firstname}}
+				{{$optionals-&gt;surname}}
+			</td>
+		</tr>
+		<tr>
+			<td><p>&nbsp;</p>
+
+				<h4><span class="s3"><strong>MENU</strong></span></h4>
+				<span class="s3">Roast beef<br/>
+            BBQ-grilled Carré sausage with Västerbotten cheese <br/>
+            Västerbotten pie<br/>
+            Pasta salad with sun-dried tomato and olives<br/>
+            Creamy potato salad<br/>
+            Mixed green salad <br/>
+            Coleslaw<br/>
+            Tomato salad<br/>
+            Marinated vegetables <br/>
+            Bearnaise sauce and BBQ sauce <br/>
+            Bread and butter<br/>
+            Cookies<br/>
+            Coffee/Tea</span><br/>
+			</td>
+		</tr>
+		<tr>
+			<td class="s3">&nbsp;</td>
+		</tr>
+		<tr>
+			<td class="s3">Brännland Inn: info@brannlandswardshus.se | +46 (0)90-301 30</td>
+		</tr>
+		<tr>
+			<td class="s3">For more information please visit: https://midnightsunrandonnee.se/program/#dinner</td>
+		</tr>
+		</tbody>
+	</table>
 </div>
 
 <div style=";text-indent: 0pt;text-align: left;">
-	<div class="info">
-		<h2>For payment of {{$product->productname}}</h2>
-		<p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">Location: Brännland Inn, Brännland 35,
-			Umeå </p>
-		<p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">Date: Saturday the 15th of June, 17:00 -
-			20:00.</p>
-	</div>
-
-	<div class="info">
-		<p>Casual Attire. Free parking.</p>
-	</div>
-
-	<div class="info">
-		<p>For more information please visit: <a href="https://vasterbottenbrevet.se/program">https://vasterbottenbrevet.se/program</a>
-		</p>
-
-	</div>
-
-
 </body>
 </html>
-
-
-

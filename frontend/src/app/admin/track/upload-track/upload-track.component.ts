@@ -27,7 +27,7 @@ export class UploadTrackComponent implements OnInit {
     for(let file of $event.files) {
       let progress = this.uploadService.upload( environment.backend_url + "buildlEventAndTrackFromCsv/upload" , new Set($event.files));
       console.log("FILE TO BE UPLOADED: ", file);
-      this.primeFileUpload.onProgress.emit(100 / 100 * 100);
+      this.primeFileUpload.onProgress.emit({ originalEvent: null, progress: 100 });
       this.uploadedFiles.push(file);
     }
   }

@@ -17,11 +17,7 @@ class Competitor implements JsonSerializable
     private int $role_id;
     private ?string $password;
     private $birthdate;
-
-
-
-
-
+    private $gender;
     private $roles = array();
 
     public function __construct()
@@ -184,6 +180,19 @@ class Competitor implements JsonSerializable
     public function setBirthdate($birthdate): void
     {
         $this->birthdate = $birthdate;
+    }
+
+    public function getGender()
+    {
+        return $this->gender;
+    }
+
+    /**
+     * @param mixed $gender
+     */
+    public function setGender($gender): void
+    {
+        $this->gender = $gender;
     }
 
 

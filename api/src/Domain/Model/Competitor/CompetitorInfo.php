@@ -145,7 +145,7 @@ class CompetitorInfo
 
     public function getCountryId(): int
     {
-        return $this->country_id;
+        return $this->country_id ?? 0;
     }
 
     public function setCountryId(int $country_id): void

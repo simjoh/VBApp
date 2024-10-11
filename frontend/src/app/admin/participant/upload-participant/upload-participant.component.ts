@@ -43,7 +43,7 @@ export class UploadParticipantComponent implements OnInit {
 
       progress[$event.files[0].name].progress.pipe(map((ss) => {
         this.uploadedFiles.push(file);
-        this.primeFileUpload.onProgress.emit(ss / 100 * 100);
+this.primeFileUpload.onProgress.emit({ originalEvent: null, progress: ss });
       })).subscribe();
         console.log("FILE TO BE UPLOADED: ", file);
     }
