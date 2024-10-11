@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {LinkService} from "../core/link.service";
 import {environment} from "../../environments/environment";
 import {catchError, map, mergeMap, shareReplay, take, tap} from "rxjs/operators";

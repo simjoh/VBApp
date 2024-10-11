@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {combineLatest, Observable, of, Subject, throwError} from "rxjs";
 import {catchError, map, mergeMap, shareReplay, startWith, tap} from "rxjs/operators";
 
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {EventRepresentation, ParticipantInformationRepresentation} from 'src/app/shared/api/api';
 import {environment} from 'src/environments/environment';
 import {LinkService} from "../../../core/link.service";

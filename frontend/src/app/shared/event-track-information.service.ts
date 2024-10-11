@@ -1,5 +1,5 @@
 import {Injectable, isDevMode} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {LinkService} from "../core/link.service";
 import {EventInformationRepresentation, TrackRepresentation} from "./api/api";
 import {environment} from "../../environments/environment";

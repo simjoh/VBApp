@@ -3,7 +3,7 @@ import {Observable, Subject} from "rxjs";
 import {EventRepresentation, RandonneurCheckPointRepresentation} from "../shared/api/api";
 import {environment} from "../../environments/environment";
 import {map, mergeMap, shareReplay, take, tap} from "rxjs/operators";
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {LinkService} from "../core/link.service";
 import {HttpMethod} from "../core/HttpMethod";
 import {MessageService} from "primeng/api";

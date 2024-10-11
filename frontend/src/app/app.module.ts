@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {CoreModule} from "./core/core.module";
-import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import {AuthInterceptor} from "./core/interceptors/auth.interceptor";
 import {PendingRequestInterceptor} from "./core/interceptors/pending-request.interceptor";
 import {CompetitorModule} from "./competitor/competitor.module";
@@ -32,70 +32,64 @@ import {ConfirmationService, MessageService} from "primeng/api";
 import { EnvService } from './core/env.service';
 import {HashLocationStrategy, LocationStrategy } from '@angular/common';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    UnknownRouteComponent,
-    AppComponent,
-    NgbdTableComplete,
-    NgbdSortableHeader,
-    KontrollerComponent,
-    KontrollFormComponent,
-    KontrollerCombinerComponent,
-  ],
-  imports: [
-    BrowserAnimationsModule,
-    ButtonModule,
-    CoreModule,
-    SharedModule,
-    LoginModule,
-    HttpClientModule,
-    CompetitorModule,
-    FormsModule,
-    AdminModule,
-    NgbModule,
-    VolunteerModule,
-    FormsModule,
-    ReactiveFormsModule,
-    AppRoutingModule,
-    InputTextModule,
-  ],
-  exports: [CardModule, NgbModule, SharedModule, AppComponent],
-  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy},MessageService,
-    {
-    provide: HTTP_INTERCEPTORS,
-    useClass: AuthInterceptor,
-    multi: true},
-    {
-    provide: HTTP_INTERCEPTORS,
-    useClass: PendingRequestInterceptor,
-    multi: true
-  },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ApiKeyHeaderInterceptor,
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: NotauthorizedInterceptor,
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: TokenHeaderInterceptor,
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: FeedbackInterceptor,
-      multi: true
-    },{
-      provide: APP_INITIALIZER,
-      useFactory: (envService: EnvService) => () => envService.init(),
-      deps: [EnvService],
-      multi: true
-    },ConfirmationService],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        UnknownRouteComponent,
+        AppComponent,
+        NgbdTableComplete,
+        NgbdSortableHeader,
+        KontrollerComponent,
+        KontrollFormComponent,
+        KontrollerCombinerComponent,
+    ],
+    exports: [CardModule, NgbModule, SharedModule, AppComponent],
+    bootstrap: [AppComponent], imports: [BrowserAnimationsModule,
+        ButtonModule,
+        CoreModule,
+        SharedModule,
+        LoginModule,
+        CompetitorModule,
+        FormsModule,
+        AdminModule,
+        NgbModule,
+        VolunteerModule,
+        FormsModule,
+        ReactiveFormsModule,
+        AppRoutingModule,
+        InputTextModule], providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }, MessageService,
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: PendingRequestInterceptor,
+            multi: true
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: ApiKeyHeaderInterceptor,
+            multi: true
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: NotauthorizedInterceptor,
+            multi: true
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: TokenHeaderInterceptor,
+            multi: true
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: FeedbackInterceptor,
+            multi: true
+        }, {
+            provide: APP_INITIALIZER,
+            useFactory: (envService: EnvService) => () => envService.init(),
+            deps: [EnvService],
+            multi: true
+        }, ConfirmationService, provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {combineLatest, Observable, Subject, throwError} from "rxjs";
 import {catchError, map, shareReplay, startWith, tap} from "rxjs/operators";
 import {EventRepresentation, Site} from "../../shared/api/api";
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {environment} from "../../../environments/environment";
 
 @Injectable({

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {combineLatest, Observable, Subject, throwError} from "rxjs";
 import {catchError, map, shareReplay, startWith, tap} from "rxjs/operators";
 import { Site } from 'src/app/shared/api/api';

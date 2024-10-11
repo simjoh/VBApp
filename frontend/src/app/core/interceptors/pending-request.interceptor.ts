@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor
-} from '@angular/common/http';
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
 import {asapScheduler, BehaviorSubject, Observable} from 'rxjs';
 import {finalize, observeOn} from "rxjs/operators";
 import {PendingRequestsService} from "../pending-requests.service";

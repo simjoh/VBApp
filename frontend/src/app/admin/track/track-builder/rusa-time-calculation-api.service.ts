@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import {SiteRepresentation} from "../../../shared/api/api";
 import {catchError, map, scan, tap} from "rxjs/operators";
 import {

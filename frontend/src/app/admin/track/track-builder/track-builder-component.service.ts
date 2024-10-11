@@ -5,7 +5,7 @@ import {BehaviorSubject, combineLatest, of} from "rxjs";
 
 import {EventService} from "../../shared/service/event.service";
 import {EventRepresentation} from "../../../shared/api/api";
-import {HttpClient} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import {
   RusaPlannerControlInputRepresentation,
   RusaPlannerInputRepresentation, RusaPlannerResponseRepresentation,
