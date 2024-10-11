@@ -139,16 +139,16 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "frontend:build",
             "port": 4200,
-            "proxyConfig": "proxy.conf.json"
+            "proxyConfig": "proxy.conf.json",
+            "buildTarget": "frontend:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "brevet-frontend:build:production"
+              "buildTarget": "brevet-frontend:build:production"
             },
             "development": {
-              "browserTarget": "brevet-frontend:build:development"
+              "buildTarget": "brevet-frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -156,7 +156,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "brevet-frontend:build"
+            "buildTarget": "brevet-frontend:build"
           }
         },
         "test": {
