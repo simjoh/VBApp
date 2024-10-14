@@ -276,6 +276,7 @@ class RegistrationController extends Controller
         // Rimligen är en och samma person bara registrerad en gång per event
         if (Person::where('checksum', $this->hashsumfor($string_to_hash))->exists()) {
             $person = Person::where('checksum', $this->hashsumfor($string_to_hash))->first();
+            $person->gender = $request['gender'];
 
             $registrationsforperson = $person->registration;
             if ($registrationsforperson) {

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('base')
-<body class="antialiased bg-stone-100">
+<body class="antialiased bg-stone-100 w-full h-full">
 
 <!-- Main Content -->
 <div class="mx-auto p-0 font-sans">
@@ -86,19 +86,7 @@
                                class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
                     </div>
                 </div>
-				<div class="mt-3">
-					<label for="gender" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Gender</label>
-					<select id="gender" name="gender" autocomplete="gender-name"
-							class="sm:w-full px-3 py-2 md:w-1/2 lg:w-1/2 py-2 border-2 focus:outline-none focus:border-gray-600"
-							required>
-						<option>Select gender</option>
-						@foreach ($genders as $key => $gender)
-						<option value="{{$key}}">
-							{{$gender}}
-						</option>
-						@endforeach
-					</select>
-				</div>
+
 
                 <div class="mt-3">
                     <label for="country" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Country</label>
@@ -114,88 +102,186 @@
                     </select>
                 </div>
 
-                <div class="mt-2 mb-4">
-                    <label for="club" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Club</label>
-                    <input type="text" name="club" id="club"
-                           class="md:w-1/2  sm:w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
-                </div>
+				<div class="mt-3 grid md:grid-cols-2 sm:grid-cols-1 gap-3">
+				<p class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Birthdate</p>
+				<p  class="text-gray-900 font-semibold sm:text-base sm:leading-10">Gender</p>
+				</div>
 
-                <p class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Birthdate</p>
-                <div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">
-                    <div class="grid md:grid-cols-3 sm:grid-cols-1 gap-3">
-                        <div class="mt-2">
+				<div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">
+					<div class="grid md:grid-cols-3 sm:grid-cols-1 gap-3">
+						<div class="mt-1">
+							<select name="year" id="year" class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+								<option>Year</option>
+								@foreach ($years as $year)
+								<option value="{{$year}}">{{$year}}</option>
+								@endforeach
+							</select>
+						</div>
+						<div class="mt-1">
+							<select name="month" id="month" class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+								<option value="">Month</option>
+								<option value="01">Januray</option>
+								<option value="02">February</option>
+								<option value="03">March</option>
+								<option value="04">April</option>
+								<option value="05">May</option>  
 
-                            <select name="year" id="year"
-                                    class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
-                                <option>Year</option>
-                                @foreach ($years as $year)
-                                <option value="{{$year}}">
-                                    {{$year}}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mt-2">
+								<option value="06">June</option>
+								<option value="07">July</option>
+								<option value="08">August</option>
+								<option value="09">September</option>
+								<option value="10">October</option>
+								<option value="11">November</option>
+								<option value="12">December</option>
+							</select>
+						</div>
+						<div class="mt-1">
+							<select name="day" id="day" class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+								<option value="">Day</option>
+								<option value="01">01</option>
+								<option value="02">02</option>
+								<option value="03">03</option>
+								<option value="04">04</option>  
 
-                            <select name="month" id="month"
-                                    class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
-                                <option value="">Month</option>
-                                <option value="01">Januray</option>
-                                <option value="02">February</option>
-                                <option value="03">March</option>
-                                <option value="04">April</option>
-                                <option value="05">May</option>
-                                <option value="06">June</option>
-                                <option value="07">July</option>
-                                <option value="08">August</option>
-                                <option value="09">September</option>
-                                <option value="10">October</option>
-                                <option value="11">November</option>
-                                <option value="12">December</option>
-                            </select>
-                        </div>
-                        <div class="mt-2">
+								<option value="05">05</option>
+								<option value="06">06</option>
+								<option value="07">07</option>
+								<option value="08">08</option>
+								<option value="09">09</option>
+								<option value="10">10</option>
+								<option value="11">11</option>
+								<option value="12">12</option>
+								<option value="13">13</option>
+								<option value="14">14</option>
+								<option value="15">15</option>
+								<option value="16">16</option>
+								<option value="17">17</option>
+								<option value="18">18</option>
+								<option value="19">19</option>
+								<option value="20">20</option>
+								<option value="21">21</option>
+								<option value="22">22</option>
+								<option value="23">23</option>
+								<option value="24">24</option>
+								<option value="25">25</option>
+								<option value="26">26</option>
+								<option value="27">27</option>
+								<option value="28">28</option>
+								<option value="29">29</option>
+								<option value="30">30</option>
+								<option value="31">31</option>
+							</select>
+						</div>
+					</div>
 
-                            <select name="day" id="day"
-                                    class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
-                                <option value="">Day</option>
-                                <option value="01">01</option>
-                                <option value="02">02</option>
-                                <option value="03">03</option>
-                                <option value="04">04</option>
-                                <option value="05">05</option>
-                                <option value="06">06</option>
-                                <option value="07">07</option>
-                                <option value="08">08</option>
-                                <option value="09">09</option>
-                                <option value="10">10</option>
-                                <option value="11">11</option>
-                                <option value="12">12</option>
-                                <option value="13">13</option>
-                                <option value="14">14</option>
-                                <option value="15">15</option>
-                                <option value="16">16</option>
-                                <option value="17">17</option>
-                                <option value="18">18</option>
-                                <option value="19">19</option>
-                                <option value="20">20</option>
-                                <option value="21">21</option>
-                                <option value="22">22</option>
-                                <option value="23">23</option>
-                                <option value="24">24</option>
-                                <option value="25">25</option>
-                                <option value="26">26</option>
-                                <option value="27">27</option>
-                                <option value="28">28</option>
-                                <option value="29">29</option>
-                                <option value="30">30</option>
-                                <option value="31">31</option>
-                            </select>
-                        </div>
+					<div class="mt-2">
 
-                    </div>
+						<select id="gender" name="gender" autocomplete="gender-name" class="sm:w-full px-3 py-2 md:w-1/2 lg:w-1/2 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+							<option>Select gender</option>
+							@foreach ($genders as $key => $gender)
+							<option value="{{$key}}">{{$gender}}</option>
+							@endforeach
+						</select>
+					</div>
+				</div>
 
-                </div>
+
+
+<!--                <p class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Birthdate</p>-->
+<!--                <div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">-->
+<!--                    <div class="grid md:grid-cols-3 sm:grid-cols-1 gap-3">-->
+<!--                        <div class="mt-2">-->
+<!---->
+<!--                            <select name="year" id="year"-->
+<!--                                    class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>-->
+<!--                                <option>Year</option>-->
+<!--                                @foreach ($years as $year)-->
+<!--                                <option value="{{$year}}">-->
+<!--                                    {{$year}}-->
+<!--                                </option>-->
+<!--                                @endforeach-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                        <div class="mt-2">-->
+<!---->
+<!--                            <select name="month" id="month"-->
+<!--                                    class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>-->
+<!--                                <option value="">Month</option>-->
+<!--                                <option value="01">Januray</option>-->
+<!--                                <option value="02">February</option>-->
+<!--                                <option value="03">March</option>-->
+<!--                                <option value="04">April</option>-->
+<!--                                <option value="05">May</option>-->
+<!--                                <option value="06">June</option>-->
+<!--                                <option value="07">July</option>-->
+<!--                                <option value="08">August</option>-->
+<!--                                <option value="09">September</option>-->
+<!--                                <option value="10">October</option>-->
+<!--                                <option value="11">November</option>-->
+<!--                                <option value="12">December</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                        <div class="mt-2">-->
+<!---->
+<!--                            <select name="day" id="day"-->
+<!--                                    class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>-->
+<!--                                <option value="">Day</option>-->
+<!--                                <option value="01">01</option>-->
+<!--                                <option value="02">02</option>-->
+<!--                                <option value="03">03</option>-->
+<!--                                <option value="04">04</option>-->
+<!--                                <option value="05">05</option>-->
+<!--                                <option value="06">06</option>-->
+<!--                                <option value="07">07</option>-->
+<!--                                <option value="08">08</option>-->
+<!--                                <option value="09">09</option>-->
+<!--                                <option value="10">10</option>-->
+<!--                                <option value="11">11</option>-->
+<!--                                <option value="12">12</option>-->
+<!--                                <option value="13">13</option>-->
+<!--                                <option value="14">14</option>-->
+<!--                                <option value="15">15</option>-->
+<!--                                <option value="16">16</option>-->
+<!--                                <option value="17">17</option>-->
+<!--                                <option value="18">18</option>-->
+<!--                                <option value="19">19</option>-->
+<!--                                <option value="20">20</option>-->
+<!--                                <option value="21">21</option>-->
+<!--                                <option value="22">22</option>-->
+<!--                                <option value="23">23</option>-->
+<!--                                <option value="24">24</option>-->
+<!--                                <option value="25">25</option>-->
+<!--                                <option value="26">26</option>-->
+<!--                                <option value="27">27</option>-->
+<!--                                <option value="28">28</option>-->
+<!--                                <option value="29">29</option>-->
+<!--                                <option value="30">30</option>-->
+<!--                                <option value="31">31</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!---->
+<!--                    </div>-->
+<!--                </div>-->
+
+<!--				<div class="mt-2">-->
+<!--					<label for="gender" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Gender</label>-->
+<!--					<select id="gender" name="gender" autocomplete="gender-name"-->
+<!--							class="sm:w-full px-3 py-2 md:w-1/2 lg:w-1/2 py-2 border-2 focus:outline-none focus:border-gray-600"-->
+<!--							required>-->
+<!--						<option>Select gender</option>-->
+<!--						@foreach ($genders as $key => $gender)-->
+<!--						<option value="{{$key}}">-->
+<!--							{{$gender}}-->
+<!--						</option>-->
+<!--						@endforeach-->
+<!--					</select>-->
+<!--				</div>-->
+
+				<div class="mt-2 mb-4">
+					<label for="club" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Club</label>
+					<input type="text" name="club" id="club"
+						   class="md:w-1/2  sm:w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+				</div>
 
 				<hr class="h-1 mb-4 mt-8 bg-gray-200 border-0 dark:bg-gray-700">
 
@@ -348,9 +434,9 @@
                     </button>
                     @endif
 
-                    <button disabled type="submit" value="{{$registrationproduct}}" name="save"
+                    <button  type="submit" value="{{$registrationproduct}}" name="save"
                             class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
-                        REGISTER - OPENS 15 OCTOBER
+                        REGISTER
                     </button>
                 </div>
             </div>
