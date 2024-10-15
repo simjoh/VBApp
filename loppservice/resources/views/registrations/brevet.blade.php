@@ -234,15 +234,15 @@
 			</div>
 		</fieldset>
 
-		@if ($isRegistrationOpen)
-		<button type="submit" value="{{$registrationproduct}}" name="save"
-				class="w-full mt-3 w-full bg-black hover:bg-gray-500 text-white font-bold py-2 px-4 border text-bold border-black rounded">
-			ANMÄL DIG
+		@if ( $availabledetails['isRegistrationOpen'] == true)
+		<button  type="submit" value="{{$registrationproduct}}" name="save"
+				 class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
+			REGISTRERA
 		</button>
 		@else
 		<button disabled type="submit" value="{{$registrationproduct}}" name="save"
-				class="w-full mt-3 w-full bg-black hover:bg-gray-500 text-white font-bold py-2 px-4 border text-bold border-black rounded">
-			ANMÄL DIG - ANMÄLAN ÖPPNAR SNART
+				class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
+			REGISTRERING - ÖPPNAR {{ $availabledetails['opens']}}
 		</button>
 		@endif
 	</form>

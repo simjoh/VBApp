@@ -65,15 +65,30 @@ class RegistrationController extends Controller
         $isRegistrationOpen = Carbon::now()->gt($registrationopen);
 
 
+
+
         if ($eventType === 'BRM') {
+
+            $registrationConfig = [
+                'opens' => strtoupper(Carbon::parse($event->eventconfiguration->registration_opens)->format('d') . ' ' . $this->monthsforSelect()[Carbon::parse($event->eventconfiguration->registration_opens)->month]),
+                'closes' => strtoupper(Carbon::parse($event->eventconfiguration->registration_closes)->format('d') . ' ' . $this->monthsforSelect()[Carbon::parse($event->eventconfiguration->registration_closes)->month]),
+                'isRegistrationOpen' => $isRegistrationOpen,
+            ];
+
+
             return view('registrations.brevet')->with(['showreservationbutton' => $reservationactive,
                 'countries' => Country::all()->sortBy("country_name_en"), 'event' => $event->event_uid,
-                'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID, 'genders' => $this->gendersSv(), 'isRegistrationOpen' => $isRegistrationOpen]);
+                'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID, 'genders' => $this->gendersSv(), 'isRegistrationOpen' => $isRegistrationOpen, 'availabledetails' => $registrationConfig]);
         }
 
+        $registrationConfig = [
+            'opens' => \strtoupper(Carbon::parse($event->eventconfiguration->registration_opens)->format('d F')),
+            'closes' => \strtoupper(Carbon::parse($event->eventconfiguration->registration_closes)->format('d F')),
+            'isRegistrationOpen' => $isRegistrationOpen,
+        ];
         return view('registrations.show')->with(['showreservationbutton' => $reservationactive,
             'countries' => Country::all()->sortBy("country_name_en"),
-            'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID, 'genders' => $this->gendersEn(), 'isRegistrationOpen' => $isRegistrationOpen]);
+            'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID, 'genders' => $this->gendersEn(), 'isRegistrationOpen' => $isRegistrationOpen, 'availabledetails' => $registrationConfig]);
     }
 
 

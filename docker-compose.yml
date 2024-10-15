@@ -27,7 +27,7 @@ services:
       dockerfile: ./loppservice/Dockerfile
       target: dev
     volumes:
-      - working_dir2:/var/www/html
+      - working_dir2:/var/www/html/loppservice
 #      - ./loppservice:/var/www/html
     #  - working_dir2:/var/www/html/
     ports:
