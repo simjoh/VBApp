@@ -2,9 +2,13 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('base')
 <body class="antialiased bg-stone-100 w-full h-full">
-
+<header class="bg-white py-4">
+	<div class="container sm:p-1 mx-auto">
+		<img alt="msr logotyp" width="75%" height="800" src="{{ asset('logo2025.svg') }}"/>
+	</div>
+</header>
 <!-- Main Content -->
-<div class="mx-auto p-0 font-sans">
+<div class="container mx-auto p-0 font-sans">
     <div class="bg-orange-50 p-4 shadow-md">
         @if ($errors->any())
         <div class="alert alert-danger">
@@ -28,7 +32,7 @@
 
         <form method="post" class="grid sm:grid-cols-1 gap-4">
             @csrf
-            <hr class="h-1 my-4 bg-gray-900 border-0 dark:bg-gray-700">
+<!--            <hr class="h-1 my-4 bg-gray-900 border-0 dark:bg-gray-700">-->
             <div class="border-gray-900/10 pb-3">
                 <div class="grid md:grid-cols-2 gap-3 mt-3 sm:grid-cols-1">
                     <div>
@@ -433,11 +437,17 @@
                         RESERVE
                     </button>
                     @endif
-
+					@if ($isRegistrationOpen)
                     <button  type="submit" value="{{$registrationproduct}}" name="save"
                             class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
-                        REGISTER
+                        CHECK OUT
                     </button>
+					@else
+					<button disabled type="submit" value="{{$registrationproduct}}" name="save"
+							 class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
+						CHECK OUT - OPENS 15 OCTOBER
+					</button>
+					@endif
                 </div>
             </div>
         </form>

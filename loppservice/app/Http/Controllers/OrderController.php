@@ -15,6 +15,7 @@ class OrderController extends Controller
     {
         $requestedform = $request->formname;
         $event = Event::find($request['uid']);
+//       dd($request);
         return view('orderform.' . $requestedform, ['event' => $event, 'dinnerproduct' => 1006]);
     }
 

@@ -89,9 +89,7 @@ class CompletedRegistrationSuccessEventListener
 
         $create_participant_in_app = env("CREATE_PARTICIPANT_IN_CYCLING_APP");
         if ($create_participant_in_app) {
-            if ($event_event->event_type === 'BRM') {
                 event(new CreateParticipantInCyclingAppEvent($event_event->event_uid, $person->person_uid, $registration->registration_uid));
-            }
         }
     }
 

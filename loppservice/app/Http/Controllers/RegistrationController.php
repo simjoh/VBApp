@@ -61,16 +61,19 @@ class RegistrationController extends Controller
         // registrera sig kan man alltid göra
         $registration_product = $event->eventconfiguration->products->where('categoryID', 6)->first();
 
+        $registrationopen = Carbon::parse($event->eventconfiguration->registration_opens);
+        $isRegistrationOpen = Carbon::now()->gt($registrationopen);
+
 
         if ($eventType === 'BRM') {
             return view('registrations.brevet')->with(['showreservationbutton' => $reservationactive,
-                'countries' => Country::all()->sortByDesc("country_name_en"), 'event' => $event->event_uid,
-                'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID, 'genders' => $this->gendersSv()]);
+                'countries' => Country::all()->sortBy("country_name_en"), 'event' => $event->event_uid,
+                'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID, 'genders' => $this->gendersSv(), 'isRegistrationOpen' => $isRegistrationOpen]);
         }
 
         return view('registrations.show')->with(['showreservationbutton' => $reservationactive,
-            'countries' => Country::all()->sortByDesc("country_name_en"),
-            'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID, 'genders' => $this->gendersEn()]);
+            'countries' => Country::all()->sortBy("country_name_en"),
+            'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID, 'genders' => $this->gendersEn(), 'isRegistrationOpen' => $isRegistrationOpen]);
     }
 
 

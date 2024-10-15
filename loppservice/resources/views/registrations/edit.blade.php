@@ -5,7 +5,7 @@
 <!-- Header -->
 <header class="bg-white py-4">
     <div class="container sm:p-1 mx-auto">
-        <img alt="msr logotyp" width="75%" height="800" src="{{ asset('logo2024.svg') }}"/>
+        <img alt="msr logotyp" width="75%" height="800" src="{{ asset('logo2025.svg') }}"/>
     </div>
 </header>
 <!-- Main Content -->
