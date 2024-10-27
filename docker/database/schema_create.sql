@@ -25,7 +25,7 @@ CREATE TABLE `checkpoint` (
 
 CREATE TABLE `club` (
   `club_uid` char(36) NOT NULL,
-  `acp_kod` int(10) UNSIGNED DEFAULT NULL,
+  `acp_kod` char(8),
   `title` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -93,7 +93,7 @@ CREATE TABLE `participant` (
   `competitor_uid` char(36) NOT NULL,
   `startnumber` int(10) UNSIGNED NOT NULL,
   `finished` tinyint(1) DEFAULT 0,
-  `acpkod` int(10) UNSIGNED DEFAULT NULL,
+  `acpkod` char(8),
   `club_uid` char(36) DEFAULT NULL,
   `time` char(36) DEFAULT NULL,
   `dns` tinyint(1) DEFAULT 0,

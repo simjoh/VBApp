@@ -380,7 +380,7 @@ class ParticipantRepository extends BaseRepository
             $competitor_uid = $participanttoCreate->getCompetitorUid();
             $startnumber = intval($participanttoCreate->getStartnumber());
             $finished = $participanttoCreate->isFinished();
-            $acpkod = intval($participanttoCreate->getAcpkod());
+            $acpkod = $participanttoCreate->getAcpkod();
             $club_uid = $participanttoCreate->getClubUid();
             $dns = $participanttoCreate->isDns();
             $dnf = $participanttoCreate->isDnf();
