@@ -253,7 +253,7 @@
 
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="lunch_box" class="font-sm sm:text-base text-gray-600">Lunch box - Baggböle Manor</label>
+                                <label for="lunch_box" class="font-sm sm:text-base text-gray-600">Lunch - Brännland Inn</label>
                             </div>
                         </div>
                         <div class="relative flex gap-x-3">
@@ -262,7 +262,7 @@
                                        class="h-4 w-4 border-black text-black focus:ring-indigo-600">
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="bag_drop" class="font-sm sm:text-base text-gray-600">Bag drop - Baggböle Manor (to Scandic
+                                <label for="bag_drop" class="font-sm sm:text-base text-gray-600">Bag drop - Brännland Inn (to Scandic
                                     Plaza)</label>
                             </div>
                         </div>
@@ -273,7 +273,7 @@
                             </div>
                             <div class="text-sm leading-6">
                                 <label for="long_term_parking" class="font-sm sm:text-base text-gray-600">
-                                    Long-term parking - Baggböle Manor</label>
+                                    Long-term parking - Brännland Inn</label>
                             </div>
                         </div>
                         <div class="relative flex gap-x-3">
@@ -292,7 +292,7 @@
                                        class="h-4 w-4 border-black text-black focus:ring-gray-600">
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="midsummer" class="font-sm sm:text-base text-gray-600">Swedish midsummer celebration -
+                                <label for="midsummer" class="font-sm sm:text-base text-gray-600">Swedish Midsummer celebration -
                                     Norrmjöle</label>
                             </div>
                         </div>
@@ -328,12 +328,12 @@
                     <div class="flex items-center gap-x-3">
                         <input id="buffe_dinner" name="dinner" value="1006" type="radio"
                                class="h-4 w-4 border-black text-black focus:ring-indigo-600">
-                        <label for="buffe_dinner" class="block sm:text-base font-sm leading-6 text-gray-600">Buffet dinner - Saturday the 14th  June: 38 EUR</label>
+                        <label for="buffe_dinner" class="block sm:text-base font-sm leading-6 text-gray-600">Buffet Dinner - Saturday the 14th  June: 38 EUR</label>
                     </div>
                     <div class="flex items-center gap-x-3">
                         <input id="no-buffedinner" name="dinner" value="nobuffedinner" type="radio" checked
                                class="h-4 w-4 border-black text-black focus:ring-indigo-600">
-                        <label for="no-buffedinner" class="block sm:text-base font-sm leading-6 text-gray-600">No buffet dinner</label>
+                        <label for="no-buffedinner" class="block sm:text-base font-sm leading-6 text-gray-600">No Buffet Dinner</label>
                     </div>
                 </fieldset>
                 <hr class="h-1 my-5 bg-gray-900 border-0 dark:bg-gray-700">
@@ -361,7 +361,5 @@
         </form>
     </div>
 </div>
-
 </body>
-
 </html>
