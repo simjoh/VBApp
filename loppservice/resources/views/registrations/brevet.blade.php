@@ -234,6 +234,13 @@
 			</div>
 		</fieldset>
 
+
+		<div class="flex items-center">
+			<input type="checkbox" name="gdpr" id="gdpr" class="mr-2">
+			<label for="gdpr" class="text-gray-900 font-semibold sm:text-base sm:leading-10">Jag godkänner att websidan sparar informationen som jag postar i detta formulär<a
+					href="https://www.ebrevet.org/datapolicy" target="_blank" class="text-black-500 underline">Läs mer här om de allmäna vilkorer</a></label>
+		</div>
+
 		@if ( $availabledetails['isRegistrationOpen'] == true)
 		<button  type="submit" value="{{$registrationproduct}}" name="save"
 				 class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">

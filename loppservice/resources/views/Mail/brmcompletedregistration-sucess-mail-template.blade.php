@@ -549,6 +549,8 @@
 <p class="s10" style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">
 	<a href="{{$startlistlink}}">Startlista</a>
 </p>
+<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://www.ebrevet.org/datapolicy" style="font-size: 12pt">Allmänna villkor</a><br />
+</p>
 <!--  <p class="s10" style="padding-top: 8pt;padding-left: 10pt;text-indent: 0pt;text-align: left;"><a href="{{$updatelink}}">Follow this link to change your registered information </a><br></p>-->
 <p style="text-indent: 0pt;text-align: left;">
 	<br />

@@ -522,6 +522,12 @@
 	</tr>
 	<tr style="height:22pt">
 		<td colspan="3"
+			style="width:227pt"><p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="{{$updatelink}}" style="font-size: 12pt">Change registered information </a></p>
+			<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://www.midnightsunrandonnee.se/program" style="font-size: 12pt">Event program 14-20 June</a></p>
+			<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://cycling.lachemise.se/collections/midnight-sun" style="font-size: 12pt">La Chemise webshop for jersey</a></p>
+			<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://sigr.cc" style="font-size: 12pt">Sigr webshop for high-visibility vest</a><br /></p>
+			<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://www.ebrevet.org/datapolicy" style="font-size: 12pt">General terms and conditions</a></p><br />
+			<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="{{$startlistlink}}" style="font-size: 12pt">Starting list MSR 2025</a></p></td>
 			style="width:227pt"><p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="{{$updatelink}}"
 																											  style="font-size: 12pt">Change
 					registered information </a></p>

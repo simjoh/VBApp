@@ -295,6 +295,13 @@ class RegistrationController extends Controller
         if (Person::where('checksum', $this->hashsumfor($string_to_hash))->exists()) {
             $person = Person::where('checksum', $this->hashsumfor($string_to_hash))->first();
             $person->gender = $request['gender'];
+            if($request['gdpr'] == 'on'){
+                $person->gdpr_approved = true;
+            } else {
+//                return back()->withErrors(['gdpr' => 'You need to approve GDPR'])->withInput();
+                $person->gdpr_approved = false;
+            }
+
 
             $registrationsforperson = $person->registration;
             if ($registrationsforperson) {
@@ -328,6 +335,11 @@ class RegistrationController extends Controller
             $person->birthdate = $request['year'] . "-" . $request['month'] . "-" . $request['day'];
             $person->registration_registration_uid = '1111111';
             $person->checksum = $this->hashsumfor($string_to_hash);
+            if($request['gdpr'] == 'on'){
+                $person->gdpr_approved = true;
+            } else {
+                $person->gdpr_approved = false;
+            }
 
 
             $adress = new Adress();

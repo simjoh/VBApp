@@ -337,6 +337,13 @@
                     </div>
                 </fieldset>
                 <hr class="h-1 my-5 bg-gray-900 border-0 dark:bg-gray-700">
+
+				<div class="flex items-center">
+					<input type="checkbox" name="gdpr" id="gdpr" class="mr-2">
+					<label for="gdpr" class="text-gray-900 font-semibold sm:text-base sm:leading-10"> I allow the website to collect and store my data i submit through this form<a
+							href="https://www.ebrevet.org/datapolicy" target="_blank" class="text-black-500 underline">Read more about our general terms an conditions</a></label>
+				</div>
+
                 <div class="grid md:grid-cols-1 gap-3 mt-4 sm:grid-cols-1">
                     @if ($showreservationbutton)
                     <button type="submit" value="{{$reservationproduct}}" name="save"
