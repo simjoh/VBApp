@@ -52,6 +52,15 @@ export class MenuComponent implements OnInit{
             expanded: true
           })
         }
+
+        if (!this.items.some(item => item.label === 'Administration')) {
+          this.items.push({
+            label: 'Administration',
+            routerLink: '/admin/administration',
+            expanded: true
+          })
+        }
+
         if (!this.items.some(item => item.label === 'Systemadministration')) {
           this.items.push({
             label: 'Systemadministration',
@@ -84,20 +93,6 @@ export class MenuComponent implements OnInit{
           routerLink: '/volunteer',
         })
       }
-
-      // if (!this.items.some(item => item.label === 'Logout')) {
-      //   if (!this.deviceService.isDesktop()){
-      //     if (this.deviceService.isMobile()  ||  this.deviceService.isTablet()){
-      //       this.items.push({
-      //         label: 'Logout',
-      //         icon: 'pi pi-fw pi-sign-out',
-      //         styleClass: "lg:hidden",
-      //         command:()=> this.logout(),
-      //       })
-      //     }
-      //   }
-      //
-      // }
 
       this.$menuSubject.next(this.items);
 
@@ -133,35 +128,6 @@ export class MenuComponent implements OnInit{
   test() {
   }
 
-  onResize($event: any) {
-    // const userAgent = window.navigator.userAgent;
-    // if (this.deviceService.isMobile(window.navigator.userAgent)) {
-    //
-    //   let items = this.$menuSubject.value
-    //   if (!items.some(item => item.label === 'Logout')) {
-    //
-    //     items.push({
-    //       label: 'Logout',
-    //       icon: 'pi pi-fw pi-sign-out',
-    //       styleClass: "lg:hidden",
-    //       command:()=> this.logout(),
-    //     })
-    //
-    //     this.$menuSubject.next(items)
-    //   } else {
-    //     console.log(items.length)
-    //     if (items.some(item => item.label === 'Logout')) {
-    //       console.log(this.deviceService.isMobile(window.navigator.userAgent) + 'Ska filtrerar')
-    //         items = items.filter(function (item) {
-    //           return item.label != 'Logout';
-    //         })
-    //     }
-    //     console.log(items)
-    //     this.$menuSubject.next(items)
-    //   }
-    //
-    // }
-  }
 
 
 }

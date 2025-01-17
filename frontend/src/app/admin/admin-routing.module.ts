@@ -18,6 +18,10 @@ const routes: Routes = [{
       loadChildren: () => import('./track/track.module').then(m => m.TrackModule),
     },
     {
+      path: 'administration',
+      loadChildren: () => import('./administration/administration.module').then(m => m.AdministrationModule),
+    },
+    {
       path: 'useradmin',
       loadChildren: () => import('./user-admin/user-admin.module').then(m => m.UserAdminModule),
     },
@@ -34,13 +38,6 @@ const routes: Routes = [{
       loadChildren: () => import('./event-admin/event-admin.module').then(m => m.EventAdminModule),
     },
     { path: 'brevet-admin-start', component: AdminStartComponent },
-    // { path: 'brevet-site-admin', component: SiteAdminComponent},
-    // { path: 'brevet-kontroller-combiner', component: KontrollerCombinerComponent},
-    // // { path: 'brevet-user-admin', component: UserAdminComponent },
-    // { path: 'brevet-dashboard', component: DashboardComponent },
-    // { path: 'brevet-site-admin', component: SiteAdminComponent},
-    // { path: 'brevet-event-admin', component: EventAdminComponent},
-    // { path: '**', redirectTo: 'brevet-admin-start'},
   ]
 }
 ];

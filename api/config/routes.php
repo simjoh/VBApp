@@ -160,6 +160,7 @@ return function (App $app) {
         // roller i systemet endast läsa
 
 
+        $app->get('/administration/acpreport/track/{trackUid}', \App\Action\Administration\AcpReportAction::class. ':getAcpReport');
 
     })->add(\App\Middleware\JwtTokenValidatorMiddleware::class)->add(\App\Middleware\PermissionvalidatorMiddleWare::class);
 
