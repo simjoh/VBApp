@@ -24,8 +24,6 @@ export class CreateEventDialogComponent implements OnInit {
    this.eventForm = this.createObject();
 
     this.eventStatus = this.categories[0];
-
-
   }
 
   private createObject(): EventFormModel{

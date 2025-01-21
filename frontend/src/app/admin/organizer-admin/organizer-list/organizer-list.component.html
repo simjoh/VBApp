@@ -1,1 +1,89 @@
-<p>organizer-list works!</p>
+<ng-container *ngIf="organizers$ | async as events">
+  <p-table #dt [value]="events" [(selection)]="selectedCustomers" dataKey="id" styleClass="p-datatable-customers"
+           [rowHover]="true"
+           [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="loading"
+           [paginator]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+           [filterDelay]="0" [globalFilterFields]="['name','email','phone']">
+    <ng-template pTemplate="caption">
+      <div class="table-header">
+      <span class="p-input-icon-left  sm:inline-flex">
+          <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2 ml-2"
+                  (click)="openNew()"></button>
+      </span>
+        <span class="p-input-icon-left sm:inline-flex">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Sök"/>
+      </span>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="namn">
+          <div class="p-d-flex p-jc-between p-ai-center">
+            Arrangör
+            <p-sortIcon field="namn"></p-sortIcon>
+          </div>
+        </th>
+        <th pSortableColumn="contact_person">
+          <div class="p-d-flex p-jc-between p-ai-center">
+            Kontaktperson
+            <p-sortIcon field="contact_person"></p-sortIcon>
+          </div>
+        </th>
+        <th pSortableColumn="epostadress">
+          <div class="p-d-flex p-jc-between p-ai-center">
+            Epostadress
+            <p-sortIcon field="epostadress"></p-sortIcon>
+          </div>
+        </th>
+        <th pSortableColumn="phone">
+          <div class="p-d-flex p-jc-between p-ai-center">
+            Telefon
+            <p-sortIcon field="phone"></p-sortIcon>
+          </div>
+        </th>
+        <th>
+          <div class="p-d-flex p-jc-between pi-align-rightl">
+            Åtgärder
+          </div>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-event>
+      <tr class="p-selectable-row">
+        <td>
+          <span class="p-column-title">Titel</span>
+          {{ event.name }}
+        </td>
+        <td>
+          <span class="p-column-title">Titel</span>
+          {{ event.contact_person }}
+        </td>
+        <td>
+          <span class="p-column-title">Epost</span>
+          <span class="image-text">{{ event.email }}</span>
+        </td>
+        <td>
+          <span class="p-column-title">Telefon</span>
+          <span class="image-text">{{ event.phone }}</span>
+        </td>
+        <td>
+          <span class="p-column-title">Åtgärder</span>
+          <!--          <button pButton pRipple icon="pi pi-info" class="p-button-rounded p-button-info mr-2"-->
+          <!--                  (click)="viewUser(customer.user_uid)"></button>-->
+          <!--          <brevet-event-info-popover [event]="event" ></brevet-event-info-popover>-->
+          <brevet-organizer-info-popover [event]="event"></brevet-organizer-info-popover>
+          <!--          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success sm-0 p-ml-1" (click)="editProduct(event)"></button>-->
+          <!--          <button  [disabled]="!canDelete(event)" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1" (click)="deleteProduct(event.event_uid)"></button>-->
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8">No users found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <!--  <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>-->
+  <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+</ng-container>

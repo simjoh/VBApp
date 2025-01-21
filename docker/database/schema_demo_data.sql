@@ -79,10 +79,10 @@ VALUES (1, 'ADMIN', 1),
 
 
 
-INSERT INTO `organizers` (`organizer_id`, `name`, `email`, `phone`, `created_at`, `updated_at`)
-VALUES (1, 'Randonneurs Laponia', 'organizer1@example.com', '1234567890', NOW(), NOW());
-INSERT INTO `organizers` (`organizer_id`, `name`, `email`, `phone`, `created_at`, `updated_at`)
-VALUES (2, 'Cykelintresset', 'organizer2@example.com', '1234567890', NOW(), NOW());
+INSERT INTO `organizers` (`organizer_id`, `name`,  `contact_person`, `email`, `phone`, `created_at`, `updated_at`)
+VALUES (1, 'Randonneurs Laponia', 'Florian Kynman' ,'organizer1@example.com', '1234567890', NOW(), NOW());
+INSERT INTO `organizers` (`organizer_id`, name , `contact_person`, `email`, `phone`, `created_at`, `updated_at`)
+VALUES (2, 'Cykelintresset', 'Simon Johansson','organizer2@example.com', '1234567890', NOW(), NOW());
 
 -- Användare
 INSERT INTO `users` (`user_uid`, `user_name`, `given_name`, `family_name`, `password`, `organizer_id`)

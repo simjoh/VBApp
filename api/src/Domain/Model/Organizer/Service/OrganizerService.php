@@ -4,6 +4,7 @@ namespace App\Domain\Model\Organizer\Service;
 
 use App\common\CurrentUser;
 use App\common\Service\ServiceAbstract;
+use App\Domain\Model\Organizer\Organizer;
 use App\Domain\Model\Organizer\Repository\OrganizerRepository;
 use App\Domain\Model\Organizer\Rest\OrganizerAssembly;
 use App\Domain\Model\Organizer\Rest\OrganizerRepresentation;
@@ -22,7 +23,7 @@ class OrganizerService extends ServiceAbstract
     public function __construct(ContainerInterface   $c,
                                 PermissionRepository $permissionRepository,
                                 OrganizerRepository  $organizerRepository,
-                                OrganizerAssembly $organizerassembly)
+                                OrganizerAssembly    $organizerassembly)
     {
         $this->permissinrepository = $permissionRepository;
         $this->organizerRepository = $organizerRepository;
@@ -42,6 +43,18 @@ class OrganizerService extends ServiceAbstract
     public function organizer(string $organizer_id): ?OrganizerRepresentation
     {
         $organizer = $this->organizerRepository->getById($organizer_id);
+
+        if (!isset($organizer)) {
+            return null;
+        }
+        $permissions = $this->getPermissions(null);
+        return $this->organizerassembly->toRepresentation($organizer, $permissions);
+    }
+
+    public function createOrganizer(OrganizerRepresentation $organizer): ?OrganizerRepresentation
+    {
+
+        $organizer = $this->organizerRepository->createOrganizer($this->organizerassembly->toOrganizer($organizer));
 
         if (!isset($organizer)) {
             return null;

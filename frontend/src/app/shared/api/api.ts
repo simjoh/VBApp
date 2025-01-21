@@ -194,6 +194,15 @@ export interface ClubRepresentation {
   links: [];
 }
 
+export interface OrganizerRepresentation {
+  organizer_id: number;
+  name: string | null;
+  contact_person: string | null;
+  email: string | null;
+  phone: string | null;
+  links: Link[];
+}
+
 
 
 

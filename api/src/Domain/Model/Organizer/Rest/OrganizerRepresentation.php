@@ -9,6 +9,7 @@ class OrganizerRepresentation  implements JsonSerializable
 
     private $organizer_id;
     private $name;
+    private $contact_person;
     private $email;
     private $phone;
 
@@ -44,6 +45,22 @@ class OrganizerRepresentation  implements JsonSerializable
     public function setName($name): void
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getContactPerson()
+    {
+        return $this->contact_person;
+    }
+
+    /**
+     * @param mixed $contact_person
+     */
+    public function setContactPerson($contact_person): void
+    {
+        $this->contact_person = $contact_person;
     }
 
     /**

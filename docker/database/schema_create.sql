@@ -84,6 +84,7 @@ CREATE TABLE `organizers`
 (
     `organizer_id` BIGINT UNSIGNED NOT NULL PRIMARY KEY, -- Primary key without auto-increment
     `name`         VARCHAR(255) NOT NULL,                -- Organizer name
+    `contact_person` VARCHAR(255) NOT NULL,
     `email`        VARCHAR(255) NOT NULL UNIQUE,         -- Unique email
     `phone`        VARCHAR(255) DEFAULT NULL,            -- Optional phone number
     `created_at`   TIMESTAMP NULL DEFAULT NULL,          -- Created timestamp

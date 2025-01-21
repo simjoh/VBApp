@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 import {SiteAdminComponent} from "../site-admin/site-admin.component";
 import {SiteListComponent} from "../site-admin/site-list/site-list.component";
 import {OrganizerAdminComponent} from "./organizer-admin.component";
@@ -11,8 +11,8 @@ const routes: Routes = [
     path: 'organizers',
     component: OrganizerAdminComponent,
     children: [
-      { path: 'brevet-organizer-list', component:  OrganizerListComponent},
-      { path: '**', redirectTo: 'brevet-organizer-list'},
+      {path: 'brevet-organizer-list', component: OrganizerListComponent},
+      {path: '**', redirectTo: 'brevet-organizer-list'},
     ]
   }];
 
@@ -20,4 +20,5 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class OrganizerAdminRoutingModule { }
+export class OrganizerAdminRoutingModule {
+}

@@ -1,0 +1,44 @@
+<form #eventFormName="ngForm" (ngSubmit)="addEvent(eventFormName)" novalidate>
+  <div class="p-dynamicdialog">
+    <div class="p-dialog-content">
+      <div class="form-group">
+        <div class="form-group mb-5">
+          <label class="col-form-label" for="name">Arrangörsnamn</label>
+          <input pInputText pTooltip="Titel" tooltipPosition="left" #name="ngModel" type="text" name="name"
+                 class="form-control" id="name" [(ngModel)]="eventForm.name" placeholder="Tex Ranonneurs laponia"
+                 required>
+        </div>
+
+        <div class="form-group mb-5">
+          <label class="col-form-label" for="name">Kontaktperson</label>
+          <input pInputText pTooltip="Kontaktperson för arrangör" tooltipPosition="left" #contact_person="ngModel" type="text" name="contact_person"
+                 class="form-control" id="contactperson" [(ngModel)]="eventForm.contact_person" placeholder="Tex Kalle Randonneur"
+                 required>
+        </div>
+        <div class="form-group mb-5">
+          Email
+          <input pInputText pTooltip="Arrangörens epostadress" tooltipPosition="left" #email="ngModel" type="text" name="email"
+                 class="form-control" id="email" [(ngModel)]="eventForm.email" placeholder="kontakt@arrangör.se"
+                 required>
+        </div>
+        <div class="form-group">
+          Telefon
+          <input pInputText pTooltip="Telefonnummer till arrangör" tooltipPosition="left" #phone="ngModel" type="text" name="phone"
+                 class="form-control" id="phone" [(ngModel)]="eventForm.phone" placeholder="Tex 123 235" required>
+        </div>
+      </div>
+    </div>
+    <div class="p-dialog-footer">
+  <span class="p-buttonset">
+    <button pTooltip="Klicka för att spara" type="submit" [disabled]="!eventFormName.valid" tooltipPosition="left"
+            pButton pRipple label="Save" icon="pi pi-check" class="p-button-sm"></button>
+    <button pTooltip="Klicka för att avbryta" pButton pRipple label="Cancel" (click)="cancel()" icon="pi pi-times"
+            class="p-button-sm"></button>
+</span>
+    </div>
+  </div>
+</form>
+
+
+
+

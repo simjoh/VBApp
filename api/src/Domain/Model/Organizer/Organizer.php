@@ -8,16 +8,18 @@ class Organizer
 {
     private $organizer_id;
     private $name;
+    private $contact_person;
     private $email;
     private $phone;
     private $created_at;
     private $updated_at;
 
     // Constructor
-    public function __construct($organizer_id, $name, $email, $phone = null, $created_at = null, $updated_at = null)
+    public function __construct($organizer_id, $name,  $contact_person ,$email, $phone = null, $created_at = null, $updated_at = null)
     {
         $this->organizer_id = $organizer_id;
         $this->name = $name;
+        $this->contact_person = $contact_person;
         $this->email = $email;
         $this->phone = $phone;
         $this->created_at = $created_at;
@@ -64,6 +66,22 @@ class Organizer
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getContactPerson()
+    {
+        return $this->contact_person;
+    }
+
+    /**
+     * @param mixed|null $contact_person
+     */
+    public function setContactPerson($contact_person): void
+    {
+        $this->contact_person = $contact_person;
     }
 
     public function setEmail($email)

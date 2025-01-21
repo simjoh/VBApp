@@ -41,6 +41,10 @@ class OrganizerAssembly
 
         $organizationsrepresentation = new OrganizerRepresentation();
         $organizationsrepresentation->setOrganizerId($organizer->getOrganizerId());
+        $organizationsrepresentation->setContactPerson($organizer->getContactPerson());
+        $organizationsrepresentation->setName($organizer->getName());
+        $organizationsrepresentation->setEmail($organizer->getEmail());
+        $organizationsrepresentation->setPhone($organizer->getPhone());
 
         $linkArray = array();
         foreach ($permissions as $x => $site) {
@@ -54,6 +58,12 @@ class OrganizerAssembly
         }
         $organizationsrepresentation->setLinks($linkArray);
         return $organizationsrepresentation;
+    }
+
+    public function toOrganizer(OrganizerRepresentation $organizer): Organizer
+    {
+        return  new Organizer("", $organizer->getName(), $organizer->getContactPerson(), $organizer->getEmail(), $organizer->getPhone());
+
     }
 
     public function getPermissions($user_uid): array
