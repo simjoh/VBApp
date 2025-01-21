@@ -33,10 +33,11 @@ class EventInformationAssembly
 //        return $events;
 //    }
 
-    public function toRepresentation(Event $event, array $tracks ,  array $permissions, string $currentUserUid): EventInformationRepresentation {
+    public function toRepresentation(Event $event, array $tracks, array $permissions, string $currentUserUid): EventInformationRepresentation
+    {
         $permissions = $this->getPermissions($currentUserUid);
         $eventinformationrepresentation = new EventInformationRepresentation();
-        $eventinformationrepresentation->setEvent($this->eventAssembly->toRepresentation($event,$permissions));
+        $eventinformationrepresentation->setEvent($this->eventAssembly->toRepresentation($event, $permissions));
         $eventinformationrepresentation->setTracks($tracks);
 
         return $eventinformationrepresentation;
@@ -44,7 +45,7 @@ class EventInformationAssembly
 
     public function getPermissions($user_uid): array
     {
-        return $this->permissinrepository->getPermissionsTodata("EVENT",$user_uid);
+        return $this->permissinrepository->getPermissionsTodata("EVENT", $user_uid);
 
     }
 

@@ -10,6 +10,7 @@ class RandonneurCheckpointAssembly
 {
 
     private $settings;
+
     public function __construct(ContainerInterface $c)
     {
         $this->settings = $c->get('settings');
@@ -41,7 +42,7 @@ class RandonneurCheckpointAssembly
             } else {
                 array_push($linkArray, new Link("relation.randonneur.undocheckout", 'PUT', $this->settings['path'] . 'randonneur/' . $currentUserUId . "/track/" . $track_uid . "/startnumber/" . $startnumber . "/checkpoint/" . $checkpoint->getCheckpointUid() . "/undocheckoutFrom"));
             }
-         //   array_push($linkArray, new Link("relation.randonneur.rollback", 'PUT', $this->settings['path'] . 'randonneur/' . $currentUserUId . "/track/" . $track_uid . "/startnumber/" . $startnumber . "/checkpoint/" . $checkpoint->getCheckpointUid() . "/rollback"));
+            //   array_push($linkArray, new Link("relation.randonneur.rollback", 'PUT', $this->settings['path'] . 'randonneur/' . $currentUserUId . "/track/" . $track_uid . "/startnumber/" . $startnumber . "/checkpoint/" . $checkpoint->getCheckpointUid() . "/rollback"));
         }
         if ($hasDnf == false) {
             array_push($linkArray, new Link("relation.randonneur.dnf", 'PUT', $this->settings['path'] . 'randonneur/' . $currentUserUId . "/track/" . $track_uid . "/startnumber/" . $startnumber . "/checkpoint/" . $checkpoint->getCheckpointUid() . "/markasdnf"));

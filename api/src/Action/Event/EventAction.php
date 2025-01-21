@@ -25,6 +25,7 @@ class EventAction
     {
 
         $allEvents = $this->eventService->allEvents($request->getAttribute('currentuserUid'));
+
         if (empty($allEvents)) {
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
@@ -43,7 +44,6 @@ class EventAction
         if (!isset($event)) {
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
-
         $response->getBody()->write(json_encode($event));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }

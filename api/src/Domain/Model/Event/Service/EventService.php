@@ -157,6 +157,4 @@ class EventService extends ServiceAbstract
     }
 
 
-
-
 }

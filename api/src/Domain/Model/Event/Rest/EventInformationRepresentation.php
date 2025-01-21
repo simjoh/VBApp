@@ -9,6 +9,7 @@ class EventInformationRepresentation implements JsonSerializable
 {
     private EventRepresentation $event;
     private array $tracks = [];
+
     /**
      * @return EventRepresentation
      */
@@ -44,6 +45,6 @@ class EventInformationRepresentation implements JsonSerializable
 
     public function jsonSerialize(): mixed
     {
-        return (object) get_object_vars($this);
+        return (object)get_object_vars($this);
     }
 }

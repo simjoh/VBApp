@@ -4,7 +4,7 @@ namespace App\Domain\Model\Event\Rest;
 
 use JsonSerializable;
 
-class EventMetricRepresentation   implements JsonSerializable
+class EventMetricRepresentation implements JsonSerializable
 {
     private string $countParticipants;
     private string $countDnf;
@@ -76,10 +76,9 @@ class EventMetricRepresentation   implements JsonSerializable
     }
 
 
-
     public function jsonSerialize(): mixed
     {
-        return (object) get_object_vars($this);
+        return (object)get_object_vars($this);
     }
 
 }

@@ -12,6 +12,7 @@ class User implements JsonSerializable
     private string $familyname;
     private string $username ="";
     private string $token;
+    private string $organizer_id;
     private  $roles = array();
 
 
@@ -112,7 +113,17 @@ class User implements JsonSerializable
         $this->username = $username;
     }
 
-    public function jsonSerialize(): string {
+    public function getOrganizerId(): string
+    {
+        return $this->organizer_id;
+    }
+
+    public function setOrganizerId(string $organizer_id): void
+    {
+        $this->organizer_id = $organizer_id;
+    }
+
+    public function jsonSerialize(): mixed {
         return (object) get_object_vars($this);
     }
 }

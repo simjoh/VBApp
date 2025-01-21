@@ -61,9 +61,9 @@ export class MenuComponent implements OnInit{
           })
         }
 
-        if (!this.items.some(item => item.label === 'Systemadministration')) {
+        if (!this.items.some(item => item.label === 'Systeminställningar')) {
           this.items.push({
-            label: 'Systemadministration',
+            label: 'Systeminställningar',
             items: [{
               label: 'Användare',
               routerLink: '/admin/useradmin/user'
@@ -79,6 +79,10 @@ export class MenuComponent implements OnInit{
               {
                 label: 'Kontrollplatser',
                 routerLink: '/admin/siteadmin/sites/'
+              },
+              {
+                label: 'Arrangör',
+                routerLink: '/admin/organizeradmin/organizers/'
               }
             ]
           });

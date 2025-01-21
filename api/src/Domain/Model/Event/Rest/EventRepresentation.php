@@ -10,12 +10,15 @@ class EventRepresentation implements JsonSerializable
 
     private string $event_uid;
     private string $title;
-    private  $startdate;
-    private  $enddate;
+    private $startdate;
+    private $enddate;
     private bool $active;
     private bool $canceled;
     private bool $completed;
     private string $description;
+    private $organizer_id;
+
+
     private array $links = [];
 
     /**
@@ -147,6 +150,22 @@ class EventRepresentation implements JsonSerializable
     }
 
     /**
+     * @return mixed
+     */
+    public function getOrganizerId()
+    {
+        return $this->organizer_id;
+    }
+
+    /**
+     * @param mixed $organizer_id
+     */
+    public function setOrganizerId($organizer_id): void
+    {
+        $this->organizer_id = $organizer_id;
+    }
+
+    /**
      * @return array
      */
     public function getLinks(): array
@@ -163,8 +182,8 @@ class EventRepresentation implements JsonSerializable
     }
 
 
-
-    public function jsonSerialize(): mixed {
-        return (object) get_object_vars($this);
+    public function jsonSerialize(): mixed
+    {
+        return (object)get_object_vars($this);
     }
 }

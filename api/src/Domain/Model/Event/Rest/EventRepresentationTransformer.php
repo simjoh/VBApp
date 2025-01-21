@@ -16,6 +16,7 @@ class EventRepresentationTransformer implements Transformer
     {
         $classBindings->register(new FieldBinding('link', 'link', Link::class));
     }
+
     public function transforms()
     {
         return EventRepresentation::class;

@@ -4,7 +4,7 @@ namespace App\Domain\Model\Randonneur\Rest;
 
 use JsonSerializable;
 
-class TrackInfoRepresentation  implements JsonSerializable
+class TrackInfoRepresentation implements JsonSerializable
 {
 
     private string $distance;
@@ -41,7 +41,6 @@ class TrackInfoRepresentation  implements JsonSerializable
     {
         $this->start_date_time = $start_date_time;
     }
-
 
 
     public function jsonSerialize()

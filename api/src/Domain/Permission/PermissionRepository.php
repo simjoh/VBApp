@@ -78,6 +78,8 @@ class PermissionRepository extends BaseRepository
             $statement->execute();
             $data = $statement->fetchAll();
 
+
+
             if(empty($data)){
                 return array();
             }

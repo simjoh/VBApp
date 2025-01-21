@@ -26,18 +26,20 @@ class EventAssembly
         $this->trackRepository = $trackRepository;
     }
 
-    public function toRepresentations(array $eventsArray, string $currentUserUid): array {
+    public function toRepresentations(array $eventsArray, string $currentUserUid): array
+    {
 
         $permissions = $this->getPermissions($currentUserUid);
 
         $events = array();
-        foreach ($eventsArray as $x =>  $event) {
-            array_push($events, (object) $this->toRepresentation($event,$permissions));
+        foreach ($eventsArray as $x => $event) {
+            array_push($events, (object)$this->toRepresentation($event, $permissions));
         }
         return $events;
     }
 
-    public function toRepresentation(Event $event,  array $permissions): EventRepresentation {
+    public function toRepresentation(Event $event, array $permissions): EventRepresentation
+    {
 
         $eventrepresentation = new EventRepresentation();
         $eventrepresentation->setDescription($event->getDescription() == null ? 0 : $event->getDescription());
@@ -48,31 +50,34 @@ class EventAssembly
         $eventrepresentation->setCompleted($event->isCompleted());
         $eventrepresentation->setStartdate($event->getStartdate());
         $eventrepresentation->setEnddate($event->getEnddate());
+        $eventrepresentation->setOrganizerId($event->getOrganizerId());
 
         $participantsarray = array();
         $linkArray = array();
-        foreach ($permissions as $x =>  $site) {
-            if($site->hasWritePermission()){
-                array_push($linkArray, new Link("relation.event.update", 'PUT', $this->settings['path'] .'user/' . $event->getEventUid()));
+        foreach ($permissions as $x => $site) {
+            if ($site->hasWritePermission()) {
+                array_push($linkArray, new Link("relation.event.update", 'PUT', $this->settings['path'] . 'user/' . $event->getEventUid()));
                 // ett event får inte tas bort om deltagare är tillagda
-              $tracks =  $this->trackRepository->tracksbyEvent($event->getEventUid());
-              foreach ($tracks as $track){
-                  $participants = $this->participantRepository->participantsOnTrack($track->getTrackUid());
-                  if(count($participants) > 0){
-                      array_push($participantsarray, $participants);
-                  }
-              }
-                if(count($participantsarray) == 0 && count($tracks) == 0){
-                    array_push($linkArray, new Link("relation.event.delete", 'DELETE', $this->settings['path'] .'user/' . $event->getEventUid()));
+                $tracks = $this->trackRepository->tracksbyEvent($event->getEventUid());
+                foreach ($tracks as $track) {
+                    $participants = $this->participantRepository->participantsOnTrack($track->getTrackUid());
+                    if (count($participants) > 0) {
+                        array_push($participantsarray, $participants);
+                    }
+                }
+                if (count($participantsarray) == 0 && count($tracks) == 0) {
+                    array_push($linkArray, new Link("relation.event.delete", 'DELETE', $this->settings['path'] . 'user/' . $event->getEventUid()));
                 }
 
                 break;
             }
 
-            if($site->hasReadPermission()){
+            if ($site->hasReadPermission()) {
                 array_push($linkArray, new Link("self", 'GET', $this->settings['path'] . 'user/' . $event->getEventUid()));
 
                 array_push($linkArray, new Link("relation.event.track", 'GET', $this->settings['path'] . 'tracker/event/' . $event->getEventUid()));
+
+                array_push($linkArray, new Link("relation.organizers.organizer", 'GET', '/api/organizers/organizer/' . $event->getOrganizerId()));
             };
 
             array_push($linkArray, new Link("relation.event.result", 'GET', $this->settings['path'] . 'results/event/' . $event->getEventUid()));
@@ -89,10 +94,9 @@ class EventAssembly
 
     public function getPermissions($user_uid): array
     {
-        return $this->permissinrepository->getPermissionsTodata("EVENT",$user_uid);
+        return $this->permissinrepository->getPermissionsTodata("EVENT", $user_uid);
 
     }
-
 
 
 }

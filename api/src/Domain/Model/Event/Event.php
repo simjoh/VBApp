@@ -13,6 +13,9 @@ class Event
     private ?bool $canceled;
     private ?bool $completed;
     private ?string $description = "";
+    private $organizer_id;
+
+
 
 //    /**
 //     * @param string $event_uid
@@ -163,6 +166,22 @@ class Event
     public function setDescription(string $description): void
     {
         $this->description = $description;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOrganizerId()
+    {
+        return $this->organizer_id;
+    }
+
+    /**
+     * @param mixed $organizer_id
+     */
+    public function setOrganizerId($organizer_id): void
+    {
+        $this->organizer_id = $organizer_id;
     }
 
 

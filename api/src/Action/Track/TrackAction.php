@@ -34,32 +34,36 @@ class TrackAction
         $this->settings = $c->get('settings');
     }
 
-    public function allTracks(ServerRequestInterface $request, ResponseInterface $response){
-      $currentuserUid = $request->getAttribute('currentuserUid');
-        $response->getBody()->write((string)json_encode( $this->trackService->allTracks($currentuserUid)), JSON_UNESCAPED_SLASHES);
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    public function allTracks(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $currentuserUid = $request->getAttribute('currentuserUid');
+        $response->getBody()->write((string)json_encode($this->trackService->allTracks($currentuserUid)), JSON_UNESCAPED_SLASHES);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
-    public function track(ServerRequestInterface $request, ResponseInterface $response){
+    public function track(ServerRequestInterface $request, ResponseInterface $response)
+    {
         $currentuserUid = $request->getAttribute('currentuserUid');
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
-        $response->getBody()->write((string)json_encode( $this->trackService->getTrackByTrackUid($route->getArgument('trackUid'),$currentuserUid)));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        $response->getBody()->write((string)json_encode($this->trackService->getTrackByTrackUid($route->getArgument('trackUid'), $currentuserUid)));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
-    public function tracksForEvent(ServerRequestInterface $request, ResponseInterface $response){
+    public function tracksForEvent(ServerRequestInterface $request, ResponseInterface $response)
+    {
         $currentuserUid = $request->getAttribute('currentuserUid');
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $event_uid = $route->getArgument('eventUid');
 
-        $response->getBody()->write((string)json_encode( $this->trackService->tracksForEvent($currentuserUid, $event_uid)), JSON_UNESCAPED_SLASHES);
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        $response->getBody()->write((string)json_encode($this->trackService->tracksForEvent($currentuserUid, $event_uid)), JSON_UNESCAPED_SLASHES);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
 
-    public function publishresults(ServerRequestInterface $request, ResponseInterface $response){
+    public function publishresults(ServerRequestInterface $request, ResponseInterface $response)
+    {
         $currentuserUid = $request->getAttribute('currentuserUid');
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
@@ -68,94 +72,92 @@ class TrackAction
         $action = filter_var($params["publish"], FILTER_VALIDATE_BOOLEAN);
 
 
-        $this->trackService->publishResults($route->getArgument('trackUid'),$action ,$currentuserUid);
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        $this->trackService->publishResults($route->getArgument('trackUid'), $action, $currentuserUid);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
 
-    public function updateTrack(ServerRequestInterface $request, ResponseInterface $response){
+    public function updateTrack(ServerRequestInterface $request, ResponseInterface $response)
+    {
 
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new TrackRepresentationTransformer());
-        $trackrepresentation = (object) $jsonDecoder->decode($request->getBody(), TrackRepresentation::class);
+        $trackrepresentation = (object)$jsonDecoder->decode($request->getBody(), TrackRepresentation::class);
         $updatedTrack = $this->trackService->updateTrack($trackrepresentation, $request->getAttribute('currentuserUid'));
-        $response->getBody()->write((string)json_encode($updatedTrack),JSON_UNESCAPED_SLASHES);
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        $response->getBody()->write((string)json_encode($updatedTrack), JSON_UNESCAPED_SLASHES);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
-    public function createTrack(ServerRequestInterface $request, ResponseInterface $response){
+    public function createTrack(ServerRequestInterface $request, ResponseInterface $response)
+    {
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new TrackRepresentationTransformer());
-        $trackrepresentation = (object) $jsonDecoder->decode($request->getBody(), TrackRepresentation::class);
-        $created = $this->trackService->createTrack($trackrepresentation,  $request->getAttribute('currentuserUid'));
-        $response->getBody()->write((string)json_encode($created),JSON_UNESCAPED_SLASHES);
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        $trackrepresentation = (object)$jsonDecoder->decode($request->getBody(), TrackRepresentation::class);
+        $created = $this->trackService->createTrack($trackrepresentation, $request->getAttribute('currentuserUid'));
+        $response->getBody()->write((string)json_encode($created), JSON_UNESCAPED_SLASHES);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
 
-
-    public function createTrackFromPlanner(ServerRequestInterface $request, ResponseInterface $response){
+    public function createTrackFromPlanner(ServerRequestInterface $request, ResponseInterface $response)
+    {
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new RusaPlannerResponseRepresentationTransformer());
 //        $jsonDecoder->register(new SiteRepresentationTransformer());
 
         $trackrepresentation = json_decode($request->getBody());
 
-      //  $trackrepresentation = (object) $jsonDecoder->decode($request->getBody(), RusaPlannerResponseRepresentation::class);
+        //  $trackrepresentation = (object) $jsonDecoder->decode($request->getBody(), RusaPlannerResponseRepresentation::class);
 
 
+        $created = $this->trackService->createTrackFromPlanner($trackrepresentation, $request->getAttribute('currentuserUid'));
 
-         $created = $this->trackService->createTrackFromPlanner($trackrepresentation,  $request->getAttribute('currentuserUid'));
-
-        $response->getBody()->write((string)json_encode($created),JSON_UNESCAPED_SLASHES);
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        $response->getBody()->write((string)json_encode($created), JSON_UNESCAPED_SLASHES);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
 
-
-
-    public function trackplanner(ServerRequestInterface $request, ResponseInterface $response){
+    public function trackplanner(ServerRequestInterface $request, ResponseInterface $response)
+    {
 
         $currentuserUid = $request->getBody()->getContents();
 
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new RusaPlannerInputRepresentationTransformer());
-        $rusaPlannnerInput = (object) $jsonDecoder->decode($currentuserUid, RusaPlannerInputRepresentation::class);
+        $rusaPlannnerInput = (object)$jsonDecoder->decode($currentuserUid, RusaPlannerInputRepresentation::class);
 
 
+        $result = $this->trackService->planTrack($rusaPlannnerInput, $currentuserUid);
 
-       $result = $this->trackService->planTrack($rusaPlannnerInput,$currentuserUid);
-
-       $response->getBody()->write(json_encode($result),JSON_UNESCAPED_SLASHES);
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        $response->getBody()->write(json_encode($result), JSON_UNESCAPED_SLASHES);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
 
-    public function deleteTrack(ServerRequestInterface $request, ResponseInterface $response){
+    public function deleteTrack(ServerRequestInterface $request, ResponseInterface $response)
+    {
         $currentuserUid = $request->getAttribute('currentuserUid');
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
-        $this->trackService->deleteTrack($route->getArgument('trackUid'),$currentuserUid);
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        $this->trackService->deleteTrack($route->getArgument('trackUid'), $currentuserUid);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
 
-
-
-
-    public function buildfromCsv(ServerRequestInterface $request, ResponseInterface $response){
+    public function buildfromCsv(ServerRequestInterface $request, ResponseInterface $response)
+    {
         $uploadDir = $this->settings['upload_directory'];
         $uploadedFiles = $request->getUploadedFiles();
 
         foreach ($uploadedFiles as $uploadedFile) {
-         //   if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+            //   if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
             $filename = $this->moveUploadedFile($uploadDir, $uploadedFile);
-        //    }
+            //    }
         }
 
 //        throw new Exception();
         $this->trackService->buildFromCsv($filename, $uploadDir, $request->getAttribute('currentuserUid'));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
     function moveUploadedFile($directory, UploadedFile $uploadedFile)
@@ -167,8 +169,6 @@ class TrackAction
 
         return $filename;
     }
-
-
 
 
 }

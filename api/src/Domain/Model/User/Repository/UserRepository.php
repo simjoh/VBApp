@@ -49,6 +49,7 @@ class UserRepository extends BaseRepository
         $user->setGivenname($userdetails['given_name']);
         $user->setFamilyname($userdetails['family_name']);
         $user->setUsername($userdetails['user_name']);
+        $user->setOrganizerId($userdetails['organizer_id']);
         $user->setToken('');
         $user->setRoles(array($userdetails['role_name']));
        // $user->setRoles($roleArray);
@@ -71,6 +72,7 @@ class UserRepository extends BaseRepository
             $user->setGivenname($row['given_name']);
             $user->setFamilyname($row['family_name']);
             $user->setUsername($row['user_name']);
+            $user->setOrganizerId($row['organizer_id']);
             $user->setToken('');
 
             $user_roles_stmt = $this->connection->prepare($this->sqls('roles'));
@@ -105,6 +107,7 @@ class UserRepository extends BaseRepository
         $user->setGivenname($data['given_name']);
         $user->setFamilyname($data['family_name']);
         $user->setFamilyname($data['user_name']);
+        $user->setOrganizerId($data['organizer_id']);
         $user->setToken('');
 
         $user_roles_stmt = $this->connection->prepare($this->sqls('roles'));
@@ -171,6 +174,7 @@ class UserRepository extends BaseRepository
         $familyname = $userTocreate->getFamilyname();
         $givenname = $userTocreate->getGivenname();
         $username = $userTocreate->getUsername();
+        $organizer_id = $userTocreate->getOrganizerId();
         $password = sha1("test");
         $roleid = 1;
         $stmt = $this->connection->prepare($this->sqls('createUser'));
@@ -178,6 +182,7 @@ class UserRepository extends BaseRepository
         $stmt->bindParam(':family_name',$familyname );
         $stmt->bindParam(':user_name', $username);
         $stmt->bindParam(':given_name', $givenname);
+        $stmt->bindParam(':organizer_id', $organizer_id);
         $stmt->bindParam(':password', $password);
         $stmt->execute();
         }
@@ -210,7 +215,7 @@ class UserRepository extends BaseRepository
         $usersqls['allUsers'] = 'select * from users s;';
         $usersqls['getUserById'] = 'select * from users s where s.user_uid = :user_uid;';
         $usersqls['updateUser']  = "UPDATE users SET given_name=:givenname, family_name=:familyname, username=:username WHERE user_uid=:user_uid";
-        $usersqls['createUser']  = "INSERT INTO users(user_uid, user_name, given_name, family_name, password) VALUES (:user_uid, :user_name, :given_name, :family_name, :password)";
+        $usersqls['createUser']  = "INSERT INTO users(user_uid, user_name, given_name, family_name, password, organizer_id) VALUES (:user_uid, :user_name, :given_name, :family_name, :password, :organizer_id)";
         $usersqls['deleteUser'] = 'delete from users  where user_uid = :user_uid';
         $usersqls['roles'] = 'select distinct(r.role_name) , r.role_id from user_role ur inner join roles r on r.role_id = ur.role_id  where ur.user_uid = :user_uid';
         $usersqls['isRole'] = 'select role_id from roles s where s.role_id = :role_id;';

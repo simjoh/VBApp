@@ -76,7 +76,7 @@ class RandonneurService
                 $stamptime = "";
                 $stamped = $this->participantRepository->hasStampOnCheckpoint($participant->getParticipantUid(), $checkpoint->getCheckPointUId());
                 $hasDnf = $this->participantRepository->hasDnf($participant->getParticipantUid());
-                $hasCheckout = $this->participantRepository->hasCheckedOut($participant->getParticipantUid(),  $checkpoint->getCheckPointUId());
+                $hasCheckout = $this->participantRepository->hasCheckedOut($participant->getParticipantUid(), $checkpoint->getCheckPointUId());
 
                 $participant_checkpoint = $this->participantRepository->stampTimeOnCheckpoint($participant->getParticipantUid(), $checkpoint->getCheckPointUId());
                 if ($participant_checkpoint != null) {

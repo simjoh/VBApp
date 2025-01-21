@@ -113,7 +113,7 @@ class ClubRepository extends BaseRepository
     public function getClubByAcpKod(string $acpkod)
     {
         try {
-            $acpint = intval($acpkod);
+            $acpint = $acpkod;
             $statement = $this->connection->prepare($this->sqls('clubByAcpkod'));
             $statement->bindParam(':acpkod', $acpint);
             $statement->execute();
@@ -135,7 +135,7 @@ class ClubRepository extends BaseRepository
     {
         try {
             $club_uid = Uuid::uuid4();
-            $acpkod = intval($acp_kod);
+            $acpkod = $acp_kod;
             $stmt = $this->connection->prepare($this->sqls('createClub'));
             $stmt->bindParam(':club_uid', $club_uid);
             $stmt->bindParam(':acpkod', $acpkod);

@@ -39,6 +39,7 @@ class UserAssembly
         $userRepresentation->setUsername($s->getUsername());
         $userRepresentation->setGivenname($s->getGivenname());
         $userRepresentation->setFamilyname($s->getFamilyname());
+        $userRepresentation->setOrganizerId($s->getOrganizerId());
         $userRepresentation->setRoles($s->getRoles());
 
         $userinfo = $this->userinforepository->userinfoFor($s->getId());
@@ -58,6 +59,7 @@ class UserAssembly
             }
             if($site->hasReadPermission()){
                 array_push($linkArray, new Link("self", 'GET', '/api/user/' . $s->getId()));
+                array_push($linkArray, new Link("relation.organizers.organizer", 'GET', '/api/organizers/organizer/' . $s->getOrganizerId()));
             };
         }
         $userRepresentation->setLinks($linkArray);

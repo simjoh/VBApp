@@ -1,7 +1,12 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
+import {AdministrationService} from "./administration.service";
 
 @Injectable()
 export class AdministrationComponentService {
 
-  constructor() { }
+  constructor(private administrationservice: AdministrationService) {
+
+
+    this.administrationservice.getFoundationForAcpReport();
+  }
 }

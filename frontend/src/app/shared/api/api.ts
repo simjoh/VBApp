@@ -22,6 +22,7 @@ export interface Event {
   title: string;
   startdate: string;
   enddate: string;
+  organizer_id: number
   active: boolean;
   canceled: boolean;
   completed: boolean;
@@ -37,6 +38,7 @@ export interface User {
   givenname: string;
   familyname: string;
   username: string;
+  organizer_id: number
   token: string;
   roles: string[];
   userInfoRepresentation: UserInfoRepresentation;

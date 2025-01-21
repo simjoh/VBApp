@@ -1,6 +1,10 @@
 <?php
 
 use App\Middleware\ApiKeyValidatorMiddleware;
+use App\Middleware\CleanupMiddleware;
+use App\Middleware\CleanupUserMiddleware;
+use App\Middleware\OrganizerValidatorMiddleWare;
+use App\Middleware\UserValidatorMiddleWare;
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
 
@@ -151,7 +155,7 @@ return function (App $app) {
         //Ingång för att lägga tillbrevenr i efterhand.
 
         // lägg till ingångar för admin av klubbar
-          $app->get('/club/allclubs', \App\Action\Club\ClubAction::class . ':allClubs');
+        $app->get('/allclubs', \App\Action\Club\ClubAction::class . ':allClubs');
         // $app->get('/club/club/{clubUid}', \App\Action\Club\ClubAction::class . ':allUsers')->setName("club");
         $app->post('/club/createclub', \App\Action\Club\ClubAction::class . ':createClub');
         // $app->put('/club/updateClub/{clubUid}', \App\Action\Club\ClubAction::class . ':allUsers')->setName("updateClub");
@@ -161,8 +165,18 @@ return function (App $app) {
 
 
         $app->get('/administration/acpreport/track/{trackUid}', \App\Action\Administration\AcpReportAction::class. ':getAcpReport');
+        $app->get('/administration/acpreport/tracks', \App\Action\Administration\AcpReportAction::class. ':tracksPossibleToReportOn');
+        $app->get('/administration/acpreport/foundation/track/{trackUid}', \App\Action\Administration\AcpReportAction::class. ':getFoundationForAcpReport');
+        $app->post('/administration/acpreport/report/track/{trackUid}', \App\Action\Administration\AcpReportAction::class. ':createAcpReport');
 
-    })->add(\App\Middleware\JwtTokenValidatorMiddleware::class)->add(\App\Middleware\PermissionvalidatorMiddleWare::class);
+
+        // Arrangör
+        $app->get('/organizers/organizer/{organizerID}', \App\Action\Organizers\OrganizerAction::class. ':getOrganizer');
+        $app->get('/organizers', \App\Action\Organizers\OrganizerAction::class. ':allOrganizers');
+        $app->post('/organizers', \App\Action\Organizers\OrganizerAction::class. ':createOrganizer');
+
+
+    })->add(CleanupMiddleware::class)->add(CleanupUserMiddleware::class)->add(\App\Middleware\JwtTokenValidatorMiddleware::class)->add(\App\Middleware\PermissionvalidatorMiddleWare::class)->add(OrganizerValidatorMiddleWare::class)->add(UserValidatorMiddleWare::class);
 
     };
 

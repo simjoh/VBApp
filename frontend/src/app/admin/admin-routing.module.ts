@@ -34,6 +34,10 @@ const routes: Routes = [{
       loadChildren: () => import('./site-admin/site-admin.module').then(m => m.SiteAdminModule),
     },
     {
+      path: 'organizeradmin',
+      loadChildren: () => import('./organizer-admin/organizer-admin.module').then(m => m.OrganizerAdminModule),
+    },
+    {
       path: 'eventadmin',
       loadChildren: () => import('./event-admin/event-admin.module').then(m => m.EventAdminModule),
     },

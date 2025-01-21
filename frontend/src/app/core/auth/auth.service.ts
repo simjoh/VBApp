@@ -76,6 +76,7 @@ await loginModel$.pipe(
       roles: values,
       id: data.id,
       startnumber: data.startnumber,
+      organizer: data.organizer_id,
       trackuid: data.trackuid
     } as ActiveUser
     localStorage.setItem('activeUser', JSON.stringify(activeUser));

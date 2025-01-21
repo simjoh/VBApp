@@ -28,4 +28,10 @@ class Event extends Model
     protected $startlisturl;
 
 
+    public function organizer()
+    {
+        return $this->belongsTo(Organizer::class);
+    }
+
+
 }

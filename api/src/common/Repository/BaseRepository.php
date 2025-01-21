@@ -2,6 +2,7 @@
 
 namespace App\common\Repository;
 
+use App\common\CurrentOrganizer;
 use App\common\Database;
 use PDO;
 
@@ -21,6 +22,11 @@ abstract class BaseRepository extends Database
 
      public function gets() :PDO{
          return $this::getConnection();
+    }
+
+    public function getOrganizer(): int
+    {
+         return CurrentOrganizer::getUser()->getOrganizerId();
     }
 
 }

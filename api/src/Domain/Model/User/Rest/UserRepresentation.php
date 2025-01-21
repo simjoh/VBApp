@@ -14,6 +14,9 @@ class UserRepresentation implements \JsonSerializable
     private  $roles = array();
     private ?Link $link;
     private $links = array();
+    private $organizer_id;
+
+
     private UserInfoRepresentation $userInfoRepresentation;
 
 
@@ -145,6 +148,22 @@ class UserRepresentation implements \JsonSerializable
     public function setUserInfoRepresentation(UserInfoRepresentation $userInfoRepresentation): void
     {
         $this->userInfoRepresentation = $userInfoRepresentation;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOrganizerId()
+    {
+        return $this->organizer_id;
+    }
+
+    /**
+     * @param mixed $organizer_id
+     */
+    public function setOrganizerId($organizer_id): void
+    {
+        $this->organizer_id = $organizer_id;
     }
 
 

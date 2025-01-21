@@ -32,5 +32,10 @@ class Permission
         return Strings::compare('WRITE', $this->type);
     }
 
+    public function hasUpdatePermission(): bool
+    {
+        return Strings::compare('UPDATE', $this->type);
+    }
+
 
 }

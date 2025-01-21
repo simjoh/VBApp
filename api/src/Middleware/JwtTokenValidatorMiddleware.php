@@ -26,6 +26,7 @@ class JwtTokenValidatorMiddleware
     {
         $token = $request->getHeaderLine("TOKEN");
 
+
         if ($token == '') {
 
             return (new Response())->withStatus(403);
@@ -34,7 +35,6 @@ class JwtTokenValidatorMiddleware
         $validator = $this->addRules();
         $signer = new HS256($this->key);
         $parser = new Parser($signer, $validator);
-
 
 
         try {
@@ -49,7 +49,7 @@ class JwtTokenValidatorMiddleware
     private function addRules(): DefaultValidator
     {
         $validator = new DefaultValidator();
-       $validator->addRule('exp', new NewerThanOrSame(time()), true);
+        $validator->addRule('exp', new NewerThanOrSame(time()), true);
 
         return $validator;
     }

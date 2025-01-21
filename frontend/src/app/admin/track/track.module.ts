@@ -32,9 +32,10 @@ import { TrackBuilderSummaryComponent } from './track-builder/track-builder-summ
     TrackBuilderControlsFormComponent,
     TrackBuilderSummaryComponent
   ],
-  exports: [
-    TrackInfoPopoverComponent
-  ],
+    exports: [
+        TrackInfoPopoverComponent,
+        TrackListComponent
+    ],
   imports: [
     TabMenuModule,
     TrackRoutingModule,
