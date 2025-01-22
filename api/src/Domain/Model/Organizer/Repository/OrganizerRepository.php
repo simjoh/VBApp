@@ -23,12 +23,9 @@ class OrganizerRepository extends BaseRepository
 
     public function createOrganizer(Organizer $organizer): ?Organizer
     {
-
         $countsql = "select max(organizer_id) AS max_id from organizers";
 
         try {
-
-
             $stmtss = $this->connection->prepare($countsql);
             $stmtss->execute();
             $row = $stmtss->fetch(PDO::FETCH_ASSOC);
@@ -44,13 +41,12 @@ class OrganizerRepository extends BaseRepository
         try {
             $stmt = $this->connection->prepare($sql);
 
-
             $name = $organizer->getName();
             $contactperson = $organizer->getContactPerson();
             $email = $organizer->getEmail();
             $phone = $organizer->getPhone();
-            $createdat = date('Y-m-d H:i:s');
-            $updatedat = date('Y-m-d H:i:s');
+            $createdat = getCreatedAt();
+            $updatedat = getUpdatedAt();
 
 
             $stmt->bindParam(':organizer_id', $next_id);

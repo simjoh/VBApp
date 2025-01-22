@@ -29,4 +29,16 @@ abstract class BaseRepository extends Database
          return CurrentOrganizer::getUser()->getOrganizerId();
     }
 
+
+  public function getCreatedAt(): string
+{
+    return date('Y-m-d H:i:s');
+
+}
+
+public function getUpdatedAt(): string
+{
+    return date('Y-m-d H:i:s');
+}
+
 }

@@ -12,6 +12,7 @@
       <sourceFolder url="file://$MODULE_DIR$/loppservice/tests" isTestSource="true" packagePrefix="Tests\" />
       <sourceFolder url="file://$MODULE_DIR$/api/src" isTestSource="false" packagePrefix="App\" />
       <sourceFolder url="file://$MODULE_DIR$/api/tests" isTestSource="true" packagePrefix="App\Test\" />
+      <sourceFolder url="file://$MODULE_DIR$/api/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/loppservice/app" isTestSource="false" packagePrefix="App\" />
       <sourceFolder url="file://$MODULE_DIR$/loppservice/database/factories" isTestSource="false" packagePrefix="Database\Factories\" />
       <sourceFolder url="file://$MODULE_DIR$/loppservice/database/seeders" isTestSource="false" packagePrefix="Database\Seeders\" />
