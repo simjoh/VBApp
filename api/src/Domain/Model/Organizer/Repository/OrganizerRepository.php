@@ -37,8 +37,8 @@ class OrganizerRepository extends BaseRepository
             echo "Error: " . $e->getMessage();
         }
 
-        $sql = "INSERT INTO organizers (organizer_id, name, contact_person ,email, phone, created_at, updated_at) 
-                VALUES (:organizer_id, :name, :contactperson, :email, :phone, :created_at, :updated_at)";
+        $sql = "INSERT INTO organizers (organizer_id, name, active, confirmed, contact_person ,email, phone, created_at, updated_at) 
+                VALUES (:organizer_id, :name, :active, :confirmed ,:contactperson, :email, :phone, :created_at, :updated_at)";
 
         try {
             $stmt = $this->connection->prepare($sql);
@@ -47,12 +47,16 @@ class OrganizerRepository extends BaseRepository
             $contactperson = $organizer->getContactPerson();
             $email = $organizer->getEmail();
             $phone = $organizer->getPhone();
-            $createdat = getCreatedAt();
-            $updatedat = getUpdatedAt();
+            $createdat = $this->getCreatedAt();
+            $updatedat = $this->getUpdatedAt();
+            $active = false;
+            $confirmed = false;
 
 
             $stmt->bindParam(':organizer_id', $next_id);
             $stmt->bindParam(':name', $name);
+            $stmt->bindParam(':active',$active );
+            $stmt->bindParam(':confirmed', $confirmed);
             $stmt->bindParam(':contactperson', $contactperson);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':phone', $phone);
@@ -66,6 +70,8 @@ class OrganizerRepository extends BaseRepository
                 return new Organizer(
                     $row['organizer_id'],
                     $row['name'],
+                    $row['active'],
+                    $row['confirmed'],
                     $row['contact_person'],
                     $row['email'],
                     $row['phone'],
@@ -92,16 +98,22 @@ class OrganizerRepository extends BaseRepository
         $contactperson = $organizer->getContactPerson();
         $email = $organizer->getEmail();
         $phone = $organizer->getPhone();
-        $updatedat = date('Y-m-d H:i:s');
+        $active = $organizer->getActive();
+        $confirmed = $organizer->getConfirmed();
+        $updatedat = $this->getUpdatedAt();
+
+
 
         try {
             $stmt = $this->connection->prepare($sql);
             $stmt->bindParam(':organizer_id', $organizer_id);
             $stmt->bindParam(':name', $name);
+            $stmt->bindParam(':active', $active);
+            $stmt->bindParam(':confirmed', $confirmed);
             $stmt->bindParam(':contactperson', $contactperson);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':phone', $phone);
-            $stmt->bindParam(':updated_at', $updated_at);
+            $stmt->bindParam(':updated_at', $updatedat);
             $stmt->execute();
             return $organizer;
         } catch (PDOException $e) {
@@ -138,6 +150,8 @@ class OrganizerRepository extends BaseRepository
             return new Organizer(
                 $row['organizer_id'],
                 $row['name'],
+                $row['active'],
+                $row['confirmed'],
                 $row['contact_person'],
                 $row['email'],
                 $row['phone'],
@@ -160,6 +174,8 @@ class OrganizerRepository extends BaseRepository
             $organizers[] = new Organizer(
                 $row['organizer_id'],
                 $row['name'],
+                $row['active'],
+                $row['confirmed'],
                 $row['contact_person'],
                 $row['email'],
                 $row['phone'],

@@ -9,6 +9,7 @@ class OrganizerRepresentation  implements JsonSerializable
 
     private $organizer_id;
     private $name;
+    private bool $active;
     private $contact_person;
     private $email;
     private $phone;
@@ -103,6 +104,22 @@ class OrganizerRepresentation  implements JsonSerializable
     public function setLinks(array $links): void
     {
         $this->links = $links;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getActive()
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param mixed $active
+     */
+    public function setActive($active): void
+    {
+        $this->active = $active;
     }
 
     public function jsonSerialize(): mixed

@@ -48,6 +48,7 @@ class OrganizerAssembly
         $organizationsrepresentation->setName($organizer->getName());
         $organizationsrepresentation->setEmail($organizer->getEmail());
         $organizationsrepresentation->setPhone($organizer->getPhone());
+        $organizationsrepresentation->setActive($organizer->getActive());
 
         $events = $this->eventRepository->eventsForOrganizer($organizer->getOrganizerId());
 
@@ -71,7 +72,7 @@ class OrganizerAssembly
 
     public function toOrganizer(OrganizerRepresentation $organizer): Organizer
     {
-        return new Organizer("", $organizer->getName(), $organizer->getContactPerson(), $organizer->getEmail(), $organizer->getPhone());
+        return new Organizer("", $organizer->getName(), $organizer->getActive(), false, $organizer->getContactPerson(), $organizer->getEmail(), $organizer->getPhone());
 
     }
 

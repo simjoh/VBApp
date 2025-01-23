@@ -8,6 +8,8 @@ class Organizer
 {
     private $organizer_id;
     private $name;
+    private $active;
+    private $confirmed;
     private $contact_person;
     private $email;
     private $phone;
@@ -15,16 +17,19 @@ class Organizer
     private $updated_at;
 
     // Constructor
-    public function __construct($organizer_id, $name,  $contact_person ,$email, $phone = null, $created_at = null, $updated_at = null)
+    public function __construct($organizer_id, $name, $active, $confirmed , $contact_person ,$email, $phone = null, $created_at = null, $updated_at = null)
     {
         $this->organizer_id = $organizer_id;
         $this->name = $name;
+        $this->active = $active;
+        $this->confirmed = $confirmed;
         $this->contact_person = $contact_person;
         $this->email = $email;
         $this->phone = $phone;
         $this->created_at = $created_at;
         $this->updated_at = $updated_at;
     }
+
 
     // Getters
     public function getOrganizerId()
@@ -103,5 +108,38 @@ class Organizer
     {
         $this->updated_at = $updated_at;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getConfirmed()
+    {
+        return $this->confirmed;
+    }
+
+    /**
+     * @param mixed $confirmed
+     */
+    public function setConfirmed($confirmed): void
+    {
+        $this->confirmed = $confirmed;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getActive()
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param mixed $active
+     */
+    public function setActive($active): void
+    {
+        $this->active = $active;
+    }
+
 
 }

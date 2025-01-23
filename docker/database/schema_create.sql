@@ -686,4 +686,35 @@ ALTER TABLE `user_role`
   ADD CONSTRAINT `user_role_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`);
 COMMIT;
 
+CREATE TABLE `acpreports`
+(
+    `report_uid`   char(36)     NOT NULL,
+    `track_uid`   char(36)     NOT NULL,
+    `organizer_id` BIGINT UNSIGNED NOT NULL,
+    `ready_for_approval`  tinyint(1) DEFAULT 0,
+    `marked_as_ready_for_approval_by`  tinyint(1) DEFAULT 0,
+    `approved`  tinyint(1) DEFAULT 0,
+    `approved_by`  char(36),
+    `created_at`     TIMESTAMP NULL DEFAULT NULL,
+    `updated_at`     TIMESTAMP NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+ALTER TABLE `acpreports`
+    ADD PRIMARY KEY (`report_uid`);
+
+    ADD CONSTRAINT `fk_acpreports_organizer`
+    FOREIGN KEY (`organizer_id`)
+    REFERENCES `organizers` (`organizer_id`)
+    ON
+DELETE
+CASCADE ON UPDATE CASCADE;
+
+ADD CONSTRAINT `fk_acpreports_organizer`
+    FOREIGN KEY (`approved_by`)
+    REFERENCES `users` (`user_uid`)
+    ON
+DELETE
+CASCADE ON UPDATE CASCADE;
+
 
