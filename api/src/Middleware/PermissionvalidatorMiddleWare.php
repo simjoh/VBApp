@@ -58,7 +58,6 @@ class PermissionvalidatorMiddleWare
             return (new Response())->withStatus(401);
         }
 
-
         if ((Arrays::get($claims['roles'], 'isUser')) || (Arrays::get($claims['roles'], 'isAdmin')) || (Arrays::get($claims['roles'], 'isSuperuser'))) {
 
             $request = $request->withAttribute('currentuserUid', $claims['id']);
@@ -82,6 +81,18 @@ class PermissionvalidatorMiddleWare
 
         if ((Arrays::get($claims['roles'], 'isVolonteer'))) {
 
+            $request = $request->withAttribute('currentuserUid', $claims['id']);
+            return $handler->handle($request);
+//            if(Strings::startsWith($request->getRequestTarget(), "/api/volonteer/") === True){
+//                $request = $request->withAttribute('currentuserUid', $claims['id']);
+//                return $handler->handle($request);
+//            } else {
+//                return (new Response())->withStatus(401);
+//            }
+        }
+
+
+        if ((Arrays::get($claims['roles'], 'isAcprepresentive'))) {
             $request = $request->withAttribute('currentuserUid', $claims['id']);
             return $handler->handle($request);
 //            if(Strings::startsWith($request->getRequestTarget(), "/api/volonteer/") === True){

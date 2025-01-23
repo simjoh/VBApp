@@ -15,7 +15,7 @@ export class AdministrationComponent implements OnInit {
   designTabs = [];
   tabs = [];
 
-  constructor(administrationcomponentservice: AdministrationComponentService) {
+  constructor(public administrationcomponentservice: AdministrationComponentService) {
 
   }
 

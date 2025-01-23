@@ -44,7 +44,7 @@ return function (App $app) {
 //        $payload = ['error' => $exception->getMessage()];
 
         $error = new \App\common\Exceptions\BrevetExceptionrepresentation();
-        $error->setMessage($exception->getTraceAsString());
+        $error->setMessage($exception->getMessage());
         $error->setCode($exception->getFile() . $exception->getLine());
 
         $response = $app->getResponseFactory()->createResponse();

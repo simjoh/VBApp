@@ -3,6 +3,7 @@
 namespace App\common\Repository;
 
 use App\common\CurrentOrganizer;
+use App\common\CurrentUser;
 use App\common\Database;
 use PDO;
 
@@ -14,31 +15,36 @@ abstract class BaseRepository extends Database
      */
     public PDO $connection;
 
-     function __construct(PDO $connection) {
+    function __construct(PDO $connection)
+    {
         $this->connection = $connection;
     }
 
-     abstract public function sqls($type);
+    abstract public function sqls($type);
 
-     public function gets() :PDO{
-         return $this::getConnection();
+    public function gets(): PDO
+    {
+        return $this::getConnection();
     }
 
     public function getOrganizer(): int
     {
-         return CurrentOrganizer::getUser()->getOrganizerId();
+        return CurrentOrganizer::getUser()->getOrganizerId();
     }
 
+    public function getCreatedAt(): string
+    {
+        return date('Y-m-d H:i:s');
 
-  public function getCreatedAt(): string
-{
-    return date('Y-m-d H:i:s');
+    }
 
-}
+    public function getUpdatedAt(): string
+    {
+        return date('Y-m-d H:i:s');
+    }
 
-public function getUpdatedAt(): string
-{
-    return date('Y-m-d H:i:s');
-}
-
+    public function changedBy(): string
+    {
+        return CurrentUser::getUser()->getId();
+    }
 }

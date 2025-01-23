@@ -82,13 +82,15 @@ CREATE TABLE `countries`
 
 CREATE TABLE `organizers`
 (
-    `organizer_id` BIGINT UNSIGNED NOT NULL PRIMARY KEY, -- Primary key without auto-increment
-    `name`         VARCHAR(255) NOT NULL,                -- Organizer name
+    `organizer_id`   BIGINT UNSIGNED NOT NULL PRIMARY KEY, -- Primary key without auto-increment
+    `name`           VARCHAR(255) NOT NULL,
+    `active`         tinyint(1) DEFAULT 0,
+    `confirmed`      tinyint(1) DEFAULT 0,
     `contact_person` VARCHAR(255) NOT NULL,
-    `email`        VARCHAR(255) NOT NULL UNIQUE,         -- Unique email
-    `phone`        VARCHAR(255) DEFAULT NULL,            -- Optional phone number
-    `created_at`   TIMESTAMP NULL DEFAULT NULL,          -- Created timestamp
-    `updated_at`   TIMESTAMP NULL DEFAULT NULL           -- Updated timestamp
+    `email`          VARCHAR(255) NOT NULL UNIQUE,         -- Unique email
+    `phone`          VARCHAR(255) DEFAULT NULL,            -- Optional phone number
+    `created_at`     TIMESTAMP NULL DEFAULT NULL,          -- Created timestamp
+    `updated_at`     TIMESTAMP NULL DEFAULT NULL           -- Updated timestamp
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -111,7 +113,9 @@ ALTER TABLE `event`
     ADD CONSTRAINT `fk_event_organizer`
     FOREIGN KEY (`organizer_id`)
     REFERENCES `organizers` (`organizer_id`)
-    ON DELETE CASCADE ON UPDATE CASCADE;
+    ON
+DELETE
+CASCADE ON UPDATE CASCADE;
 
 CREATE TABLE `event_tracks`
 (
@@ -216,7 +220,8 @@ CREATE TABLE `users`
     `password`    char(128)    DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `users` ADD COLUMN `organizer_id` BIGINT UNSIGNED;
+ALTER TABLE `users`
+    ADD COLUMN `organizer_id` BIGINT UNSIGNED;
 
 CREATE TABLE `user_info`
 (

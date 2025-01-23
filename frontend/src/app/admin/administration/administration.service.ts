@@ -6,7 +6,11 @@ import {map, shareReplay, tap} from "rxjs/operators";
 import {HttpClient} from "@angular/common/http";
 import {LinkService} from "../../core/link.service";
 
-@Injectable()
+@Injectable(
+  {
+    providedIn: 'root'
+  }
+)
 export class AdministrationService {
 
   constructor(private httpClient: HttpClient, private linkService: LinkService) {

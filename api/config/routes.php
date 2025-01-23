@@ -174,6 +174,8 @@ return function (App $app) {
         $app->get('/organizers/organizer/{organizerID}', \App\Action\Organizers\OrganizerAction::class. ':getOrganizer');
         $app->get('/organizers', \App\Action\Organizers\OrganizerAction::class. ':allOrganizers');
         $app->post('/organizers', \App\Action\Organizers\OrganizerAction::class. ':createOrganizer');
+        $app->put('/organizers', \App\Action\Organizers\OrganizerAction::class. ':updateOrganizer');
+        $app->delete('/organizers/organizer/{organizerID}', \App\Action\Organizers\OrganizerAction::class. ':updateOrganizer');
 
 
     })->add(CleanupMiddleware::class)->add(CleanupUserMiddleware::class)->add(\App\Middleware\JwtTokenValidatorMiddleware::class)->add(\App\Middleware\PermissionvalidatorMiddleWare::class)->add(OrganizerValidatorMiddleWare::class)->add(UserValidatorMiddleWare::class);

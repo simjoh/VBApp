@@ -1,19 +1,19 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
 
-import { AdministrationRoutingModule } from './administration-routing.module';
+import {AdministrationRoutingModule} from './administration-routing.module';
 import {AdministrationComponent} from "./administration.component";
-import {TabMenuModule} from "primeng/tabmenu";
+import {SharedModule} from "../../shared/shared.module";
 
 
 @NgModule({
   declarations: [
     AdministrationComponent
   ],
-    imports: [
-        CommonModule,
-        AdministrationRoutingModule,
-        TabMenuModule
-    ]
+  imports: [
+    SharedModule,
+    AdministrationRoutingModule,
+
+  ]
 })
-export class AdministrationModule { }
+export class AdministrationModule {
+}

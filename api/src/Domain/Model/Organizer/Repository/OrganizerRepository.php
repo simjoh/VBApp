@@ -26,6 +26,8 @@ class OrganizerRepository extends BaseRepository
         $countsql = "select max(organizer_id) AS max_id from organizers";
 
         try {
+
+
             $stmtss = $this->connection->prepare($countsql);
             $stmtss->execute();
             $row = $stmtss->fetch(PDO::FETCH_ASSOC);
@@ -81,22 +83,31 @@ class OrganizerRepository extends BaseRepository
 
 // Method to update the data in the database
     public
-    function update(PDO $pdo)
+    function update(Organizer $organizer): ?Organizer
     {
-        $sql = "UPDATE organizers SET name = :name, contact_person = contactperson, email = :email, phone = :phone, updated_at = :updated_at
+        $sql = "UPDATE organizers SET name = :name, contact_person = :contactperson, email = :email, phone = :phone, updated_at = :updated_at
                 WHERE organizer_id = :organizer_id";
 
-        $stmt = $this->connection->prepare($sql);
+        $name = $organizer->getName();
+        $contactperson = $organizer->getContactPerson();
+        $email = $organizer->getEmail();
+        $phone = $organizer->getPhone();
+        $updatedat = date('Y-m-d H:i:s');
 
-        $stmt->bindParam(':organizer_id', $this->organizer_id);
-        $stmt->bindParam(':name', $this->name);
-        $stmt->bindParam(':contactperson', $this->contact_person);
-        $stmt->bindParam(':email', $this->email);
-        $stmt->bindParam(':phone', $this->phone);
-        $stmt->bindParam(':updated_at', $this->updated_at);
-
-
-        return $stmt->execute();
+        try {
+            $stmt = $this->connection->prepare($sql);
+            $stmt->bindParam(':organizer_id', $organizer_id);
+            $stmt->bindParam(':name', $name);
+            $stmt->bindParam(':contactperson', $contactperson);
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':phone', $phone);
+            $stmt->bindParam(':updated_at', $updated_at);
+            $stmt->execute();
+            return $organizer;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+        return null;
     }
 
 // Method to delete the organizer
@@ -106,7 +117,6 @@ class OrganizerRepository extends BaseRepository
         $sql = "DELETE FROM organizers WHERE organizer_id = :organizer_id";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindParam(':organizer_id', $organizer_id);
-
         return $stmt->execute();
     }
 
@@ -114,13 +124,17 @@ class OrganizerRepository extends BaseRepository
     public
     function getById($organizer_id)
     {
+
+
+        $organizer_int = intval($organizer_id);
         $sql = "SELECT * FROM organizers WHERE organizer_id = :organizer_id";
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindParam(':organizer_id', $organizer_id);
+        $stmt->bindParam(':organizer_id', $organizer_int);
         $stmt->execute();
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($row) {
+
             return new Organizer(
                 $row['organizer_id'],
                 $row['name'],

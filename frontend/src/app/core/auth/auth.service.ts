@@ -97,6 +97,8 @@ await loginModel$.pipe(
       this.router.navigate(['brevet-list']);
     } else if (role === Role.VOLONTEER) {
       this.router.navigate(['volunteer']);
+    } else if (role === Role.ACPREPRESENTIVE){
+        this.router.navigate(['admin/administration/acp/brevet-acp-report']);
     }
   }
 

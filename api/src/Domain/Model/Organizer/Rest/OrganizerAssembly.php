@@ -4,6 +4,7 @@ namespace App\Domain\Model\Organizer\Rest;
 
 use App\common\CurrentUser;
 use App\common\Rest\Link;
+use App\Domain\Model\Event\Repository\EventRepository;
 use App\Domain\Model\Organizer\Organizer;
 use App\Domain\Permission\PermissionRepository;
 use Psr\Container\ContainerInterface;
@@ -13,11 +14,13 @@ class OrganizerAssembly
 
     private $permissinrepository;
     private $settings;
+    private EventRepository $eventRepository;
 
 
-    public function __construct(PermissionRepository $permissionRepository, ContainerInterface $c)
+    public function __construct(PermissionRepository $permissionRepository, ContainerInterface $c, EventRepository $eventRepository)
     {
         $this->permissinrepository = $permissionRepository;
+        $this->eventRepository = $eventRepository;
         $this->settings = $c->get('settings');
     }
 
@@ -46,10 +49,16 @@ class OrganizerAssembly
         $organizationsrepresentation->setEmail($organizer->getEmail());
         $organizationsrepresentation->setPhone($organizer->getPhone());
 
+        $events = $this->eventRepository->eventsForOrganizer($organizer->getOrganizerId());
+
+
         $linkArray = array();
         foreach ($permissions as $x => $site) {
             if ($site->hasWritePermission()) {
                 array_push($linkArray, new Link("relations.organizers", 'POST', $this->settings['path'] . '/organizers'));
+                if (count($events) === 0) {
+                    array_push($linkArray, new Link("relations.organizers", 'DELETE', $this->settings['path'] . '/organizers'));
+                }
                 break;
             }
             if ($site->hasReadPermission()) {
@@ -62,7 +71,7 @@ class OrganizerAssembly
 
     public function toOrganizer(OrganizerRepresentation $organizer): Organizer
     {
-        return  new Organizer("", $organizer->getName(), $organizer->getContactPerson(), $organizer->getEmail(), $organizer->getPhone());
+        return new Organizer("", $organizer->getName(), $organizer->getContactPerson(), $organizer->getEmail(), $organizer->getPhone());
 
     }
 

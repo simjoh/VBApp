@@ -14,6 +14,8 @@ INSERT INTO roles (`role_id`, `role_name`)
 VALUES (5, 'DEVELOPER');
 INSERT INTO roles (`role_id`, `role_name`)
 VALUES (6, 'VOLONTEER');
+INSERT INTO roles (`role_id`, `role_name`)
+VALUES (7, 'ACPREPRESENTIVE');
 
 
 INSERT INTO `permission_type`(`type_id`, `type_desc`, `type`)
@@ -49,7 +51,8 @@ VALUES (1, 'USER', 1),
        (23, 'ACPREPORT', 2),
        (24, 'ORGANIZER', 1),
        (25, 'ORGANIZER', 2),
-       (26, 'ORGANIZER', 2);
+       (26, 'ORGANIZER', 2),
+       (27, 'ACPREPORT', 3);
 
 
 INSERT INTO roles_permissions (role_id, perm_mod, perm_id)
@@ -75,21 +78,31 @@ VALUES (1, 'ADMIN', 1),
        (1, 'ADMIN', 22),
        (1, 'ADMIN', 23),
        (1, 'ADMIN', 24),
-       (1, 'ADMIN', 25);
+       (1, 'ADMIN', 25),
+       (7, 'ACPREPRESENTIVE', 22),
+       (7, 'ACPREPRESENTIVE', 23),
+       (7, 'ACPREPRESENTIVE', 27);
 
 
 
-INSERT INTO `organizers` (`organizer_id`, `name`,  `contact_person`, `email`, `phone`, `created_at`, `updated_at`)
-VALUES (1, 'Randonneurs Laponia', 'Florian Kynman' ,'organizer1@example.com', '1234567890', NOW(), NOW());
-INSERT INTO `organizers` (`organizer_id`, name , `contact_person`, `email`, `phone`, `created_at`, `updated_at`)
-VALUES (2, 'Cykelintresset', 'Simon Johansson','organizer2@example.com', '1234567890', NOW(), NOW());
+INSERT INTO `organizers` (`organizer_id`, `name`, `active`, `confirmed`, `contact_person`, `email`, `phone`,
+                          `created_at`, `updated_at`)
+VALUES (1, 'Randonneurs Laponia', 1, 1, 'Florian Kynman', 'organizer1@example.com', '1234567890', NOW(), NOW());
+INSERT INTO `organizers` (`organizer_id`, `name`, `active`, `confirmed`, `contact_person`, `email`, `phone`,
+                          `created_at`, `updated_at`)
+VALUES (2, 'Cykelintresset', 1, 1, 'Simon Johansson', 'organizer2@example.com', '1234567890', NOW(), NOW());
+
+INSERT INTO `organizers` (`organizer_id`, `name`, `active`, `confirmed`, `contact_person`, `email`, `phone`,
+                          `created_at`, `updated_at`)
+VALUES (2, 'AcpRapportör', 1, 1, 'Acp rapportör', 'acp@example.com', '1234567890', NOW(), NOW());
 
 -- Användare
 INSERT INTO `users` (`user_uid`, `user_name`, `given_name`, `family_name`, `password`, `organizer_id`)
 VALUES ('82fbb2ec-d998-4b8a-861f-46f2b0fdbc4e', 'admin@admin', 'Admin', 'Administratör', sha1('admin'), 1),
        ('ac6543a6-df1e-4c5b-95a1-565a00676603', 'volonteer@volonteer', 'Anders', 'Volontär', sha1('volonteer'), 1),
        ('e3b78c98-ffe5-4877-8491-258413c772e9', 'user@user', 'Jonas', 'Användare', sha1('user'), 1),
-       ('e3b78c98-ffe5-4877-8491-258413c772a8', 'bethem92@admin', 'Bethem', 'Admin', sha1('admin'), 2);
+       ('e3b78c98-ffe5-4877-8491-258413c772a8', 'bethem92@admin', 'Bethem', 'Admin', sha1('admin'), 2),
+       ('e3b78c98-ffe5-4877-8491-258413c662a8', 'acp@super', 'Acp', 'Rapportör', sha1('super'), 10000);
 
 INSERT INTO `user_info`(`uid`, `user_uid`, `email`, `phone`)
 VALUES ('5e125776-2005-43a7-b58a-a1fc960ce9f4', '82fbb2ec-d998-4b8a-861f-46f2b0fdbc4e', 'admin@administrator.se',
@@ -101,6 +114,13 @@ INSERT INTO user_role(role_id, user_uid)
 VALUES (1, '82fbb2ec-d998-4b8a-861f-46f2b0fdbc4e');
 INSERT INTO user_role(role_id, user_uid)
 VALUES (3, '82fbb2ec-d998-4b8a-861f-46f2b0fdbc4e');
+-- Superanvändare som kan rapportera till acp
+INSERT INTO user_role(role_id, user_uid)
+VALUES (7, 'e3b78c98-ffe5-4877-8491-258413c662a8');
+
+
+
+
 -- Volontär
 INSERT INTO user_role(role_id, user_uid)
 VALUES (6, 'ac6543a6-df1e-4c5b-95a1-565a00676603');

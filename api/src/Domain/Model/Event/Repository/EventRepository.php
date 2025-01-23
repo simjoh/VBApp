@@ -71,6 +71,24 @@ class EventRepository extends BaseRepository
     }
 
 
+    public function eventsForOrganizer(string $organizer_id): array
+    {
+        try {
+            $statement = $this->connection->prepare($this->sqls('eventsForOrganizer'));
+            $statement->bindParam(':organizer_id', $organizer_id);
+            $statement->execute();
+            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Event\Event::class, null);
+            if (empty($events)) {
+                return array();
+            }
+            return $events;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+        return array();
+    }
+
+
     public function tracksOnEvent(string $event_uid): ?array
     {
         try {
@@ -229,6 +247,9 @@ class EventRepository extends BaseRepository
         $eventqls['createEvent'] = "INSERT INTO event(event_uid, title, start_date, end_date, active, canceled, completed,description) VALUES (:event_uid, :title,:start_date,:end_date,:active, :canceled, :completed, :description)";
         $eventqls['createEventTrack'] = 'INSERT INTO event_tracks(track_uid, event_uid) VALUES (:track_uid , :event_uid)';
         $eventqls['existsByTitleAndStartDate'] = 'select *  from event e where e.title=:title;';
+        $eventqls['eventsForOrganizer'] = 'select *  from event e where e.organizer_id=:organizer_id;';
+
+
 
 
         return $eventqls[$type];

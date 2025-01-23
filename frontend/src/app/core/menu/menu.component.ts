@@ -53,13 +53,17 @@ export class MenuComponent implements OnInit{
           })
         }
 
+
         if (!this.items.some(item => item.label === 'Administration')) {
           this.items.push({
             label: 'Administration',
-            routerLink: '/admin/administration',
+            routerLink: 'admin/administration/',
             expanded: true
           })
         }
+
+
+
 
         if (!this.items.some(item => item.label === 'Systeminställningar')) {
           this.items.push({
@@ -90,6 +94,15 @@ export class MenuComponent implements OnInit{
 
 
       }
+
+      if (user.roles.includes("ACPREPRESENTIVE")) {
+        this.items.push({
+          label: 'Administration',
+          routerLink: 'admin/administration/acp/brevet-acp-report/',
+          expanded: true
+        })
+      }
+
 
       if (user.roles.length > 1 && user.roles.includes("VOLONTEER") && !this.items.some(item => item.label === 'Volontär')) {
         this.items.push({

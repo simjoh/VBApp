@@ -53,12 +53,36 @@ class OrganizerService extends ServiceAbstract
 
     public function createOrganizer(OrganizerRepresentation $organizer): ?OrganizerRepresentation
     {
-
         $organizer = $this->organizerRepository->createOrganizer($this->organizerassembly->toOrganizer($organizer));
 
         if (!isset($organizer)) {
             return null;
         }
+        $permissions = $this->getPermissions(null);
+        return $this->organizerassembly->toRepresentation($organizer, $permissions);
+    }
+
+
+    public function updateOrganizer(OrganizerRepresentation $organizer): ?OrganizerRepresentation
+    {
+        $organizer = $this->organizerRepository->update($this->organizerassembly->toOrganizer($organizer));
+
+        if (!isset($organizer)) {
+            return null;
+        }
+        $permissions = $this->getPermissions(null);
+        return $this->organizerassembly->toRepresentation($organizer, $permissions);
+    }
+
+
+    public function delete(string $organizer_id): ?OrganizerRepresentation
+    {
+        $organizer = $this->organizerRepository->getById($organizer_id);
+
+        if (!isset($organizer)) {
+            return null;
+        }
+
         $permissions = $this->getPermissions(null);
         return $this->organizerassembly->toRepresentation($organizer, $permissions);
     }
