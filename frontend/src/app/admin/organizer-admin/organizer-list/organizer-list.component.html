@@ -74,7 +74,7 @@
           <!--          <brevet-event-info-popover [event]="event" ></brevet-event-info-popover>-->
           <brevet-organizer-info-popover [event]="event"></brevet-organizer-info-popover>
           <!--          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success sm-0 p-ml-1" (click)="editProduct(event)"></button>-->
-          <!--          <button  [disabled]="!canDelete(event)" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1" (click)="deleteProduct(event.event_uid)"></button>-->
+          <button  [disabled]="!canDelete(event)" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1" (click)="deleteOranizer(event)"></button>
         </td>
       </tr>
     </ng-template>

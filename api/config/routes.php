@@ -1,5 +1,10 @@
 <?php
 
+use App\Action\Administration\AcpReportAction;
+use App\Action\Cache\CacheAction;
+use App\Action\Club\ClubAction;
+use App\Action\Organizers\OrganizerAction;
+use App\Action\Participant\ParticipantAction;
 use App\Middleware\ApiKeyValidatorMiddleware;
 use App\Middleware\CleanupMiddleware;
 use App\Middleware\CleanupUserMiddleware;
@@ -12,7 +17,7 @@ use Slim\Routing\RouteCollectorProxy;
 return function (App $app) {
 
     // validate api key for all requests
-   $app->add(ApiKeyValidatorMiddleware::class . ':validate');
+    $app->add(ApiKeyValidatorMiddleware::class . ':validate');
 
     // add more endpoints here
     $app->post('/login', \App\Action\Login\LoginAction::class)->setName('login');
@@ -20,7 +25,10 @@ return function (App $app) {
     $app->get('/ping', \App\Action\Ping\PingAction::class)->setName('ping');
 
 
-     //$app->get('/bla/bla/bla', \App\Action\HomeAction::class)->setName('home');
+    $app->get('/cacheSvgs', CacheAction::class . ':cache');
+
+
+    //$app->get('/bla/bla/bla', \App\Action\HomeAction::class)->setName('home');
 
     //lägg till ingång för att kunna generera resultat på vb.se
     // Hämtar vyn för en resultat på ett event för ett event och år.
@@ -49,7 +57,8 @@ return function (App $app) {
     $app->get('/track/{trackUid}/participant/{participantUid}/checkpoints', \App\Controller\ResultsController::class . ':gettrackranonneurcheckpoints');
     $app->post('/participant/addparticipant/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':addParticipantOntrack2');
     // User route group
-    $app->group('/api', function(RouteCollectorProxy $apps) use ($app) {
+    $app->group('/api', function (RouteCollectorProxy $apps) use ($app) {
+
 
         // ingångar som används av en cyklist
         $app->get('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}', \App\Action\Randonneur\RandonneurAction::class . ':getCheckpoint');
@@ -83,21 +92,20 @@ return function (App $app) {
         $app->delete('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':deleteTrack');
         $app->put('/publishresults/track/{trackUid}', \App\Action\Track\TrackAction::class . ':publishresults');
 
-        $app->post('/buildlEventAndTrackFromCsv/upload', \App\Action\Track\TrackAction::class  . ':buildfromCsv');
+        $app->post('/buildlEventAndTrackFromCsv/upload', \App\Action\Track\TrackAction::class . ':buildfromCsv');
 
-        $app->post('/trackplanner', \App\Action\Track\TrackAction::class  . ':trackplanner');
+        $app->post('/trackplanner', \App\Action\Track\TrackAction::class . ':trackplanner');
 
-        $app->post('/trackplanner/createtrackfromplanner', \App\Action\Track\TrackAction::class  . ':createTrackFromPlanner');
-
+        $app->post('/trackplanner/createtrackfromplanner', \App\Action\Track\TrackAction::class . ':createTrackFromPlanner');
 
 
         // event
         $app->get('/events', \App\Action\Event\EventAction::class . ':allEvents');
-        $app->get('/event/{eventUid}', \App\Action\Event\EventAction::class  . ':eventFor');
-        $app->get('/events/eventInformation', \App\Action\Event\EventAction::class  . ':eventInformation');
-        $app->put('/event/{eventUid}', \App\Action\Event\EventAction::class  . ':updateEvent');
+        $app->get('/event/{eventUid}', \App\Action\Event\EventAction::class . ':eventFor');
+        $app->get('/events/eventInformation', \App\Action\Event\EventAction::class . ':eventInformation');
+        $app->put('/event/{eventUid}', \App\Action\Event\EventAction::class . ':updateEvent');
         $app->post('/event/', \App\Action\Event\EventAction::class . ':createEvent');
-        $app->delete('/event/{eventUid}', \App\Action\Event\EventAction::class  . ':deleteEvent');
+        $app->delete('/event/{eventUid}', \App\Action\Event\EventAction::class . ':deleteEvent');
 
         // Sites platser där en kotroll kommer att vara
         $app->get('/sites', \App\Action\Site\SitesAction::class . ':allSites');
@@ -126,60 +134,59 @@ return function (App $app) {
         // ingång för dashboard
 
         // Deltagare på olika banor och event
-        $app->get('/participants/event/{eventUid}', \App\Action\Participant\ParticipantAction::class. ':participantOnEvent');
+        $app->get('/participants/event/{eventUid}', ParticipantAction::class . ':participantOnEvent');
 
         // admin ska också kunna checka in och behöver kunna läsa upp dessa checkpoints och kunna stämpla in eller sätta dnf. Då nästan utan kontroller
-        $app->get('/participant/{participantUid}/checkpointsforparticipant', \App\Action\Participant\ParticipantAction::class. ':getCheckpointsForparticipant');
-        $app->put('/participant/{uid}/checkpoint/{checkpointUid}/rollbackstamp', \App\Action\Participant\ParticipantAction::class . ':rollbackstampAdmin');
-        $app->put('/participant/{uid}/checkpoint/{checkpointUid}/stamp', \App\Action\Participant\ParticipantAction::class . ':stampAdmin');
-        $app->put('/participant/{uid}/setdnf', \App\Action\Participant\ParticipantAction::class . ':markasDNF');
-        $app->put('/participant/{uid}/setdns', \App\Action\Participant\ParticipantAction::class . ':markasDNS');
-        $app->put('/participant/{uid}/rollbackdnf', \App\Action\Participant\ParticipantAction::class  . ':rollbackDNF');
-        $app->put('/participant/{uid}/rollbackdns', \App\Action\Participant\ParticipantAction::class  . ':rollbackDNS');
+        $app->get('/participant/{participantUid}/checkpointsforparticipant', ParticipantAction::class . ':getCheckpointsForparticipant');
+        $app->put('/participant/{uid}/checkpoint/{checkpointUid}/rollbackstamp', ParticipantAction::class . ':rollbackstampAdmin');
+        $app->put('/participant/{uid}/checkpoint/{checkpointUid}/stamp', ParticipantAction::class . ':stampAdmin');
+        $app->put('/participant/{uid}/setdnf', ParticipantAction::class . ':markasDNF');
+        $app->put('/participant/{uid}/setdns', ParticipantAction::class . ':markasDNS');
+        $app->put('/participant/{uid}/rollbackdnf', ParticipantAction::class . ':rollbackDNF');
+        $app->put('/participant/{uid}/rollbackdns', ParticipantAction::class . ':rollbackDNS');
 
 
-        $app->get('/participants/event/{eventUid}/track/{trackUid}', \App\Action\Participant\ParticipantAction::class. ':participantOnEventAndTrack');
-        $app->get('/participants/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':participantsOnTrack');
-        $app->get('/participants/track/{trackUid}/extended', \App\Action\Participant\ParticipantAction::class . ':participantsOnTrackMore');
-        $app->get('/participant/{participantUid}', \App\Action\Participant\ParticipantAction::class . ':participants');
-        $app->get('/participant/{uid}/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':participantOnTrack');
-        $app->put('/participant/{uid}/track/{trackUid}/update', \App\Action\Participant\ParticipantAction::class . ':updateParticipant');
-        $app->put('/participant/{uid}/track/{trackUid}/updateTime', \App\Action\Participant\ParticipantAction::class . ':updateTime');
-        $app->put('/participant/{uid}/track/{trackUid}/addbrevetnumber', \App\Action\Participant\ParticipantAction::class . ':addbrevetnumber');
+        $app->get('/participants/event/{eventUid}/track/{trackUid}', ParticipantAction::class . ':participantOnEventAndTrack');
+        $app->get('/participants/{trackUid}', ParticipantAction::class . ':participantsOnTrack');
+        $app->get('/participants/track/{trackUid}/extended', ParticipantAction::class . ':participantsOnTrackMore');
+        $app->get('/participant/{participantUid}', ParticipantAction::class . ':participants');
+        $app->get('/participant/{uid}/track/{trackUid}', ParticipantAction::class . ':participantOnTrack');
+        $app->put('/participant/{uid}/track/{trackUid}/update', ParticipantAction::class . ':updateParticipant');
+        $app->put('/participant/{uid}/track/{trackUid}/updateTime', ParticipantAction::class . ':updateTime');
+        $app->put('/participant/{uid}/track/{trackUid}/addbrevetnumber', ParticipantAction::class . ':addbrevetnumber');
 
-     //   $app->post('/participants/{trackUid}/upload', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
-        $app->post('/participants/upload/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
+        //   $app->post('/participants/{trackUid}/upload', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
+        $app->post('/participants/upload/track/{trackUid}', ParticipantAction::class . ':uploadParticipants');
         $app->delete('/participant/{uid}/deleteParticipant', \App\Action\Participant\ParticipantAction::class . ':deleteParticipant');
 
-        $app->delete('/participants/deleteParticipants/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':deleteParticipantsontrack');
+        $app->delete('/participants/deleteParticipants/{trackUid}', ParticipantAction::class . ':deleteParticipantsontrack');
         //Ingång för att lägga tillbrevenr i efterhand.
 
         // lägg till ingångar för admin av klubbar
-        $app->get('/allclubs', \App\Action\Club\ClubAction::class . ':allClubs');
+        $app->get('/allclubs', ClubAction::class . ':allClubs');
         // $app->get('/club/club/{clubUid}', \App\Action\Club\ClubAction::class . ':allUsers')->setName("club");
-        $app->post('/club/createclub', \App\Action\Club\ClubAction::class . ':createClub');
+        $app->post('/club/createclub', ClubAction::class . ':createClub');
         // $app->put('/club/updateClub/{clubUid}', \App\Action\Club\ClubAction::class . ':allUsers')->setName("updateClub");
         // $app->delete('/club/deleteClub/{clubUid}', \App\Action\Club\ClubAction::class . ':allUsers')->setName("deleteClub");
 
-        // roller i systemet endast läsa
-
-
-        $app->get('/administration/acpreport/track/{trackUid}', \App\Action\Administration\AcpReportAction::class. ':getAcpReport');
-        $app->get('/administration/acpreport/tracks', \App\Action\Administration\AcpReportAction::class. ':tracksPossibleToReportOn');
-        $app->get('/administration/acpreport/foundation/track/{trackUid}', \App\Action\Administration\AcpReportAction::class. ':getFoundationForAcpReport');
-        $app->post('/administration/acpreport/report/track/{trackUid}', \App\Action\Administration\AcpReportAction::class. ':createAcpReport');
-
+        $app->get('/administration/acpreport/track/{trackUid}', AcpReportAction::class . ':getAcpReport');
+        $app->get('/administration/acpreport/tracks', AcpReportAction::class . ':tracksPossibleToReportOn');
+        $app->get('/administration/acpreport/foundation/track/{trackUid}', AcpReportAction::class . ':getFoundationForAcpReport');
+        $app->post('/administration/acpreport/report/track/{trackUid}', AcpReportAction::class . ':createAcpReport');
 
         // Arrangör
-        $app->get('/organizers/organizer/{organizerID}', \App\Action\Organizers\OrganizerAction::class. ':getOrganizer');
-        $app->get('/organizers', \App\Action\Organizers\OrganizerAction::class. ':allOrganizers');
-        $app->post('/organizers', \App\Action\Organizers\OrganizerAction::class. ':createOrganizer');
-        $app->put('/organizers', \App\Action\Organizers\OrganizerAction::class. ':updateOrganizer');
-        $app->delete('/organizers/organizer/{organizerID}', \App\Action\Organizers\OrganizerAction::class. ':updateOrganizer');
+        $app->get('/organizers/organizer/{organizerID}', OrganizerAction::class . ':getOrganizer');
+        $app->get('/organizers', OrganizerAction::class . ':allOrganizers');
+        $app->post('/organizers', OrganizerAction::class . ':createOrganizer');
+        $app->put('/organizers', OrganizerAction::class . ':updateOrganizer');
+        $app->delete('/organizers/organizer/{organizerID}', \App\Action\Organizers\OrganizerAction::class . ':deleteOrganizer');
+
+
+        $app->post('/cacheSvgs', CacheAction::class . ':create');
 
 
     })->add(CleanupMiddleware::class)->add(CleanupUserMiddleware::class)->add(\App\Middleware\JwtTokenValidatorMiddleware::class)->add(\App\Middleware\PermissionvalidatorMiddleWare::class)->add(OrganizerValidatorMiddleWare::class)->add(UserValidatorMiddleWare::class);
 
-    };
+};
 
 

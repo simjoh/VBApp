@@ -1,9 +1,10 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {MenuComponentService} from "./menu-component.service";
 import {map} from "rxjs/operators";
 import {BehaviorSubject, Observable} from "rxjs";
-import { MenuItem } from 'primeng/api';
-import { DeviceDetectorService } from 'ngx-device-detector';
+import {MenuItem} from 'primeng/api';
+import {DeviceDetectorService} from 'ngx-device-detector';
+import {Roles} from "../../shared/roles";
 
 @Component({
   selector: 'brevet-menu',
@@ -12,7 +13,7 @@ import { DeviceDetectorService } from 'ngx-device-detector';
   providers: [MenuComponentService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MenuComponent implements OnInit{
+export class MenuComponent implements OnInit {
   deviceInfo = null;
   isMenuCollapsed = false
 
@@ -23,11 +24,10 @@ export class MenuComponent implements OnInit{
   items: MenuItem[] = [];
 
   $activeUser = this.menucomponentService.$activeuser.pipe(
-    map(user =>{
+    map(user => {
 
 
-
-      if (user.roles.includes("ADMIN") || user.roles.includes("SUPERUSER")) {
+      if (user.roles.find(s => s.id === Roles.ADMIN) || user.roles.find(s => s.id === Roles.SUPERUSER)) {
 
         if (!this.items.some(item => item.label === 'Start')) {
           this.items.push({
@@ -63,39 +63,44 @@ export class MenuComponent implements OnInit{
         }
 
 
-
-
         if (!this.items.some(item => item.label === 'Systeminställningar')) {
-          this.items.push({
-            label: 'Systeminställningar',
-            items: [{
+          let d = []
+          d.push({
               label: 'Användare',
               routerLink: '/admin/useradmin/user'
             },
-              {
-                label: 'Events',
-                routerLink: '/admin/eventadmin/events'
-              },
-              {
-                label: 'Klubbar',
-                routerLink: '/admin/clubadmin/'
-              },
-              {
-                label: 'Kontrollplatser',
-                routerLink: '/admin/siteadmin/sites/'
-              },
-              {
-                label: 'Arrangör',
-                routerLink: '/admin/organizeradmin/organizers/'
-              }
-            ]
-          });
+            {
+              label: 'Events',
+              routerLink: '/admin/eventadmin/events'
+            },
+            {
+              label: 'Klubbar',
+              routerLink: '/admin/clubadmin/'
+            },
+            {
+              label: 'Kontrollplatser',
+              routerLink: '/admin/siteadmin/sites/'
+            });
+
+
+          if (user.roles.find(s => s.id === Roles.SUPERUSER)) {
+            d.push({
+              label: 'Arrangör',
+              routerLink: '/admin/organizeradmin/organizers/'
+            });
+          }
+
+          this.items.push({
+              label: 'Systeminställningar',
+              items: d
+            }
+          );
         }
 
 
       }
 
-      if (user.roles.includes("ACPREPRESENTIVE")) {
+      if (user.roles.find(s => s.id === Roles.ACPREPRESENTIVE)) {
         this.items.push({
           label: 'Administration',
           routerLink: 'admin/administration/acp/brevet-acp-report/',
@@ -104,7 +109,7 @@ export class MenuComponent implements OnInit{
       }
 
 
-      if (user.roles.length > 1 && user.roles.includes("VOLONTEER") && !this.items.some(item => item.label === 'Volontär')) {
+      if (user.roles.length > 1 && user.roles.find(s => s.id === Roles.VOLONTAR) && !this.items.some(item => item.label === 'Volontär')) {
         this.items.push({
           label: 'Volontär',
           routerLink: '/volunteer',
@@ -114,22 +119,22 @@ export class MenuComponent implements OnInit{
       this.$menuSubject.next(this.items);
 
       return this.items;
-     // return this.items.sort((a, b) => (a.label > b.label) ? 1 : -1)
+      // return this.items.sort((a, b) => (a.label > b.label) ? 1 : -1)
     })
   ) as Observable<MenuItem[]>
 
   $logedinas = this.menucomponentService.$activeuser.pipe(
     map((val) => {
-     return val.name;
+      return val.name;
     })
   )
 
 
-  constructor(private menucomponentService: MenuComponentService,  private deviceService: DeviceDetectorService) {
-    if(this.deviceService.isDesktop()){
+  constructor(private menucomponentService: MenuComponentService, private deviceService: DeviceDetectorService) {
+    if (this.deviceService.isDesktop()) {
       this.isMenuCollapsed = false;
     }
-    if (this.deviceService.isMobile()){
+    if (this.deviceService.isMobile()) {
       this.isMenuCollapsed = true;
     }
   }
@@ -139,15 +144,15 @@ export class MenuComponent implements OnInit{
   }
 
   ngOnInit(): void {
-   this.menucomponentService.reload();
+    this.menucomponentService.reload();
   }
 
   test() {
   }
 
 
-
 }
+
 export class VyInformation {
   namn: string;
   admin?: boolean;

@@ -42,7 +42,10 @@ class UserRepository extends BaseRepository
             array_push($roleArray, new Role(intval($row['role_id']), $row['role_name']));
         }
 
+
+
         $userdetails = $result[0];
+
 
         $user = new User();
         $user->setId($userdetails['user_uid']);
@@ -51,8 +54,11 @@ class UserRepository extends BaseRepository
         $user->setUsername($userdetails['user_name']);
         $user->setOrganizerId($userdetails['organizer_id']);
         $user->setToken('');
-        $user->setRoles(array($userdetails['role_name']));
+       // $user->setRoles(array($userdetails['role_name']));
+
+        $user->setRoles($roleArray);
        // $user->setRoles($roleArray);
+
         return $user;
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Action\Track;
 
+use App\common\CurrentUser;
 use App\Domain\Model\Site\Rest\SiteRepresentation;
 use App\Domain\Model\Site\Rest\SiteRepresentationTransformer;
 use App\Domain\Model\Track\Rest\RusaPlannerInputRepresentation;
@@ -36,35 +37,31 @@ class TrackAction
 
     public function allTracks(ServerRequestInterface $request, ResponseInterface $response)
     {
-        $currentuserUid = $request->getAttribute('currentuserUid');
-        $response->getBody()->write((string)json_encode($this->trackService->allTracks($currentuserUid)), JSON_UNESCAPED_SLASHES);
+        $response->getBody()->write((string)json_encode($this->trackService->allTracks()), JSON_UNESCAPED_SLASHES);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
     public function track(ServerRequestInterface $request, ResponseInterface $response)
     {
-        $currentuserUid = $request->getAttribute('currentuserUid');
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
-        $response->getBody()->write((string)json_encode($this->trackService->getTrackByTrackUid($route->getArgument('trackUid'), $currentuserUid)));
+        $response->getBody()->write((string)json_encode($this->trackService->getTrackByTrackUid($route->getArgument('trackUid'), CurrentUser::getUser()->getId())));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
     public function tracksForEvent(ServerRequestInterface $request, ResponseInterface $response)
     {
-        $currentuserUid = $request->getAttribute('currentuserUid');
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $event_uid = $route->getArgument('eventUid');
 
-        $response->getBody()->write((string)json_encode($this->trackService->tracksForEvent($currentuserUid, $event_uid)), JSON_UNESCAPED_SLASHES);
+        $response->getBody()->write((string)json_encode($this->trackService->tracksForEvent(CurrentUser::getUser()->getId(), $event_uid)), JSON_UNESCAPED_SLASHES);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
 
     public function publishresults(ServerRequestInterface $request, ResponseInterface $response)
     {
-        $currentuserUid = $request->getAttribute('currentuserUid');
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $route->getArgument('trackUid');
@@ -72,7 +69,7 @@ class TrackAction
         $action = filter_var($params["publish"], FILTER_VALIDATE_BOOLEAN);
 
 
-        $this->trackService->publishResults($route->getArgument('trackUid'), $action, $currentuserUid);
+        $this->trackService->publishResults($route->getArgument('trackUid'), $action);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -83,7 +80,7 @@ class TrackAction
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new TrackRepresentationTransformer());
         $trackrepresentation = (object)$jsonDecoder->decode($request->getBody(), TrackRepresentation::class);
-        $updatedTrack = $this->trackService->updateTrack($trackrepresentation, $request->getAttribute('currentuserUid'));
+        $updatedTrack = $this->trackService->updateTrack($trackrepresentation,CurrentUser::getUser()->getId());
         $response->getBody()->write((string)json_encode($updatedTrack), JSON_UNESCAPED_SLASHES);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
@@ -93,7 +90,7 @@ class TrackAction
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new TrackRepresentationTransformer());
         $trackrepresentation = (object)$jsonDecoder->decode($request->getBody(), TrackRepresentation::class);
-        $created = $this->trackService->createTrack($trackrepresentation, $request->getAttribute('currentuserUid'));
+        $created = $this->trackService->createTrack($trackrepresentation, CurrentUser::getUser()->getId());
         $response->getBody()->write((string)json_encode($created), JSON_UNESCAPED_SLASHES);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
@@ -110,7 +107,7 @@ class TrackAction
         //  $trackrepresentation = (object) $jsonDecoder->decode($request->getBody(), RusaPlannerResponseRepresentation::class);
 
 
-        $created = $this->trackService->createTrackFromPlanner($trackrepresentation, $request->getAttribute('currentuserUid'));
+        $created = $this->trackService->createTrackFromPlanner($trackrepresentation, CurrentUser::getUser()->getId());
 
         $response->getBody()->write((string)json_encode($created), JSON_UNESCAPED_SLASHES);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
@@ -136,10 +133,9 @@ class TrackAction
 
     public function deleteTrack(ServerRequestInterface $request, ResponseInterface $response)
     {
-        $currentuserUid = $request->getAttribute('currentuserUid');
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
-        $this->trackService->deleteTrack($route->getArgument('trackUid'), $currentuserUid);
+        $this->trackService->deleteTrack($route->getArgument('trackUid'), CurrentUser::getUser()->getId());
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -156,7 +152,7 @@ class TrackAction
         }
 
 //        throw new Exception();
-        $this->trackService->buildFromCsv($filename, $uploadDir, $request->getAttribute('currentuserUid'));
+        $this->trackService->buildFromCsv($filename, $uploadDir, CurrentUser::getUser()->getId());
         return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 

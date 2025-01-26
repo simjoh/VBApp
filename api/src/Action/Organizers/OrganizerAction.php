@@ -2,11 +2,14 @@
 
 namespace App\Action\Organizers;
 
-use App\Domain\Model\Event\Rest\EventRepresentation;
-use App\Domain\Model\Event\Rest\EventRepresentationTransformer;
+use App\common\Exceptions\BrevetException;
 use App\Domain\Model\Organizer\Rest\OrganizerRepresentation;
 use App\Domain\Model\Organizer\Rest\OrganizerRepresentationTransformer;
 use App\Domain\Model\Organizer\Service\OrganizerService;
+use Karriere\JsonDecoder\Exceptions\InvalidBindingException;
+use Karriere\JsonDecoder\Exceptions\InvalidJsonException;
+use Karriere\JsonDecoder\Exceptions\JsonValueException;
+use Karriere\JsonDecoder\Exceptions\NotExistingRootException;
 use Karriere\JsonDecoder\JsonDecoder;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -18,44 +21,68 @@ class OrganizerAction
 
     private OrganizerService $organizerService;
 
-    public function __construct(ContainerInterface $c, OrganizerService $organizerService){
+    public function __construct(ContainerInterface $c, OrganizerService $organizerService)
+    {
 
         $this->organizerService = $organizerService;
     }
 
-    public function allOrganizers(ServerRequestInterface $request, ResponseInterface $response){
+    /**
+     * @throws BrevetException
+     */
+    public function allOrganizers(ServerRequestInterface $request, ResponseInterface $response)
+    {
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $response->getBody()->write(json_encode($this->organizerService->allOrganizers(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
 
-
-    public function createOrganizer(ServerRequestInterface $request, ResponseInterface $response){
+    /**
+     * @throws NotExistingRootException
+     * @throws InvalidJsonException
+     * @throws BrevetException
+     * @throws InvalidBindingException
+     * @throws JsonValueException
+     */
+    public function createOrganizer(ServerRequestInterface $request, ResponseInterface $response)
+    {
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new OrganizerRepresentationTransformer());
         $checkpoint = $jsonDecoder->decode($request->getBody()->getContents(), OrganizerRepresentation::class);
-        $response->getBody()->write(json_encode($this->organizerService->createOrganizer($checkpoint, $request->getAttribute('currentuserUid'))));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        $response->getBody()->write(json_encode($this->organizerService->createOrganizer($checkpoint)));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
 
-    public function getOrganizer(ServerRequestInterface $request, ResponseInterface $response){
+    /**
+     * @throws BrevetException
+     */
+    public function getOrganizer(ServerRequestInterface $request, ResponseInterface $response)
+    {
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $organizer = $this->organizerService->organizer($route->getArgument('organizerID'));
 
-        if(!isset($organizer)){
-            return  $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        if (!isset($organizer)) {
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
         $response->getBody()->write((string)json_encode($organizer));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
-    public function updateOrganizer(ServerRequestInterface $request, ResponseInterface $response){
+    /**
+     * @throws NotExistingRootException
+     * @throws InvalidJsonException
+     * @throws BrevetException
+     * @throws InvalidBindingException
+     * @throws JsonValueException
+     */
+    public function updateOrganizer(ServerRequestInterface $request, ResponseInterface $response)
+    {
 
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
@@ -63,23 +90,24 @@ class OrganizerAction
         $jsonDecoder->register(new OrganizerRepresentationTransformer());
         $checkpoint = $jsonDecoder->decode($request->getBody()->getContents(), OrganizerRepresentation::class);
         $response->getBody()->write(json_encode($this->organizerService->createOrganizer($checkpoint, $request->getAttribute('currentuserUid'))));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
 
-    public function deleteOrganizer(ServerRequestInterface $request, ResponseInterface $response){
+    /**
+     * @throws BrevetException
+     */
+    public function deleteOrganizer(ServerRequestInterface $request, ResponseInterface $response)
+    {
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $organizer = $this->organizerService->delete($route->getArgument('organizerID'));
 
-        if(!isset($organizer)){
-            return  $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        if (!isset($organizer)) {
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
         $response->getBody()->write((string)json_encode($organizer));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
-
-
-
 
 }

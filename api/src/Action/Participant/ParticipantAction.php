@@ -2,6 +2,7 @@
 
 namespace App\Action\Participant;
 
+use App\common\CurrentUser;
 use App\common\Exceptions\BrevetException;
 use App\Domain\Model\Loppservice\Rest\LoppserviceParticipantTranformer;
 use App\Domain\Model\Loppservice\Rest\LoppservicePersonRepresentation;
@@ -11,7 +12,9 @@ use App\Domain\Model\Partisipant\Rest\ParticipantInformationRepresentationTransf
 use App\Domain\Model\Partisipant\Service\ParticipantService;
 use Exception;
 use Karriere\JsonDecoder\JsonDecoder;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Psr7\UploadedFile;
@@ -20,8 +23,13 @@ use Slim\Routing\RouteContext;
 class ParticipantAction
 {
 
-    private $participantService;
+    private ParticipantService $participantService;
     private $settings;
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function __construct(ContainerInterface $c, ParticipantService $participantService)
     {
         $this->participantService = $participantService;
@@ -45,7 +53,7 @@ class ParticipantAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $participant_uid = $route->getArgument('participantUid');
-        $checkpointforrandoneur = $this->participantService->checkpointsForParticipant($participant_uid, $request->getAttribute('currentuserUid'));
+        $checkpointforrandoneur = $this->participantService->checkpointsForParticipant($participant_uid, CurrentUser::getUser()->getId());
         $response->getBody()->write(json_encode($checkpointforrandoneur));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
@@ -55,7 +63,7 @@ class ParticipantAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $participant_uid = $route->getArgument('uid');
-        $response->getBody()->write(json_encode($this->participantService->setDnf($participant_uid, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->participantService->setDnf($participant_uid)));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -65,29 +73,35 @@ class ParticipantAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $participant_uid = $route->getArgument('uid');
-        $response->getBody()->write(json_encode($this->participantService->setDns($participant_uid, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->participantService->setDns($participant_uid, CurrentUser::getUser()->getId())));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
 
+    /**
+     * @throws BrevetException
+     */
     public function stampAdmin(ServerRequestInterface $request, ResponseInterface $response)
     {
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $participant_uid = $route->getArgument('uid');
         $checkpoint_uid = $route->getArgument('checkpointUid');
-        $response->getBody()->write(json_encode($this->participantService->stampAdmin($participant_uid, $checkpoint_uid, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->participantService->stampAdmin($participant_uid, $checkpoint_uid, CurrentUser::getUser()->getId())));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
 
+    /**
+     * @throws BrevetException
+     */
     public function rollbackstampAdmin(ServerRequestInterface $request, ResponseInterface $response)
     {
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $participant_uid = $route->getArgument('uid');
         $checkpoint_uid = $route->getArgument('checkpointUid');
-        $response->getBody()->write(json_encode($this->participantService->rollbackstampAdmin($participant_uid, $checkpoint_uid, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->participantService->rollbackstampAdmin($participant_uid, $checkpoint_uid, CurrentUser::getUser()->getId())));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -96,7 +110,7 @@ class ParticipantAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $participant_uid = $route->getArgument('uid');
-        $response->getBody()->write(json_encode($this->participantService->rollbackDnf($participant_uid, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->participantService->rollbackDnf($participant_uid, CurrentUser::getUser()->getId())));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -105,7 +119,7 @@ class ParticipantAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $participant_uid = $route->getArgument('uid');
-        $response->getBody()->write(json_encode($this->participantService->rollbackDns($participant_uid, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->participantService->rollbackDns($participant_uid, CurrentUser::getUser()->getId())));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -114,7 +128,7 @@ class ParticipantAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $event_uid = $route->getArgument('eventUid');
-        $response->getBody()->write(json_encode($this->participantService->participantOnEvent($event_uid, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->participantService->participantOnEvent($event_uid, CurrentUser::getUser()->getId())));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -123,16 +137,17 @@ class ParticipantAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('trackUid');
-        $response->getBody()->write(json_encode($this->participantService->participantsOnTrack($track_uid, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->participantService->participantsOnTrack($track_uid, CurrentUser::getUser()->getId())));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
     public function participantsOnTrackMore(ServerRequestInterface $request, ResponseInterface $response)
     {
+
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('trackUid');
-        $response->getBody()->write(json_encode($this->participantService->participantsOnTrackWithMoreInformation($track_uid, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->participantService->participantsOnTrackWithMoreInformation($track_uid, CurrentUser::getUser()->getId())));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -145,13 +160,16 @@ class ParticipantAction
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    /**
+     * @throws BrevetException
+     */
     public function participantOnEventAndTrack(ServerRequestInterface $request, ResponseInterface $response)
     {
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('trackUid');
         $event_uid = $route->getArgument('eventUid');
-        $response->getBody()->write(json_encode($this->participantService->participantOnEventAndTrack($event_uid, $track_uid, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->participantService->participantOnEventAndTrack($event_uid, $track_uid, CurrentUser::getUser()->getId())));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -234,6 +252,9 @@ class ParticipantAction
         }
     }
 
+    /**
+     * @throws BrevetException
+     */
     public function uploadParticipants(ServerRequestInterface $request, ResponseInterface $response)
     {
 
@@ -249,7 +270,7 @@ class ParticipantAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('trackUid');
-        $uploadedParticipants = $this->participantService->parseUplodesParticipant($filename, $uploadDir, $track_uid, $request->getAttribute('currentuserUid'));
+        $uploadedParticipants = $this->participantService->parseUplodesParticipant($filename, $uploadDir, $track_uid, CurrentUser::getUser()->getId());
         $response->getBody()->write(json_encode($uploadedParticipants));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
 
@@ -259,28 +280,32 @@ class ParticipantAction
 
     public function deleteParticipant(ServerRequestInterface $request, ResponseInterface $response)
     {
-        $currentuserUid = $request->getAttribute('currentuserUid');
+
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
-        $this->participantService->deleteParticipant($route->getArgument('uid'), $currentuserUid);
+        $this->participantService->deleteParticipant($route->getArgument('uid'), CurrentUser::getUser()->getId());
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
 
+    /**
+     * @throws BrevetException
+     */
     public function deleteParticipantsontrack(ServerRequestInterface $request, ResponseInterface $response)
     {
-        $currentuserUid = $request->getAttribute('currentuserUid');
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
-        $this->participantService->deleteParticipantsOnTrack($route->getArgument('trackUid'), $currentuserUid);
+        $this->participantService->deleteParticipantsOnTrack($route->getArgument('trackUid'));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
 
-
+    /**
+     * @throws BrevetException
+     */
     public function addbrevetnumber(ServerRequestInterface $request, ResponseInterface $response)
     {
-        $currentuserUid = $request->getAttribute('currentuserUid');
+
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $params = $request->getQueryParams();
@@ -289,8 +314,6 @@ class ParticipantAction
         $this->participantService->updateParticipantwithbrevenumber($participant_uid, $brevenumber);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
-
-
 
 
     function moveUploadedFile($directory, UploadedFile $uploadedFile)

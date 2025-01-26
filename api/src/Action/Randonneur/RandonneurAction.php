@@ -29,7 +29,7 @@ class RandonneurAction
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('track_uid');
         $startnumber = $route->getArgument('startnumber');
-        $checkpointforrandoneur = $this->randonneurService->checkpointsForRandonneur($track_uid, $startnumber, $request->getAttribute('currentuserUid'));
+        $checkpointforrandoneur = $this->randonneurService->checkpointsForRandonneur($track_uid, $startnumber, "user_uid");
         $response->getBody()->write(json_encode($checkpointforrandoneur));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
@@ -40,7 +40,7 @@ class RandonneurAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('track_uid');
-        $checkpointforrandoneur = $this->randonneurService->previewCheckpointsForRandonneur($track_uid, $request->getAttribute('currentuserUid'));
+        $checkpointforrandoneur = $this->randonneurService->previewCheckpointsForRandonneur($track_uid, "user_uid");
         $response->getBody()->write(json_encode($checkpointforrandoneur));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
@@ -51,7 +51,7 @@ class RandonneurAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('track_uid');
-        $response->getBody()->write(json_encode($this->trackservice->getTrackByTrackUid($track_uid, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->trackservice->getTrackByTrackUid($track_uid, "user_uid")));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
@@ -75,7 +75,7 @@ class RandonneurAction
         $track_uid = $route->getArgument('track_uid');
         $checkpoint_uid = $route->getArgument('checkpointUid');
         $startnumber = $route->getArgument('startnumber');
-        $response->getBody()->write(json_encode($this->randonneurService->stampOnCheckpoint($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'), $latitude, $longitude)));
+        $response->getBody()->write(json_encode($this->randonneurService->stampOnCheckpoint($track_uid, $checkpoint_uid, $startnumber, "user_uid", $latitude, $longitude)));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
@@ -86,7 +86,7 @@ class RandonneurAction
         $track_uid = $route->getArgument('track_uid');
         $checkpoint_uid = $route->getArgument('checkpointUid');
         $startnumber = $route->getArgument('startnumber');
-        $response->getBody()->write(json_encode($this->randonneurService->checkoutFromCheckpoint($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->randonneurService->checkoutFromCheckpoint($track_uid, $checkpoint_uid, $startnumber)));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
@@ -117,7 +117,7 @@ class RandonneurAction
         $track_uid = $route->getArgument('track_uid');
         $checkpoint_uid = $route->getArgument('checkpointUid');
         $startnumber = $route->getArgument('startnumber');
-        $response->getBody()->write(json_encode($this->randonneurService->markAsDnf($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->randonneurService->markAsDnf($track_uid, $checkpoint_uid, $startnumber)));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -129,7 +129,7 @@ class RandonneurAction
         $checkpoint_uid = $route->getArgument('checkpointUid');
         $startnumber = $route->getArgument('startnumber');
         //skicka tillbacka checkpoints med ny status
-        $response->getBody()->write(json_encode($this->randonneurService->rollbackStamp($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->randonneurService->rollbackStamp($track_uid, $checkpoint_uid, $startnumber)));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -140,7 +140,7 @@ class RandonneurAction
         $track_uid = $route->getArgument('track_uid');
         $checkpoint_uid = $route->getArgument('checkpointUid');
         $startnumber = $route->getArgument('startnumber');
-        $response->getBody()->write(json_encode($this->randonneurService->undoCheckoutFrom($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->randonneurService->undoCheckoutFrom($track_uid, $checkpoint_uid, $startnumber)));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -152,7 +152,7 @@ class RandonneurAction
         $track_uid = $route->getArgument('track_uid');
         $checkpoint_uid = $route->getArgument('checkpointUid');
         $startnumber = $route->getArgument('startnumber');
-        $response->getBody()->write(json_encode($this->randonneurService->rollbackDnf($track_uid, $checkpoint_uid, $startnumber, $request->getAttribute('currentuserUid'))));
+        $response->getBody()->write(json_encode($this->randonneurService->rollbackDnf($track_uid, $checkpoint_uid, $startnumber)));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 }

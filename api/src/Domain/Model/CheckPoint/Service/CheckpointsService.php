@@ -33,9 +33,8 @@ class CheckpointsService extends ServiceAbstract
         return $this->toRepresentations($checkpoints);
     }
 
-    public function checkpointsFor(array $checkpoints_uid, string $currentUserUid): array
+    public function checkpointsFor(array $checkpoints_uid): array
     {
-        $permissions = $this->getPermissions($currentUserUid);
         $checkpoints = $this->checkpointRepository->checkpointsFor($checkpoints_uid);
         return $this->toRepresentations($checkpoints);
     }
@@ -51,9 +50,16 @@ class CheckpointsService extends ServiceAbstract
 
         $checkpointUIDS = $this->checkpointRepository->checkpointUidsForTrack($track_uid);
 
-        $checkpoints = $this->checkpointRepository->checkpointsFor($checkpointUIDS);
+        if(!empty($checkpointUIDS)){
 
-        return $this->toRepresentations($checkpoints);
+            $checkpoints = $this->checkpointRepository->checkpointsFor($checkpointUIDS);
+
+            return $this->toRepresentations($checkpoints);
+        }
+
+
+        return array();
+
     }
 
     public function countCheckpointsForTrack(?string $track_uid): int {
@@ -133,7 +139,7 @@ class CheckpointsService extends ServiceAbstract
             $checkpointRepresentation->setClosing($checkpoint->getClosing());
         }
 
-        $checkpointRepresentation->setSite($this->siteservice->siteFor($checkpoint->getSiteUid(),'s'));
+        $checkpointRepresentation->setSite($this->siteservice->siteFor($checkpoint->getSiteUid()));
         return $checkpointRepresentation;
     }
 

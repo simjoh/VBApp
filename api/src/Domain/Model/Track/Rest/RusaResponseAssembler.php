@@ -36,7 +36,7 @@ class RusaResponseAssembler
                 $rusacontrolrepresentation =  $this->createRusaControlResponserepresentation($control);
                 $rusaPlannercontroll = new RusaControlResponseRepresentation();
                 $siteUid = $this->siteRep($control->CONTROL_DISTANCE_KM,$rusaPlannnerInput->getControls());
-                $site =  $this->siteservice->siteFor($siteUid, $currentuserUid);
+                $site =  $this->siteservice->siteFor($siteUid);
                 $rusaPlannercontroll->setSiteRepresentation($site);
                 $rusaPlannercontroll->setRusaControlRepresentation($rusacontrolrepresentation);
                 array_push($rusaPlannercontrolls, $rusaPlannercontroll);

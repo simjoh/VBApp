@@ -145,9 +145,12 @@ class CheckpointRepository extends BaseRepository
     }
 
     public function checkpointsFor(array $checkpoints_uids) : array{
+
+
+
+
         try {
             $sql = $this->sqls('getCheckpointsFor');
-
             $in  = str_repeat('?,', count($checkpoints_uids) - 1) . '?';
             $sql = " SELECT * from checkpoint where checkpoint_uid  IN ($in) order by opens asc";
 

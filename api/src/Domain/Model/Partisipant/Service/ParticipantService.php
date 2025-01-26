@@ -394,7 +394,10 @@ class ParticipantService extends ServiceAbstract
         $this->participantRepository->deleteParticipantByUID($participant->getParticipantUid());
     }
 
-    public function deleteParticipantsOnTrack(?string $track_uid, mixed $currentuserUid)
+    /**
+     * @throws BrevetException
+     */
+    public function deleteParticipantsOnTrack(?string $track_uid)
     {
         $track = $this->trackRepository->getTrackByUid($track_uid);
 
@@ -402,7 +405,7 @@ class ParticipantService extends ServiceAbstract
             throw new BrevetException("Bana finns inte", 5, null);
         }
         // kolla om loppet är använt har startats eller är passerat
-        if ($this->participantRepository->hasAnyoneStartedonTrack($track_uid) == false) {
+        if (!$this->participantRepository->hasAnyoneStartedonTrack($track_uid)) {
             $participants = $this->participantRepository->getPArticipantsByTrackUids(array($track_uid));
 
             if (count($participants) > 0) {
@@ -431,7 +434,7 @@ class ParticipantService extends ServiceAbstract
         return $this->randonneurservice->getChecpointsForRandonneurForAdmin($participant, $track);
     }
 
-    public function setDnf(?string $participant_uid, string $currentuserUid)
+    public function setDnf(?string $participant_uid)
     {
         $participant = $this->participantRepository->participantFor($participant_uid);
         $status = $this->participantRepository->setDnf($participant->getParticipantUid());

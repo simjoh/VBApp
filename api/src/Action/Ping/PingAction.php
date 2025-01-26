@@ -23,18 +23,6 @@ class PingAction extends BaseAction
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-//        $url = $this->settings['loppserviceurl'];
-//        $test = file_get_contents($url .'/api/ping');
-
-//
-//
-//        $club = ['ss'];
-//
-//       $crawler->filter('table')->each(function ($node) use ($club) {
-//           return array_push($club, $node->text());
-//        });
-
-
         $response->getBody()->write((string)json_encode(['healthy' => $this->pingservice->ping(), 'scrap' => null]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }

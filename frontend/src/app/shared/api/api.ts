@@ -203,5 +203,13 @@ export interface OrganizerRepresentation {
 }
 
 
+export interface CacheRepresentation {
+  organizer_id: number;
+  id: number;
+  svg_blob: string;
+  links: Link[];
+}
+
+
 
 

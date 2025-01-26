@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {catchError, map, take} from "rxjs/operators";
 
 import {Observable, of, ReplaySubject} from "rxjs";
@@ -13,6 +13,7 @@ import {EventsService} from "../events/events.service";
 import {AEvent, EventType} from "../events/aevents";
 import {ConfirmationService} from "primeng/api";
 import {DialogService} from "primeng/dynamicdialog";
+import {Roles} from "../../shared/roles";
 
 
 @Injectable({
@@ -24,7 +25,7 @@ export class AuthService {
   $auth$ = this.authSubjet.asObservable().pipe(
     take(1),
     map((active) => {
-      if (active){
+      if (active) {
         return active;
       } else {
         return JSON.parse(<string>localStorage.getItem("activeUser"));
@@ -33,14 +34,15 @@ export class AuthService {
   ) as Observable<ActiveUser>;
 
 
-  constructor(private httpClient: HttpClient, private authenticatedService: AuthenticatedService,private router: Router, private eventService: EventsService, private readonly :DialogService, private asd: ConfirmationService) { }
+  constructor(private httpClient: HttpClient, private authenticatedService: AuthenticatedService, private router: Router, private eventService: EventsService, private readonly: DialogService, private asd: ConfirmationService) {
+  }
 
-  async loginUser(loginModel$: Observable<LoginModel>)  {
+  async loginUser(loginModel$: Observable<LoginModel>) {
 
-    if (this.isMockedLoggin()){
+    if (this.isMockedLoggin()) {
       this.mockLogin();
     }
-await loginModel$.pipe(
+    await loginModel$.pipe(
       map(model => {
         this.httpClient.post<any>(this.backendUrl() + "login", this.createPayload(model))
           .pipe(
@@ -53,13 +55,13 @@ await loginModel$.pipe(
               this.eventService.nyHändelse(EventType.Error, new AEvent(EventType.Error, "Cannot sign in"));
               return of(null);
             })
-            ).toPromise().then((data) => {
-              if (data){
-                this.setActiveUser(data)
-                this.redirect(data.roles);
-              } else {
-                this.logoutUser();
-              }
+          ).toPromise().then((data) => {
+          if (data) {
+            this.setActiveUser(data)
+            this.redirect(data.roles);
+          } else {
+            this.logoutUser();
+          }
 
         });
       })
@@ -69,7 +71,7 @@ await loginModel$.pipe(
   }
 
   private setActiveUser(data: any): void {
-   let values: Array<string> = data.roles;
+    let values: Array<any> = data.roles;
 
     const activeUser = {
       name: data.givenname + " " + data.familyname,
@@ -83,40 +85,47 @@ await loginModel$.pipe(
     this.authSubjet.next(activeUser)
   }
 
-  private redirect(roles: string) {
+  private redirect(roles: Array<any>) {
     let role = null;
-    if (roles.length === 1){
+    if (roles.length === 1) {
       role = roles[0];
     } else {
+      if (vendor => vendor === Roles.SUPERUSER) {
+        role = roles.find(role => role.id === Roles.SUPERUSER).role_name
+      } else {
+        if (vendor => vendor === Roles.ADMIN) {
+          role = roles.find(role => role.id === Roles.ADMIN).role_name
+        }
+      }
 
     }
 
-    if ((role === Role.ADMIN|| role === Role.SUPERUSER ||  role === Role.USER)) {
+    if ((role === Role.ADMIN || role === Role.SUPERUSER || role === Role.USER)) {
       this.router.navigate(['admin/brevet-admin-start']);
-    } else if (role === Role.COMPETITOR){
+    } else if (role === Role.COMPETITOR) {
       this.router.navigate(['brevet-list']);
     } else if (role === Role.VOLONTEER) {
       this.router.navigate(['volunteer']);
-    } else if (role === Role.ACPREPRESENTIVE){
-        this.router.navigate(['admin/administration/acp/brevet-acp-report']);
+    } else if (role === Role.ACPREPRESENTIVE) {
+      this.router.navigate(['admin/administration/acp/brevet-acp-report']);
     }
   }
 
-  private mockLogin(){
+  private mockLogin() {
     localStorage.setItem('loggedInUser', 'fake_token');
     this.authenticatedService.changeStatus(true);
     const role = "ADMIN";
-    this.redirect(role)
+    this.redirect(["ADMIN"])
   }
 
-  private createPayload(loginmodel: LoginModel): LoginPayload{
+  private createPayload(loginmodel: LoginModel): LoginPayload {
     return {
       username: loginmodel.username,
       password: loginmodel.password
     } as LoginPayload;
   }
 
-  private isMockedLoggin(): boolean{
+  private isMockedLoggin(): boolean {
     return environment.mock_login;
   }
 
@@ -127,13 +136,13 @@ await loginModel$.pipe(
     this.authenticatedService.authenticatedSubject.next(false);
   }
 
-  public reload(){
+  public reload() {
     this.authSubjet.next(null);
   }
 
-  private backendUrl(): string{
-    if (!environment.production && environment.mock_backend){
-      if (environment.mockbackendurl != ''){
+  private backendUrl(): string {
+    if (!environment.production && environment.mock_backend) {
+      if (environment.mockbackendurl != '') {
         return environment.mockbackendurl;
       } else {
         return environment.backend_url;

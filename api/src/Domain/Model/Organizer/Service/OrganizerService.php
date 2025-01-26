@@ -3,7 +3,9 @@
 namespace App\Domain\Model\Organizer\Service;
 
 use App\common\CurrentUser;
+use App\common\Exceptions\BrevetException;
 use App\common\Service\ServiceAbstract;
+use App\Domain\Model\Event\Repository\EventRepository;
 use App\Domain\Model\Organizer\Organizer;
 use App\Domain\Model\Organizer\Repository\OrganizerRepository;
 use App\Domain\Model\Organizer\Rest\OrganizerAssembly;
@@ -18,65 +20,95 @@ class OrganizerService extends ServiceAbstract
     private PermissionRepository $permissinrepository;
     private OrganizerRepository $organizerRepository;
     private OrganizerAssembly $organizerassembly;
+    private EventRepository $eventRepository;
 
 
     public function __construct(ContainerInterface   $c,
                                 PermissionRepository $permissionRepository,
                                 OrganizerRepository  $organizerRepository,
-                                OrganizerAssembly    $organizerassembly)
+                                OrganizerAssembly    $organizerassembly, EventRepository $eventRepository)
     {
         $this->permissinrepository = $permissionRepository;
         $this->organizerRepository = $organizerRepository;
         $this->organizerassembly = $organizerassembly;
+        $this->eventRepository = $eventRepository;
     }
 
     public function allOrganizers(): array
     {
-        $organizers = $this->organizerRepository->getAll();
-        if (!isset($organizers)) {
-            return array();
+        $permissions = $this->getPermissions(null);
+        if ($this->haspermission($permissions, "READ")) {
+            $organizers = $this->organizerRepository->getAll();
+            if (!isset($organizers)) {
+                return array();
+            }
+            return $this->organizerassembly->toRepresentations($organizers);
+        } else {
+            throw new BrevetException("Behörighet saknas", 5, null);
         }
-        return $this->organizerassembly->toRepresentations($organizers);
     }
 
 
     public function organizer(string $organizer_id): ?OrganizerRepresentation
     {
-        $organizer = $this->organizerRepository->getById($organizer_id);
-
-        if (!isset($organizer)) {
+        if (!isset($organizer_id)) {
             return null;
         }
+
         $permissions = $this->getPermissions(null);
-        return $this->organizerassembly->toRepresentation($organizer, $permissions);
+        if ($this->haspermission($permissions, "READ")) {
+            $organizer = $this->organizerRepository->getById($organizer_id);
+            return $this->organizerassembly->toRepresentation($organizer, $permissions);
+        } else {
+            throw new BrevetException("Behörighet saknas", 5, null);
+        }
     }
 
     public function createOrganizer(OrganizerRepresentation $organizer): ?OrganizerRepresentation
     {
-        $organizer = $this->organizerRepository->createOrganizer($this->organizerassembly->toOrganizer($organizer));
+
+        $permissions = $this->getPermissions(null);
 
         if (!isset($organizer)) {
-            return null;
+            throw new BrevetException("Indata saknas", 5, null);
         }
-        $permissions = $this->getPermissions(null);
-        return $this->organizerassembly->toRepresentation($organizer, $permissions);
+
+        if ($this->haspermission($permissions, "WRITE")) {
+            $organizer = $this->organizerRepository->createOrganizer($this->organizerassembly->toOrganizer($organizer));
+            return $this->organizerassembly->toRepresentation($organizer, $permissions);
+        } else {
+            throw new BrevetException("Behörighet saknas", 5, null);
+        }
     }
 
 
     public function updateOrganizer(OrganizerRepresentation $organizer): ?OrganizerRepresentation
     {
-        $organizer = $this->organizerRepository->update($this->organizerassembly->toOrganizer($organizer));
 
         if (!isset($organizer)) {
-            return null;
+            throw new BrevetException("Indata saknas", 5, null);
         }
+
         $permissions = $this->getPermissions(null);
-        return $this->organizerassembly->toRepresentation($organizer, $permissions);
+        if ($this->haspermission($permissions, "WRITE")) {
+            $organizer = $this->organizerRepository->update($this->organizerassembly->toOrganizer($organizer));
+            return $this->organizerassembly->toRepresentation($organizer, $permissions);
+
+        } else {
+            throw new BrevetException("Behörighet saknas", 5, null);
+        }
     }
 
 
     public function delete(string $organizer_id): ?OrganizerRepresentation
     {
+
+        $events = $this->eventRepository->eventsForOrganizer($organizer_id);
+
+        if (count($events) > 0) {
+            throw new BrevetException("Arrangör kan inta tas bort", 5, null);
+        }
+
         $organizer = $this->organizerRepository->getById($organizer_id);
 
         if (!isset($organizer)) {
@@ -89,7 +121,7 @@ class OrganizerService extends ServiceAbstract
 
     public function getPermissions($user_uid): array
     {
-        return $this->permissinrepository->getPermissionsTodata("EVENT", CurrentUser::getUser()->getId());
+        return $this->permissinrepository->getPermissionsTodata("ORGANIZER", CurrentUser::getUser()->getId());
 
     }
 }

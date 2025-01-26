@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\common\CurrentUser;
 use App\Domain\Model\Competitor\Service\CompetitorService;
 use App\Domain\Model\Event\Service\EventService;
 use App\Domain\Model\Partisipant\Service\ParticipantService;
 use App\Domain\Model\Result\Service\ResultService;
 use App\Domain\Model\Track\Service\TrackService;
+use App\Domain\Model\User\User;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -21,8 +23,8 @@ class ResultsController
     private $resultService;
     private $eventservice;
     private $trackService;
-    private $participantservice;
-    private $competitorservice;
+    private ParticipantService $participantservice;
+    private CompetitorService $competitorservice;
 
     public function __construct(ContainerInterface $c, ResultService $resultService, EventService $eventService, TrackService $trackService, ParticipantService $participantservice, CompetitorService $competitorService)
     {
@@ -32,6 +34,8 @@ class ResultsController
         $this->trackService = $trackService;
         $this->participantservice = $participantservice;
         $this->competitorservice = $competitorService;
+
+        CurrentUser::setUser(new User());
     }
 
     //Resultat på text BRM2021
@@ -46,6 +50,7 @@ class ResultsController
 
         $event = $this->eventservice->eventFor($eventUid, "");
         $result = $this->resultService->resultsOnEvent($eventUid, $year);
+        CurrentUser::setUser(null);
         return $view->render($response, 'result.html', [
             'link' => $this->settings['path'] . "resultList/year/" . strval($args['year']) . "/event/" . $args['eventUid'], 'event' => json_encode($event)
         ]);
@@ -62,6 +67,7 @@ class ResultsController
         $event = $this->eventservice->eventFor($eventUid, "");
 
         $result = $this->resultService->resultsOnEventNew($eventUid);
+        CurrentUser::setUser(null);
         return $view->render($response, 'resultonevent.html', ['event' => $event, 'results' => $result]);
     }
 
@@ -74,6 +80,7 @@ class ResultsController
         $track = $this->trackService->getTrackByTrackUid($trackUid,'');
         $event = $this->eventservice->eventFor($track->getEventUid(),'');
         $result = $this->resultService->resultsOnTrack($trackUid);
+        CurrentUser::setUser(null);
         return $view->render($response, 'resultontrack.html', ['track' => $track, 'event' => $event ,'results' => $result]);
     }
 
@@ -87,6 +94,7 @@ class ResultsController
         $competitor = $this->competitorservice->getCompetitorByUid($competitor_uid,'');
         $result = '';
       //  $result = $this->resultService->resultsOnTrack($trackUid);
+        CurrentUser::setUser(null);
         return $view->render($response, 'resultontrack.html', [ 'results' => $result]);
     }
 
@@ -99,6 +107,7 @@ class ResultsController
         $eventUid = $route->getArgument('eventUid');
         $event = $this->eventservice->eventFor($eventUid, "");
         $tracks = $this->trackService->tracksForEvent("", $eventUid);
+        CurrentUser::setUser(null);
         return $view->render($response, 'trackonevent.html', [
             'link' => $this->settings['path'] . "tracker/" . "event/" . $args['eventUid'], 'event' => $event, 'tracks' => $tracks
         ]);
@@ -113,6 +122,7 @@ class ResultsController
 
         $tracks = $this->trackService->getTrackByTrackUid($trackUid, "");
         $event = $this->eventservice->eventFor($tracks->getEventUid(), "");
+        CurrentUser::setUser(null);
         return $view->render($response, 'tracktrack.html', [
             'link' => $this->settings['path'] . "tracker/" . "track/" . $args['trackUid'], 'event' => json_encode($event === null ? null : $event), 'track' => json_encode($tracks === null ? null : $tracks)
         ]);
@@ -138,6 +148,7 @@ class ResultsController
         $result = $this->resultService->trackRandonneurOnTrack($participant->getParticipantUid(), $tracks->getTrackUid());
 
         $competitor = $this->competitorservice->getCompetitorByUid($participant->getCompetitorUid(), '');
+        CurrentUser::setUser(null);
         return $view->render($response, 'trackparticipantontrack.html', ['trackinginfo' => $result, 'track' => $tracks, 'competitor' => $competitor,
             'link' => $this->settings['path'] . "tracker/" . "track/" . $args['trackUid'] . '/participant/' . $participant->getParticipantUid() . '/checkpoints'
         ]);
@@ -155,6 +166,7 @@ class ResultsController
 
         $result = $this->resultService->trackRandonneurOnTrack($participant->getParticipantUid(), $tracks->getTrackUid());
         $response->getBody()->write((string)json_encode($result), JSON_UNESCAPED_SLASHES);
+        CurrentUser::setUser(null);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -168,6 +180,7 @@ class ResultsController
         $year = $route->getArgument('year');
         $result = $this->resultService->resultsOnEvent($eventUid, $year);
         $response->getBody()->write((string)json_encode($result), JSON_UNESCAPED_SLASHES);
+        CurrentUser::setUser(null);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 
     }
@@ -193,6 +206,7 @@ class ResultsController
             }
             array_push($returnarray, $results);
         }
+        CurrentUser::setUser(null);
         return $view->render($response, 'trackonevent.html', [
             'tracks' => $returnarray
         ]);
@@ -201,6 +215,7 @@ class ResultsController
 
     public function trackrandonneurontrack(ServerRequestInterface $request, ResponseInterface $response, $args)
     {
+
         $view = Twig::fromRequest($request);
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
@@ -224,7 +239,7 @@ class ResultsController
             array_push($preparedarray, $result);
         }
 
-
+        CurrentUser::setUser(null);
         return $view->render($response, 'trackontrack.html', [ 'track' => $track,'participants' => $preparedarray,
             'link' => $this->settings['path'] . "tracker/" . "track/" . $args['trackUid']
         ]);
@@ -255,6 +270,7 @@ class ResultsController
 
         $result = $this->resultService->resultForContestant($competitorUId, $trackUid, $eventUid);
         $response->getBody()->write((string)json_encode($result), JSON_UNESCAPED_SLASHES);
+        CurrentUser::setUser(null);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -276,6 +292,8 @@ class ResultsController
         } else {
             $link = "";
         }
+
+        CurrentUser::setUser(null);
         return $view->render($response, 'resultcontestant.html', [
             'link' => $this->settings['path'] . "/results/randonneur/" . $args['uid'] . $link,
         ]);
@@ -285,6 +303,7 @@ class ResultsController
     public function getResult(ServerRequestInterface $request, ResponseInterface $response, $args)
     {
         $response->getBody()->write("<html><body>jjsadjsajd</body></html>");
+        CurrentUser::setUser(null);
         return $response->withHeader('Content-Type', 'text/html')->withStatus(200);
 
     }
@@ -292,6 +311,7 @@ class ResultsController
     // tillfälligt testdata
     private function getJson(): array
     {
+        CurrentUser::setUser(null);
         return [["ID" => '1042', "BRM" => '200K', "Efternam" => "Johansson", "Förnamn" => 'Kalle', 'Klubb' => 'Cykelintresset', "ACP-kod" => '113072', "Brevetnr" => '779642', "Tid" => '07:12', "SR" => ''],
             ["ID" => '1042', "BRM" => '200K', "Efternam" => "Johanesson", "Förnamn" => 'Johanna', 'Klubb' => 'Gimonäs', "ACP-kod" => '113110', "Brevetnr" => '132746', "Tid" => '39:12', "SR" => 'SR']];
 
@@ -305,7 +325,7 @@ class ResultsController
         $phpView->setLayout("layout.php");
         $phpView->setAttributes(["resultlist" => $arr, "test" => 'Hej']);
         $phpView->render($response, "results.php", ["title" => "Hello - My App", "name" => "John"]);
-
+        CurrentUser::setUser(null);
         return $response;
     }
 

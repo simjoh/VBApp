@@ -2,6 +2,7 @@
 
 namespace App\Domain\Model\Site\Service;
 
+use App\common\CurrentUser;
 use App\common\Exceptions\BrevetException;
 use App\common\Service\ServiceAbstract;
 use App\Domain\Model\Site\Repository\SiteRepository;
@@ -23,16 +24,16 @@ class SiteService extends ServiceAbstract
 
     }
 
-    public function allSites(string $currentuserUid): array
+    public function allSites(): array
     {
-        $permissions = $this->getPermissions($currentuserUid);
+        $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
         $siteArray = $this->siterepository->allSites();
         return $this->siteassembly->toRepresentations($siteArray, $permissions);
     }
 
-    public function siteFor(string $siteUid, string $currentuserUid): ?SiteRepresentation
+    public function siteFor(string $siteUid): ?SiteRepresentation
     {
-        $permissions = $this->getPermissions($currentuserUid);
+        $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
         $site = $this->siterepository->siteFor($siteUid);
         if (!isset($site)) {
             return null;
@@ -40,9 +41,9 @@ class SiteService extends ServiceAbstract
         return $this->siteassembly->toRepresentation($site, $permissions);
     }
 
-    public function updateSite(SiteRepresentation $siteRepresentation, string $currentuserUid): SiteRepresentation
+    public function updateSite(SiteRepresentation $siteRepresentation): SiteRepresentation
     {
-        $permissions = $this->getPermissions($currentuserUid);
+        $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
         $updatedSite = $this->siterepository->updateSite($this->siteassembly->toSite($siteRepresentation));
         return $this->siteassembly->toRepresentation($updatedSite, $permissions);
     }

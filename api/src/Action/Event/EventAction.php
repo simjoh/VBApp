@@ -2,6 +2,7 @@
 
 namespace App\Action\Event;
 
+use App\common\CurrentUser;
 use App\Domain\Model\Event\Rest\EventRepresentation;
 use App\Domain\Model\Event\Rest\EventRepresentationTransformer;
 use App\Domain\Model\Event\Service\EventService;
@@ -24,7 +25,7 @@ class EventAction
     public function allEvents(ServerRequestInterface $request, ResponseInterface $response)
     {
 
-        $allEvents = $this->eventService->allEvents($request->getAttribute('currentuserUid'));
+        $allEvents = $this->eventService->allEvents();
 
         if (empty($allEvents)) {
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
@@ -39,7 +40,7 @@ class EventAction
         $route = $routeContext->getRoute();
         $event_uid = $route->getArgument('eventUid');
 
-        $event = $this->eventService->eventFor($event_uid, $request->getAttribute('currentuserUid'));
+        $event = $this->eventService->eventFor($event_uid);
 
         if (!isset($event)) {
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
@@ -67,7 +68,7 @@ class EventAction
             $year = "";
         }
 
-        $response->getBody()->write(json_encode($this->eventService->eventInformation($eventUid, $request->getAttribute('currentuserUid')), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        $response->getBody()->write(json_encode($this->eventService->eventInformation($eventUid, CurrentUser::getUser()->getId()), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 

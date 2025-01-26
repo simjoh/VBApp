@@ -55,7 +55,7 @@ class OrganizerRepository extends BaseRepository
 
             $stmt->bindParam(':organizer_id', $next_id);
             $stmt->bindParam(':name', $name);
-            $stmt->bindParam(':active',$active );
+            $stmt->bindParam(':active', $active);
             $stmt->bindParam(':confirmed', $confirmed);
             $stmt->bindParam(':contactperson', $contactperson);
             $stmt->bindParam(':email', $email);
@@ -101,7 +101,6 @@ class OrganizerRepository extends BaseRepository
         $active = $organizer->getActive();
         $confirmed = $organizer->getConfirmed();
         $updatedat = $this->getUpdatedAt();
-
 
 
         try {
@@ -166,7 +165,7 @@ class OrganizerRepository extends BaseRepository
     public
     function getAll()
     {
-        $sql = "SELECT * FROM organizers";
+        $sql = "SELECT * FROM organizers where organizer_id != 10000";
         $stmt = $this->connection->query($sql);
 
         $organizers = [];

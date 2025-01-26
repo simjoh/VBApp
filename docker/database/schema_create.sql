@@ -1,15 +1,3 @@
-SET
-SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET
-time_zone = "+00:00";
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
-
 CREATE TABLE `api_keys`
 (
     `task_id` int(11) NOT NULL,
@@ -115,7 +103,8 @@ ALTER TABLE `event`
     REFERENCES `organizers` (`organizer_id`)
     ON
 DELETE
-CASCADE ON UPDATE CASCADE;
+CASCADE ON
+UPDATE CASCADE;
 
 CREATE TABLE `event_tracks`
 (
@@ -688,33 +677,41 @@ COMMIT;
 
 CREATE TABLE `acpreports`
 (
-    `report_uid`   char(36)     NOT NULL,
-    `track_uid`   char(36)     NOT NULL,
-    `organizer_id` BIGINT UNSIGNED NOT NULL,
-    `ready_for_approval`  tinyint(1) DEFAULT 0,
-    `marked_as_ready_for_approval_by`  tinyint(1) DEFAULT 0,
-    `approved`  tinyint(1) DEFAULT 0,
-    `approved_by`  char(36),
-    `created_at`     TIMESTAMP NULL DEFAULT NULL,
-    `updated_at`     TIMESTAMP NULL DEFAULT NULL
+    `report_uid`                      char(36) NOT NULL,
+    `track_uid`                       char(36) NOT NULL,
+    `organizer_id`                    BIGINT UNSIGNED NOT NULL,
+    `ready_for_approval`              tinyint(1) DEFAULT 0,
+    `marked_as_ready_for_approval_by` tinyint(1) DEFAULT 0,
+    `approved`                        tinyint(1) DEFAULT 0,
+    `approved_by`                     char(36),
+    `created_at`                      TIMESTAMP NULL DEFAULT NULL,
+    `updated_at`                      TIMESTAMP NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 ALTER TABLE `acpreports`
     ADD PRIMARY KEY (`report_uid`);
 
+ALTER TABLE `acpreports`
     ADD CONSTRAINT `fk_acpreports_organizer`
-    FOREIGN KEY (`organizer_id`)
-    REFERENCES `organizers` (`organizer_id`)
-    ON
-DELETE
-CASCADE ON UPDATE CASCADE;
+        FOREIGN KEY (`organizer_id`)
+            REFERENCES `organizers` (`organizer_id`)
+            ON DELETE CASCADE ON UPDATE CASCADE;
 
-ADD CONSTRAINT `fk_acpreports_organizer`
-    FOREIGN KEY (`approved_by`)
-    REFERENCES `users` (`user_uid`)
-    ON
-DELETE
-CASCADE ON UPDATE CASCADE;
+ALTER TABLE `acpreports`
+    ADD CONSTRAINT `fk_acpreports_users`
+        FOREIGN KEY (`approved_by`)
+            REFERENCES `users` (`user_uid`)
+            ON DELETE CASCADE ON UPDATE CASCADE;
 
+
+CREATE TABLE svg_files
+(
+    `id`       INT AUTO_INCREMENT PRIMARY KEY,
+    `name`     VARCHAR(255),
+    `organizer_id` BIGINT UNSIGNED NOT NULL,
+    `svg_blob` LONGBLOB,
+    `created_at`                      TIMESTAMP NULL DEFAULT NULL,
+    `updated_at`                      TIMESTAMP NULL DEFAULT NULL
+);
 

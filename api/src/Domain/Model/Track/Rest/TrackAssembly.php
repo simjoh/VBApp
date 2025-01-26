@@ -62,7 +62,7 @@ class TrackAssembly
         }
 
         if(!empty($track->getCheckpoints())){
-            $trackRepresentation->setCheckpoints($this->checkpointService->checkpointsFor($track->getCheckpoints(),$curruentUserUid));
+            $trackRepresentation->setCheckpoints($this->checkpointService->checkpointsFor($track->getCheckpoints()));
         }
 
         $linkArray = array();

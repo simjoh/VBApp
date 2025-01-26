@@ -3,6 +3,7 @@
 namespace App\Domain\Model\Track\Service;
 
 
+use App\common\CurrentUser;
 use App\common\Exceptions\BrevetException;
 use App\common\Service\ServiceAbstract;
 use App\Domain\Model\CheckPoint\Checkpoint;
@@ -64,12 +65,12 @@ class TrackService extends ServiceAbstract
         $this->rusaTimeTrackPlannerService = $rusaTimeTrackPlannerService;
     }
 
-    public function allTracks(string $currentuserUid): array
+    public function allTracks(): array
     {
-        $permissions = $this->getPermissions($currentuserUid);
+        $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
         $trackArray = $this->trackRepository->allTracks();
         // hämta checkpoints
-        return $this->trackAssembly->toRepresentations($trackArray, $currentuserUid, $permissions);
+        return $this->trackAssembly->toRepresentations($trackArray, CurrentUser::getUser()->getId(), $permissions);
     }
 
     public function getTrackByTrackUid(string $trackUid, string $currentuserUid): TrackRepresentation
@@ -393,16 +394,18 @@ class TrackService extends ServiceAbstract
 
     }
 
-    public function publishResults(?string $track_uid, $publish, string $currentuserUid)
+    public function publishResults(?string $track_uid, $publish)
     {
         $track = $this->trackRepository->getTrackByUid($track_uid);
         if ($track == null) {
             throw new BrevetException("Finns ingen bana med angivet uid", 5);
         }
 
+
         if ($track->isActive()) {
             $this->trackRepository->setInactive($track_uid, 0);
         } else {
+            print_r($track->isActive());
             $this->trackRepository->setInactive($track_uid, 1);
         }
 

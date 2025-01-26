@@ -63,13 +63,10 @@ class LoginAction extends BaseAction
             return $response->withStatus(200)->withHeader('Content-type', 'application/json');
         } else {
 
-
             $organizer = $this->organizerRepository->getById($user->getOrganizerId());
-
 
             $signer = new HS256($this->key);
             $generator = new Generator($signer);
-
 
             // byt till roleid
             $jwt = $generator->generate(['id' => $user->getId(), 'roles' => $this->getRoles($user->getRoles()), 'iat' => time(), 'exp' => time() + 86400, 'organizer' => $organizer->getOrganizerId()]);
@@ -86,7 +83,6 @@ class LoginAction extends BaseAction
 
     private function getRoles($roles): array
     {
-
         $rolearray = array();
 
 

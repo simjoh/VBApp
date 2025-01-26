@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from "rxjs";
 import {
   ParticipantInformationRepresentation,
@@ -8,7 +8,7 @@ import {
 } from "../../shared/api/api";
 import {TrackService} from "../../shared/track-service";
 import {map, mergeMap, startWith, take} from "rxjs/operators";
-import { ParticipantService } from 'src/app/shared/participant.service';
+import {ParticipantService} from 'src/app/shared/participant.service';
 
 @Injectable()
 export class ParticipantComponentService {
@@ -33,31 +33,17 @@ export class ParticipantComponentService {
 
 
   $participantsfortrack = combineLatest(([this.$reloadparticipants.pipe(startWith('timer start')), this.trackService.$currentTrack])).pipe(
-   mergeMap(([checkin ,part]) => {
-     if (part === ""){
-       return [] as ParticipantInformationRepresentation[];
-     }
-     return this.participantService.participantsForTrackExtended(part).pipe(
-       map((participants) => {
-         return participants;
-       })
-     ) as Observable<ParticipantInformationRepresentation[]>;
-   })
-    )as Observable<ParticipantInformationRepresentation[]>;
-
-
-  // $participantsfortrack = this.trackService.$currentTrack.pipe(
-  //   mergeMap((val) => {
-  //     if (val === ""){
-  //         return [] as ParticipantInformationRepresentation[];
-  //     }
-  //     return this.participantService.participantsForTrackExtended(val).pipe(
-  //       map((participants) => {
-  //         return participants;
-  //       })
-  //     ) as Observable<ParticipantInformationRepresentation[]>;
-  //   })
-  // ) as Observable<ParticipantInformationRepresentation[]>;
+    mergeMap(([checkin, part]) => {
+      if (part === "" || !part) {
+        return [] as ParticipantInformationRepresentation[];
+      }
+      return this.participantService.participantsForTrackExtended(part).pipe(
+        map((participants) => {
+          return participants;
+        })
+      ) as Observable<ParticipantInformationRepresentation[]>;
+    })
+  ) as Observable<ParticipantInformationRepresentation[]>;
 
   tracks$ = this.trackService.getAllTracks().pipe(
     map((tracks) => {
@@ -69,20 +55,20 @@ export class ParticipantComponentService {
     this.$reloadsubject.next(null)
   }
 
-  public track(trackuid: string){
+  public track(trackuid: string) {
     this.trackSubject.next(trackuid);
   }
 
-  public currentTrack(trackUid: string){
+  public currentTrack(trackUid: string) {
     this.trackService.currentTrack(trackUid);
   }
 
-  public setCurrentparticipant(participant: ParticipantRepresentation){
+  public setCurrentparticipant(participant: ParticipantRepresentation) {
     this.participantService.currentparticipant(participant);
   }
 
   public isPossibleToRemove(participant: ParticipantRepresentation): boolean {
-   return this.participantService.removeLinkExists(participant);
+    return this.participantService.removeLinkExists(participant);
   }
 
   async remove(participant: ParticipantRepresentation) {
@@ -111,8 +97,8 @@ export class ParticipantComponentService {
 
   }
 
- async  rollbackDns(participant: ParticipantRepresentation) {
-   await  this.participantService.rollbackDns(participant).then(() => {
+  async rollbackDns(participant: ParticipantRepresentation) {
+    await this.participantService.rollbackDns(participant).then(() => {
       this.$reloadsubject.next("rollbackdns");
     });
 
@@ -122,16 +108,16 @@ export class ParticipantComponentService {
     this.$reloadsubject.next("reload");
   }
 
-async updateTime(participant: ParticipantRepresentation) {
-      await this.participantService.updateTime(participant).then(() => {
+  async updateTime(participant: ParticipantRepresentation) {
+    await this.participantService.updateTime(participant).then(() => {
 
-      })
+    })
   }
 
 
-    async addbrevenr(participant: ParticipantRepresentation) {
-        await this.participantService.addbrevenr(participant).then(() => {
+  async addbrevenr(participant: ParticipantRepresentation) {
+    await this.participantService.addbrevenr(participant).then(() => {
 
-        })
-    }
+    })
+  }
 }

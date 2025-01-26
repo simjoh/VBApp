@@ -44,6 +44,10 @@ export class ParticipantService {
   }
 
   public participantsForTrackExtended(trackuid: string): Observable<ParticipantInformationRepresentation[]> {
+
+    if(!trackuid){
+      trackuid = "12";
+    }
     const path = 'participants/track/' + trackuid + "/extended";
     return this.httpClient.get<ParticipantInformationRepresentation[]>(environment.backend_url + path).pipe(
       map((participants: ParticipantInformationRepresentation[]) => {

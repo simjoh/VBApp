@@ -26,6 +26,8 @@ class AuthenticationService
 
         $usera = $this->repository->authenticate($username, $password);
 
+
+
         if (isset($usera)) {
             return $usera;
         }

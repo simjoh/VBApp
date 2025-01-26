@@ -94,7 +94,7 @@ VALUES (2, 'Cykelintresset', 1, 1, 'Simon Johansson', 'organizer2@example.com', 
 
 INSERT INTO `organizers` (`organizer_id`, `name`, `active`, `confirmed`, `contact_person`, `email`, `phone`,
                           `created_at`, `updated_at`)
-VALUES (2, 'AcpRapportör', 1, 1, 'Acp rapportör', 'acp@example.com', '1234567890', NOW(), NOW());
+VALUES (10000, 'global', 1, 1, 'global', 'acp@example.com', '1234567890', NOW(), NOW());
 
 -- Användare
 INSERT INTO `users` (`user_uid`, `user_name`, `given_name`, `family_name`, `password`, `organizer_id`)
@@ -287,6 +287,7 @@ INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `sta
 VALUES ('e6957ddc-f9fd-444f-861f-f0f22cc363b1', '0c9648fd-1664-4526-aaa4-059a01fc079c',
         '593edcab-5dcb-4916-829d-08ac536770ad', 2018, false, 113036, '427b5419-ebad-4a31-bd84-ed26718a32be', null,
         false, false, CURRENT_TIMESTAMP());
+
 -- Månskensbrevet
 INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `startnumber`, `finished`, `acpkod`,
                           `club_uid`, `time`, `dns`, `dnf`, `register_date_time`)
@@ -846,3 +847,7 @@ VALUES (1, 'French Polynesia', 'Franska Polynesien', 'PF', 'https://flagcdn.com/
         '2023-09-30 08:22:34', '2024-01-06 19:23:45'),
        (250, 'Ecuador', 'Ecuador', 'EC', 'https://flagcdn.com/ec.svg', 'https://flagcdn.com/w320/ec.png',
         '2023-09-30 08:22:34', '2024-01-06 19:23:45');
+
+
+INSERT INTO svg_files (organizer_id, svg_blob)
+VALUES (1, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40"/></svg>');

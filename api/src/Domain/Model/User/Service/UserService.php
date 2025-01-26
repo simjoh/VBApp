@@ -2,6 +2,7 @@
 
 namespace App\Domain\Model\User\Service;
 
+use App\common\CurrentUser;
 use App\common\Service\ServiceAbstract;
 use App\Domain\Model\User\Repository\UserInfoRepository;
 use App\Domain\Model\User\Repository\UserRepository;
@@ -39,11 +40,11 @@ class UserService extends  ServiceAbstract
         $this->userInfoRepository = $userInfoRepository;
         $this->userInfoAssembly = $userInfoAssembly;
     }
-    public function getAllUsers(string $currentUseruid): ?array {
+    public function getAllUsers(): ?array {
         $allUsers = $this->repository->getAllUSers();
 
         if (isset($allUsers)) {
-            return $this->userAssembly->toRepresentations($allUsers, $currentUseruid);
+            return $this->userAssembly->toRepresentations($allUsers, CurrentUser::getUser()->getId());
         }
         return null;
     }

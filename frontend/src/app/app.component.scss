@@ -1,5 +1,16 @@
+#steps {
+  width: 70px; /* Set the desired width */
+  height: 70px; /* Set the desired height */
+  overflow: hidden; /* Ensure content doesn't overflow */
+}
 
+/* Ensure the SVG fills the container */
 
+#steps svg {
+  width: 5rem;
+  height: 5rem;
+  display: block; /* Prevent unwanted inline spacing */
+}
 
 
 

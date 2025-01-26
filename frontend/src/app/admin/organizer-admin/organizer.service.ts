@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {LinkService} from "../../core/link.service";
-import {combineLatest, Observable, Subject} from "rxjs";
+import {combineLatest, Observable, Subject, throwError} from "rxjs";
 import {environment} from "../../../environments/environment";
-import {map, shareReplay, startWith, tap} from "rxjs/operators";
+import {catchError, map, shareReplay, startWith, tap} from "rxjs/operators";
 import {EventRepresentation, OrganizerRepresentation} from "../../shared/api/api";
 
 @Injectable({
@@ -19,7 +19,7 @@ export class OrganizerService {
     startWith(''),
   );
 
-  removeSubject = new Subject<string>()
+  removeSubject = new Subject<number>()
   relaod$ = this.removeSubject.asObservable().pipe(
     startWith(''),
   );
@@ -82,6 +82,17 @@ export class OrganizerService {
   async newOrganizer(newSite: OrganizerRepresentation) {
     const user = await this.addSite(newSite);
     this.organizerInsertedInsertedSubject.next(user);
+  }
+
+  public delete(id: number){
+    return this.httpClient.delete(environment.backend_url + "organizers/organizer/" + id)
+      .pipe(
+        catchError(err => {
+          return throwError(err);
+        })
+      ).toPromise().then((s) => {
+        this.removeSubject.next(id);
+      })
   }
 
 

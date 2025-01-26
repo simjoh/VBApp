@@ -2,9 +2,14 @@
 
 namespace App\Action\Site;
 
+use App\common\Exceptions\BrevetException;
 use App\Domain\Model\Site\Rest\SiteRepresentation;
 use App\Domain\Model\Site\Rest\SiteRepresentationTransformer;
 use App\Domain\Model\Site\Service\SiteService;
+use Karriere\JsonDecoder\Exceptions\InvalidBindingException;
+use Karriere\JsonDecoder\Exceptions\InvalidJsonException;
+use Karriere\JsonDecoder\Exceptions\JsonValueException;
+use Karriere\JsonDecoder\Exceptions\NotExistingRootException;
 use Karriere\JsonDecoder\JsonDecoder;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -25,7 +30,7 @@ class SitesAction
     }
 
     public function allSites(ServerRequestInterface $request, ResponseInterface $response){
-        $sites = $this->siteservice->allSites($request->getAttribute('currentuserUid'));
+        $sites = $this->siteservice->allSites();
         if(empty($sites)){
             return  $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
@@ -36,7 +41,7 @@ class SitesAction
     public function siteFor(ServerRequestInterface $request, ResponseInterface $response){
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
-        $site = $this->siteservice->siteFor($route->getArgument('siteUid'),$request->getAttribute('currentuserUid'));
+        $site = $this->siteservice->siteFor($route->getArgument('siteUid'));
         if(!isset($site)){
             return  $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
@@ -44,15 +49,24 @@ class SitesAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    /**
+     * @throws NotExistingRootException
+     * @throws InvalidJsonException
+     * @throws InvalidBindingException
+     * @throws JsonValueException
+     */
     public function updateSite(ServerRequestInterface $request, ResponseInterface $response){
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new SiteRepresentationTransformer());
         $siterepresentation = $jsonDecoder->decode($request->getBody(), SiteRepresentation::class);
-        $siteUpdated = $this->siteservice->updateSite($siterepresentation, $request->getAttribute('currentuserUid'));
+        $siteUpdated = $this->siteservice->updateSite($siterepresentation);
         $response->getBody()->write(json_encode($siteUpdated));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    /**
+     * @throws BrevetException
+     */
     public function deleteSite(ServerRequestInterface $request, ResponseInterface $response){
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
@@ -61,6 +75,13 @@ class SitesAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    /**
+     * @throws NotExistingRootException
+     * @throws InvalidJsonException
+     * @throws BrevetException
+     * @throws InvalidBindingException
+     * @throws JsonValueException
+     */
     public function createSite(ServerRequestInterface $request, ResponseInterface $response){
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new SiteRepresentationTransformer());

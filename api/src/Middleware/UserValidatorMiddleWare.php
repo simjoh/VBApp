@@ -6,6 +6,7 @@ use App\common\CurrentOrganizer;
 use App\common\CurrentUser;
 use App\Domain\Model\Organizer\Repository\OrganizerRepository;
 use App\Domain\Model\User\Repository\UserRepository;
+use App\Domain\Model\User\User;
 use App\Domain\Permission\PermissionRepository;
 use MiladRahimi\Jwt\Cryptography\Algorithms\Hmac\HS256;
 use MiladRahimi\Jwt\Exceptions\ValidationException;
@@ -58,11 +59,34 @@ class UserValidatorMiddleWare
         if (!$user) {
             return (new Response())->withStatus(401);
         }
+
+
+        $path = $request->getUri()->getPath();
+
+        if($this->ignoreApiKey($path)){
+            CurrentUser::setUser(new User());
+            return $handler->handle($request);
+        }
+
         CurrentUser::setUser($user);
         $request = $request->withAttribute('userId', $user->getId());
         return $handler->handle($request);
 
 
+    }
+
+    private function ignoreApiKey(string $url): bool{
+        $pathToIgnore = $this->pathsToIgnore();
+        foreach ($pathToIgnore as $item){
+            if(Strings::contains($url, $item)){
+                return True;
+            }
+        }
+        return False;
+    }
+
+    private function pathsToIgnore(): array{
+        return array("/api/results/year/", "/api/resultList/year", "/api/resultList/test", "/api/track/event/", "/api/tracker/event", "/results/randonneur/", "/track/track","/tracker/track", "/api/track/", '/api/results');
     }
 
 

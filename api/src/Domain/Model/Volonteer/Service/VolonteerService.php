@@ -3,6 +3,7 @@
 namespace App\Domain\Model\Volonteer\Service;
 
 
+use App\common\CurrentUser;
 use App\common\Exceptions\BrevetException;
 use App\common\Service\ServiceAbstract;
 use App\common\Util;
@@ -37,9 +38,9 @@ class VolonteerService extends ServiceAbstract
         $this->settings = $c->get('settings');
     }
 
-    public function getCheckpointsForTrack(string $track_uid, string $currentUserUID): array
+    public function getCheckpointsForTrack(string $track_uid): array
     {
-        $permissions = $this->getPermissions($currentUserUID);
+        $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
 
 
         return $this->checkpointService->checkpointForTrack($track_uid);
@@ -48,9 +49,11 @@ class VolonteerService extends ServiceAbstract
     }
 
 
-    public function getRandoneursForCheckpoint(string $track_uid, string $checkpoint_uid, string $currentUserUID): array
+    public function getRandoneursForCheckpoint(string $track_uid, string $checkpoint_uid): array
     {
-        $permissions = $this->getPermissions($currentUserUID);
+
+
+        $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
         $pparticipantToPassCheckpoint = $this->volonteerRepository->getRandoneurToPassCheckpoint($track_uid, $checkpoint_uid);
 
         $dns = $this->participantrepository->participantsOnTrackDns($track_uid);
@@ -324,8 +327,11 @@ class VolonteerService extends ServiceAbstract
     }
 
 
-    public function undoCheckoutFrom(?string $track_uid, ?string $checkpoint_uid, ?string $startnumber, $getAttribute): bool
+    public function undoCheckoutFrom(?string $track_uid, ?string $checkpoint_uid, ?string $startnumber): bool
     {
+
+        $user = CurrentUser::getUser()->getId();
+
         $track = $this->trackrepository->getTrackByUid($track_uid);
         if (!isset($track)) {
             throw new BrevetException("Track not exists", 5, null);

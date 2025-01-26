@@ -2,6 +2,7 @@
 
 namespace App\Domain\Model\Event\Service;
 
+use App\common\CurrentUser;
 use App\common\Exceptions\BrevetException;
 use App\common\Service\ServiceAbstract;
 use App\Domain\Model\CheckPoint\Service\CheckpointsService;
@@ -50,8 +51,10 @@ class EventService extends ServiceAbstract
         $this->statisticsRepository = $statisticsRepository;
     }
 
-    public function allEvents(string $currentUserUid): array
+    public function allEvents(): array
     {
+         $currentUserUid = CurrentUser::getUser()->getId();
+
         $events = $this->eventRepository->allEvents();
         if (!isset($events)) {
             return array();
@@ -60,7 +63,7 @@ class EventService extends ServiceAbstract
         return $this->eventAssembly->toRepresentations($events, $currentUserUid);
     }
 
-    public function eventFor(string $event_uid, string $currentUserUid)
+    public function eventFor(string $event_uid)
     {
 
         $event = $this->eventRepository->eventFor($event_uid);
@@ -68,7 +71,7 @@ class EventService extends ServiceAbstract
         if (!isset($event)) {
             return null;
         }
-        $permissions = $this->getPermissions($currentUserUid);
+        $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
         return $this->eventAssembly->toRepresentation($event, $permissions);
     }
 

@@ -139,7 +139,7 @@ class RandonneurService
         return $this->participantRepository->checkoutFromCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0);
     }
 
-    public function undoCheckoutFrom(?string $track_uid, ?string $checkpoint_uid, ?string $startnumber, $getAttribute): bool
+    public function undoCheckoutFrom(?string $track_uid, ?string $checkpoint_uid, ?string $startnumber): bool
     {
         $track = $this->trackrepository->getTrackByUid($track_uid);
         if (!isset($track)) {
@@ -292,7 +292,7 @@ class RandonneurService
 
     }
 
-    public function markAsDnf(?string $track_uid, $checkpoint_uid, string $startnumber, string $current_useruid): bool
+    public function markAsDnf(?string $track_uid, $checkpoint_uid, string $startnumber): bool
     {
 
         $track = $this->trackrepository->getTrackByUid($track_uid);
@@ -332,7 +332,7 @@ class RandonneurService
     }
 
 
-    public function rollbackDnf(?string $track_uid, $checkpoint_uid, string $startnumber, string $current_useruid): bool
+    public function rollbackDnf(?string $track_uid, $checkpoint_uid, string $startnumber): bool
     {
 
         $track = $this->trackrepository->getTrackByUid($track_uid);
@@ -391,7 +391,7 @@ class RandonneurService
 
     }
 
-    public function rollbackStamp(?string $track_uid, $checkpoint_uid, string $startnumber, string $current_useruid): bool
+    public function rollbackStamp(?string $track_uid, $checkpoint_uid, string $startnumber): bool
     {
         $track = $this->trackrepository->getTrackByUid($track_uid);
 

@@ -4,5 +4,6 @@ export enum Roles {
   SUPERUSER = 3,
   COMPETITOR = 4,
   DEVELOPER = 5,
-  VOLONTAR
+  VOLONTAR,
+  ACPREPRESENTIVE = 7
 }

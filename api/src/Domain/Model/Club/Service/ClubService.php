@@ -2,6 +2,7 @@
 
 namespace App\Domain\Model\Club\Service;
 
+use App\common\CurrentUser;
 use App\common\Rest\Link;
 use App\Domain\Model\Club\ClubRepository;
 use App\Domain\Model\Club\Rest\ClubAssembly;
@@ -40,11 +41,11 @@ class ClubService
         return new ClubRepresentation();
     }
 
-    public function getAllClubs(string $currentuser_id): ?array
+    public function getAllClubs(): ?array
     {
-        $permissions = $this->getPermissions($currentuser_id);
+        $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
         $clubs = $this->clubrepository->getAllClubs();
-        return $this->clubAssembly->toRepresentations($clubs, $currentuser_id);
+        return $this->clubAssembly->toRepresentations($clubs,CurrentUser::getUser()->getId() );
     }
 
 

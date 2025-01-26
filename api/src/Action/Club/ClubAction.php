@@ -46,7 +46,7 @@ class ClubAction
 
 
         $response->getBody()->write(json_encode($this->clubservice->createClub(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
 

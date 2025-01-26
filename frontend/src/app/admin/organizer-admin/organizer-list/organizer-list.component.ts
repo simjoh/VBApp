@@ -3,7 +3,7 @@ import {AsyncPipe, NgIf} from "@angular/common";
 import {ButtonDirective} from "primeng/button";
 import {ConfirmDialogModule} from "primeng/confirmdialog";
 import {InputTextModule} from "primeng/inputtext";
-import {PrimeTemplate} from "primeng/api";
+import {ConfirmationService, PrimeTemplate} from "primeng/api";
 import {Ripple} from "primeng/ripple";
 import {SharedModule} from "../../../shared/shared.module";
 import {TableModule} from "primeng/table";
@@ -16,6 +16,7 @@ import {CreateEventDialogComponent} from "../../event-admin/create-event-dialog/
 import {DialogService} from "primeng/dynamicdialog";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {CreateOrganizerDialogComponent} from "../create-organizer-dialog/create-organizer-dialog.component";
+import {LinkService} from "../../../core/link.service";
 
 @Component({
   selector: 'brevet-organizer-list',
@@ -46,7 +47,7 @@ export class OrganizerListComponent {
     })
   ) as Observable<OrganizerRepresentation[]>;
 
-  constructor(private organizerservice: OrganizerService, private dialogService: DialogService, private deviceDetector: DeviceDetectorService,) {
+  constructor(private organizerservice: OrganizerService, private dialogService: DialogService, private deviceDetector: DeviceDetectorService,private confirmationService: ConfirmationService, private linkService: LinkService) {
   }
 
 
@@ -62,6 +63,10 @@ export class OrganizerListComponent {
       width = "90%"
     }
 
+
+
+
+
     const ref = this.dialogService.open(CreateOrganizerDialogComponent, {
       data: {
         id: '51gF3'
@@ -74,5 +79,25 @@ export class OrganizerListComponent {
         this.organizerservice.newOrganizer(event);
       }
     });
+  }
+
+  deleteOranizer(organizerRepresentation: OrganizerRepresentation) {
+
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete ' + organizerRepresentation.name + '?',
+      header: 'Confirm',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        console.log(organizerRepresentation.organizer_id)
+        this.organizerservice.delete(organizerRepresentation.organizer_id);
+      },
+      reject: () => {
+        console.log("reject");
+      }
+    });
+  }
+
+  canDelete(site: any):boolean {
+    return this.linkService.exists(site.links,"relations.organizers", 'GET');
   }
 }

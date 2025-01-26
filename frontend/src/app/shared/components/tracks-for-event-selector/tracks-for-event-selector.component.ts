@@ -31,7 +31,10 @@ export class TracksForEventSelectorComponent implements OnInit {
 
   setValue($event: any) {
    // this.trackChange.emit(this.selectedTrack);
-    this.trackChange.emit($event);
-    this.trackForEventComponentService.currentTrack($event)
+    if($event){
+      this.trackChange.emit($event);
+      this.trackForEventComponentService.currentTrack($event);
+    }
+
   }
 }
