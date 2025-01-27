@@ -9,7 +9,7 @@ import {AcpReportComponent} from "./acp-report/acp-report.component";
 
 const routes: Routes = [
   {
-    path: 'acp',
+    path: '',
     component: AdministrationComponent,
     children: [
       { path: 'brevet-acp-report', component:  AcpReportComponent},

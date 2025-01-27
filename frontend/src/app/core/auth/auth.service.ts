@@ -91,7 +91,11 @@ export class AuthService {
       id: null
     };
     if (roles.length === 1) {
-      role.role_name = roles[0];
+      if(roles[0] ===  Roles[Roles.COMPETITOR]){
+         role.role_name = Roles[Roles.COMPETITOR];
+      } else {
+        role.role_name = roles[0].role_name;
+      }
     } else {
       if (roles.some(element => element.id === Roles.SUPERUSER)) {
         role.role_name = roles.find(rola => rola.id === Roles.SUPERUSER).role_name;
@@ -102,7 +106,7 @@ export class AuthService {
         if (roles.some(element => element.id === Roles.VOLONTAR && Roles[Roles.ADMIN] != Roles[element.id])) {
           role.role_name = roles.find(rola => rola.id === Roles.VOLONTAR).role_name
         }
-        if (roles.some(element => element.id === Roles.ACPREPRESENTIVE && Roles[Roles.ACPREPRESENTIVE] != Roles[element.id])) {
+        if (roles.some(element => element.id === Roles.ACPREPRESENTIVE)) {
           role.role_name = roles.find(rola => rola.id === Roles.ACPREPRESENTIVE).role_name
         }
       }
@@ -115,7 +119,7 @@ export class AuthService {
     } else if (role.role_name === Role.VOLONTEER) {
       this.router.navigate(['volunteer/volunteer']);
     } else if (role.role_name === Role.ACPREPRESENTIVE) {
-      this.router.navigate(['admin/administration/acp/brevet-acp-report']);
+      this.router.navigate(['admin/administration/brevet-acp-report']);
     }
   }
 
