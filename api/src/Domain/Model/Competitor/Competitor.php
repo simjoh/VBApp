@@ -43,12 +43,14 @@ class Competitor implements JsonSerializable
     /**
      * @return string
      */
-    public function getId(): string
+    public function getCompetitorUid(): string
     {
         return $this->competitor_uid;
     }
 
-    public function setId(): string
+
+
+    public function setCompetitorUid(): string
     {
         return $this->competitor_uid;
     }

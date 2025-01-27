@@ -3,6 +3,7 @@
 <brevet-track-info></brevet-track-info>
 
 <ng-container *ngIf="checkpoints$ | async as kontroller">
+  <ng-container *ngIf="kontroller.length > 0">
   <ng-container *ngFor="let s of kontroller; index as i; let first = first ;let last = last;">
     <brevet-checkpoint (checkedin)="checkin($event,s,kontroller,i)" (dnf)="dnf($event,s)" (checkedout)="checkout($event,s,kontroller,i)"  [checkpoints]="s"
                        [start]="i === 0" [firstCheckpoint]="first" [lastCheckpoint]="last"
@@ -10,12 +11,15 @@
                        [finsih]="i + 1 === kontroller.length"
                        [distance]="s.checkpoint.distance" [distancetonext]="s.checkpoint.distance | distanceBetween: i + 1 === kontroller.length ?  s.checkpoint.distance : kontroller[i  + 1].checkpoint.distance : true">
     </brevet-checkpoint>
+
     <div id="{{kontroller.length + 1}}"></div>
+
     <br>
     <br>
   </ng-container>
 
   <div class="col-12 sm:col-12 lg:col-12"><button [disabled]="!kontroller[0].active" pButton (click)="dnf2(kontroller[0])" title="Press this button if you cant finish. You can undo this action"  pRipple type="button" label="{{dnfknapptext}}" class=" p-button-danger container-fluid"></button></div>
+  </ng-container>
 </ng-container>
 
 <!--</div>-->

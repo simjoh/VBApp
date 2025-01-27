@@ -25,11 +25,12 @@ class PermissionRepository extends BaseRepository
 
     public function getPermissionsFor(string $user_uid): ?array {
         try {
+
+
             $statement = $this->connection->prepare($this->sqls('permissionsfor'));
             $statement->bindParam(':user_uid', $user_uid);
             $statement->execute();
             $data = $statement->fetchAll();
-
             if(empty($data)){
                 return array();
             }

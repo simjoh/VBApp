@@ -66,7 +66,7 @@ class VolonteerService extends ServiceAbstract
 
 
         if (count($pparticipantToPassCheckpoint) > 0) {
-            return $this->participantToPassCheckpointAssembly->toRepresentations($pparticipantToPassCheckpoint, $currentUserUID, $permissions);
+            return $this->participantToPassCheckpointAssembly->toRepresentations($pparticipantToPassCheckpoint, $permissions);
         }
         return array();
     }
@@ -87,11 +87,7 @@ class VolonteerService extends ServiceAbstract
     }
 
 
-    public function getPermissions($user_uid): array
-    {
-        return $this->permissionrepository->getPermissionsTodata("VOLONTEER", $user_uid);
-        // TODO: Implement getPermissions() method.
-    }
+
 
     public function rollbackRandonneurStamp(?string $track_uid, ?string $participant_uid, ?string $checkpoint_uid): bool
     {
@@ -342,5 +338,10 @@ class VolonteerService extends ServiceAbstract
         }
         $participant = $this->participantrepository->participantOntRackAndStartNumber($track->getTrackUid(), $startnumber);
         return $this->participantrepository->undoCheckout($participant->getParticipantUid(), $checkpoint_uid);
+    }
+
+    public function getPermissions($user_uid): array
+    {
+        return $this->permissionrepository->getPermissionsTodata("VOLONTEER", CurrentUser::getUser()->getId());
     }
 }

@@ -79,7 +79,7 @@ class TrackService extends ServiceAbstract
         $track = $this->trackRepository->getTrackByUid($trackUid);
 
 
-//        print_r($track);
+
 
         $isracePassed = $this->trackRepository->isRacePassed($trackUid);
         if ($isracePassed == true) {
@@ -89,6 +89,8 @@ class TrackService extends ServiceAbstract
                 $track->setActive(false);
             }
         }
+
+
         return $this->trackAssembly->toRepresentation($track, $permissions, $currentuserUid);
     }
 

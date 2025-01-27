@@ -24,12 +24,14 @@ class RandonneurAction
     public function getCheckpoint(ServerRequestInterface $request, ResponseInterface $response)
     {
         //skicka tillbacka checkpoints med ny status
-
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('track_uid');
         $startnumber = $route->getArgument('startnumber');
+
+
         $checkpointforrandoneur = $this->randonneurService->checkpointsForRandonneur($track_uid, $startnumber, "user_uid");
+
         $response->getBody()->write(json_encode($checkpointforrandoneur));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
@@ -52,7 +54,7 @@ class RandonneurAction
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('track_uid');
         $response->getBody()->write(json_encode($this->trackservice->getTrackByTrackUid($track_uid, "user_uid")));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
     public function stamp(ServerRequestInterface $request, ResponseInterface $response)

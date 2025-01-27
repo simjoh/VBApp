@@ -91,7 +91,7 @@ class RandonneurService
             return $randonneurcheckpoints;
         }
 
-        return null;
+        return [];
     }
 
     public function previewCheckpointsForRandonneur(?string $track_uid, string $current_user_uid): ?array

@@ -3,6 +3,7 @@
 namespace App\Domain\Model\Volonteer\Rest;
 
 
+use App\common\CurrentUser;
 use App\common\Rest\Link;
 use App\Domain\Model\CheckPoint\Service\CheckpointsService;
 use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
@@ -25,15 +26,15 @@ class ParticipantToPassCheckpointAssembly
     }
 
 
-    public function toRepresentations(array $participantToPassCheckpointArray, string $currentUserUid , array $permissions): array
+    public function toRepresentations(array $participantToPassCheckpointArray , array $permissions): array
     {
         if(empty($permissions)){
-            $permissions = $this->getPermissions($currentUserUid);
+            $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
         }
         $trackarrayReprs = array();
         foreach ($participantToPassCheckpointArray as $x =>  $participantToPassCheckpoint) {
 
-            array_push($trackarrayReprs, (object) $this->toRepresentation($participantToPassCheckpoint,$permissions, $currentUserUid));
+            array_push($trackarrayReprs, (object) $this->toRepresentation($participantToPassCheckpoint,$permissions, CurrentUser::getUser()->getId()));
         }
         return $trackarrayReprs;
     }
@@ -97,7 +98,7 @@ class ParticipantToPassCheckpointAssembly
 
     public function getPermissions($user_uid): array
     {
-        return $this->permissionrepository->getPermissionsTodata("VOLONTEER",$user_uid);
+        return $this->permissionrepository->getPermissionsTodata("VOLONTEER",CurrentUser::getUser()->getId());
     }
 
 

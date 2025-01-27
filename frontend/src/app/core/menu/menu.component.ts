@@ -109,12 +109,12 @@ export class MenuComponent implements OnInit {
       }
 
 
-      if (user.roles.length > 1 && user.roles.find(s => s.id === Roles.VOLONTAR) && !this.items.some(item => item.label === 'Volontär')) {
-        this.items.push({
-          label: 'Volontär',
-          routerLink: '/volunteer',
-        })
-      }
+      // if (user.roles.length > 1 && user.roles.find(s => s.id === Roles.VOLONTAR) && !this.items.some(item => item.label === 'Volontär')) {
+      //   this.items.push({
+      //     label: 'Volontär',
+      //     routerLink: '/volunteer',
+      //   })
+      // }
 
       this.$menuSubject.next(this.items);
 

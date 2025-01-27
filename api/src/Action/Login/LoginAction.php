@@ -50,16 +50,17 @@ class LoginAction extends BaseAction
 
         if ($user == null || !isset($user)) {
             $competitor = $this->authenticationService->authenticateCompetitor($username, $password);
+
             if (!isset($competitor)) {
                 return (new Response())->withStatus(403);
             }
             $signer = new HS256($this->key);
             $generator = new Generator($signer);
-            $jwt = $generator->generate(['id' => $competitor->getId(), 'roles' => $this->getRoles($competitor->getRoles()), 'iat' => time(), 'exp' => time() + 345600]);
-            $competitor->setToken($jwt);
+            $jwt = $generator->generate(['id' => $competitor->getCompetitorUid(), 'roles' => $this->getRoles($competitor->getRoles()), 'iat' => time(), 'exp' => time() + 345600]);
+            $competitor->setToken($jwt);;
             $ser = new CleanJsonSerializer();
 
-            $response->getBody()->write($ser->serialize($competitor));
+            $response->getBody()->write(json_encode($competitor));
             return $response->withStatus(200)->withHeader('Content-type', 'application/json');
         } else {
 

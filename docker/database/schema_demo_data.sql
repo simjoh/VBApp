@@ -81,7 +81,13 @@ VALUES (1, 'ADMIN', 1),
        (1, 'ADMIN', 25),
        (7, 'ACPREPRESENTIVE', 22),
        (7, 'ACPREPRESENTIVE', 23),
-       (7, 'ACPREPRESENTIVE', 27);
+       (7, 'ACPREPRESENTIVE', 27),
+        (6, 'TRACK', 13),
+       (6, 'TRACK', 14),
+       (6, 'TRACK', 15),
+       (6, 'EVENT', 16),
+       (6, 'EVENT', 17),
+       (6, 'EVENT', 18);
 
 
 
@@ -117,9 +123,6 @@ VALUES (3, '82fbb2ec-d998-4b8a-861f-46f2b0fdbc4e');
 -- Superanvändare som kan rapportera till acp
 INSERT INTO user_role(role_id, user_uid)
 VALUES (7, 'e3b78c98-ffe5-4877-8491-258413c662a8');
-
-
-
 
 -- Volontär
 INSERT INTO user_role(role_id, user_uid)

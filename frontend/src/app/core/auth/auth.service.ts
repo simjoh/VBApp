@@ -76,7 +76,7 @@ export class AuthService {
     const activeUser = {
       name: data.givenname + " " + data.familyname,
       roles: values,
-      id: data.id,
+      id: data.competitor_uid,
       startnumber: data.startnumber,
       organizer: data.organizer_id,
       trackuid: data.trackuid
@@ -86,27 +86,35 @@ export class AuthService {
   }
 
   private redirect(roles: Array<any>) {
-    let role = null;
+    let role = {
+      role_name: "",
+      id: null
+    };
     if (roles.length === 1) {
-      role = roles[0];
+      role.role_name = roles[0];
     } else {
-      if (vendor => vendor === Roles.SUPERUSER) {
-        role = roles.find(role => role.id === Roles.SUPERUSER).role_name
+      if (roles.some(element => element.id === Roles.SUPERUSER)) {
+        role.role_name = roles.find(rola => rola.id === Roles.SUPERUSER).role_name;
       } else {
-        if (vendor => vendor === Roles.ADMIN) {
-          role = roles.find(role => role.id === Roles.ADMIN).role_name
+        if (roles.some(element => element.id === Roles.ADMIN)) {
+          role.role_name = roles.find(rola => rola.id === Roles.ADMIN).role_name
+        }
+        if (roles.some(element => element.id === Roles.VOLONTAR && Roles[Roles.ADMIN] != Roles[element.id])) {
+          role.role_name = roles.find(rola => rola.id === Roles.VOLONTAR).role_name
+        }
+        if (roles.some(element => element.id === Roles.ACPREPRESENTIVE && Roles[Roles.ACPREPRESENTIVE] != Roles[element.id])) {
+          role.role_name = roles.find(rola => rola.id === Roles.ACPREPRESENTIVE).role_name
         }
       }
-
     }
 
-    if ((role === Role.ADMIN || role === Role.SUPERUSER || role === Role.USER)) {
+    if ((role.role_name === Role.ADMIN || role.role_name === Role.SUPERUSER || role.role_name === Role.USER)) {
       this.router.navigate(['admin/brevet-admin-start']);
-    } else if (role === Role.COMPETITOR) {
+    } else if (role.role_name === Role.COMPETITOR) {
       this.router.navigate(['brevet-list']);
-    } else if (role === Role.VOLONTEER) {
-      this.router.navigate(['volunteer']);
-    } else if (role === Role.ACPREPRESENTIVE) {
+    } else if (role.role_name === Role.VOLONTEER) {
+      this.router.navigate(['volunteer/volunteer']);
+    } else if (role.role_name === Role.ACPREPRESENTIVE) {
       this.router.navigate(['admin/administration/acp/brevet-acp-report']);
     }
   }

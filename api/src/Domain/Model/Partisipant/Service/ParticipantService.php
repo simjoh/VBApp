@@ -210,8 +210,8 @@ class ParticipantService extends ServiceAbstract
 
                 $competitor = $this->competitorService->createCompetitor($competitorrepresentation->getGivenName(), $competitorrepresentation->getFamilyName(), "ordernr", $competitorrepresentation->getBirthDate());
 
-                if ($competitor->getId() != null) {
-                    $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParams($competitorInfo->getEmail(), $competitorInfo->getPhone(), $competitorInfo->getAdress(), $competitorInfo->getAdress(), $competitorInfo->getPlace(), $competitorInfo->getCountry(), $competitor->getId());
+                if ($competitor->getCompetitorUid() != null) {
+                    $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParams($competitorInfo->getEmail(), $competitorInfo->getPhone(), $competitorInfo->getAdress(), $competitorInfo->getAdress(), $competitorInfo->getPlace(), $competitorInfo->getCountry(), $competitor->getCompetitorUid());
                 }
 
 
@@ -221,7 +221,7 @@ class ParticipantService extends ServiceAbstract
         }
 
         $participant = new Participant();
-        $participant->setCompetitorUid(isset($competitor) && $competitor->getId() != null ? $competitor->getId() : $competitorrepresentation->getCompetitorUid());
+        $participant->setCompetitorUid(isset($competitor) && $competitor->getCompetitorUid() != null ? $competitor->getCompetitorUid() : $competitorrepresentation->getCompetitorUid());
         $participant->setStartnumber($participantInput->getStartnumber());
         $participant->setFinished(false);
         $participant->setTrackUid($track->getTrackUid());
@@ -244,7 +244,7 @@ class ParticipantService extends ServiceAbstract
 
         if (isset($participantcreated) && isset($competitor)) {
             // skapa upp inloggning för cyklisten
-            $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $participant->getStartnumber(), $participant->getStartnumber());
+            $this->competitorService->createCredentialFor($competitor->getCompetitorUid(), $participant->getParticipantUid(), $participant->getStartnumber(), $participant->getStartnumber());
         }
 
         return $this->participantassembly->toRepresentation($participant, array());
@@ -290,17 +290,17 @@ class ParticipantService extends ServiceAbstract
                 if (isset($competitor)) {
                     //  $compInfo = $this->competitorInfoRepository->getCompetitorInfoByCompetitorUid($competitor->getId());
                     // if(!isset($compInfo)){
-                    $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParams($record[9], $record[10], $record[5], $record[6], $record[7], $record[8], $competitor->getId());
+                    $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParams($record[9], $record[10], $record[5], $record[6], $record[7], $record[8], $competitor->getCompetitorUid());
                     // }
                 }
             }
-            $existingParticipant = $this->participantRepository->participantForTrackAndCompetitor($trackUid, $competitor->getId());
+            $existingParticipant = $this->participantRepository->participantForTrackAndCompetitor($trackUid, $competitor->getCompetitorUid());
 
 
             if (!isset($existingParticipant)) {
                 $participant = new Participant();
 
-                $participant->setCompetitorUid($competitor->getId());
+                $participant->setCompetitorUid($competitor->getCompetitorUid());
 
                 $participant->setStartnumber($record[0]);
                 $participant->setFinished(false);
@@ -334,7 +334,7 @@ class ParticipantService extends ServiceAbstract
 
             if (isset($participantcreated) && isset($competitor)) {
                 // skapa upp inloggning för cyklisten
-                $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $record[0], $record[13]);
+                $this->competitorService->createCredentialFor($competitor->getCompetitorUid(), $participant->getParticipantUid(), $record[0], $record[13]);
             }
 
         }
@@ -680,7 +680,7 @@ class ParticipantService extends ServiceAbstract
                 }
                 if (isset($participantcreated) && isset($competitor)) {
                     // skapa upp inloggning för cyklisten
-                    $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $participant->getStartnumber(), $registration['ref_nr']);
+                    $this->competitorService->createCredentialFor($competitor->getCompetitorUid(), $participant->getParticipantUid(), $participant->getStartnumber(), $registration['ref_nr']);
                 }
             }
             //   $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParamsFromLoppservice($contactinformation['email'], $contactinformation['tel'], $adress['adress'], $adress['postal_code'], $adress['city'], $this->countryrepository->countryFor($adress['country_id'])->country_name_sv, $participant_to_create['person_uid'], $adress['country_id']);

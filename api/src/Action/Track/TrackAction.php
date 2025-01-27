@@ -37,6 +37,7 @@ class TrackAction
 
     public function allTracks(ServerRequestInterface $request, ResponseInterface $response)
     {
+
         $response->getBody()->write((string)json_encode($this->trackService->allTracks()), JSON_UNESCAPED_SLASHES);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }

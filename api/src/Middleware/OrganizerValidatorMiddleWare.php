@@ -47,8 +47,12 @@ class OrganizerValidatorMiddleWare
         try {
             $claims = $parser->parse($token);
         } catch (ValidationException $e) {
-
             return (new Response())->withStatus(401);
+        }
+
+        $roles = $claims['roles'];
+        if ($roles['isCompetitor'] === true) {
+            return $handler->handle($request);
         }
 
         $organizer = $this->organizerRepository->getById($claims['organizer']);

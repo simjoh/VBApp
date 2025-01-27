@@ -50,20 +50,26 @@ class UserValidatorMiddleWare
         try {
             $claims = $parser->parse($token);
         } catch (ValidationException $e) {
-
             return (new Response())->withStatus(401);
         }
 
         $user = $this->userRepository->getUserById($claims['id']);
 
         if (!$user) {
+            $roles = $claims['roles'];
+            if ($roles['isCompetitor'] === true) {
+                return $handler->handle($request);
+            }
+
+        }
+
+        if (!$user) {
             return (new Response())->withStatus(401);
         }
 
-
         $path = $request->getUri()->getPath();
 
-        if($this->ignoreApiKey($path)){
+        if ($this->ignoreApiKey($path)) {
             CurrentUser::setUser(new User());
             return $handler->handle($request);
         }
@@ -75,18 +81,20 @@ class UserValidatorMiddleWare
 
     }
 
-    private function ignoreApiKey(string $url): bool{
+    private function ignoreApiKey(string $url): bool
+    {
         $pathToIgnore = $this->pathsToIgnore();
-        foreach ($pathToIgnore as $item){
-            if(Strings::contains($url, $item)){
+        foreach ($pathToIgnore as $item) {
+            if (Strings::contains($url, $item)) {
                 return True;
             }
         }
         return False;
     }
 
-    private function pathsToIgnore(): array{
-        return array("/api/results/year/", "/api/resultList/year", "/api/resultList/test", "/api/track/event/", "/api/tracker/event", "/results/randonneur/", "/track/track","/tracker/track", "/api/track/", '/api/results');
+    private function pathsToIgnore(): array
+    {
+        return array("/api/results/year/", "/api/resultList/year", "/api/resultList/test", "/api/track/event/", "/api/tracker/event", "/results/randonneur/", "/track/track", "/tracker/track", "/api/track/", '/api/results');
     }
 
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Observable, Subject} from "rxjs";
+import {Observable, of, Subject} from "rxjs";
 import {EventRepresentation, RandonneurCheckPointRepresentation} from "../shared/api/api";
 import {environment} from "../../environments/environment";
 import {map, mergeMap, shareReplay, take, tap} from "rxjs/operators";
@@ -22,6 +22,7 @@ export class CompetitorService {
     return this.httpClient.get<Array<RandonneurCheckPointRepresentation>>(environment.backend_url + path).pipe(
       take(1),
       map((checkpoints: Array<RandonneurCheckPointRepresentation>) => {
+
         return checkpoints;
       }),
       tap((checkpoints: Array<RandonneurCheckPointRepresentation>) => {

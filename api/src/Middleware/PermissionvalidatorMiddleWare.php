@@ -53,6 +53,7 @@ class PermissionvalidatorMiddleWare
 
         $permissions = $this->permissionrepository->getPermissionsFor($claims['id']);
 
+
         if (empty($permissions) && !Arrays::get($claims['roles'], 'isCompetitor') && !Arrays::get($claims['roles'], 'isVolonteer')) {
 
             return (new Response())->withStatus(401);
@@ -74,33 +75,19 @@ class PermissionvalidatorMiddleWare
                 $request = $request->withAttribute('currentuserUid', $claims['id']);
                 return $handler->handle($request);
             } else {
-
                 return (new Response())->withStatus(401);
             }
         }
 
         if ((Arrays::get($claims['roles'], 'isVolonteer'))) {
-
             $request = $request->withAttribute('currentuserUid', $claims['id']);
             return $handler->handle($request);
-//            if(Strings::startsWith($request->getRequestTarget(), "/api/volonteer/") === True){
-//                $request = $request->withAttribute('currentuserUid', $claims['id']);
-//                return $handler->handle($request);
-//            } else {
-//                return (new Response())->withStatus(401);
-//            }
         }
 
 
         if ((Arrays::get($claims['roles'], 'isAcprepresentive'))) {
             $request = $request->withAttribute('currentuserUid', $claims['id']);
             return $handler->handle($request);
-//            if(Strings::startsWith($request->getRequestTarget(), "/api/volonteer/") === True){
-//                $request = $request->withAttribute('currentuserUid', $claims['id']);
-//                return $handler->handle($request);
-//            } else {
-//                return (new Response())->withStatus(401);
-//            }
         }
 
         // Skicka iväg detta för att kunna sätta rätt länkar osv
