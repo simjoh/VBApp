@@ -28,17 +28,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::prefix('/api')->group(function () {
 
-
     Route::get('/ping' , [ToolController::class, 'testappintegration']);
-
     Route::post('/transfer' , [ToolController::class, 'publishToCyclingappIfNotAlreadyRegister']);
 
-    Route::get('/pingapikey', ['middleware' => ['apikey',], function () {
+    Route::get('/pingapikey', ['middleware' => ['apikey'], function () {
         return 'Testar kontroll av apinyckel';
     }]);
 
     Route::prefix('/integration')->group(function () {
-
         Route::prefix('/registration')->group(function () {
             Route::get('/registrations/event/{eventUid}/all', function () {
             });
@@ -51,10 +48,8 @@ Route::prefix('/api')->group(function () {
             });
             Route::get('/events/all', function () {
             });
-
             Route::post('/create', function () {
             });
-
             Route::post('/' , [EventController::class, 'create']);
             Route::get('/all' , [EventController::class, 'all']);
             Route::put('/' , [EventController::class, 'update']);
@@ -63,7 +58,6 @@ Route::prefix('/api')->group(function () {
     });
 
     Route::prefix('/artisan')->group(function () {
-
         Route::get('/migrate', function () {
             Artisan::call('migrate', ["--force" => true]);
             Artisan::call('app:country-update');
@@ -76,14 +70,15 @@ Route::prefix('/api')->group(function () {
         Route::get('/command/cache/run', function () {
             Artisan::call('view:cache');
             Artisan::call('route:cache');
-           Artisan::call('event:cache');
+            Artisan::call('event:cache');
         });
 
         Route::get('/command/schedule/run', function () {
             Artisan::call('schedule:run');
         });
     });
-});
+
+});  // Corrected closing parenthesis here
 
 
 //});

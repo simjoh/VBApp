@@ -1,9 +1,9 @@
-import { NgModule } from '@angular/core';
+import {NgModule} from '@angular/core';
 import {CommonModule, DatePipe} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CardModule} from "primeng/card";
 import {ButtonModule} from "primeng/button";
-import { LogoComponent } from './logo/logo.component';
+import {LogoComponent} from './logo/logo.component';
 import {TabMenuModule} from 'primeng/tabmenu';
 import {MenubarModule} from 'primeng/menubar';
 import {NgbCollapseModule} from "@ng-bootstrap/ng-bootstrap";
@@ -22,72 +22,74 @@ import {InputTextModule} from "primeng/inputtext";
 import {TooltipModule} from "primeng/tooltip";
 import {MessageModule} from "primeng/message";
 import {OverlayPanelModule} from "primeng/overlaypanel";
-import { OverlayComponent } from './components/overlay/overlay.component';
-import { YesNoPipe } from './pipes/yes-no.pipe';
+import {OverlayComponent} from './components/overlay/overlay.component';
+import {YesNoPipe} from './pipes/yes-no.pipe';
 import {CalendarModule} from "primeng/calendar";
 import {InputTextareaModule} from "primeng/inputtextarea";
 import {FileUploadModule} from "primeng/fileupload";
 import {ImageModule} from "primeng/image";
-import { DistanceBetweenPipe } from './pipes/distance-between.pipe';
-import { CloseOrOpenPipe } from './pipes/close-or-open.pipe';
-import { TagModule } from 'primeng/tag';
+import {DistanceBetweenPipe} from './pipes/distance-between.pipe';
+import {CloseOrOpenPipe} from './pipes/close-or-open.pipe';
+import {TagModule} from 'primeng/tag';
 import {PanelModule} from "primeng/panel";
-import { DistanceKmPipe } from './pipes/distance-km.pipe';
-import { DatetimeBetweenPipe } from './pipes/datetime-between.pipe';
+import {DistanceKmPipe} from './pipes/distance-km.pipe';
+import {DatetimeBetweenPipe} from './pipes/datetime-between.pipe';
 import {ListboxModule} from 'primeng/listbox';
 import {BadgeModule} from "primeng/badge";
 import {KnobModule} from "primeng/knob";
 import {ConfirmPopupModule} from 'primeng/confirmpopup';
 import {ToastModule} from 'primeng/toast';
-import { ToastComponent } from './components/toast/toast.component';
-import { DateTimePrettyPrintPipe } from './pipes/date-time-pretty-print.pipe';
-import { RemoveAfterPipe } from './pipes/remove-after.pipe';
+import {ToastComponent} from './components/toast/toast.component';
+import {DateTimePrettyPrintPipe} from './pipes/date-time-pretty-print.pipe';
+import {RemoveAfterPipe} from './pipes/remove-after.pipe';
 import {AccordionModule} from "primeng/accordion";
 import {TabViewModule} from "primeng/tabview";
 import {MenuModule} from "primeng/menu";
-import { TrackTableComponent } from './components/track-table/track-table.component';
-import { CheckpointTableComponent } from './components/checkpoint-table/checkpoint-table.component';
-import { HtmlLinkComponent } from './components/html-link/html-link.component';
+import {TrackTableComponent} from './components/track-table/track-table.component';
+import {CheckpointTableComponent} from './components/checkpoint-table/checkpoint-table.component';
+import {HtmlLinkComponent} from './components/html-link/html-link.component';
 import {CheckpointPreviewComponent} from "./components/checkpoint-preview/checkpoint-preview.component";
 import {
   CheckpointPreviewDialogComponent
 } from "./components/checkpoint-preview/checkpoint-preview-dialog/checkpoint-preview-dialog.component";
 import {CheckpointComponent} from "./components/checkpoint/checkpoint.component";
 import {TrackInfoComponent} from "./components/track-info/track-info.component";
-import { TracksForEventSelectorComponent } from './components/tracks-for-event-selector/tracks-for-event-selector.component';
+import {
+  TracksForEventSelectorComponent
+} from './components/tracks-for-event-selector/tracks-for-event-selector.component';
 import {InputNumberModule} from "primeng/inputnumber";
-import { EventSelectorComponent } from './components/event-selector/event-selector.component';
-import { SiteSelectorComponent } from './components/site-selector/site-selector.component';
+import {EventSelectorComponent} from './components/event-selector/event-selector.component';
+import {SiteSelectorComponent} from './components/site-selector/site-selector.component';
 import {ToolbarModule} from "primeng/toolbar";
 import {StepsModule} from "primeng/steps";
 import {CheckboxModule} from "primeng/checkbox";
 import {SvgDisplayComponent} from "./components/svg-display/svg-display.component";
-
+import {ContextMenu, ContextMenuModule} from "primeng/contextmenu";
 
 
 @NgModule({
-    declarations: [
-        LogoComponent,
-        OverlayComponent,
-        YesNoPipe,
-        DistanceBetweenPipe,
-        CloseOrOpenPipe,
-        DistanceKmPipe,
-        DatetimeBetweenPipe,
-        ToastComponent,
-        DateTimePrettyPrintPipe,
-        RemoveAfterPipe,
-        TrackTableComponent,
-        CheckpointTableComponent,
-        HtmlLinkComponent,
-        CheckpointPreviewComponent,
-        CheckpointPreviewDialogComponent,
-        CheckpointComponent,
-        TrackInfoComponent,
-        TracksForEventSelectorComponent,
-        EventSelectorComponent,
-        SiteSelectorComponent
-    ],
+  declarations: [
+    LogoComponent,
+    OverlayComponent,
+    YesNoPipe,
+    DistanceBetweenPipe,
+    CloseOrOpenPipe,
+    DistanceKmPipe,
+    DatetimeBetweenPipe,
+    ToastComponent,
+    DateTimePrettyPrintPipe,
+    RemoveAfterPipe,
+    TrackTableComponent,
+    CheckpointTableComponent,
+    HtmlLinkComponent,
+    CheckpointPreviewComponent,
+    CheckpointPreviewDialogComponent,
+    CheckpointComponent,
+    TrackInfoComponent,
+    TracksForEventSelectorComponent,
+    EventSelectorComponent,
+    SiteSelectorComponent
+  ],
   imports: [
     CommonModule,
     NgbCollapseModule,
@@ -125,13 +127,16 @@ import {SvgDisplayComponent} from "./components/svg-display/svg-display.componen
     TabViewModule,
     PanelModule,
     MenuModule,
+    ContextMenuModule,
+    ToolbarModule,
     FormsModule, ReactiveFormsModule, StepsModule, AccordionModule, InputNumberModule, ToolbarModule, SvgDisplayComponent
   ],
-    exports: [CommonModule, ToastModule, ConfirmPopupModule, TabViewModule, SvgDisplayComponent,
-        PanelModule, ToolbarModule,
-        MenuModule, BadgeModule,CheckboxModule, StepsModule ,ListboxModule, SiteSelectorComponent, EventSelectorComponent, InputNumberModule, TracksForEventSelectorComponent, CheckpointComponent, CheckpointPreviewComponent, CheckpointPreviewDialogComponent, KnobModule, HtmlLinkComponent, ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
-        LogoComponent, DatePipe, NgbCollapseModule, ProgressSpinnerModule, AccordionModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
-        ProgressBarModule, TrackTableComponent, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent, DateTimePrettyPrintPipe, RemoveAfterPipe, TracksForEventSelectorComponent, CheckpointTableComponent],
-    providers: [DatePipe, DialogService]
+  exports: [CommonModule, ToastModule, ConfirmPopupModule, TabViewModule, SvgDisplayComponent,
+    PanelModule, ToolbarModule, ContextMenu,
+    MenuModule, BadgeModule, CheckboxModule, StepsModule, ListboxModule, SiteSelectorComponent, EventSelectorComponent, InputNumberModule, TracksForEventSelectorComponent, CheckpointComponent, CheckpointPreviewComponent, CheckpointPreviewDialogComponent, KnobModule, HtmlLinkComponent, ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
+    LogoComponent, DatePipe, NgbCollapseModule, ProgressSpinnerModule, AccordionModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
+    ProgressBarModule, TrackTableComponent, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent, DateTimePrettyPrintPipe, RemoveAfterPipe, TracksForEventSelectorComponent, CheckpointTableComponent],
+  providers: [DatePipe, DialogService]
 })
-export class SharedModule { }
+export class SharedModule {
+}

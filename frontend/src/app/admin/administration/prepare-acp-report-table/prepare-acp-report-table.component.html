@@ -1,0 +1,29 @@
+
+
+
+<div class="card">
+  <p-table [value]="products" [tableStyle]="{ 'min-width': '50rem' }">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Bana</th>
+        <th>Datum</th>
+        <th>Avklarad</th>
+        <th>Antal</th>
+        <th>Status</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-product>
+      <tr>
+        <td>
+          <a [routerLink]="['/admin/administration/to-report', product.code]">
+            View Report for {{ product.code }}
+          </a>
+        </td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.category }}</td>
+        <td>{{ product.quantity }}</td>
+        <td>{{ product.quantity }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

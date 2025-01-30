@@ -119,7 +119,7 @@ export class AuthService {
     } else if (role.role_name === Role.VOLONTEER) {
       this.router.navigate(['volunteer/volunteer']);
     } else if (role.role_name === Role.ACPREPRESENTIVE) {
-      this.router.navigate(['admin/administration/brevet-acp-report']);
+      this.router.navigate(['admin/administration/to-report']);
     }
   }
 

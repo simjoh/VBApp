@@ -43,7 +43,7 @@ class AcpReportAction
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('trackUid');
 
-        $csvContent = $this->acpService->tracksPossibleToReportOn($track_uid, $request->getAttribute('currentuserUid'));
+        $csvContent = $this->acpService->tracksPossibleToReportOn($track_uid);
 
         // Write the content to the response body
         $response->getBody()->write($csvContent);

@@ -681,9 +681,9 @@ CREATE TABLE `acpreports`
     `track_uid`                       char(36) NOT NULL,
     `organizer_id`                    BIGINT UNSIGNED NOT NULL,
     `ready_for_approval`              tinyint(1) DEFAULT 0,
-    `marked_as_ready_for_approval_by` tinyint(1) DEFAULT 0,
+    `marked_as_ready_for_approval_by` char(100),
     `approved`                        tinyint(1) DEFAULT 0,
-    `approved_by`                     char(36),
+    `approved_by`                     char(100),
     `created_at`                      TIMESTAMP NULL DEFAULT NULL,
     `updated_at`                      TIMESTAMP NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
