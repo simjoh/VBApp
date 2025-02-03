@@ -39,7 +39,7 @@ class UserValidatorMiddleWare
         $this->routeCollector = $routeCollector;
     }
 
-    public function __invoke(Request $request, RequestHandler $handler): Response
+    public function __invoke(Request $request, RequestHandler $handler): \Psr\Http\Message\ResponseInterface
     {
 
         $token = $request->getHeaderLine("TOKEN");
@@ -58,6 +58,10 @@ class UserValidatorMiddleWare
         if (!$user) {
             $roles = $claims['roles'];
             if ($roles['isCompetitor'] === true) {
+                $user = new User();
+                $user->setId($claims['id']);
+                $user->setRoles($claims['roles']);
+                CurrentUser::setUser($user);
                 return $handler->handle($request);
             }
 
@@ -73,6 +77,7 @@ class UserValidatorMiddleWare
             CurrentUser::setUser(new User());
             return $handler->handle($request);
         }
+
 
         CurrentUser::setUser($user);
         $request = $request->withAttribute('userId', $user->getId());

@@ -8,6 +8,8 @@ import {ConfirmationService, OverlayService, PrimeNGConfig} from 'primeng/api';
 import {CreateUserDialogComponent} from "../create-user-dialog/create-user-dialog.component";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {map, tap} from "rxjs/operators";
+import {AuthService} from "../../../core/auth/auth.service";
+import {Roles} from "../../../shared/roles";
 
 @Component({
   selector: 'brevet-user-list',
@@ -28,11 +30,19 @@ export class UserListComponent implements OnInit {
 
   loading: boolean = false;
 
+  roles: any[] = []
+
+  $activetabs = this.authService.$auth$.pipe(
+    tap(aciveuser => {
+      this.roles = aciveuser.roles;
+    })
+  ).subscribe();
+
   constructor(private userService: UserService,
               private primengConfig: PrimeNGConfig,
               private dialogService: DialogService,
               private confirmationService: ConfirmationService,
-              private deviceDetector: DeviceDetectorService) { }
+              private deviceDetector: DeviceDetectorService, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.primengConfig.ripple = true;
@@ -69,7 +79,8 @@ export class UserListComponent implements OnInit {
 
     const ref = this.dialogService.open(CreateUserDialogComponent, {
       data: {
-        id: '51gF3'
+        id: '51gF3',
+        userrole: this.roles
       },
       header: 'Lägg till användare',
     });

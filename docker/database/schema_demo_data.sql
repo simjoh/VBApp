@@ -138,9 +138,11 @@ VALUES (2, 'e3b78c98-ffe5-4877-8491-258413c772e9');
 INSERT INTO competitors(competitor_uid, user_name, given_name, family_name, role_id, password, birthdate, gender)
 VALUES ('2922a6e9-9e32-4832-9575-b3d2eb3011b9', '100', 'Pelle', 'Cyklist', 4, sha1('test'), DATE ('1973-06-15'), 2);
 INSERT INTO competitors(competitor_uid, user_name, given_name, family_name, role_id, password, birthdate, gender)
+VALUES ('2922a6e9-9e32-4832-9575-b3d2eb3011b0', '500', 'Test', 'Kramfors', 4, sha1('kramfors'), DATE ('1973-06-20'), 2);
+INSERT INTO competitors(competitor_uid, user_name, given_name, family_name, role_id, password, birthdate, gender)
 VALUES ('68f06a8c-8f08-45cc-8d20-d5e37ce658ba', '200', 'Johan', 'Randonnéer', 4, sha1('test1'), DATE ('1980-08-15'), 2);
 INSERT INTO competitors(competitor_uid, user_name, given_name, family_name, role_id, password, birthdate, gender)
-VALUES ('593edcab-5dcb-4916-829d-08ac536770ad', '300', 'Kalle', 'Super Randonneur', 4, sha1('test2'),
+VALUES ('593edcab-5dcb-4916-829d-08ac536770ad', '1021', 'Kalle', 'Super Randonneur', 4, sha1('test1'),
         DATE ('1990-03-04'), 2);
 
 INSERT INTO `competitor_info`(`uid`, `competitor_uid`, `email`, `phone`, `adress`, `postal_code`, `place`, `country`,
@@ -158,70 +160,33 @@ INSERT INTO site(site_uid, place, adress, description, lat, lng, location)
 VALUES ('e53d8d51-c5e1-4d25-a8d3-afe0646c1f13', 'Rödtjarn', '', '', null, null, '');
 INSERT INTO site(site_uid, place, adress, description, lat, lng, location)
 VALUES ('e8a2df8a-7c0c-48f3-be9e-432d97e418ef', 'Circle K', 'Normaling', 'Matkontroll med vc', null, null, '');
--- Olika event som pågår över tid
-INSERT INTO `event`(`event_uid`, `title`, `start_date`, `end_date`, `active`, `canceled`, `completed`, `description`,
-                    `organizer_id`)
-VALUES ('f6bdbba8-960d-472b-8864-cda48a07eeac', 'Brm series 2022', STR_TO_DATE("01-05-22", "%d-%m-%y"),
-        STR_TO_DATE("01-09-22", "%d-%m-%y"), false, false, true, 'Brm serien 2022', 1);
-INSERT INTO `event`(`event_uid`, `title`, `start_date`, `end_date`, `active`, `canceled`, `completed`, `description`,
-                    `organizer_id`)
-VALUES ('ae5c2acd-8042-480b-b937-f3f416d7aeaa', 'Västerbottenbrevet 2022', STR_TO_DATE("07-08-22", "%d-%m-%y"),
-        STR_TO_DATE("07-08-22", "%d-%m-%y"), false, false, true, 'Brevet 2022', 1);
-INSERT INTO `event`(`event_uid`, `title`, `start_date`, `end_date`, `active`, `canceled`, `completed`, `description`,
-                    `organizer_id`)
-VALUES ('2d1767dc-f768-419b-8cdd-01fdfdbc44e4', 'Västerbottenbrevet 2023', STR_TO_DATE("07-08-23", "%d-%m-%y"),
-        STR_TO_DATE("07-08-23", "%d-%m-%y"), false, false, false, 'Brevet 2023', 1);
-INSERT INTO `event`(`event_uid`, `title`, `start_date`, `end_date`, `active`, `canceled`, `completed`, `description`,
-                    `organizer_id`)
-VALUES ('62c332d2-72c8-407c-b71c-ca2541d72577', 'Månskensbrevet 2022', STR_TO_DATE("18-09-22", "%d-%m-%y"),
-        STR_TO_DATE("18-09-22", "%d-%m-%y"), false, false, true, 'Kvällscykling i fullmåne', 1);
+
 
 INSERT INTO `event`(`event_uid`, `title`, `start_date`, `end_date`, `active`, `canceled`, `completed`, `description`,
                     `organizer_id`)
-VALUES ('dc03677a-51eb-4269-bce1-b7a6a15dd7b3', 'Testbana för skapa deltagare', STR_TO_DATE("07-08-23", "%d-%m-%y"),
-        STR_TO_DATE("07-08-23", "%d-%m-%y"), false, false, false, 'TEST skapa deltagare', 2);
+VALUES ('62c332d2-72c8-407c-b71c-ca2541d72577', 'Månskensbrevet 2022', DATE(NOW()),
+        DATE_ADD(DATE(NOW()), INTERVAL 1 DAY), false, false, true, 'Kvällscykling i fullmåne', 1);
 
--- Banor som ingår i ett event
--- BRM
-INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`, start_date_time, active)
-VALUES ('8a5a0649-6aee-4b64-803e-4f083f746d2d', 'BRM200K', 'http://www.banan.strava.com',
-        'f6bdbba8-960d-472b-8864-cda48a07eeac', '200 k ....', 200.3, STR_TO_DATE("07-07-23", "%d-%m-%y"), true);
-INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`, start_date_time, active)
-VALUES ('0c9648fd-1664-4526-aaa4-059a01fc079c', 'BRM300K', 'http://www.banan.strava.com',
-        'f6bdbba8-960d-472b-8864-cda48a07eeac', '300 k ....', 300.3, STR_TO_DATE("07-05-23", "%d-%m-%y"), true);
-INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`, start_date_time, active)
-VALUES ('8862bd72-f5af-45f5-a377-337f26cbd195', 'BRM400K', 'http://www.banan.strava.com',
-        'f6bdbba8-960d-472b-8864-cda48a07eeac', '400 k ....', 400.3, STR_TO_DATE("07-05-24", "%d-%m-%y"), true);
-INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`, start_date_time, active)
-VALUES ('06ba3113-d95b-48c9-b0f9-f25bda5dad31', 'BRM600K', 'http://www.banan.strava.com',
-        'f6bdbba8-960d-472b-8864-cda48a07eeac', '600 k ....', 600.3, STR_TO_DATE("07-09-24", "%d-%m-%y"), true);
+INSERT INTO `event`(`event_uid`, `title`, `start_date`, `end_date`, `active`, `canceled`, `completed`, `description`,
+                    `organizer_id`)
+VALUES ('dc03677a-51eb-4269-bce1-b7a6a15dd7b3', 'Testbana för skapa deltagare', DATE(NOW()),
+        DATE_ADD(DATE(NOW()), INTERVAL 10 DAY), false, false, false, 'TEST skapa deltagare', 2);
 
 
 -- Månskensbrev
 INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`, start_date_time, active)
 VALUES ('bf31d141-32c3-4cc9-b497-36d82b060221', 'Månskensbrevet', 'http://www.banan.strava.com',
-        '62c332d2-72c8-407c-b71c-ca2541d72577', 'Månstensbrevet k ....', 86.3, DATE ('2024-09-04'), true);
-
+        '62c332d2-72c8-407c-b71c-ca2541d72577', 'Månstensbrevet k ....', 86.3,NOW(), true);
+-- BRM 200 Kramfors
 INSERT INTO `track`(`track_uid`, `title`, `link`, `event_uid`, `description`, `distance`, start_date_time, active)
 VALUES ('c9dd3c38-6860-4a0d-bfed-eebff6b8b8a1', 'BRM 200K Kramfors', 'http://www.banan.strava.com',
-        'dc03677a-51eb-4269-bce1-b7a6a15dd7b3', 'BRM 200k ....', 86.3, DATE ('2024-09-04'), true);
+        'dc03677a-51eb-4269-bce1-b7a6a15dd7b3', 'BRM 200k ....', 86.3, NOW(), true);
 
 
 
--- Koppling mellan banor och event
--- Här BRM banor
-INSERT INTO `event_tracks`(`track_uid`, `event_uid`)
-VALUES ('8a5a0649-6aee-4b64-803e-4f083f746d2d', 'f6bdbba8-960d-472b-8864-cda48a07eeac');
-INSERT INTO `event_tracks`(`track_uid`, `event_uid`)
-VALUES ('0c9648fd-1664-4526-aaa4-059a01fc079c', 'f6bdbba8-960d-472b-8864-cda48a07eeac');
-INSERT INTO `event_tracks`(`track_uid`, `event_uid`)
-VALUES ('8862bd72-f5af-45f5-a377-337f26cbd195', 'f6bdbba8-960d-472b-8864-cda48a07eeac');
-INSERT INTO `event_tracks`(`track_uid`, `event_uid`)
-VALUES ('06ba3113-d95b-48c9-b0f9-f25bda5dad31', 'f6bdbba8-960d-472b-8864-cda48a07eeac');
--- TESTBANA skapa deltagare
+-- BRM 200K Kramfors
 INSERT INTO `event_tracks`(`track_uid`, `event_uid`)
 VALUES ('c9dd3c38-6860-4a0d-bfed-eebff6b8b8a1', 'dc03677a-51eb-4269-bce1-b7a6a15dd7b3');
-
 
 -- Månskensbrev kopplad till banor
 INSERT INTO `event_tracks`(`track_uid`, `event_uid`)
@@ -230,30 +195,25 @@ VALUES ('bf31d141-32c3-4cc9-b497-36d82b060221', '62c332d2-72c8-407c-b71c-ca2541d
 -- Kontroller kopplade till en plats
 -- En kontroll brännäset
 INSERT INTO `checkpoint`(`checkpoint_uid`, `site_uid`, `title`, `description`, `distance`, `opens`, `closing`)
-VALUES ('63e8f1de-22ad-416d-b181-4a1a004a2959', '47e2e397-872a-49f9-8f5b-069d09f5855c', 'Test 1', 'DEMO', 33, TIME ("2021-06-15 09:00:00"),
-        ("2021-06-15 10:00:00"));
+VALUES ('63e8f1de-22ad-416d-b181-4a1a004a2959', '47e2e397-872a-49f9-8f5b-069d09f5855c', 'Test 1', 'DEMO', 33, NOW(), DATE_ADD(NOW(), INTERVAL 1 HOUR));
 -- En kontroll rödtjärn
 INSERT INTO `checkpoint`(`checkpoint_uid`, `site_uid`, `title`, `description`, `distance`, `opens`, `closing`)
-VALUES ('6b86551e-e9b6-46f1-b411-3196e0f0f4e3', 'e53d8d51-c5e1-4d25-a8d3-afe0646c1f13', 'Test 2', 'DEMO', 60, TIME ("2021-06-15 11:00:00"),
-        TIME ("2021-06-15 12:30:00"));
+VALUES ('6b86551e-e9b6-46f1-b411-3196e0f0f4e3', 'e53d8d51-c5e1-4d25-a8d3-afe0646c1f13', 'Test 2', 'DEMO', 60, DATE_ADD(NOW(), INTERVAL 2 HOUR), DATE_ADD(NOW(), INTERVAL 3 HOUR));
 -- Mål broparken
 INSERT INTO `checkpoint`(`checkpoint_uid`, `site_uid`, `title`, `description`, `distance`, `opens`, `closing`)
-VALUES ('c0a8e4a4-a37a-4e9d-b59e-112519b4abc0', '8a13602-83dc-447d-a85f-13b943e23a42', 'Test 3', 'DEMO', 86, TIME ("2021-06-15 08:00:00"),
-        TIME ("2021-06-15 09:00:00"));
+VALUES ('c0a8e4a4-a37a-4e9d-b59e-112519b4abc0', '8a13602-83dc-447d-a85f-13b943e23a42', 'Test 3', 'DEMO', 86, DATE_ADD(NOW(), INTERVAL 4 HOUR), DATE_ADD(NOW(), INTERVAL 5 HOUR));
+
 
 
 -- Testbana skapa deltagare. OBS ÄNDRA site SEN
 INSERT INTO `checkpoint`(`checkpoint_uid`, `site_uid`, `title`, `description`, `distance`, `opens`, `closing`)
-VALUES ('6af9f3c5-d9c4-4bb0-959b-8d3700a1bf85', '47e2e397-872a-49f9-8f5b-069d09f5855c', 'Test 1', 'DEMO', 33, TIME ("2021-06-15 09:00:00"),
-        ("2021-06-15 10:00:00"));
+VALUES ('6af9f3c5-d9c4-4bb0-959b-8d3700a1bf85', '47e2e397-872a-49f9-8f5b-069d09f5855c', 'Test 1', 'DEMO', 33, NOW(), DATE_ADD(NOW(), INTERVAL 1 HOUR));
 -- En kontroll rödtjärn
 INSERT INTO `checkpoint`(`checkpoint_uid`, `site_uid`, `title`, `description`, `distance`, `opens`, `closing`)
-VALUES ('614e66c9-9d83-4144-b7f8-4effd01386f9', 'e53d8d51-c5e1-4d25-a8d3-afe0646c1f13', 'Test 2', 'DEMO', 60, TIME ("2021-06-15 11:00:00"),
-        TIME ("2021-06-15 12:30:00"));
+VALUES ('614e66c9-9d83-4144-b7f8-4effd01386f9', 'e53d8d51-c5e1-4d25-a8d3-afe0646c1f13', 'Test 2', 'DEMO', 60, DATE_ADD(NOW(), INTERVAL 2 HOUR), DATE_ADD(NOW(), INTERVAL 3 HOUR));
 -- Mål broparken
 INSERT INTO `checkpoint`(`checkpoint_uid`, `site_uid`, `title`, `description`, `distance`, `opens`, `closing`)
-VALUES ('b340120e-f031-4040-bc86-4145fb74cd29 ', '8a13602-83dc-447d-a85f-13b943e23a42', 'Test 3', 'DEMO', 86, TIME ("2021-06-15 08:00:00"),
-        TIME ("2021-06-15 09:00:00"));
+VALUES ('b340120e-f031-4040-bc86-4145fb74cd29 ', '8a13602-83dc-447d-a85f-13b943e23a42', 'Test 3', 'DEMO', 86, DATE_ADD(NOW(), INTERVAL 4 HOUR), DATE_ADD(NOW(), INTERVAL 5 HOUR));
 
 
 -- Koppling bana till  kontroll/er
@@ -270,26 +230,23 @@ VALUES ('c9dd3c38-6860-4a0d-bfed-eebff6b8b8a1', '6af9f3c5-d9c4-4bb0-959b-8d3700a
 INSERT INTO `track_checkpoint`(`track_uid`, `checkpoint_uid`)
 VALUES ('c9dd3c38-6860-4a0d-bfed-eebff6b8b8a1', '614e66c9-9d83-4144-b7f8-4effd01386f9');
 INSERT INTO `track_checkpoint`(`track_uid`, `checkpoint_uid`)
-VALUES ('c9dd3c38-6860-4a0d-bfed-eebff6b8b8a1', 'b340120e-f031-4040-bc86-4145fb74cd29 ');
+VALUES ('c9dd3c38-6860-4a0d-bfed-eebff6b8b8a1', 'b340120e-f031-4040-bc86-4145fb74cd29');
 
--- Deltagare på en viss bana
--- BRM200
+
+
+
 INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `startnumber`, `finished`, `acpkod`,
                           `club_uid`, `time`, `dns`, `dnf`, `register_date_time`)
-VALUES ('b3f68992-c5c7-4c31-bad5-78a93b53f28f', '8a5a0649-6aee-4b64-803e-4f083f746d2d',
-        '2922a6e9-9e32-4832-9575-b3d2eb3011b9', 1018, false, 113072, 'e990365b-00a8-4615-a648-c7b6797ce13a', null,
+VALUES ('e8f9557e-4b96-41a0-b6c7-ce6c45d81256', 'c9dd3c38-6860-4a0d-bfed-eebff6b8b8a1',
+        '2922a6e9-9e32-4832-9575-b3d2eb3011b0', 1001, false, 113072, 'be80dc3b-3ff7-414f-ad7f-41db57e90221', null,
         false, false, CURRENT_TIMESTAMP());
+
 INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `startnumber`, `finished`, `acpkod`,
                           `club_uid`, `time`, `dns`, `dnf`, `register_date_time`)
-VALUES ('162b49ea-1e8c-4047-8fd6-e4d96920a054', '8a5a0649-6aee-4b64-803e-4f083f746d2d',
-        '593edcab-5dcb-4916-829d-08ac536770ad', 2018, false, 113036, '31f10de0-33c4-49da-a8fe-4cc2354604bc', null,
+VALUES ('e8f9557e-4f96-41a0-b6c7-be6c45d81253', 'c9dd3c38-6860-4a0d-bfed-eebff6b8b8a1',
+        '68f06a8c-8f08-45cc-8d20-d5e37ce658ba', 1002, false, 113072, 'be80dc3b-3ff7-414f-ad7f-41db57e90221', null,
         false, false, CURRENT_TIMESTAMP());
--- BRM300
-INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `startnumber`, `finished`, `acpkod`,
-                          `club_uid`, `time`, `dns`, `dnf`, `register_date_time`)
-VALUES ('e6957ddc-f9fd-444f-861f-f0f22cc363b1', '0c9648fd-1664-4526-aaa4-059a01fc079c',
-        '593edcab-5dcb-4916-829d-08ac536770ad', 2018, false, 113036, '427b5419-ebad-4a31-bd84-ed26718a32be', null,
-        false, false, CURRENT_TIMESTAMP());
+
 
 -- Månskensbrevet
 INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `startnumber`, `finished`, `acpkod`,
@@ -298,18 +255,37 @@ VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81259', 'bf31d141-32c3-4cc9-b497-36d82b0
         '2922a6e9-9e32-4832-9575-b3d2eb3011b9', 1020, false, 113072, 'be80dc3b-3ff7-414f-ad7f-41db57e90221', null,
         false, false, CURRENT_TIMESTAMP());
 
--- Koppla till kontroll
--- BRM200
+INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `startnumber`, `finished`, `acpkod`,
+                          `club_uid`, `time`, `dns`, `dnf`, `register_date_time`)
+VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81255', 'bf31d141-32c3-4cc9-b497-36d82b060221',
+        '593edcab-5dcb-4916-829d-08ac536770ad', 1021, false, 113072, 'be80dc3b-3ff7-414f-ad7f-41db57e90221', null,
+        false, false, CURRENT_TIMESTAMP());
+
+
+-- BRM 200 KRAMFORS
 INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`,
                                      `volonteer_checkin`, lat, lng)
-VALUES ('b3f68992-c5c7-4c31-bad5-78a93b53f28f', '63e8f1de-22ad-416d-b181-4a1a004a2959', false, null, false, null, null);
+VALUES ('e8f9557e-4f96-41a0-b6c7-be6c45d81253', '6af9f3c5-d9c4-4bb0-959b-8d3700a1bf85', false, null, false, null, null);
 INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`,
                                      `volonteer_checkin`, lat, lng)
-VALUES ('162b49ea-1e8c-4047-8fd6-e4d96920a054', '63e8f1de-22ad-416d-b181-4a1a004a2959', false, null, false, null, null);
--- BRM300
+VALUES ('e8f9557e-4f96-41a0-b6c7-be6c45d81253', '614e66c9-9d83-4144-b7f8-4effd01386f9', false, null, false, null, null);
 INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`,
                                      `volonteer_checkin`, lat, lng)
-VALUES ('e6957ddc-f9fd-444f-861f-f0f22cc363b1', '6b86551e-e9b6-46f1-b411-3196e0f0f4e3', false, null, false, null, null);
+VALUES ('e8f9557e-4f96-41a0-b6c7-be6c45d81253', 'b340120e-f031-4040-bc86-4145fb74cd29', false, null, false, null, null);
+
+
+INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`,
+                                     `volonteer_checkin`, lat, lng)
+VALUES ('e8f9557e-4b96-41a0-b6c7-ce6c45d81256', '6af9f3c5-d9c4-4bb0-959b-8d3700a1bf85', false, null, false, null, null);
+INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`,
+                                     `volonteer_checkin`, lat, lng)
+VALUES ('e8f9557e-4b96-41a0-b6c7-ce6c45d81256', '614e66c9-9d83-4144-b7f8-4effd01386f9', false, null, false, null, null);
+INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`,
+                                     `volonteer_checkin`, lat, lng)
+VALUES ('e8f9557e-4b96-41a0-b6c7-ce6c45d81256', 'b340120e-f031-4040-bc86-4145fb74cd29', false, null, false, null, null);
+
+
+
 -- Månskensbrev
 INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`,
                                      `volonteer_checkin`, lat, lng)
@@ -321,10 +297,26 @@ INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passe
                                      `volonteer_checkin`, lat, lng)
 VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81259', 'c0a8e4a4-a37a-4e9d-b59e-112519b4abc0', false, null, false, null, null);
 
+
+INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`,
+                                     `volonteer_checkin`, lat, lng)
+VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81255', '63e8f1de-22ad-416d-b181-4a1a004a2959', false, null, false, null, null);
+INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`,
+                                     `volonteer_checkin`, lat, lng)
+VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81255', '6b86551e-e9b6-46f1-b411-3196e0f0f4e3', false, null, false, null, null);
+INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`,
+                                     `volonteer_checkin`, lat, lng)
+VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81255', 'c0a8e4a4-a37a-4e9d-b59e-112519b4abc0', false, null, false, null, null);
+
+
 -- Fixa inloggning
 INSERT INTO `competitor_credential`(`credential_uid`, `competitor_uid`, `participant_uid`, `user_name`, `password`)
 VALUES ('8cdee576-1de3-454e-90f9-33d7c2c070ce', '2922a6e9-9e32-4832-9575-b3d2eb3011b9',
-        'b3f68992-c5c7-4c31-bad5-78a93b53f28f', '100', sha1('test'));
+        'e8f9557e-4b96-41a0-b6c7-be6c45d81255', '1020', sha1('test'));
+
+INSERT INTO `competitor_credential`(`credential_uid`, `competitor_uid`, `participant_uid`, `user_name`, `password`)
+VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81210', '593edcab-5dcb-4916-829d-08ac536770ad',
+        'e8f9557e-4b96-41a0-b6c7-be6c45d81259', '1021', sha1('test1'));
 
 
 -- Klubbar

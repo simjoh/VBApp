@@ -4,6 +4,7 @@ namespace App\Action\Ping;
 
 
 use App\common\Action\BaseAction;
+use App\common\Message\Messages;
 use App\common\Rest\LoppserviceRestClient;
 use App\Domain\Ping\Service\PingService;
 use Psr\Container\ContainerInterface;
@@ -35,6 +36,7 @@ class PingAction extends BaseAction
 //                }
 //            }
 //        )->wait();
+
 
         $response->getBody()->write((string)json_encode(['healthy' => $this->pingservice->ping(), 'scrap' => null]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);

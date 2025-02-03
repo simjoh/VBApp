@@ -82,7 +82,7 @@ class ParticipantRepository extends BaseRepository
             $statement = $this->connection->prepare($this->sqls('participantByUID'));
             $statement->bindParam(':participant_uid', $participant_uid);
             $statement->execute();
-            $event = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\Participant::class, null);
+            $event = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Participant::class, null);
 
             if ($statement->rowCount() > 1) {
                 // Fixa bätter felhantering
@@ -315,7 +315,6 @@ class ParticipantRepository extends BaseRepository
     public function participantOntRackAndStartNumber(string $track_uid, $startnumber): ?Participant
     {
         try {
-
             $statement = $this->connection->prepare($this->sqls('participantonTrackWithStartnumber'));
             $statement->bindParam(':track_uid', $track_uid);
             $statement->bindParam(':startnumber', $startnumber);
@@ -461,7 +460,6 @@ class ParticipantRepository extends BaseRepository
 
         $participant_uid = $participant_uid;
         $brevenr = $brevenr;
-        print_r($brevenr);
         try {
             $stmt = $this->connection->prepare($this->sqls('updateBrevenr'));
             $stmt->bindParam(':participant_uid', $participant_uid);
@@ -715,6 +713,7 @@ class ParticipantRepository extends BaseRepository
             }
 
 
+
             $passed = true;
             $stmt = $this->connection->prepare($this->sqls('updateCheckpoint'));
             $stmt->bindParam(':participant_uid', $participant_uid);
@@ -726,8 +725,9 @@ class ParticipantRepository extends BaseRepository
             $stmt->bindParam(':lng', $lng);
             $stmt->execute();
 
-        } catch (PDOException $e) {
 
+
+        } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
         return true;

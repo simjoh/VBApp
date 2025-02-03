@@ -53,6 +53,7 @@ class RandonneurAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('track_uid');
+
         $response->getBody()->write(json_encode($this->trackservice->getTrackByTrackUid($track_uid, "user_uid")));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }

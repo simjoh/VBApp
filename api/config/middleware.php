@@ -1,5 +1,6 @@
 <?php
 
+use App\Middleware\SessionMiddleware;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
@@ -16,6 +17,8 @@ return function (App $app) {
     $app->addRoutingMiddleware();
 
     $app->add(BasePathMiddleware::class);
+
+    $app->add(new SessionMiddleware());
 
 
 //    // Catch exceptions and errors
@@ -44,7 +47,7 @@ return function (App $app) {
 //        $payload = ['error' => $exception->getMessage()];
 
         $error = new \App\common\Exceptions\BrevetExceptionrepresentation();
-        $error->setMessage($exception->getMessage());
+        $error->setMessage($exception->getTraceAsString());
         $error->setCode($exception->getFile() . $exception->getLine());
 
         $response = $app->getResponseFactory()->createResponse();

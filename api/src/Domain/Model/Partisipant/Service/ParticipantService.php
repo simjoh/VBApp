@@ -23,6 +23,8 @@ use App\Domain\Model\Partisipant\Rest\ParticipantRepresentation;
 use App\Domain\Model\Randonneur\Service\RandonneurService;
 use App\Domain\Model\Track\Repository\TrackRepository;
 use App\Domain\Permission\PermissionRepository;
+use DateTimeImmutable;
+use DateTimeZone;
 use Exception;
 use League\Csv\Reader;
 use League\Csv\Statement;
@@ -232,7 +234,7 @@ class ParticipantService extends ServiceAbstract
         $participant->setAcpkod("s");
         $participant->setClubUid($club->getClubUid());
         $participant->setTrackUid($track->getTrackUid());
-        $participant->setRegisterDateTime(date('Y-m-d H:i:s'));
+        $participant->setRegisterDateTime( (new DateTimeImmutable('now', new DateTimeZone('UTC')))->format('Y-m-d H:i:s'));
 
 
         $participantcreated = $this->participantRepository->createparticipant($participant);
@@ -489,8 +491,10 @@ class ParticipantService extends ServiceAbstract
                 }
             }
             if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
+
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, null, null);
             } else if (date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {
+
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, null, null);
             } else if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
 //                if($this->settings['demo'] == 'false'){
@@ -553,6 +557,7 @@ class ParticipantService extends ServiceAbstract
         }
 
         $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0, null, null);
+
         return $this->randonneurservice->getChecpointsForRandonneurForAdmin($participant, $track);
     }
 

@@ -685,9 +685,10 @@ CREATE TABLE `acpreports`
     `approved`                        tinyint(1) DEFAULT 0,
     `approved_by`                     char(100),
     `created_at`                      TIMESTAMP NULL DEFAULT NULL,
-    `updated_at`                      TIMESTAMP NULL DEFAULT NULL
+    `updated_at`                      TIMESTAMP NULL DEFAULT NULL,
+    `delivered_to_acp`                tinyint(1) DEFAULT 0,
+    `brm_id`                          BIGINT UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 ALTER TABLE `acpreports`
     ADD PRIMARY KEY (`report_uid`);
@@ -707,11 +708,30 @@ ALTER TABLE `acpreports`
 
 CREATE TABLE svg_files
 (
-    `id`       INT AUTO_INCREMENT PRIMARY KEY,
-    `name`     VARCHAR(255),
+    `id`           INT AUTO_INCREMENT PRIMARY KEY,
+    `name`         VARCHAR(255),
     `organizer_id` BIGINT UNSIGNED NOT NULL,
-    `svg_blob` LONGBLOB,
-    `created_at`                      TIMESTAMP NULL DEFAULT NULL,
-    `updated_at`                      TIMESTAMP NULL DEFAULT NULL
+    `svg_blob`     LONGBLOB,
+    `created_at`   TIMESTAMP NULL DEFAULT NULL,
+    `updated_at`   TIMESTAMP NULL DEFAULT NULL
 );
 
+
+CREATE TABLE acpreportparicipants (
+                                      `participant_uid` char(36) NOT NULL ,
+                                      `report_uid` char(36) NOT NULL ,
+                                      `medaille` tinyint(1) DEFAULT 0,
+                                      `temps` VARCHAR(255) DEFAULT NULL,
+                                      `sexe` VARCHAR(10) DEFAULT NULL,
+                                      `nom` VARCHAR(100) DEFAULT NULL,
+                                      `prenom` VARCHAR(100) DEFAULT NULL,
+                                      `naissance` DATE DEFAULT NULL,
+                                      `codeclub` VARCHAR(50) DEFAULT NULL,
+                                      `nomclub` VARCHAR(100) DEFAULT NULL,
+                                      `delivered` tinyint(1) DEFAULT 0,
+                                      `created_at`   TIMESTAMP NULL DEFAULT NULL,
+                                      `updated_at`   TIMESTAMP NULL DEFAULT NULL,
+                                      `organizer_id` BIGINT UNSIGNED NOT NULL);
+
+ALTER TABLE `acpreportparicipants`
+    ADD PRIMARY KEY (`report_uid`);

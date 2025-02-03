@@ -1,9 +1,10 @@
 import {Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation, ViewChild} from '@angular/core';
-import { NgForm} from '@angular/forms';
-import {DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import {NgForm} from '@angular/forms';
+import {DynamicDialogConfig, DynamicDialogRef} from 'primeng/dynamicdialog';
 import {User, UserInfoRepresentation} from 'src/app/shared/api/api';
 import {Roles} from "../../../shared/roles";
-import { Role } from 'src/app/core/auth/roles';
+import {Role} from 'src/app/core/auth/roles';
+import {AuthService} from "../../../core/auth/auth.service";
 
 
 @Component({
@@ -16,22 +17,27 @@ export class CreateUserDialogComponent implements OnInit {
 
 
   userForm: UserFormModel;
+  roles: any[] = [];
 
 
   constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig) {
   }
+
   ngOnInit(): void {
+
+    this.roles = this.config.data.userrole;
     this.userForm = this.createObject();
   }
 
   addUser(contactForm: NgForm) {
-    if (contactForm.valid){
+    if (contactForm.valid) {
       this.ref.close(this.getUserObject(contactForm));
     } else {
       contactForm.dirty
     }
   }
-  cancel(){
+
+  cancel() {
     this.ref.close(null);
   }
 
@@ -39,35 +45,35 @@ export class CreateUserDialogComponent implements OnInit {
 
     let roles = Array<any>();
 
-    if (form.controls.superuser.value === true){
+    if (form.controls.superuser.value === true) {
       roles.push({
         id: Roles.SUPERUSER.valueOf(),
         role_name: Role.SUPERUSER
       })
     }
 
-    if (form.controls.admin.value == true){
+    if (form.controls.admin.value == true) {
       roles.push({
         id: Roles.ADMIN.valueOf(),
-        role_name:  Role.ADMIN
+        role_name: Role.ADMIN
       })
     }
 
-    if (form.controls.user.value == true){
+    if (form.controls.user.value == true) {
       roles.push({
         id: Roles.USER.valueOf(),
         role_name: Role.USER
       })
     }
 
-    if (form.controls.developer.value == true){
+    if (form.controls.developer.value == true) {
       roles.push({
         id: Roles.DEVELOPER.valueOf(),
         role_name: Role.ADMIN
       })
     }
 
-    if (form.controls.volonteer.value == true){
+    if (form.controls.volonteer.value == true) {
       roles.push({
         id: Roles.VOLONTAR.valueOf(),
         role_name: Role.VOLONTEER
@@ -90,12 +96,10 @@ export class CreateUserDialogComponent implements OnInit {
     } as unknown as User;
 
 
-
-
     return null;
   }
 
-  private createObject(): UserFormModel{
+  private createObject(): UserFormModel {
 
     return {
       user_uid: "",
@@ -107,11 +111,27 @@ export class CreateUserDialogComponent implements OnInit {
       volonteer: false,
       admin: false,
       developer: false,
+      acprepresentant: false,
       phone: "",
       email: "",
     } as UserFormModel;
 
   }
+
+  canAddRole(role: Role) {
+    if (this.roles.find(s => s.role_name === Role.SUPERUSER)) {
+      return true;
+    }
+
+    if (this.roles.find(s => s.role_name === Role.ADMIN)) {
+      return true;
+    }
+    return false;
+  }
+
+  protected readonly Role = Role;
+
+
 }
 
 export class UserFormModel {
@@ -124,6 +144,7 @@ export class UserFormModel {
   volonteer: false;
   admin: false;
   developer: false;
+  acprepresentant: false;
   phone;
   email;
 }

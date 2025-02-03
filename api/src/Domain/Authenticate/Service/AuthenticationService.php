@@ -35,7 +35,9 @@ class AuthenticationService
     }
 
     public function authenticateCompetitor($username, $password): ?Competitor {
+
         $competitor = $this->competitorrepository->authenticate2($username, $password);
+
         if (isset($competitor)) {
             return $competitor;
         }

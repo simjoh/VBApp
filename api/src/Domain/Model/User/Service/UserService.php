@@ -49,26 +49,26 @@ class UserService extends  ServiceAbstract
         return null;
     }
 
-    public function getUserById($id, string $currentuserUid): ?UserRepresentation {
+    public function getUserById($id): ?UserRepresentation {
         $allUsers = $this->repository->getUserById($id);
 
-        $permissions = $this->getPermissions($currentuserUid);
+        $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
         if (isset($allUsers)) {
             return $this->userAssembly->toRepresentation($allUsers,$permissions);
         }
         return null;
     }
 
-    public function updateUser($id, User $userParsed, string $currentUserUIDInSystem): ?UserRepresentation {
+    public function updateUser($id, User $userParsed): ?UserRepresentation {
         $user = $this->repository->updateUser($id, $userParsed);
         if (isset($user)) {
-            return $this->userAssembly->toRepresentation($user,$this->getPermissions($currentUserUIDInSystem));
+            return $this->userAssembly->toRepresentation($user,$this->getPermissions(CurrentUser::getUser()->getId()));
         }
 
         return null;
     }
 
-    public function createUser(UserRepresentation $userrepresentation, string $currentuser): UserRepresentation {
+    public function createUser(UserRepresentation $userrepresentation): UserRepresentation {
        $newUser = $this->repository->createUser($this->userAssembly->toUser($userrepresentation));
 
        if(isset($newUser)){
@@ -84,7 +84,7 @@ class UserService extends  ServiceAbstract
             $this->userRoleRepository->createUser($role, $newUser->getId());
         }
 
-       return $this->userAssembly->toRepresentation($newUser,$this->getPermissions($currentuser));
+       return $this->userAssembly->toRepresentation($newUser,$this->getPermissions(CurrentUser::getUser()->getId()));
     }
 
     public function deleteUser($user_uid): void{

@@ -110,6 +110,11 @@ class AcpReportParticipantRepresentation implements JsonSerializable
         $this->nomclub = $nomclub;
     }
 
+    public static function builder(): AcpReportParticipantRepresentationBuilder
+    {
+        return new AcpReportParticipantRepresentationBuilder();
+    }
+
     // Implement JsonSerializable
     public function jsonSerialize(): array
     {

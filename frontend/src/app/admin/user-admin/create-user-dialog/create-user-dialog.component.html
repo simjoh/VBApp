@@ -1,70 +1,111 @@
-
 <form #contactForm="ngForm" (ngSubmit)="addUser(contactForm)" novalidate>
-<div class="p-dialog-content">
-  <div class="form-group">
-    <h4>Användaruppgifter</h4>
+  <div class="p-dialog-content">
     <div class="form-group">
-      <label class="col-form-label" for="givenname">Förnamn</label>
-      <input pInputText pTooltip="Förnamn"  tooltipPosition="left"  #givenname="ngModel" type="text" name="givenname" class="form-control form-control" id="givenname" [(ngModel)]="userForm.givenname" placeholder="Förnamn" required>
-    </div>
-    <div class="form-group">
-      <label class="col-form-label" for="familyname">Efternamn</label>
-      <input pInputText pTooltip="Efternamn"  tooltipPosition="left" type="text" #familyname="ngModel" class="form-control" name="familyname" id="familyname" [(ngModel)]="userForm.familyname" placeholder="Efternamn" required>
-    </div>
-    <div class="form-group p-field">
-      <label class="col-form-label" for="username">Användarnamn</label>
-      <input pInputText  pTooltip="Användarnamn"  tooltipPosition="left" #username="ngModel"  title="Användarnamn" class="form-control" name="username" id="username"  [(ngModel)]="userForm.username" placeholder="Användarnamn" required>
-    </div>
-    <h4>Kontaktuppgifter</h4>
-    <div class="form-row">
-      <div class="col-lg-5 col-sm-3 mb-2">
-        <input type="text" pTooltip="Telefon" [(ngModel)]="userForm.phone" name="phone" tooltipPosition="left"  class="form-control form-control" placeholder="Telefon">
+      <h4>Användaruppgifter</h4>
+      <div class="form-group">
+        <label class="col-form-label" for="givenname">Förnamn</label>
+        <input pInputText pTooltip="Förnamn" tooltipPosition="left" #givenname="ngModel" type="text" name="givenname"
+               class="form-control form-control" id="givenname" [(ngModel)]="userForm.givenname" placeholder="Förnamn"
+               required>
       </div>
-      <div class="col-lg-7 col-sm-5 mb-2">
-        <label class="sr-only" for="inlineFormInputGroup">Email</label>
-        <div class="input-group mb-2">
-          <div class="input-group-prepend">
-            <div class="input-group-text">&#64;</div>
+      <div class="form-group">
+        <label class="col-form-label" for="familyname">Efternamn</label>
+        <input pInputText pTooltip="Efternamn" tooltipPosition="left" type="text" #familyname="ngModel"
+               class="form-control" name="familyname" id="familyname" [(ngModel)]="userForm.familyname"
+               placeholder="Efternamn" required>
+      </div>
+      <div class="form-group p-field">
+        <label class="col-form-label" for="username">Användarnamn</label>
+        <input pInputText pTooltip="Användarnamn" tooltipPosition="left" #username="ngModel" title="Användarnamn"
+               class="form-control" name="username" id="username" [(ngModel)]="userForm.username"
+               placeholder="Användarnamn" required>
+      </div>
+      <h4>Kontaktuppgifter</h4>
+      <div class="form-row">
+        <div class="col-lg-5 col-sm-3 mb-2">
+          <input type="text" pTooltip="Telefon" [(ngModel)]="userForm.phone" name="phone" tooltipPosition="left"
+                 class="form-control form-control" placeholder="Telefon">
+        </div>
+        <div class="col-lg-7 col-sm-5 mb-2">
+          <label class="sr-only" for="inlineFormInputGroup">Email</label>
+          <div class="input-group mb-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text">&#64;</div>
+            </div>
+            <input pTooltip="Email" [(ngModel)]="userForm.email" name="email" type="text" class="form-control"
+                   id="inlineFormInputGroup" placeholder="Email">
           </div>
-          <input pTooltip="Email"  [(ngModel)]="userForm.email" name="email"  type="text" class="form-control" id="inlineFormInputGroup" placeholder="Email">
         </div>
       </div>
-    </div>
-  <p>Behörigheter</p>
-    <div class="form-check-inline">
-      <label pTooltip="Superanvändare med alla behörigheter"  tooltipPosition="top" class="form-check-label">
-        <input pInputText [(ngModel)]="userForm.superuser" name="superuser" type="checkbox" class="form-check-input" value="">Superuser
-      </label>
-    </div>
-    <div class="form-check-inline">
-      <label pTooltip="Administratör med skriv och läsrättigheter"  tooltipPosition="top" class="form-check-label">
-        <input  [(ngModel)]="userForm.admin" name="admin" type="checkbox" class="form-check-input" value="">Admin
-      </label>
-    </div>
-    <div class="form-check-inline">
-      <label pTooltip="Läsbehörighet och viss skrivbehörighet"  tooltipPosition="top" class="form-check-label">
-        <input  [(ngModel)]="userForm.user" name="user"  type="checkbox" class="form-check-input" value="" >User
-      </label>
-    </div>
-    <div class="form-check-inline">
-      <label pTooltip="Behörighet att checka in och se passeringar vid kontroller"  tooltipPosition="top" class="form-check-label">
-        <input type="checkbox" [(ngModel)]="userForm.volonteer"  name="volonteer" class="form-check-input" value="" >Volontär
-      </label>
-    </div>
+      <p>Behörigheter</p>
 
-    <div class="form-check-inline">
-      <label pTooltip="Specialbehörighet för utvecklare"  tooltipPosition="top" class="form-check-label">
-        <input type="checkbox" [(ngModel)]="userForm.developer"  name="developer" class="form-check-input" value="" >Utvecklare
-      </label>
+
+      @if (canAddRole(Role.SUPERUSER)) {
+
+        <div class="form-check-inline">
+          <label pTooltip="Superanvändare med alla behörigheter" tooltipPosition="top" class="form-check-label">
+            <input pInputText [(ngModel)]="userForm.superuser" name="superuser" type="checkbox" class="form-check-input"
+                   value="">Superuser
+          </label>
+        </div>
+
+        <div class="form-check-inline">
+          <label pTooltip="behörighet för acprepresentant" tooltipPosition="top" class="form-check-label">
+            <input type="checkbox" [(ngModel)]="userForm.acprepresentant" name="acprepresentant"
+                   class="form-check-input" value="">AcpRepresentant
+          </label>
+        </div>
+
+
+        <div class="form-check-inline">
+          <label pTooltip="Specialbehörighet för utvecklare" tooltipPosition="top" class="form-check-label">
+            <input type="checkbox" [(ngModel)]="userForm.developer" name="developer" class="form-check-input" value="">Utvecklare
+          </label>
+        </div>
+
+      }
+
+
+      @if (canAddRole(Role.SUPERUSER) || canAddRole(Role.ADMIN)) {
+        <div class="form-check-inline">
+          <label pTooltip="Administratör med skriv och läsrättigheter" tooltipPosition="top" class="form-check-label">
+            <input [(ngModel)]="userForm.admin" name="admin" type="checkbox" class="form-check-input" value="">Admin
+          </label>
+        </div>
+        <div class="form-check-inline">
+          <label pTooltip="Läsbehörighet och viss skrivbehörighet" tooltipPosition="top" class="form-check-label">
+            <input [(ngModel)]="userForm.user" name="user" type="checkbox" class="form-check-input" value="">User
+          </label>
+        </div>
+        <div class="form-check-inline">
+          <label pTooltip="Behörighet att checka in och se passeringar vid kontroller" tooltipPosition="top"
+                 class="form-check-label">
+            <input type="checkbox" [(ngModel)]="userForm.volonteer" name="volonteer" class="form-check-input" value="">Volontär
+          </label>
+        </div>
+      }
+
+
+      @if (canAddRole(Role.SUPERUSER)) {
+        <div class="form-check-inline">
+          <label pTooltip="behörighet för acprepresentant" tooltipPosition="top" class="form-check-label">
+            <input type="checkbox" [(ngModel)]="userForm.acprepresentant" name="acprepresentant"
+                   class="form-check-input" value="">AcpRepresentant
+          </label>
+        </div>
+      }
+
+
     </div>
-  </div>
   </div>
   <div class="p-dialog-footer">
   <span class="p-buttonset">
-    <button pTooltip="Klicka för att spara" type="submit"  [disabled]="!contactForm.valid" tooltipPosition="left" pButton pRipple label="Save"  icon="pi pi-check" class="p-button-sm"></button>
-    <button pTooltip="Klicka för att avbryta" pButton pRipple label="Cancel" (click)="cancel()"  icon="pi pi-times" class="p-button-sm"></button>
+    <button pTooltip="Klicka för att spara" type="submit" [disabled]="!contactForm.valid" tooltipPosition="left" pButton
+            pRipple label="Save" icon="pi pi-check" class="p-button-sm"></button>
+    <button pTooltip="Klicka för att avbryta" pButton pRipple label="Cancel" (click)="cancel()" icon="pi pi-times"
+            class="p-button-sm"></button>
 </span>
-</div>
+  </div>
 </form>
 
 

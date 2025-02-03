@@ -47,12 +47,15 @@ class RandonneurService
     public function checkpointsForRandonneur(?string $track_uid, $startnumber, string $current_user_uid): ?array
     {
         $checkpoints = [];
+
+
         $participant = $this->participantRepository->participantOntRackAndStartNumber($track_uid, $startnumber);
         $track = $this->trackrepository->getTrackByUid($track_uid);
-
+//        print_r($track);
         $event = $this->eventrepository->eventFor($track->getEventUid());
 
         $racepassed = $this->trackrepository->isRacePassed($track_uid);
+
 
 
         if ($event->isCompleted() == true || $racepassed == true) {
@@ -173,8 +176,10 @@ class RandonneurService
         $checkpoint = $this->checkpointService->checkpointFor($checkpoint_uid);
         //kolla om mindre än 100 meter från kontroll
         $distance = $this->calculateDistancebetweenCordinates($lat, $long, $checkpoint->getSite()->getLat(), $checkpoint->getSite()->getLng(), 'K');
-        if ($distance > 0.900) {
-            throw new BrevetException("You are not within range of the checkpoint", 7, null);
+        if ($this->settings['demo'] == 'false') {
+            if ($distance > 0.900) {
+                throw new BrevetException("You are not within range of the checkpoint", 7, null);
+            }
         }
 
         if ($this->settings['demo'] == 'false') {
@@ -223,9 +228,11 @@ class RandonneurService
             }
 
             if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
+
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, $lat, $long);
                 $this->participantRepository->checkoutFromCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, 1, 0, $track->getStartDateTime());
             } else if (date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {
+
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, $lat, $long);
                 // kan vara intressant att veta när man verkligen startade
                 $this->participantRepository->checkoutFromCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0);
@@ -237,6 +244,7 @@ class RandonneurService
                     $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, $lat, $long);
                     $this->participantRepository->checkoutFromCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, 1, 0, $track->getStartDateTime());
                 } else {
+
                     $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, $lat, $long);
                     $this->participantRepository->checkoutFromCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, 1, 0, $track->getStartDateTime());
                 }
@@ -286,6 +294,7 @@ class RandonneurService
         if ($participant->isStarted() == false) {
             throw new BrevetException("You have to check in on startcheckpoint before this", 7, null);
         }
+
 
         $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0, $lat, $long);
         return true;

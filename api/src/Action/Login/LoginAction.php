@@ -49,9 +49,11 @@ class LoginAction extends BaseAction
 
 
         if ($user == null || !isset($user)) {
+
             $competitor = $this->authenticationService->authenticateCompetitor($username, $password);
 
             if (!isset($competitor)) {
+
                 return (new Response())->withStatus(403);
             }
             $signer = new HS256($this->key);

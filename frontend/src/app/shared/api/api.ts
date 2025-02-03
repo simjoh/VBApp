@@ -210,6 +210,22 @@ export interface CacheRepresentation {
   links: Link[];
 }
 
+export interface AcpReportRepresentation {
+  reportUid: string;
+  trackUid: string;
+  organizerId: number;
+  readyForApproval: boolean;
+  markedAsReadyForApprovalBy?: string | null;
+  approved: boolean;
+  approvedBy?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  deliveredToAcp: boolean;
+  brmId: number;
+  links: Link[];
+}
+
+
 
 
 

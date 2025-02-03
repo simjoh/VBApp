@@ -173,6 +173,10 @@ return function (App $app) {
         $app->get('/administration/acpreport/tracks', AcpReportAction::class . ':tracksPossibleToReportOn');
         $app->get('/administration/acpreport/foundation/track/{trackUid}', AcpReportAction::class . ':getFoundationForAcpReport');
         $app->post('/administration/acpreport/report/track/{trackUid}', AcpReportAction::class . ':createAcpReport');
+        $app->delete('/administration/acpreport/report/{report_uid}', AcpReportAction::class . ':deletereport');
+        $app->put('/administration/acpreport/approve/report/{report_uid}', AcpReportAction::class . ':approveReport');
+        $app->put('/administration/acpreport/markreadyforapproval/report/{report_uid}', AcpReportAction::class . ':markAsReadyForApproval');
+
 
         // Arrangör
         $app->get('/organizers/organizer/{organizerID}', OrganizerAction::class . ':getOrganizer');
