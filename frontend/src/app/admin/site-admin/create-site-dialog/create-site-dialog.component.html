@@ -2,56 +2,137 @@
 <form #eventFormName="ngForm" (ngSubmit)="addEvent(eventFormName)" novalidate>
   <div class="p-dynamicdialog">
     <div class="p-dialog-content">
-      <div class="form-group">
-        <label class="col-form-label" for="place">Plats</label>
+      <!-- Place -->
+      <div class="field">
+        <label class="block mb-2">
+          <i class="pi pi-map-marker mr-2"></i>
+          <strong>Plats</strong>
+        </label>
+        <span class="p-float-label p-input-icon-right">
+          <input
+            pInputText
+            id="place"
+            name="place"
+            #place="ngModel"
+            [(ngModel)]="siteform.place"
+            required
+            class="p-inputtext w-full"
+            placeholder="Broparken">
+        </span>
+      </div>
 
-        <input pInputText pTooltip="Plats"  tooltipPosition="left"   #place="ngModel" type="text" name="place" class="form-control" id="place" [(ngModel)]="siteform.place" placeholder="Broparken" required>
+      <!-- Address -->
+      <div class="field">
+        <label class="block mb-2">
+          <i class="pi pi-home mr-2"></i>
+          <strong>Adress</strong>
+        </label>
+        <span class="p-float-label p-input-icon-right">
+          <input
+            pInputText
+            id="adress"
+            name="adress"
+            #adress="ngModel"
+            [(ngModel)]="siteform.adress"
+            required
+            class="p-inputtext w-full"
+            placeholder="Brogatan 1">
+        </span>
       </div>
-      <div class="form-group">
-        <label class="col-form-label" for="adress">Adress</label>
-        <input pInputText pTooltip="Adress"  tooltipPosition="left"   #adress="ngModel" type="text" name="adress" class="form-control" id="adress" [(ngModel)]="siteform.adress" placeholder="Brogatan 1" required>
-      </div>
-      <div class="form-group">
-        <div class="form-row">
-          <div class="col-6">
-            Latitud
-            <input pInputText pTooltip="Latitud"  tooltipPosition="left"   #title="ngModel" type="text" name="title" class="form-control" id="lat" [(ngModel)]="siteform.lat" placeholder="" required>
+
+      <!-- Coordinates -->
+      <div class="grid">
+        <div class="col-6">
+          <div class="field">
+            <label class="block mb-2">
+              <i class="pi pi-map mr-2"></i>
+              <strong>Latitud</strong>
+            </label>
+            <p-inputNumber
+              id="lat"
+              name="lat"
+              #lat="ngModel"
+              [(ngModel)]="siteform.lat"
+              [required]="true"
+              mode="decimal"
+              [minFractionDigits]="6"
+              class="w-full">
+            </p-inputNumber>
           </div>
-          <div class="col-6">
-            Longitud
-            <input pInputText pTooltip="Longitud"  tooltipPosition="left"   #title="ngModel" type="text" name="title" class="form-control" id="long" [(ngModel)]="siteform.long" placeholder="" required>
+        </div>
+        <div class="col-6">
+          <div class="field">
+            <label class="block mb-2">
+              <i class="pi pi-map mr-2"></i>
+              <strong>Longitud</strong>
+            </label>
+            <p-inputNumber
+              id="long"
+              name="long"
+              #lng="ngModel"
+              [(ngModel)]="siteform.long"
+              [required]="true"
+              mode="decimal"
+              [minFractionDigits]="6"
+              class="w-full">
+            </p-inputNumber>
           </div>
         </div>
       </div>
-      <div class="form-group">
-        <div class="form-group">
-          Description
-          <textarea  pTooltip="Beskrivning för platsen" tooltipPosition="left" [(ngModel)]="siteform.description" name="description" placeholder="" class="col-12" rows="5"  pInputTextarea autoResize="autoResize"></textarea>
-        </div>
-        <div class="form-group">
-          Ladda upp bild
-<!--          <p-fileUpload showCancelButton="false" (onSelect)="onupload($event)" name="myfile[]" url="/api/site/upload"></p-fileUpload>-->
 
-          <p-fileUpload #primeFileUpload (onProgress)="progressReport($event)" name="myfile[]" customUpload="true" (uploadHandler)="myUploader($event)">
-            multiple="multiple" accept="image/*" maxFileSize="1000000">
-            <ng-template pTemplate="content">
-              <ul *ngIf="uploadedFiles.length">
-                <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
-              </ul>
-            </ng-template>
-          </p-fileUpload>
+      <!-- Description -->
+      <div class="field">
+        <label class="block mb-2">
+          <i class="pi pi-align-left mr-2"></i>
+          <strong>Description</strong>
+        </label>
+        <p-editor
+          [(ngModel)]="siteform.description"
+          name="description"
+          [style]="{'height':'200px'}"
+          class="w-full">
+        </p-editor>
+      </div>
 
-
-        </div>
-        <div class="form-group">
-        </div>
+      <!-- File Upload -->
+      <div class="field">
+        <label class="block mb-2">
+          <i class="pi pi-upload mr-2"></i>
+          <strong>Ladda upp bild</strong>
+        </label>
+        <p-fileUpload
+          #primeFileUpload
+          mode="basic"
+          [auto]="true"
+          chooseLabel="Välj fil"
+          name="myfile[]"
+          accept="image/*"
+          [maxFileSize]="1000000"
+          (uploadHandler)="myUploader($event)"
+          (onProgress)="progressReport($event)"
+          styleClass="w-full"
+          [style]="{'justify-content': 'flex-start'}">
+        </p-fileUpload>
       </div>
     </div>
+
+    <!-- Footer -->
     <div class="p-dialog-footer">
-  <span class="p-buttonset">
-    <button pTooltip="Klicka för att spara" type="submit"  [disabled]="!eventFormName.valid" tooltipPosition="left" pButton pRipple label="Save"  icon="pi pi-check" class="p-button-sm"></button>
-    <button pTooltip="Klicka för att avbryta" pButton pRipple label="Cancel" (click)="cancel()"  icon="pi pi-times" class="p-button-sm"></button>
-</span>
+      <div class="flex justify-content-end gap-2">
+        <p-button
+          type="submit"
+          [disabled]="!eventFormName.valid"
+          label="Save"
+          icon="pi pi-check"
+          styleClass="p-button-sm">
+        </p-button>
+        <p-button
+          label="Cancel"
+          icon="pi pi-times"
+          styleClass="p-button-sm p-button-secondary"
+          (onClick)="cancel()">
+        </p-button>
+      </div>
     </div>
   </div>
 </form>

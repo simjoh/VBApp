@@ -3,11 +3,12 @@ import {MenuItem} from 'primeng/api';
 import {ParticipantComponentService} from "../participant-component.service";
 
 @Component({
-  selector: 'brevet-participant',
-  templateUrl: './participant.component.html',
-  styleUrls: ['./participant.component.scss'],
-  providers: [ParticipantComponentService],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'brevet-participant',
+    templateUrl: './participant.component.html',
+    styleUrls: ['./participant.component.scss'],
+    providers: [ParticipantComponentService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ParticipantComponent implements OnInit {
 

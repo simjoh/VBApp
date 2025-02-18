@@ -5,10 +5,11 @@ import {ClubRepresentation} from "../../../shared/api/api";
 import {map} from "rxjs/operators";
 
 @Component({
-  selector: 'brevet-club-list',
-  templateUrl: './club-list.component.html',
-  styleUrls: ['./club-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-club-list',
+    templateUrl: './club-list.component.html',
+    styleUrls: ['./club-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ClubListComponent implements OnInit {
 

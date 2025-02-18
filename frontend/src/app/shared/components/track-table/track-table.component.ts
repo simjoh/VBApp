@@ -9,11 +9,12 @@ import {HttpMethod} from "../../../core/HttpMethod";
 
 
 @Component({
-  selector: 'brevet-track-table',
-  templateUrl: './track-table.component.html',
-  styleUrls: ['./track-table.component.scss'],
-  providers: [TracktableComponentService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-track-table',
+    templateUrl: './track-table.component.html',
+    styleUrls: ['./track-table.component.scss'],
+    providers: [TracktableComponentService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TrackTableComponent implements OnInit, OnChanges {
 

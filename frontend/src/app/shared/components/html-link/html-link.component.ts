@@ -8,10 +8,11 @@ import {HttpMethod} from "../../../core/HttpMethod";
 
 
 @Component({
-  selector: 'brevet-html-link',
-  templateUrl: './html-link.component.html',
-  styleUrls: ['./html-link.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-html-link',
+    templateUrl: './html-link.component.html',
+    styleUrls: ['./html-link.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class HtmlLinkComponent implements OnInit, OnChanges {
 

@@ -7,11 +7,12 @@ import {ParticipantToPassCheckpointRepresentation} from "../../shared/api/api";
 import {combineLatest} from "rxjs";
 
 @Component({
-  selector: 'brevet-volunteer',
-  templateUrl: './volunteer.component.html',
-  styleUrls: ['./volunteer.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [VolonteerComponentService, ConfirmationService]
+    selector: 'brevet-volunteer',
+    templateUrl: './volunteer.component.html',
+    styleUrls: ['./volunteer.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [VolonteerComponentService, ConfirmationService],
+    standalone: false
 })
 export class VolunteerComponent implements OnInit {
 

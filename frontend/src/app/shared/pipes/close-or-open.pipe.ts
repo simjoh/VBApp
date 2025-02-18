@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'closeOrOpen'
+    name: 'closeOrOpen',
+    standalone: false
 })
 export class CloseOrOpenPipe implements PipeTransform {
 

@@ -3,7 +3,6 @@ import {BrowserModule} from '@angular/platform-browser';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {CoreModule} from "./core/core.module";
 import {HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi} from "@angular/common/http";
 import {AuthInterceptor} from "./core/interceptors/auth.interceptor";
@@ -15,11 +14,6 @@ import {ApiKeyHeaderInterceptor} from "./core/interceptors/api-key-header.interc
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SharedModule} from "./shared/shared.module";
 import {LoginModule} from "./login/login.module";
-import {KontrollFormComponent} from "./admin/kontroll-form/kontroll-form.component";
-import {KontrollerComponent} from "./admin/kontroller/kontroller.component";
-import {NgbdTableComplete} from "./admin/competitors-list/competitors-table-complete";
-import {NgbdSortableHeader} from "./admin/competitors-list/sortable.directive";
-import {KontrollerCombinerComponent} from "./admin/kontroller-combiner/kontroller-combiner.component";
 import {VolunteerModule} from "./volunteer/volunteer.module";
 import {NotauthorizedInterceptor} from "./core/interceptors/notauthorized.interceptor";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -32,6 +26,11 @@ import {ConfirmationService, MessageService} from "primeng/api";
 import {EnvService} from './core/env.service';
 import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 import {SvgService} from "./shared/svg.service";
+import {TrackInfoComponent} from "./competitor/track-info/track-info.component";
+import {providePrimeNG} from "primeng/config";
+import MyTheme from "./design/myTheme";
+import {ToastComponent} from "./shared/components/toast/toast.component";
+import {LoaderComponent} from "./core/loader/loader.component";
 
 
 export function preloadSvgFactory(svgService: SvgService): () => Promise<void> {
@@ -43,13 +42,9 @@ export function preloadSvgFactory(svgService: SvgService): () => Promise<void> {
     AppComponent,
     UnknownRouteComponent,
     AppComponent,
-    NgbdTableComplete,
-    NgbdSortableHeader,
-    KontrollerComponent,
-    KontrollFormComponent,
-    KontrollerCombinerComponent,
+    TrackInfoComponent
   ],
-  exports: [CardModule, NgbModule, SharedModule, AppComponent],
+  exports: [CardModule, SharedModule, AppComponent],
   bootstrap: [AppComponent], imports: [BrowserAnimationsModule,
     ButtonModule,
     CoreModule,
@@ -58,12 +53,12 @@ export function preloadSvgFactory(svgService: SvgService): () => Promise<void> {
     CompetitorModule,
     FormsModule,
     AdminModule,
-    NgbModule,
     VolunteerModule,
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
     InputTextModule], providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}, MessageService,
+    providePrimeNG({ theme: { preset: MyTheme } }),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

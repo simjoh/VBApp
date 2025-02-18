@@ -6,11 +6,12 @@ import {map} from "rxjs/operators";
 import {ConfirmationService} from 'primeng/api';
 
 @Component({
-	selector: 'brevet-checkpoint',
-	templateUrl: './checkpoint.component.html',
-	styleUrls: ['./checkpoint.component.scss'],
-	changeDetection: ChangeDetectionStrategy.OnPush,
-	providers: [ConfirmationService]
+    selector: 'brevet-checkpoint',
+    templateUrl: './checkpoint.component.html',
+    styleUrls: ['./checkpoint.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [ConfirmationService],
+    standalone: false
 })
 export class CheckpointComponent implements OnInit {
 

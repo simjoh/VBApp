@@ -5,11 +5,12 @@ import {map} from "rxjs/operators";
 import {Observable} from "rxjs";
 
 @Component({
-  selector: 'brevet-tracks-for-event-selector',
-  templateUrl: './tracks-for-event-selector.component.html',
-  styleUrls: ['./tracks-for-event-selector.component.scss'],
-  providers: [TracksForEventComponentService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-tracks-for-event-selector',
+    templateUrl: './tracks-for-event-selector.component.html',
+    styleUrls: ['./tracks-for-event-selector.component.scss'],
+    providers: [TracksForEventComponentService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TracksForEventSelectorComponent implements OnInit {
 

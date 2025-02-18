@@ -3,12 +3,12 @@ import {MenuItem} from "primeng/api";
 import {TrackAdminComponentService} from "./track-admin-component.service";
 
 @Component({
-  selector: 'brevet-track-admin',
-  templateUrl: './track-admin.component.html',
-  styleUrls: ['./track-admin.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [TrackAdminComponentService]
-
+    selector: 'brevet-track-admin',
+    templateUrl: './track-admin.component.html',
+    styleUrls: ['./track-admin.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [TrackAdminComponentService],
+    standalone: false
 })
 export class TrackAdminComponent implements OnInit {
 

@@ -1,21 +1,38 @@
 <ng-container *ngIf="($activeUser | async) as user">
-  <p-menubar class="hide" [styleClass]="" [autoDisplay]="false" [model]="$menuitems | async">
-    <ng-template pTemplate="start">
+
+
+
+  <p-menubar [model]="$menuitems | async">
+    <ng-template #start>
       <img src="./assets/ebrevet-sidhuvud.svg" height="50" width="100" class="mr-2" alt="Ebrevet logotyp">
-<!--      <brevet-svg-display [svgHeight]="50" [svgWidth]="100" [svgID]="1"></brevet-svg-display>-->
     </ng-template>
-    <ng-template pTemplate="end">
-      <div class="">
-        <!--          <strong>Welcome:</strong>  {{$logedinas | async}}-->
-      </div>
-      <div>
-        <a class="ml-2 float-right text-base text-bold linkunde" href="" (click)="logout()">LOG OUT</a>
-      </div>
+    <ng-template  #item let-item>
+      <ng-container *ngIf="item.route; else urlRef">
+        <a [routerLink]="item.route" class="p-menubar-item-link">
+          <span class="ml-2">{{ item.label }}</span>
+        </a>
+      </ng-container>
+      <ng-template #urlRef>
+        <a *ngIf="item.url; else noLink" [href]="item.url" class="p-menubar-item-link">
+          <span class="ml-2">{{ item.label }}</span>
+        </a>
+      </ng-template>
+      <ng-template #noLink>
+        <div class="p-menubar-item-link">
+          <span class="ml-2">{{ item.label }}</span>
+          <span class="pi pi-fw pi-angle-down ml-2"></span>
+        </div>
+      </ng-template>
+      <ng-template #end>
+        <div class="flex items-center gap-2">
+          <a class="ml-2 float-right text-base text-bold linkunde" href="" (click)="logout()">LOG OUT</a>
+        </div>
+      </ng-template>
     </ng-template>
   </p-menubar>
+
+
 </ng-container>
-
-
 
 
 

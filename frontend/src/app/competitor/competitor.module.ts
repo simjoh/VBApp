@@ -6,14 +6,12 @@ import { CompetitorComponent } from './competitor.component';
 import {CoreModule} from "../core/core.module";
 import {MapComponent} from "./map/map.component";
 import {SharedModule} from "../shared/shared.module";
-import { TrackInfoComponent } from './track-info/track-info.component';
-import {ListModule} from "./list/list.module";
+
 
 @NgModule({
   declarations: [
     CompetitorComponent,
     MapComponent,
-    TrackInfoComponent,
   ],
   imports: [
     SharedModule,
@@ -21,6 +19,6 @@ import {ListModule} from "./list/list.module";
     CoreModule,
     CompetitorRoutingModule,
   ],
-  exports: [MapComponent, TrackInfoComponent]
+  exports: [MapComponent]
 })
 export class CompetitorModule { }

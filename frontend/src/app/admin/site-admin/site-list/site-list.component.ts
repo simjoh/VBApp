@@ -13,11 +13,12 @@ import {EditSiteDialogComponent} from "../edit-site-dialog/edit-site-dialog.comp
 
 
 @Component({
-  selector: 'brevet-site-list',
-  templateUrl: './site-list.component.html',
-  styleUrls: ['./site-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers:[DialogService, ConfirmationService]
+    selector: 'brevet-site-list',
+    templateUrl: './site-list.component.html',
+    styleUrls: ['./site-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [DialogService, ConfirmationService],
+    standalone: false
 })
 export class SiteListComponent implements OnInit {
 

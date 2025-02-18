@@ -3,7 +3,6 @@ import {ButtonDirective} from "primeng/button";
 import {CalendarModule} from "primeng/calendar";
 import {FormsModule, NgForm} from "@angular/forms";
 import {InputTextModule} from "primeng/inputtext";
-import {InputTextareaModule} from "primeng/inputtextarea";
 import {DatePipe, NgForOf} from "@angular/common";
 import {PaginatorModule} from "primeng/paginator";
 import {RadioButtonModule} from "primeng/radiobutton";
@@ -14,23 +13,20 @@ import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {EventRepresentation, OrganizerRepresentation} from "../../../shared/api/api";
 
 @Component({
-  selector: 'brevet-create-organizer-dialog',
-  standalone: true,
+    selector: 'brevet-create-organizer-dialog',
     imports: [
         ButtonDirective,
         CalendarModule,
         FormsModule,
         InputTextModule,
-        InputTextareaModule,
-        NgForOf,
         PaginatorModule,
         RadioButtonModule,
         Ripple,
         TooltipModule
     ],
-  templateUrl: './create-organizer-dialog.component.html',
-  styleUrl: './create-organizer-dialog.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    templateUrl: './create-organizer-dialog.component.html',
+    styleUrl: './create-organizer-dialog.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreateOrganizerDialogComponent implements OnInit{
 

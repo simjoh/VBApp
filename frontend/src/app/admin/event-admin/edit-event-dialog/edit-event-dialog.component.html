@@ -1,47 +1,96 @@
-
 <form #eventFormName="ngForm" (ngSubmit)="editEvent(eventFormName)" novalidate>
-  <div class="p-dynamicdialog">
-    <div class="p-dialog-content">
-      <div class="form-group">
-        <div class="form-group">
-          <label class="col-form-label" for="title">Titel</label>
-          <input pInputText pTooltip="Titel"  tooltipPosition="left"   #title="ngModel" type="text" name="title" class="form-control" id="title" [(ngModel)]="eventForm.title" placeholder="Tex Månskensbrevet" required>
-        </div>
-        <div class="form-group">
-          <div class="form-row">
-            <div class="col-6">
-              Startdatum
-              <p-calendar yearRange="2021:2030" pTooltip="Startdatum för eventet" tooltipPosition="left" [monthNavigator]="true" [yearNavigator]="true"  placeholder="YYYY-MM-DD" appendTo="body" name="startdate" dateFormat="yy-mm-dd" [(ngModel)]="eventForm.startdate" [showIcon]="true" [style]="{ 'position': 'relative' , 'overflow': 'visible' }"
-              ></p-calendar>
-            </div>
-            <div class="col-6">
-              Slutdatum <p-calendar  pTooltip="Slutdatum för eventet" tooltipPosition="right" yearRange="2021:2030" [monthNavigator]="true" [yearNavigator]="true"  placeholder="YYYY-MM-DD" name="endddate" appendTo="body" dateFormat="yy-mm-dd" [(ngModel)]="eventForm.enddate" [showIcon]="true" [style]="{ 'position': 'relative' , 'overflow': 'visible' }"></p-calendar>
-            </div>
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="form-row">
-            <div *ngFor="let category of categories" class="p-field-checkbox">
-              <div class="flex align-items-center ml-1">
-                <p-radioButton (onClick)="changeStatus($event)" [inputId]="category.key" name="category"  [value]="category" [(ngModel)]="city"
-                               [disabled]="category.key === 'R'"></p-radioButton>
-                <label [for]="category.key">{{category.name}}</label>
-              </div>
-            </div>
-          </div>
-        </div>
+  <div class="p-dialog-content">
+    <div class="grid p-fluid">
+      <div class="col-12 field mb-2">
+        <label for="title" class="block mb-1">Titel</label>
+        <input pInputText
+               id="title"
+               #title="ngModel"
+               name="title"
+               [(ngModel)]="eventForm.title"
+               placeholder="Tex Månskensbrevet"
+               required>
+      </div>
 
-        <div class="form-group">
-          Description
-          <textarea  pTooltip="Beskrivning av eventet" tooltipPosition="left" [(ngModel)]="eventForm.description" name="description" placeholder="" class="col-12" rows="5"  pInputTextarea autoResize="autoResize"></textarea>
+      <div class="col-12 field mb-2">
+        <label class="block mb-1">Datum</label>
+        <div class="grid">
+          <div class="col-6">
+            <p-calendar name="startdate"
+                      [(ngModel)]="eventForm.startdate"
+                      dateFormat="yy-mm-dd"
+                      [showIcon]="true"
+                      placeholder="Startdatum"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      yearRange="2021:2030"
+                      appendTo="body">
+            </p-calendar>
+          </div>
+          <div class="col-6">
+            <p-calendar name="endddate"
+                      [(ngModel)]="eventForm.enddate"
+                      dateFormat="yy-mm-dd"
+                      [showIcon]="true"
+                      placeholder="Slutdatum"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      yearRange="2021:2030"
+                      appendTo="body">
+            </p-calendar>
+          </div>
         </div>
       </div>
+
+      <div class="col-12 field mb-2">
+        <label class="block mb-1">Status</label>
+        <div class="flex gap-3">
+          <div *ngFor="let category of categories" class="flex align-items-center">
+            <p-radioButton [inputId]="category.key"
+                          name="category"
+                          [value]="category"
+                          [(ngModel)]="city"
+                          [disabled]="category.key === 'R'"
+                          (onClick)="changeStatus($event)">
+            </p-radioButton>
+            <label [for]="category.key" class="ml-2">{{category.name}}</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 field mb-2">
+        <label for="description" class="block mb-1">Beskrivning</label>
+        <textarea pInputTextarea
+                  id="description"
+                  name="description"
+                  [(ngModel)]="eventForm.description"
+                  rows="5"
+                  class="w-full"
+                  autoResize="autoResize"
+                  placeholder="Beskriv eventet här">
+        </textarea>
+      </div>
     </div>
-    <div class="p-dialog-footer">
-  <span class="p-buttonset">
-    <button pTooltip="Klicka för att spara" type="submit"  [disabled]="!eventFormName.valid" tooltipPosition="left" pButton pRipple label="Save"  icon="pi pi-check" class="p-button-sm"></button>
-    <button pTooltip="Klicka för att avbryta" pButton pRipple label="Cancel" (click)="cancel()"  icon="pi pi-times" class="p-button-sm"></button>
-</span>
+  </div>
+
+  <div class="p-dialog-footer">
+    <div class="flex justify-content-end gap-2">
+      <button pButton
+              pRipple
+              type="submit"
+              [disabled]="!eventFormName.valid"
+              label="Spara"
+              icon="pi pi-check"
+              class="p-button-sm">
+      </button>
+      <button pButton
+              pRipple
+              type="button"
+              label="Avbryt"
+              (click)="cancel()"
+              icon="pi pi-times"
+              class="p-button-sm p-button-outlined">
+      </button>
     </div>
   </div>
 </form>

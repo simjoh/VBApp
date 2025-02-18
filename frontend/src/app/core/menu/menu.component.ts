@@ -7,11 +7,12 @@ import {DeviceDetectorService} from 'ngx-device-detector';
 import {Roles} from "../../shared/roles";
 
 @Component({
-  selector: 'brevet-menu',
-  templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss'],
-  providers: [MenuComponentService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-menu',
+    templateUrl: './menu.component.html',
+    styleUrls: ['./menu.component.scss'],
+    providers: [MenuComponentService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class MenuComponent implements OnInit {
   deviceInfo = null;
@@ -32,23 +33,22 @@ export class MenuComponent implements OnInit {
         if (!this.items.some(item => item.label === 'Start')) {
           this.items.push({
             label: 'Start',
-            routerLink: '/admin/brevet-admin-start',
+            route: '/admin/brevet-admin-start',
           })
 
         }
 
-
         if (!this.items.some(item => item.label === 'Deltagare')) {
           this.items.push({
             label: 'Deltagare',
-            routerLink: '/admin/participant',
+            route: '/admin/participant',
           })
         }
 
         if (!this.items.some(item => item.label === 'Banor')) {
           this.items.push({
             label: 'Banor',
-            routerLink: '/admin/banor',
+            route: '/admin/banor',
             expanded: true
           })
         }
@@ -57,7 +57,7 @@ export class MenuComponent implements OnInit {
         if (!this.items.some(item => item.label === 'Administration')) {
           this.items.push({
             label: 'Administration',
-            routerLink: 'admin/administration/',
+            route: 'admin/administration/',
             expanded: true
           })
         }
@@ -67,26 +67,26 @@ export class MenuComponent implements OnInit {
           let d = []
           d.push({
               label: 'Användare',
-              routerLink: '/admin/useradmin/user'
+              route: '/admin/useradmin/user'
             },
             {
               label: 'Events',
-              routerLink: '/admin/eventadmin/events'
+              route: '/admin/eventadmin/events'
             },
             {
               label: 'Klubbar',
-              routerLink: '/admin/clubadmin/'
+              route: '/admin/clubadmin/'
             },
             {
               label: 'Kontrollplatser',
-              routerLink: '/admin/siteadmin/sites/'
+              route: '/admin/siteadmin/sites/'
             });
 
 
           if (user.roles.find(s => s.id === Roles.SUPERUSER)) {
             d.push({
               label: 'Arrangör',
-              routerLink: '/admin/organizeradmin/organizers/'
+              route: '/admin/organizeradmin/organizers/'
             });
           }
 
@@ -103,7 +103,7 @@ export class MenuComponent implements OnInit {
       if (user.roles.find(s => s.id === Roles.ACPREPRESENTIVE)) {
         this.items.push({
           label: 'Administration',
-          routerLink: 'admin/administration/acp/brevet-acp-report/',
+          route: 'admin/administration/acp/brevet-acp-report/',
           expanded: true
         })
       }

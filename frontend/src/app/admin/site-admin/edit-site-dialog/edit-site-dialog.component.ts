@@ -8,10 +8,11 @@ import {SiteRepresentation, User} from "../../../shared/api/api";
 import {environment} from "../../../../environments/environment";
 
 @Component({
-  selector: 'brevet-edit-site-dialog',
-  templateUrl: './edit-site-dialog.component.html',
-  styleUrls: ['./edit-site-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-edit-site-dialog',
+    templateUrl: './edit-site-dialog.component.html',
+    styleUrls: ['./edit-site-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EditSiteDialogComponent implements OnInit {
 

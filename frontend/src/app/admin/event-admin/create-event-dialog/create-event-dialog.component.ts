@@ -5,10 +5,11 @@ import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {EventRepresentation} from "../../../shared/api/api";
 
 @Component({
-  selector: 'brevet-create-event-dialog',
-  templateUrl: './create-event-dialog.component.html',
-  styleUrls: ['./create-event-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-create-event-dialog',
+    templateUrl: './create-event-dialog.component.html',
+    styleUrls: ['./create-event-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CreateEventDialogComponent implements OnInit {
 

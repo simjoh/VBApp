@@ -4,10 +4,11 @@ import {map} from "rxjs/operators";
 import {SelectItem} from "primeng/api";
 
 @Component({
-  selector: 'brevet-checkpoint-selector',
-  templateUrl: './checkpoint-selector.component.html',
-  styleUrls: ['./checkpoint-selector.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-checkpoint-selector',
+    templateUrl: './checkpoint-selector.component.html',
+    styleUrls: ['./checkpoint-selector.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CheckpointSelectorComponent implements OnInit {
 

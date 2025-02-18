@@ -47,6 +47,15 @@
   }
   margin: 0 !important;
   width: auto;
+
+  .p-fileupload-basic {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start !important;
+    gap: var(--p-fileupload-basic-gap);
+    margin-top: 0.5rem;
+  }
 }
 
 

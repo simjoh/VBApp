@@ -5,11 +5,12 @@ import {DatePipe} from "@angular/common";
 import {environment} from "../../../environments/environment";
 
 @Component({
-  selector: 'brevet-logo',
-  templateUrl: './logo.component.html',
-  styleUrls: ['./logo.component.scss'],
-  providers: [LogoComponentService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-logo',
+    templateUrl: './logo.component.html',
+    styleUrls: ['./logo.component.scss'],
+    providers: [LogoComponentService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LogoComponent implements OnInit {
 

@@ -7,11 +7,12 @@ import {LinkService} from "../../core/link.service";
 import {ConfirmationService} from "primeng/api";
 
 @Component({
-	selector: 'brevet-participant-list',
-	templateUrl: './participant-list.component.html',
-	styleUrls: ['./participant-list.component.scss'],
-	changeDetection: ChangeDetectionStrategy.OnPush,
-	providers: []
+    selector: 'brevet-participant-list',
+    templateUrl: './participant-list.component.html',
+    styleUrls: ['./participant-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [],
+    standalone: false
 })
 export class ParticipantListComponent implements OnInit {
 

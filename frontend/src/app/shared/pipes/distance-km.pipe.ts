@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'distanceKm'
+    name: 'distanceKm',
+    standalone: false
 })
 export class DistanceKmPipe implements PipeTransform {
   transform(value: string, ...args: unknown[]): unknown {

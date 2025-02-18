@@ -5,10 +5,11 @@ import {map} from "rxjs/operators";
 import {RandonneurCheckPointRepresentation} from "../../../api/api";
 
 @Component({
-  selector: 'brevet-checkpoint-preview-dialog',
-  templateUrl: './checkpoint-preview-dialog.component.html',
-  styleUrls: ['./checkpoint-preview-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-checkpoint-preview-dialog',
+    templateUrl: './checkpoint-preview-dialog.component.html',
+    styleUrls: ['./checkpoint-preview-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CheckpointPreviewDialogComponent implements OnInit {
 

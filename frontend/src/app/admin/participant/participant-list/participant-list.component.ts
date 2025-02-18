@@ -2,10 +2,11 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {ParticipantComponentService} from "../participant-component.service";
 
 @Component({
-  selector: 'brevet-participant-list',
-  templateUrl: './participant-list.component.html',
-  styleUrls: ['./participant-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-participant-list',
+    templateUrl: './participant-list.component.html',
+    styleUrls: ['./participant-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ParticipantListComponent implements OnInit {
 

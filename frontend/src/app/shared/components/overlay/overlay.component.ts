@@ -2,10 +2,11 @@ import {Component, OnInit, ChangeDetectionStrategy, ViewChild, AfterViewInit, In
 import {OverlayPanel} from "primeng/overlaypanel";
 
 @Component({
-  selector: 'brevet-overlay',
-  templateUrl: './overlay.component.html',
-  styleUrls: ['./overlay.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-overlay',
+    templateUrl: './overlay.component.html',
+    styleUrls: ['./overlay.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class OverlayComponent implements OnInit  {
 

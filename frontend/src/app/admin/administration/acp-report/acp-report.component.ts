@@ -3,15 +3,13 @@ import {TrackModule} from "../../track/track.module";
 import {SvgDisplayComponent} from "../../../shared/components/svg-display/svg-display.component";
 
 @Component({
-  selector: 'brevet-acp-report',
-  standalone: true,
+    selector: 'brevet-acp-report',
     imports: [
-        TrackModule,
-        SvgDisplayComponent
+        TrackModule
     ],
-  templateUrl: './acp-report.component.html',
-  styleUrl: './acp-report.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    templateUrl: './acp-report.component.html',
+    styleUrl: './acp-report.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AcpReportComponent {
 

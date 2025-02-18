@@ -4,10 +4,11 @@ import {map, mergeMap} from "rxjs/operators";
 import {TrackService} from "../track.service";
 
 @Component({
-  selector: 'brevet-track-info',
-  templateUrl: './track-info.component.html',
-  styleUrls: ['./track-info.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-track-info',
+    templateUrl: './track-info.component.html',
+    styleUrls: ['./track-info.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TrackInfoComponent implements OnInit {
 

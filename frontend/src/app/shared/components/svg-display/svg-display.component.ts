@@ -9,12 +9,10 @@ import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {NgStyle} from '@angular/common';
 
 @Component({
-  selector: 'brevet-svg-display',
-  standalone: true,
-  templateUrl: './svg-display.component.html',
-  styleUrls: ['./svg-display.component.scss'],
-  imports: [NgStyle],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'brevet-svg-display',
+    templateUrl: './svg-display.component.html',
+    styleUrls: ['./svg-display.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SvgDisplayComponent implements OnInit {
   @Input() svgID!: number; // Changed to `number` for TypeScript type consistency

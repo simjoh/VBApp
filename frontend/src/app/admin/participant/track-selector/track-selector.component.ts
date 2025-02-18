@@ -6,10 +6,11 @@ import {DatePipe} from "@angular/common";
 import {ParticipantComponentService} from "../participant-component.service";
 
 @Component({
-  selector: 'brevet-track-selector',
-  templateUrl: './track-selector.component.html',
-  styleUrls: ['./track-selector.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-track-selector',
+    templateUrl: './track-selector.component.html',
+    styleUrls: ['./track-selector.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TrackSelectorComponent implements OnInit {
 

@@ -3,11 +3,12 @@ import {CheckpointRepresentation} from "../../api/api";
 import {CheckpointTableComponentService} from "./checkpoint-table-component.service";
 
 @Component({
-  selector: 'brevet-checkpoint-table',
-  templateUrl: './checkpoint-table.component.html',
-  styleUrls: ['./checkpoint-table.component.scss'],
-  providers: [CheckpointTableComponentService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-checkpoint-table',
+    templateUrl: './checkpoint-table.component.html',
+    styleUrls: ['./checkpoint-table.component.scss'],
+    providers: [CheckpointTableComponentService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CheckpointTableComponent implements OnInit, OnChanges {
 

@@ -7,10 +7,11 @@ import {environment} from "../../../../environments/environment";
 import {MessageService} from "primeng/api";
 
 @Component({
-  selector: 'brevet-upload-participant',
-  templateUrl: './upload-participant.component.html',
-  styleUrls: ['./upload-participant.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-upload-participant',
+    templateUrl: './upload-participant.component.html',
+    styleUrls: ['./upload-participant.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class UploadParticipantComponent implements OnInit {
 

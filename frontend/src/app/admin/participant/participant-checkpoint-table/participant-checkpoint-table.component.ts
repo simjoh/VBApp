@@ -1,7 +1,5 @@
 import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
 import {ParticipantCheckpointTableComponentService} from "./participant-checkpoint-table-component.service";
-import {BehaviorSubject, combineLatest, interval} from "rxjs";
-import {map, mergeMap, startWith} from "rxjs/operators";
 import {
   CheckpointRepresentation,
   ParticipantRepresentation,
@@ -11,11 +9,12 @@ import {
 import {Statistics} from "../../../volunteer/volonteer-component.service";
 
 @Component({
-  selector: 'brevet-participant-checkpoint-table',
-  templateUrl: './participant-checkpoint-table.component.html',
-  styleUrls: ['./participant-checkpoint-table.component.scss'],
-  providers:[ParticipantCheckpointTableComponentService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-participant-checkpoint-table',
+    templateUrl: './participant-checkpoint-table.component.html',
+    styleUrls: ['./participant-checkpoint-table.component.scss'],
+    providers: [ParticipantCheckpointTableComponentService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ParticipantCheckpointTableComponent implements OnInit {
 

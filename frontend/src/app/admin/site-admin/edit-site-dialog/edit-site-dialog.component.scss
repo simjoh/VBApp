@@ -1,63 +1,11 @@
-:host ::ng-deep  {
-  div .p-dialog-content {
-    padding: 0 1.5rem 2rem 1.5rem;
-    padding-top: 0px;
-    padding-right: .5rem;
-    padding-left: 1rem;
-    padding-bottom: .5rem;
-    label {
-      display: inline-block;
-      margin-bottom: 0 !important;
-    }
+:host ::ng-deep {
+  .p-fileupload-basic {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start !important;
+    gap: var(--p-fileupload-basic-gap);
+    margin-top: 0.5rem;
+    padding-left: 0;
   }
-
-  .p-dialog-footer {
-    background: #FFFF;
-    padding: 0;
-  }
-
-  .p-dialog-footer button {
-    margin-right: .5rem !important;
-    margin-top: .5rem;
-    margin-left: .5rem;
-    width: 95px;
-    flex-wrap: nowrap;
-  }
-
-  @media (max-width: 768px) {
-    .p-dialog-footer button {
-      width: 70%;
-      padding-right: 0rem;
-      margin-left: 0;
-    }
-    .p-dialog-footer {
-      background: #FFFF;
-
-    }
-
-    .p-dialog-footer button {
-      width: 100%;
-      flex-wrap: wrap;
-    }
-
-    label {
-      display: inline-block;
-      margin-bottom: 0 !important;
-    }
-  }
-  margin: 0 !important;
-  width: auto;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

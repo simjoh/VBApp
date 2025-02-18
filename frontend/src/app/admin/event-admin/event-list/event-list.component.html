@@ -5,13 +5,15 @@
            [filterDelay]="0" [globalFilterFields]="['title','startdate','enddate','active']">
     <ng-template pTemplate="caption">
       <div class="table-header">
-      <span class="p-input-icon-left  sm:inline-flex">
-          <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2 ml-2" (click)="openNew()"></button>
-      </span>
         <span class="p-input-icon-left sm:inline-flex">
-        <i class="pi pi-search"></i>
-        <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Sök" />
-      </span>
+          <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2 ml-2" (click)="openNew()"></button>
+        </span>
+        <span class="p-input-icon-left sm:inline-flex">
+          <p-floatLabel>
+            <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" />
+            <label for="search">Sök</label>
+          </p-floatLabel>
+        </span>
       </div>
     </ng-template>
     <ng-template pTemplate="header">

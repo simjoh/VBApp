@@ -6,6 +6,7 @@ import {RouterModule} from "@angular/router";
 import {CardModule} from "primeng/card";
 import {AppModule} from "../app.module";
 import { LoaderComponent } from './loader/loader.component';
+import {Step, StepList, Stepper} from "primeng/stepper";
 
 
 
@@ -14,11 +15,12 @@ import { LoaderComponent } from './loader/loader.component';
     MenuComponent,
     LoaderComponent
   ],
-    imports: [
-        RouterModule,
-        CommonModule,
-        SharedModule,
-    ],
+  imports: [
+    RouterModule,
+    CommonModule,
+    SharedModule,
+
+  ],
   exports: [MenuComponent,LoaderComponent],
   providers: [
     {provide: Window, useValue: window},

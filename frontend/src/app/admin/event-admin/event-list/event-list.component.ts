@@ -4,20 +4,21 @@ import {EventRepresentation, Site, SiteRepresentation, User} from "../../../shar
 import {Observable} from "rxjs";
 import {EventService} from "../event.service";
 import {CreateUserDialogComponent} from "../../user-admin/create-user-dialog/create-user-dialog.component";
-import {ConfirmationService, PrimeNGConfig} from "primeng/api";
+import {ConfirmationService} from "primeng/api";
 import {DialogService} from "primeng/dynamicdialog";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {CreateEventDialogComponent} from "../create-event-dialog/create-event-dialog.component";
 import {LinkService} from "../../../core/link.service";
 import {EditSiteDialogComponent} from "../../site-admin/edit-site-dialog/edit-site-dialog.component";
 import {EditEventDialogComponent} from "../edit-event-dialog/edit-event-dialog.component";
+import { defaultDialogConfig } from '../../../shared/utils/dialog-config';
 
 @Component({
-  selector: 'brevet-event-list',
-  templateUrl: './event-list.component.html',
-  styleUrls: ['./event-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
-
+    selector: 'brevet-event-list',
+    templateUrl: './event-list.component.html',
+    styleUrls: ['./event-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EventListComponent implements OnInit {
 
@@ -30,7 +31,6 @@ export class EventListComponent implements OnInit {
   ) as Observable<EventRepresentation[]>;
 
   constructor(private eventService: EventService,
-              private primengConfig: PrimeNGConfig,
               private dialogService: DialogService,
               private confirmationService: ConfirmationService,
               private deviceDetector: DeviceDetectorService,
@@ -40,19 +40,10 @@ export class EventListComponent implements OnInit {
   }
 
   openNew() {
-
-    let width;
-    if ( this.deviceDetector.isDesktop()){
-      width = "60%";
-    } else {
-      width = "80%"
-    }
-
     const ref = this.dialogService.open(CreateEventDialogComponent, {
-      data: {
-        id: '51gF3'
-      },
+      ...defaultDialogConfig,
       header: 'Lägg till event',
+      width: '35rem'
     });
 
     ref.onClose.subscribe((event: EventRepresentation) => {
@@ -64,13 +55,14 @@ export class EventListComponent implements OnInit {
   }
 
   editProduct(user_uid: any) {
-
     const editref = this.dialogService.open(EditEventDialogComponent, {
+      ...defaultDialogConfig,
       data: {
         event: user_uid,
         id: '51gF3'
       },
       header: 'Editera event',
+      width: '30rem'
     });
 
     editref.onClose.pipe(take(1)).subscribe(((event: EventRepresentation) => {

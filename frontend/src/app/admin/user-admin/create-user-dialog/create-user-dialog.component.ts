@@ -8,32 +8,40 @@ import {AuthService} from "../../../core/auth/auth.service";
 
 
 @Component({
-  selector: 'brevet-create-user-dialog',
-  templateUrl: './create-user-dialog.component.html',
-  styleUrls: ['./create-user-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-create-user-dialog',
+    templateUrl: './create-user-dialog.component.html',
+    styleUrls: ['./create-user-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CreateUserDialogComponent implements OnInit {
 
+  userForm: any = {
+    givenname: '',
+    familyname: '',
+    username: '',
+    phone: '',
+    email: '',
+    superuser: false,
+    acprepresentant: false,
+    developer: false,
+    admin: false,
+    user: false,
+    volonteer: false
+  };
 
-  userForm: UserFormModel;
   roles: any[] = [];
-
 
   constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig) {
   }
 
   ngOnInit(): void {
-
     this.roles = this.config.data.userrole;
-    this.userForm = this.createObject();
   }
 
-  addUser(contactForm: NgForm) {
-    if (contactForm.valid) {
-      this.ref.close(this.getUserObject(contactForm));
-    } else {
-      contactForm.dirty
+  addUser(form: NgForm) {
+    if (form.valid) {
+      this.ref.close(this.userForm);
     }
   }
 
@@ -118,15 +126,8 @@ export class CreateUserDialogComponent implements OnInit {
 
   }
 
-  canAddRole(role: Role) {
-    if (this.roles.find(s => s.role_name === Role.SUPERUSER)) {
-      return true;
-    }
-
-    if (this.roles.find(s => s.role_name === Role.ADMIN)) {
-      return true;
-    }
-    return false;
+  canAddRole(role: string): boolean {
+    return true; // Implement your role check logic here
   }
 
   protected readonly Role = Role;

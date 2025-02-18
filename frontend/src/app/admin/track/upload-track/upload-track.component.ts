@@ -5,10 +5,11 @@ import {environment} from "../../../../environments/environment";
 import { MessageService } from 'primeng/api';
 
 @Component({
-  selector: 'brevet-upload-track',
-  templateUrl: './upload-track.component.html',
-  styleUrls: ['./upload-track.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-upload-track',
+    templateUrl: './upload-track.component.html',
+    styleUrls: ['./upload-track.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class UploadTrackComponent implements OnInit {
 

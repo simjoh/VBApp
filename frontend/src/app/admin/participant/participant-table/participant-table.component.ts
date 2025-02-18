@@ -8,10 +8,11 @@ import {EditTimeDialogComponent} from "../edit-time-dialog/edit-time-dialog.comp
 import {EditBrevenrDialogComponent} from "../edit-brevenr-dialog/edit-brevenr-dialog.component";
 
 @Component({
-  selector: 'brevet-participant-table',
-  templateUrl: './participant-table.component.html',
-  styleUrls: ['./participant-table.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-participant-table',
+    templateUrl: './participant-table.component.html',
+    styleUrls: ['./participant-table.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ParticipantTableComponent implements OnInit {
 

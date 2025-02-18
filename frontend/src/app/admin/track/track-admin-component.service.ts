@@ -14,26 +14,24 @@ import { TrackService } from 'src/app/shared/track-service';
 @Injectable()
 export class TrackAdminComponentService {
 
-
   $eventTrackSubject = new BehaviorSubject([] as any[]);
 
-
-
-  $reloadSubject = new Subject();
+  $reloadSubject = new Subject<void>();
   $reload = this.$reloadSubject.asObservable();
 
-
-  $eventsAndTrack = combineLatest(([this.$eventTrackSubject.asObservable().pipe(startWith([])), this.eventtrackService.getEventsAndTracks()])).pipe(
-    mergeMap(([checkin ,part]) => {
-         return this.eventtrackService.getEventsAndTracks().pipe(
-           map((ss) => {
-             return this.sortEvents(ss);
-           })
-         );
+  $eventsAndTrack = combineLatest([
+    this.$eventTrackSubject.asObservable().pipe(startWith([])),
+    this.$reloadSubject.pipe(startWith(null))
+  ]).pipe(
+    mergeMap(() => {
+      return this.eventtrackService.getEventsAndTracks().pipe(
+        map((events) => {
+          console.log('Raw events data:', events);
+          return this.sortEvents(events);
+        })
+      );
     })
   ) as Observable<EventInformationRepresentation[]>;
-
-
 
   constructor(private eventtrackService: EventTrackInformationService,
               private eventService: EventService, private trackservice: TrackService) { }
@@ -50,12 +48,12 @@ export class TrackAdminComponentService {
       return this.eventService.deletelinkExists(event);
   }
 
-
   init(){
-    this.$eventTrackSubject.next([]);
+    this.$reloadSubject.next();
   }
 
   sortEvents(eventinfo: Array<any>): Array<any>{
+    console.log('Sorting events:', eventinfo);
     return eventinfo.sort((a, b) => (a.event.startdate > b.event.startdate) ? 1 : -1)
   }
 

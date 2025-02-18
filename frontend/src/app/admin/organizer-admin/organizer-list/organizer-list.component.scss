@@ -1,0 +1,17 @@
+::ng-deep {
+    .p-paginator {
+        justify-content: flex-end !important;
+    }
+
+    .p-paginator-bottom {
+        border-width: 0;
+    }
+
+    .search-input {
+        font-size: 0.875rem;  // This is 14px
+    }
+
+    .p-float-label label {
+        font-size: 0.875rem;
+    }
+}

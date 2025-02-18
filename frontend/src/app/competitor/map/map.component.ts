@@ -3,9 +3,10 @@ import { Component, OnInit } from '@angular/core';
 declare var ol: any;
 
 @Component({
-  selector: 'brevet-map',
-  templateUrl: './map.component.html',
-  styleUrls: ['./map.component.scss']
+    selector: 'brevet-map',
+    templateUrl: './map.component.html',
+    styleUrls: ['./map.component.scss'],
+    standalone: false
 })
 //var checkpoints = [{name:'test',lan:20.3,lat:63},{name:'test 2',lan:20.3, lat:63}]
 export class MapComponent implements OnInit{

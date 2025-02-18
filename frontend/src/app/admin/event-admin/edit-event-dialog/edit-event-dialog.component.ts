@@ -4,10 +4,11 @@ import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {EventRepresentation} from "../../../shared/api/api";
 
 @Component({
-  selector: 'brevet-edit-event-dialog',
-  templateUrl: './edit-event-dialog.component.html',
-  styleUrls: ['./edit-event-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-edit-event-dialog',
+    templateUrl: './edit-event-dialog.component.html',
+    styleUrls: ['./edit-event-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EditEventDialogComponent implements OnInit {
 

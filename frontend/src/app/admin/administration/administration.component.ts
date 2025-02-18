@@ -5,11 +5,12 @@ import {map} from "rxjs/operators";
 import {Roles} from "../../shared/roles";
 
 @Component({
-  selector: 'brevet-administration',
-  templateUrl: './administration.component.html',
-  styleUrls: ['./administration.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [AdministrationComponentService]
+    selector: 'brevet-administration',
+    templateUrl: './administration.component.html',
+    styleUrls: ['./administration.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [AdministrationComponentService],
+    standalone: false
 })
 export class AdministrationComponent implements OnInit {
 

@@ -4,10 +4,11 @@ import {map} from "rxjs/operators";
 import {SelectItem} from "primeng/api";
 
 @Component({
-  selector: 'brevet-event-chooser',
-  templateUrl: './event-chooser.component.html',
-  styleUrls: ['./event-chooser.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-event-chooser',
+    templateUrl: './event-chooser.component.html',
+    styleUrls: ['./event-chooser.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EventChooserComponent implements OnInit {
 

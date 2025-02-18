@@ -19,23 +19,22 @@ import {CreateOrganizerDialogComponent} from "../create-organizer-dialog/create-
 import {LinkService} from "../../../core/link.service";
 
 @Component({
-  selector: 'brevet-organizer-list',
-  standalone: true,
-  imports: [
-    AsyncPipe,
-    ButtonDirective,
-    ConfirmDialogModule,
-    InputTextModule,
-    NgIf,
-    PrimeTemplate,
-    Ripple,
-    SharedModule,
-    TableModule,
-    OrganizerInfoPopoverComponent
-  ],
-  templateUrl: './organizer-list.component.html',
-  styleUrl: './organizer-list.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-organizer-list',
+    imports: [
+        AsyncPipe,
+        ButtonDirective,
+        ConfirmDialogModule,
+        InputTextModule,
+        NgIf,
+        PrimeTemplate,
+        Ripple,
+        SharedModule,
+        TableModule,
+        OrganizerInfoPopoverComponent
+    ],
+    templateUrl: './organizer-list.component.html',
+    styleUrl: './organizer-list.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrganizerListComponent {
 

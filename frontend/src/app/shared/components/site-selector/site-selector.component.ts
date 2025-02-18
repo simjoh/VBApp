@@ -3,11 +3,12 @@ import {Site, SiteRepresentation} from '../../api/api';
 import {SiteSelectorComponentService} from "./site-selector-component.service";
 
 @Component({
-  selector: 'brevet-site-selector',
-  templateUrl: './site-selector.component.html',
-  styleUrls: ['./site-selector.component.scss'],
-  providers: [SiteSelectorComponentService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-site-selector',
+    templateUrl: './site-selector.component.html',
+    styleUrls: ['./site-selector.component.scss'],
+    providers: [SiteSelectorComponentService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SiteSelectorComponent implements OnInit {
 

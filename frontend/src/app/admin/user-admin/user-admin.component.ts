@@ -3,11 +3,12 @@ import {UserAdminComponentService} from "./user-admin-component.service";
 import {MenuItem} from "primeng/api";
 
 @Component({
-  selector: 'brevet-user-admin',
-  templateUrl: './user-admin.component.html',
-  styleUrls: ['./user-admin.component.scss'],
-  providers: [UserAdminComponentService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-user-admin',
+    templateUrl: './user-admin.component.html',
+    styleUrls: ['./user-admin.component.scss'],
+    providers: [UserAdminComponentService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class UserAdminComponent implements OnInit {
 

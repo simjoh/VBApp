@@ -1,18 +1,17 @@
 <ng-container *ngIf="init$ | async as init">
   <ng-container *ngIf="($authenticated | async) === true">
     <main id="main" role="main" class="flex-shrink-0 mb-0">
-<!--      Lägg in topbanner med info om vem som är inloggad språkval samt logga ut länk-->
-<!--      <brevet-menu></brevet-menu>-->
+      <!--      Lägg in topbanner med info om vem som är inloggad språkval samt logga ut länk-->
+      <!--      <brevet-menu></brevet-menu>-->
       <div class="container-fluid pr-0 pl-0">
-      <brevet-menu></brevet-menu>
+        <brevet-menu></brevet-menu>
       </div>
-      <div class="container-fluid  pt-4 justify-content-center">
-        <router-outlet></router-outlet>
-      </div>
+      <router-outlet></router-outlet>
+
     </main>
   </ng-container>
   <ng-container *ngIf="($authenticated | async) === false">
-   <brevet-login></brevet-login>
+    <brevet-login></brevet-login>
   </ng-container>
 </ng-container>
 <brevet-loader></brevet-loader>

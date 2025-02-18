@@ -1,23 +1,44 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import {TrackAdminComponentService} from "../track-admin-component.service";
-import {EventRepresentation} from "../../../shared/api/api";
-import {map} from "rxjs/operators";
-import {cdkMigrations} from "@angular/cdk/schematics";
+import { BehaviorSubject, Observable } from "rxjs";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { EventRepresentation } from "../../../shared/api/api";
+import { TrackAdminComponentService } from "../track-admin-component.service";
+import { TableRowCollapseEvent, TableRowExpandEvent } from "primeng/table";
+
+interface Product {
+  event: EventRepresentation & { event_uid: string };
+  tracks: any[];
+  expanded?: boolean;
+}
 
 @Component({
   selector: 'brevet-track-list',
   templateUrl: './track-list.component.html',
   styleUrls: ['./track-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class TrackListComponent implements OnInit {
-
   $eventsandtrack = this.trackadmincomponentservice.$eventsAndTrack;
+  expandedRows: { [key: string]: boolean } = {};
 
-  constructor(private trackadmincomponentservice: TrackAdminComponentService,private cd: ChangeDetectorRef) { }
+  constructor(private trackadmincomponentservice: TrackAdminComponentService, private cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.trackadmincomponentservice.init();
+  }
+
+  onRowExpand(event: TableRowExpandEvent) {
+    console.log('Row expanded:', event.data);
+    const rowData = event.data as Product;
+    this.expandedRows = { [rowData.event.event_uid]: true };
+    this.cd.detectChanges();
+  }
+
+  onRowCollapse(event: TableRowCollapseEvent) {
+    console.log('Row collapsed:', event.data);
+    const rowData = event.data as Product;
+    this.expandedRows = {};
+    this.cd.detectChanges();
   }
 
   isPossibleToDelete(event: EventRepresentation) {
@@ -30,10 +51,5 @@ export class TrackListComponent implements OnInit {
 
   reload() {
     this.trackadmincomponentservice.init();
-  }
-
-  deepCopyProperties(obj: any): any {
-    // Konverterar till och från JSON, kopierar properties men tappar bort metoder
-    return obj === null || obj === undefined ? obj : JSON.parse(JSON.stringify(obj));
   }
 }

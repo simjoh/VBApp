@@ -4,10 +4,11 @@ import {map, mergeMap, switchMap} from "rxjs/operators";
 import {combineLatest, Observable, of} from "rxjs";
 
 @Component({
-  selector: 'brevet-track-builder-summary',
-  templateUrl: './track-builder-summary.component.html',
-  styleUrls: ['./track-builder-summary.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-track-builder-summary',
+    templateUrl: './track-builder-summary.component.html',
+    styleUrls: ['./track-builder-summary.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TrackBuilderSummaryComponent implements OnInit {
 

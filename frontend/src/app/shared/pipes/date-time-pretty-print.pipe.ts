@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'dateTimePrettyPrint'
+    name: 'dateTimePrettyPrint',
+    standalone: false
 })
 export class DateTimePrettyPrintPipe implements PipeTransform {
 

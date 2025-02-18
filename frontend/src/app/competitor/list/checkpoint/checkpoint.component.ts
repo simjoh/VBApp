@@ -4,15 +4,28 @@ import {RandonneurCheckPointRepresentation} from "../../../shared/api/api";
 import {BehaviorSubject} from "rxjs";
 import {LinkService} from "../../../core/link.service";
 import {map} from "rxjs/operators";
-import {ConfirmationService} from 'primeng/api';
+import {ConfirmationService, PrimeTemplate} from 'primeng/api';
+import {Card} from "primeng/card";
+import {Image} from "primeng/image";
+import {ConfirmDialog} from "primeng/confirmdialog";
+import {NgClass} from "@angular/common";
+import {SharedModule} from "../../../shared/shared.module";
 
 @Component({
-	selector: 'brevet-checkpoint',
-	templateUrl: './checkpoint.component.html',
-	styleUrls: ['./checkpoint.component.scss'],
-	changeDetection: ChangeDetectionStrategy.OnPush,
-	encapsulation: ViewEncapsulation.Emulated,
-	providers: [CompetitorListComponentService, ConfirmationService]
+  selector: 'brevet-checkpoint',
+  templateUrl: './checkpoint.component.html',
+  styleUrls: ['./checkpoint.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.Emulated,
+  imports: [
+    Card,
+    Image,
+    PrimeTemplate,
+    ConfirmDialog,
+    NgClass,
+    SharedModule
+  ],
+  providers: [CompetitorListComponentService, ConfirmationService]
 })
 export class CheckpointComponent implements OnInit {
 

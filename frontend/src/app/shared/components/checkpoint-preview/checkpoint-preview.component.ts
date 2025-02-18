@@ -5,10 +5,11 @@ import {ConfirmationService} from "primeng/api";
 import {CompetitorService} from "../../../competitor/competitor.service";
 
 @Component({
-  selector: 'brevet-checkpoint-preview',
-  templateUrl: './checkpoint-preview.component.html',
-  styleUrls: ['./checkpoint-preview.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-checkpoint-preview',
+    templateUrl: './checkpoint-preview.component.html',
+    styleUrls: ['./checkpoint-preview.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CheckpointPreviewComponent implements OnInit {
 

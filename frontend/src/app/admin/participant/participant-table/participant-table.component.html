@@ -1,14 +1,20 @@
-
-    <p-table #dt1  [globalFilterFields]="['participant.startnumber', 'competitorRepresentation.given_name', 'competitorRepresentation.family_name', 'clubRepresentation.title']" [value]="$participant | async " styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped" dataKey="participant.participant_uid"
-             responsiveLayout="stack" >
+    <p-table #dt1 [globalFilterFields]="['participant.startnumber', 'competitorRepresentation.given_name', 'competitorRepresentation.family_name', 'clubRepresentation.title']" [value]="$participant | async" styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped p-datatable-compact surface-card" [size]="'small'" dataKey="participant.participant_uid"
+             responsiveLayout="stack">
       <ng-template pTemplate="caption">
-        <div class="p-input-icon-left ml-auto">
-          <i class="pi pi-search"></i>
-          <input [disabled]="$searchDisabled | async" pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Sök deltagare" />
+        <div class="flex justify-content-end align-items-center p-2">
+          <input pInputText
+                 [disabled]="$searchDisabled | async"
+                 type="text"
+                 (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                 placeholder="Sök deltagare"
+                 class="w-20rem"
+                 [pTooltip]="'Sök på startnummer, namn eller klubb'"
+                 tooltipPosition="left">
+          <i class="pi pi-search" style="margin-left: -2rem;"></i>
         </div>
       </ng-template>
       <ng-template pTemplate="header">
-        <tr>
+        <tr class="surface-section">
           <th  class="w-auto">
           </th>
           <th pSortableColumn="participant.startnumber" class="lg:col-2">Startnummer
@@ -21,77 +27,110 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-participant let-expanded="expanded">
-        <tr>
+        <tr class="hover:surface-hover">
           <td>
-            <button (click)="currentparticipant(participant.participant)" type="button" pButton pRipple [pRowToggler]="participant" class="p-button-text p-button-rounded p-button-plain"
+            <button (click)="currentparticipant(participant.participant)" type="button" pButton pRipple [pRowToggler]="participant" class="p-button-text p-button-rounded p-button-plain p-button-sm"
                     [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
           </td>
           <td>{{participant.participant.startnumber}}</td>
           <td>{{participant.competitorRepresentation.family_name}}</td>
           <td>{{participant.competitorRepresentation.given_name}}</td>
           <td>{{participant.clubRepresentation.title}}</td>
-          <td><button [disabled]="!isPossibleToDelete(participant.participant)" (click)="remove(participant.participant)" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1"></button></td>
+          <td><button [disabled]="!isPossibleToDelete(participant.participant)" (click)="remove(participant.participant)" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning p-button-sm ml-2 sm-0 p-mr-1 p-button-icon-only w-2rem h-2rem"></button></td>
         </tr>
       </ng-template>
-      <ng-template pTemplate="rowexpansion" let-track>
+      <ng-template pTemplate="expandedrow" let-track>
         <tr>
           <td colspan="7">
-            <div class="row">
-              <div class="lg:col-12">
+            <div class="p-4">
+              <!-- Contact Information -->
+              <div class="grid">
+                <div class="col-12 md:col-6">
+                  <div class="flex flex-column gap-2 p-3">
+                    <h3 class="m-0">Kontaktinformation</h3>
+                    <div class="grid">
+                      <div class="col-12 md:col-6">
+                        <label class="font-bold block mb-2">Adress</label>
+                        <p class="m-0">{{track.competitorInforepresentation.adress}}</p>
+                        <p class="m-0">{{track.competitorInforepresentation.place}}</p>
+                        <p class="m-0">{{track.competitorInforepresentation.country}}</p>
+                      </div>
+                      <div class="col-12 md:col-6">
+                        <label class="font-bold block mb-2">Kontakt</label>
+                        <p class="m-0">
+                          <i class="pi pi-phone mr-2"></i>
+                          {{track.competitorInforepresentation.phone}}
+                        </p>
+                        <p class="m-0">
+                          <i class="pi pi-envelope mr-2"></i>
+                          {{track.competitorInforepresentation.email}}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                <div class="row p-2">
-                  <div class="col-md-2">
-                    <strong>Adress:</strong>
-                    <div>{{track.competitorInforepresentation.adress}}</div>
-                  </div>
-                  <div class="col-md-2">
-                    <strong>Ort:</strong>
-                    <div>{{track.competitorInforepresentation.place}}</div>
-                  </div>
-                  <div class="col-md-2">
-                    <strong>Land:</strong>
-                    <div>{{track.competitorInforepresentation.country}}</div>
-                  </div>
-                  <div class="col-md-2">
-                    <strong>Telefon:</strong>
-                    <div>{{track.competitorInforepresentation.phone}}</div>
-                  </div>
-                  <div class="col-md-2">
-                    <strong>Email:</strong>
-                    <div>{{track.competitorInforepresentation.email}}</div>
+                <!-- Race Status -->
+                <div class="col-12 md:col-6">
+                  <div class="flex flex-column gap-2 p-3">
+                    <h3 class="m-0">Status</h3>
+                    <div class="flex flex-wrap gap-3 align-items-center">
+                      <div *ngIf="track.participant.time"
+                           class="border-round p-3 cursor-pointer flex align-items-center gap-2"
+                           [ngClass]="{'bg-green-50 text-green-900': track.participant.time > '0'}"
+                           (click)="editTotalTime(track.participant)">
+                        <div>
+                          <span class="font-bold block">Sluttid</span>
+                          <span>{{track.participant.time}}</span>
+                        </div>
+                        <i class="pi pi-pencil"></i>
+                      </div>
+
+                      <div *ngIf="track.participant.brevenr && track.participant.time"
+                           class="border-round p-3 cursor-pointer flex align-items-center gap-2 bg-green-50 text-green-900"
+                           (click)="editbrevenr(track.participant)">
+                        <div>
+                          <span class="font-bold block">Brevetnr</span>
+                          <span>{{track.participant.brevenr}}</span>
+                        </div>
+                        <i class="pi pi-pencil"></i>
+                      </div>
+
+                      <div class="flex gap-2 align-items-center">
+                        <button pButton
+                                [disabled]="!track.participant.started || track.participant.finished"
+                                (click)="dnf(track.participant)"
+                                [label]="textDnfButton(track.participant.started, track.participant.dnf)"
+                                [class]="track.participant.dnf ? 'p-button-danger' : 'p-button-secondary'"
+                                icon="pi pi-flag"
+                                class="p-button-sm min-w-10rem max-w-10rem">
+                        </button>
+                        <button pButton
+                                [disabled]="track.participant.started"
+                                (click)="dns(track.participant)"
+                                [label]="textDnsButton(track.participant.started, track.participant.dns)"
+                                [class]="track.participant.dns ? 'p-button-warning' : 'p-button-secondary'"
+                                icon="pi pi-ban"
+                                class="p-button-sm min-w-10rem max-w-10rem">
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="row">
-                <div class="lg:col-8">
-                </div>
-                <div class="lg:col-2">
-                  <div (click)="editTotalTime(track.participant)"  *ngIf="track.participant.time"><p-tag styleClass="" icon="pi pi-pencil" severity="success" value="Sluttid: {{track.participant.time}}"></p-tag></div>
-                </div>
-				  <div class="lg:col-2">
-					  <div (click)="editbrevenr(track.participant)"  *ngIf="track.participant.time"><p-tag styleClass="" icon="pi pi-pencil" severity="info" value="brevetnr: {{track.participant.brevenr}}"></p-tag></div>
-				  </div>
+
+              <!-- Checkpoints Table -->
+              <div class="mt-4 p-3">
+                <brevet-participant-checkpoint-table [participant]="track.participant">
+                </brevet-participant-checkpoint-table>
               </div>
-                <div class="row">
-                  <div class="lg:col-10">
-                  </div>
-                  <div class="lg:col-2 sm:mt-1 md:mt-1">
-                  <span class="p-buttonset">
-                      <button  pButton pRipple  [disabled]="!track.participant.started || track.participant.finished" (click)="dnf(track.participant)" type="button" label="{{textDnfButton(track.participant.started, track.participant.dnf)}}" class="p-button-danger"></button>
-                      <button  pButton [disabled]="track.participant.started" (click)="dns(track.participant)" pRipple type="button" label="{{textDnsButton(track.participant.started, track.participant.dns)}}" class="p-button-secondary"></button>
-                  </span>
-                  </div>
-               </div>
-                <div class="row p-2">
-                    <brevet-participant-checkpoint-table [participant]="track.participant" ></brevet-participant-checkpoint-table>
-                </div>
             </div>
           </td>
         </tr>
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="7">Det finns inga deltagare på banan</td>
+          <td colspan="7" class="text-color-secondary">Det finns inga deltagare på banan</td>
         </tr>
       </ng-template>
     </p-table>

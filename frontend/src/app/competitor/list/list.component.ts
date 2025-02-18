@@ -6,11 +6,12 @@ import {map} from "rxjs/operators";
 import {GeolocationService} from "../../shared/geolocation.service";
 
 @Component({
-  selector: 'brevet-list',
-  templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [CompetitorListComponentService]
+    selector: 'brevet-list',
+    templateUrl: './list.component.html',
+    styleUrls: ['./list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [CompetitorListComponentService],
+    standalone: false
 })
 export class ListComponent implements OnInit, AfterViewInit {
 

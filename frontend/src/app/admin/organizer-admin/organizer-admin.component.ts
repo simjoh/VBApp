@@ -8,15 +8,14 @@ import {EventRepresentation, OrganizerRepresentation} from "../../shared/api/api
 import {Observable} from "rxjs";
 
 @Component({
-  selector: 'brevet-organizer-admin',
-  standalone: true,
-  imports: [
-    RouterOutlet,
-    TabMenuModule
-  ],
-  templateUrl: './organizer-admin.component.html',
-  styleUrl: './organizer-admin.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-organizer-admin',
+    imports: [
+        RouterOutlet,
+        TabMenuModule
+    ],
+    templateUrl: './organizer-admin.component.html',
+    styleUrl: './organizer-admin.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrganizerAdminComponent implements OnInit {
 

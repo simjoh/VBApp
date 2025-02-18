@@ -9,11 +9,12 @@ import {Observable} from "rxjs";
 import {environment} from "../../environments/environment";
 
 @Component({
-  selector: 'brevet-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
-  providers: [LoginComponentService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
+    providers: [LoginComponentService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LoginComponent implements  OnInit{
 

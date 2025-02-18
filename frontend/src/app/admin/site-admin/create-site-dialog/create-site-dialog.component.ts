@@ -6,10 +6,11 @@ import {UploadService} from "../../../core/upload.service";
 import {environment} from "../../../../environments/environment";
 
 @Component({
-  selector: 'brevet-create-site-dialog',
-  templateUrl: './create-site-dialog.component.html',
-  styleUrls: ['./create-site-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-create-site-dialog',
+    templateUrl: './create-site-dialog.component.html',
+    styleUrls: ['./create-site-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CreateSiteDialogComponent implements OnInit {
 

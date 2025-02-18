@@ -6,11 +6,12 @@ import {Router} from "@angular/router";
 import {BehaviorSubject} from "rxjs";
 
 @Component({
-  selector: 'brevet-track-builder',
-  templateUrl: './track-builder.component.html',
-  styleUrls: ['./track-builder.component.scss'],
-  providers: [TrackBuilderComponentService,RusaTimeAssemblerService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-track-builder',
+    templateUrl: './track-builder.component.html',
+    styleUrls: ['./track-builder.component.scss'],
+    providers: [TrackBuilderComponentService, RusaTimeAssemblerService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TrackBuilderComponent implements OnInit {
 

@@ -2,10 +2,11 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {TrackBuilderComponentService} from "../track-builder-component.service";
 
 @Component({
-  selector: 'brevet-track-builder-track-info-form',
-  templateUrl: './track-builder-track-info-form.component.html',
-  styleUrls: ['./track-builder-track-info-form.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-track-builder-track-info-form',
+    templateUrl: './track-builder-track-info-form.component.html',
+    styleUrls: ['./track-builder-track-info-form.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TrackBuilderTrackInfoFormComponent implements OnInit {
 

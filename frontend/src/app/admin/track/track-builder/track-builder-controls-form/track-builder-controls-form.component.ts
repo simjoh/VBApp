@@ -4,10 +4,11 @@ import {SiteRepresentation} from "../../../../shared/api/api";
 import {TrackBuilderComponentService} from "../track-builder-component.service";
 
 @Component({
-  selector: 'brevet-track-builder-controls-form',
-  templateUrl: './track-builder-controls-form.component.html',
-  styleUrls: ['./track-builder-controls-form.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'brevet-track-builder-controls-form',
+    templateUrl: './track-builder-controls-form.component.html',
+    styleUrls: ['./track-builder-controls-form.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TrackBuilderControlsFormComponent implements OnInit {
 

@@ -5,10 +5,11 @@ import {SelectItem} from "primeng/api";
 import {interval, Subscription} from "rxjs";
 
 @Component({
-  selector: 'brevet-checkpoint-selector-listbox',
-  templateUrl: './checkpoint-selector-listbox.component.html',
-  styleUrls: ['./checkpoint-selector-listbox.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-checkpoint-selector-listbox',
+    templateUrl: './checkpoint-selector-listbox.component.html',
+    styleUrls: ['./checkpoint-selector-listbox.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CheckpointSelectorListboxComponent implements OnInit, OnDestroy {
 

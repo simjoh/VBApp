@@ -5,10 +5,11 @@ import {BehaviorSubject, combineLatest} from "rxjs";
 import { map} from "rxjs/operators";
 
 @Component({
-  selector: 'brevet-loader',
-  templateUrl: './loader.component.html',
-  styleUrls: ['./loader.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-loader',
+    templateUrl: './loader.component.html',
+    styleUrls: ['./loader.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class LoaderComponent implements OnInit {
   timer: any = null;

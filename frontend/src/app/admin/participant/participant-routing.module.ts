@@ -1,9 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {ParticipantComponent} from "./participant/participant.component";
-import {AdminStartComponent} from "../admin-start/admin-start.component";
 import {UploadParticipantComponent} from "./upload-participant/upload-participant.component";
-import {KontrollerCombinerComponent} from "../kontroller-combiner/kontroller-combiner.component";
 import {ParticipantListComponent} from "./participant-list/participant-list.component";
 
 

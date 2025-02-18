@@ -2,11 +2,12 @@ import {Component, OnInit, ChangeDetectionStrategy, Input, Output, EventEmitter}
 import {EventSelectorComponentService} from "./event-selector-component.service";
 
 @Component({
-  selector: 'brevet-event-selector',
-  templateUrl: './event-selector.component.html',
-  styleUrls: ['./event-selector.component.scss'],
-  providers: [EventSelectorComponentService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-event-selector',
+    templateUrl: './event-selector.component.html',
+    styleUrls: ['./event-selector.component.scss'],
+    providers: [EventSelectorComponentService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EventSelectorComponent implements OnInit {
 

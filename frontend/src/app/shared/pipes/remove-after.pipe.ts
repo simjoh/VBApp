@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'removeAfter'
+    name: 'removeAfter',
+    standalone: false
 })
 export class RemoveAfterPipe implements PipeTransform {
 

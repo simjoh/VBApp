@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'distanceBetween'
+    name: 'distanceBetween',
+    standalone: false
 })
 export class DistanceBetweenPipe implements PipeTransform {
 

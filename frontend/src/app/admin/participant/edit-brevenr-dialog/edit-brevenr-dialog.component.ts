@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 
 @Component({
-  selector: 'brevet-edit-brevenr-dialog',
-  templateUrl: './edit-brevenr-dialog.component.html',
-  styleUrls: ['./edit-brevenr-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'brevet-edit-brevenr-dialog',
+    templateUrl: './edit-brevenr-dialog.component.html',
+    styleUrls: ['./edit-brevenr-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class EditBrevenrDialogComponent {
 

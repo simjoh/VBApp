@@ -3,11 +3,12 @@ import {DialogService} from "primeng/dynamicdialog";
 import {ConfirmationService, MenuItem} from "primeng/api";
 
 @Component({
-  selector: 'brevet-site-admin',
-  templateUrl: './site-admin.component.html',
-  styleUrls: ['./site-admin.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers:[DialogService, ConfirmationService]
+    selector: 'brevet-site-admin',
+    templateUrl: './site-admin.component.html',
+    styleUrls: ['./site-admin.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [DialogService, ConfirmationService],
+    standalone: false
 })
 export class SiteAdminComponent implements OnInit {
 

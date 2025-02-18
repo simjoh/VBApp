@@ -1,7 +1,5 @@
 <!--<div class="container">-->
 
-<brevet-track-info></brevet-track-info>
-
 <ng-container *ngIf="checkpoints$ | async as kontroller">
   <ng-container *ngIf="kontroller.length > 0">
   <ng-container *ngFor="let s of kontroller; index as i; let first = first ;let last = last;">
@@ -21,5 +19,5 @@
   <div class="col-12 sm:col-12 lg:col-12"><button [disabled]="!kontroller[0].active" pButton (click)="dnf2(kontroller[0])" title="Press this button if you cant finish. You can undo this action"  pRipple type="button" label="{{dnfknapptext}}" class=" p-button-danger container-fluid"></button></div>
   </ng-container>
 </ng-container>
-
+dfsfds
 <!--</div>-->
