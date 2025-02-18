@@ -28,7 +28,7 @@ abstract class BaseRepository extends Database
 
     public function gets(): PDO
     {
-        return $this::getConnection();
+        return $this->getConnection();
     }
 
     public function getOrganizer(): int
@@ -140,26 +140,6 @@ abstract class BaseRepository extends Database
         return [$query, $params];
     }
 
-//    // Create an instance of UserRepository
-//$userRepository = new UserRepository($pdo);
-//
-//// Define dynamic predicates, e.g., search by name or status
-//$predicates = [
-//'name' => 'John Doe',
-//'status' => 'active'
-//];
-//
-//// Optionally add more parameters for filtering
-//$additionalParams = ['email' => 'john.doe@example.com'];
-//
-//// Fetch users with the predicates (e.g., name, status, and organizer_id)
-//$users = $userRepository->getUsersWithPredicates($predicates, $additionalParams);
-//
-//// Display the users
-//foreach ($users as $user) {
-//echo $user['name'] . "<br>";
-//}
-
     /**
      * Ensures that the result data belongs to the current user's organizer.
      *
@@ -172,7 +152,7 @@ abstract class BaseRepository extends Database
         if ($checkOrganizer) {
             // Loop through each row and ensure the organizer_id matches
             foreach ($results as $result) {
-                if (isset($result['organizer_id']) && $result['organizer_id'] !== CurrentUser::getUser()->getOrganizerId()) {
+                if (isset($result['organizer_id']) && $result['organizer_id'] !== $this->getOrganizer()) {
                     throw new RuntimeException('You do not have permission to access one or more of the data rows.');
                 }
             }

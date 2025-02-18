@@ -2,6 +2,7 @@
 
 namespace App\Domain\Model\Track\Rest;
 
+use App\common\CurrentUser;
 use App\common\Rest\Link;
 use App\Domain\Model\CheckPoint\Service\CheckpointsService;
 use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
@@ -44,7 +45,7 @@ class TrackAssembly
     {
 
         if(empty($permissions)){
-            $permissions = $this->getPermissions($curruentUserUid);
+            $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
         }
 
 

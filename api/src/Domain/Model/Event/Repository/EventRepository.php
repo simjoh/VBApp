@@ -3,6 +3,7 @@
 namespace App\Domain\Model\Event\Repository;
 
 use App\common\CurrentOrganizer;
+use App\common\CurrentUser;
 use App\common\Repository\BaseRepository;
 use App\Domain\Model\Event\Event;
 use Exception;
@@ -27,6 +28,8 @@ class EventRepository extends BaseRepository
         $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
+
+
     public function allEvents(): array
     {
 
@@ -41,33 +44,33 @@ class EventRepository extends BaseRepository
 
             return $events;
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            error_log("Error: " . $e->getMessage());
         }
         return array();
     }
 
     public function eventFor(string $event_uid): ?Event
     {
-
         try {
-
-            $statement = $this->connection->prepare($this->sqls('getEventByUid'));
-            $statement->bindParam(':event_uid', $event_uid);
-            $statement->execute();
-            $event = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Event\Event::class, null);
-
-            if ($statement->rowCount() > 1) {
-                // Fixa bätter felhantering
-                throw new Exception();
+            $results = $this->executeQuery($this->sqls('getEventByUid'), ['event_uid' => $event_uid]);
+            
+            if (empty($results)) {
+                return null;
             }
-            if (!empty($event)) {
-                return $event[0];
+            
+            $event = new Event();
+            // Hydrate event object with first result
+            foreach ($results[0] as $key => $value) {
+                $setter = 'set' . ucfirst($key);
+                if (method_exists($event, $setter)) {
+                    $event->$setter($value);
+                }
             }
+            return $event;
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            error_log("Error: " . $e->getMessage());
+            return null;
         }
-
-        return null;
     }
 
 
@@ -77,34 +80,24 @@ class EventRepository extends BaseRepository
             $statement = $this->connection->prepare($this->sqls('eventsForOrganizer'));
             $statement->bindParam(':organizer_id', $organizer_id);
             $statement->execute();
-            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Event\Event::class, null);
-            if (empty($events)) {
-                return array();
-            }
-            return $events;
+            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Event::class, null);
+            
+            return empty($events) ? array() : $events;
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            error_log("Error: " . $e->getMessage());
+            return array();
         }
-        return array();
     }
 
 
     public function tracksOnEvent(string $event_uid): ?array
     {
         try {
-            $statement = $this->connection->prepare($this->sqls('tracksOnEvent'));
-            $statement->bindValue(':event_uid', $event_uid);
-            $statement->execute();
-            $track_uids = $statement->fetchAll();
-            if (empty($track_uids)) {
-                return array();
-            }
-
-            return $track_uids;
+            return $this->executeQuery($this->sqls('tracksOnEvent'), ['event_uid' => $event_uid]);
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            error_log("Error: " . $e->getMessage());
+            return array();
         }
-        return array();
     }
 
 
@@ -123,7 +116,7 @@ class EventRepository extends BaseRepository
 
             return $track_uids;
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            error_log("Error: " . $e->getMessage());
         }
         return array();
     }
@@ -139,10 +132,12 @@ class EventRepository extends BaseRepository
         $start_date = $event->getStartdate();
         $end_date = $event->getEnddate();
         $eve_U = $event->getEventUid();
+        $organizer_id = $this->getOrganizer();
         try {
             $statement = $this->connection->prepare($this->sqls('updateEvent'));
 
             $statement->bindValue(':event_uid', $eve_U);
+            $statement->bindValue(':organizer_id', $organizer_id);
             $statement->bindValue(':title', $title);
             $statement->bindValue(':description', $description);
             $statement->bindValue(':completed', $completed, PDO::PARAM_BOOL);
@@ -158,7 +153,7 @@ class EventRepository extends BaseRepository
             }
 
         } catch (PDOException $e) {
-            echo 'Kunde inte uppdatera site: ' . $e->getMessage();
+            error_log('Could not update site: ' . $e->getMessage());
         }
         return $event;
     }
@@ -174,10 +169,13 @@ class EventRepository extends BaseRepository
         $canceled = $event->isCanceled();
         $start_date = $event->getStartdate();
         $end_date = $event->getEnddate();
+        $organizer_id = $this->getOrganizer();
+    
         try {
             $statement = $this->connection->prepare($this->sqls('createEvent'));
 
             $statement->bindParam(':event_uid', $event_uid);
+            $statement->bindParam(':organizer_id', $organizer_id);
             $statement->bindParam(':title', $title);
             $statement->bindParam(':description', $description);
             $statement->bindParam(':completed', $completed, PDO::PARAM_BOOL);
@@ -193,7 +191,7 @@ class EventRepository extends BaseRepository
                 return $event;
             }
         } catch (PDOException $e) {
-            echo 'Kunde inte uppdatera site: ' . $e->getMessage();
+            error_log('Could not update site: ' . $e->getMessage());
         }
         $event->setEventUid($event_uid);
         return $event;
@@ -232,7 +230,7 @@ class EventRepository extends BaseRepository
             $stmt->bindParam(':event_uid', $event_uid);
             $stmt->execute();
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            error_log("Error: " . $e->getMessage());
         }
     }
 
@@ -243,8 +241,8 @@ class EventRepository extends BaseRepository
         $eventqls['allEvents'] = 'select * from event e;';
         $eventqls['getEventByUid'] = 'select *  from event e where e.event_uid=:event_uid;';
         $eventqls['deleteEvent'] = 'delete from event  where event_uid=:event_uid;';
-        $eventqls['updateEvent'] = "UPDATE event SET  title=:title , description=:description , active=:active, completed=:completed, canceled=:canceled, active=:active , start_date=:start_date, end_date=:end_date WHERE event_uid=:event_uid";
-        $eventqls['createEvent'] = "INSERT INTO event(event_uid, title, start_date, end_date, active, canceled, completed,description) VALUES (:event_uid, :title,:start_date,:end_date,:active, :canceled, :completed, :description)";
+        $eventqls['updateEvent'] = "UPDATE event SET organizer_id=:organizer_id, title=:title, description=:description, active=:active, completed=:completed, canceled=:canceled, start_date=:start_date, end_date=:end_date WHERE event_uid=:event_uid";
+        $eventqls['createEvent'] = "INSERT INTO event(event_uid, organizer_id, title, start_date, end_date, active, canceled, completed, description) VALUES (:event_uid, :organizer_id, :title, :start_date, :end_date, :active, :canceled, :completed, :description)";
         $eventqls['createEventTrack'] = 'INSERT INTO event_tracks(track_uid, event_uid) VALUES (:track_uid , :event_uid)';
         $eventqls['existsByTitleAndStartDate'] = 'select *  from event e where e.title=:title;';
         $eventqls['eventsForOrganizer'] = 'select *  from event e where e.organizer_id=:organizer_id;';

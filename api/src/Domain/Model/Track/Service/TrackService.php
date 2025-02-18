@@ -107,26 +107,17 @@ class TrackService extends ServiceAbstract
 
     public function tracksForEvent(string $currentuserUid, string $event_uid): ?array
     {
-        $permissions = $this->getPermissions($currentuserUid);
+        $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
         $tracks = $this->trackRepository->tracksbyEvent($event_uid);
 
-//        if (empty($track_uids)) {
-//            return array();
-//        }
-//        $test = [];
-//        foreach ($track_uids as $s => $ro) {
-//            $test[] = $ro[$s];
-//        }
-//        $tracks = $this->trackRepository->tracksOnEvent($test);
-
-        return $this->trackAssembly->toRepresentations($tracks, $currentuserUid, $permissions);
+        return $this->trackAssembly->toRepresentations($tracks, CurrentUser::getUser()->getId(), $permissions);
     }
 
-    public function createTrack(TrackRepresentation $trackrepresentation, string $currentuserUid): TrackRepresentation
+    public function createTrack(TrackRepresentation $trackrepresentation): TrackRepresentation
     {
-        $permissions = $this->getPermissions($currentuserUid);
+        $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
         $createdTrack = $this->trackRepository->createTrack($this->trackAssembly->totrack($trackrepresentation));
-        return $this->trackAssembly->toRepresentation($createdTrack, $permissions, $currentuserUid);
+        return $this->trackAssembly->toRepresentation($createdTrack, $permissions, CurrentUser::getUser()->getId());
     }
 
     public function getPermissions($user_uid): array

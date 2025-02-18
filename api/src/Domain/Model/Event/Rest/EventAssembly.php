@@ -2,6 +2,7 @@
 
 namespace App\Domain\Model\Event\Rest;
 
+use App\common\CurrentUser;
 use App\common\Rest\Link;
 use App\Domain\Model\Event\Event;
 use App\Domain\Model\Partisipant\Repository\ParticipantRepository;
@@ -29,7 +30,7 @@ class EventAssembly
     public function toRepresentations(array $eventsArray, string $currentUserUid): array
     {
 
-        $permissions = $this->getPermissions($currentUserUid);
+        $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
 
         $events = array();
         foreach ($eventsArray as $x => $event) {
@@ -41,6 +42,7 @@ class EventAssembly
     public function toRepresentation(Event $event, array $permissions): EventRepresentation
     {
 
+      
         $eventrepresentation = new EventRepresentation();
         $eventrepresentation->setDescription($event->getDescription() == null ? 0 : $event->getDescription());
         $eventrepresentation->setTitle($event->getTitle() == null ? null : $event->getTitle());
@@ -86,7 +88,6 @@ class EventAssembly
         }
 
         $eventrepresentation->setLinks($linkArray);
-
 
         return $eventrepresentation;
     }

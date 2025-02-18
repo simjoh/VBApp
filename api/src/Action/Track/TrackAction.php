@@ -91,7 +91,7 @@ class TrackAction
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new TrackRepresentationTransformer());
         $trackrepresentation = (object)$jsonDecoder->decode($request->getBody(), TrackRepresentation::class);
-        $created = $this->trackService->createTrack($trackrepresentation, CurrentUser::getUser()->getId());
+        $created = $this->trackService->createTrack($trackrepresentation);
         $response->getBody()->write((string)json_encode($created), JSON_UNESCAPED_SLASHES);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }

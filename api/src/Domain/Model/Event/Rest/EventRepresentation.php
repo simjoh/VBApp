@@ -12,10 +12,10 @@ class EventRepresentation implements JsonSerializable
     private string $title;
     private $startdate;
     private $enddate;
-    private bool $active;
-    private bool $canceled;
-    private bool $completed;
-    private string $description;
+    private bool $active = true;
+    private bool $canceled = false;
+    private bool $completed = false;
+    private string $description = "";
     private $organizer_id;
 
 

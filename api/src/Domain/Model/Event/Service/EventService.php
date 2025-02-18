@@ -56,11 +56,12 @@ class EventService extends ServiceAbstract
          $currentUserUid = CurrentUser::getUser()->getId();
 
         $events = $this->eventRepository->allEvents();
+
         if (!isset($events)) {
             return array();
         }
 
-        return $this->eventAssembly->toRepresentations($events, $currentUserUid);
+        return $this->eventAssembly->toRepresentations($events, CurrentUser::getUser()->getId());
     }
 
     public function eventFor(string $event_uid)
@@ -77,14 +78,16 @@ class EventService extends ServiceAbstract
 
     public function updateEvent(string $event_uid, EventRepresentation $eventRepresentation, string $currentUserUid): EventRepresentation
     {
-        $permissions = $this->getPermissions($currentUserUid);
+
+
+        $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
         $event = $this->eventRepository->updateEvent($event_uid, $this->toEvent($eventRepresentation));
         return $this->eventAssembly->toRepresentation($event, $permissions);
     }
 
     public function createEvent(EventRepresentation $eventRepresentation, string $currentUserUid)
     {
-        $permissions = $this->getPermissions($currentUserUid);
+        $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
         $event = $this->eventRepository->createEvent($this->toEvent($eventRepresentation));
 
         return $this->eventAssembly->toRepresentation($event, $permissions);
@@ -93,7 +96,7 @@ class EventService extends ServiceAbstract
     public function deleteEvent(string $event_uid, string $currentUserUid)
     {
 
-        $tracks = $this->trackservice->tracksForEvent($currentUserUid, $event_uid);
+        $tracks = $this->trackservice->tracksForEvent(CurrentUser::getUser()->getId(), $event_uid);
 
         if ($tracks == null || count($tracks) == 0) {
             $this->eventRepository->deleteEvent($event_uid);
@@ -121,37 +124,37 @@ class EventService extends ServiceAbstract
 
     public function getPermissions($user_uid): array
     {
-        return $this->permissinrepository->getPermissionsTodata("EVENT", $user_uid);
+        return $this->permissinrepository->getPermissionsTodata("EVENT", CurrentUser::getUser()->getId());
 
     }
 
     public function eventInformation(string $eventUid, string $currentUserUid): array
     {
-        $permissions = $this->getPermissions($currentUserUid);
+        $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
         $eventInfos = array();
         $tracksarray = array();
 
         if ($eventUid != "") {
             $event = $this->eventRepository->eventFor($eventUid);
-            $tracks = $this->trackservice->tracksForEvent($currentUserUid, $event->getEventUid());
+            $tracks = $this->trackservice->tracksForEvent(CurrentUser::getUser()->getId(), $event->getEventUid());
             foreach ($tracks as $track) {
                 // $participants = $this->participantService->participantsOnTrack($track->getTrackUid(), $currentUserUid);
                 $trackstats = $this->statisticsRepository->statsForTrack($track->getTrackUid());
-                array_push($tracksarray, $this->trackInformationAssembly->toRepresentation($this->trackservice->getTrackByTrackUid($track->getTrackUid(), $currentUserUid), $permissions, $currentUserUid, $trackstats == null ? null : $trackstats));
+                array_push($tracksarray, $this->trackInformationAssembly->toRepresentation($this->trackservice->getTrackByTrackUid($track->getTrackUid(), CurrentUser::getUser()->getId()), $permissions, CurrentUser::getUser()->getId(), $trackstats == null ? null : $trackstats));
             }
-            array_push($eventInfos, $this->eventInformationAssembly->toRepresentation($event, $tracksarray, $permissions, $currentUserUid));
+            array_push($eventInfos, $this->eventInformationAssembly->toRepresentation($event, $tracksarray, $permissions, CurrentUser::getUser()->getId()));
         } else {
 
             $events = $this->eventRepository->allEvents();
             foreach ($events as $event) {
                 $tracksarray = [];
-                $tracks = $this->trackservice->tracksForEvent($currentUserUid, $event->getEventUid());
+                $tracks = $this->trackservice->tracksForEvent(CurrentUser::getUser()->getId(), $event->getEventUid());
                 foreach ($tracks as $track) {
                     //$participants = $this->participantService->participantsOnTrack($track->getTrackUid(), $currentUserUid);
                     $trackstats = $this->statisticsRepository->statsForTrack($track->getTrackUid());
-                    array_push($tracksarray, $this->trackInformationAssembly->toRepresentation($this->trackservice->getTrackByTrackUid($track->getTrackUid(), $currentUserUid), $permissions, $currentUserUid, $trackstats == null ? null : $trackstats));
+                    array_push($tracksarray, $this->trackInformationAssembly->toRepresentation($this->trackservice->getTrackByTrackUid($track->getTrackUid(), CurrentUser::getUser()->getId()), $permissions, CurrentUser::getUser()->getId(), $trackstats == null ? null : $trackstats));
                 }
-                array_push($eventInfos, $this->eventInformationAssembly->toRepresentation($event, $tracksarray, $permissions, $currentUserUid));
+                array_push($eventInfos, $this->eventInformationAssembly->toRepresentation($event, $tracksarray, $permissions, CurrentUser::getUser()->getId()));
             }
 
         }

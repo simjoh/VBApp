@@ -87,7 +87,7 @@ class TrackRepository extends BaseRepository
             $statement = $this->connection->prepare($this->sqls('tracksByEvent'));
             $statement->bindParam(':event_uid', $event_uid);
             $statement->execute();
-            $tracks = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Track\Track::class, null);
+            $tracks = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Track::class, null);
             return $tracks;
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();

@@ -56,7 +56,7 @@ export class CreateEventDialogComponent implements OnInit {
         title: eventForm.controls.title.value,
         startdate: this.datepipe.transform(eventForm.controls.startdate.value, 'yyyy-MM-dd'),
         enddate: this.datepipe.transform(eventForm.controls.endddate.value, 'yyyy-MM-dd'),
-        active: false,
+        active: true,
         canceled: false,
         completed: false,
         description: eventForm.controls.description.value
