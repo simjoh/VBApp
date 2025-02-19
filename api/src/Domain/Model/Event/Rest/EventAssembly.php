@@ -89,6 +89,7 @@ class EventAssembly
 
         $eventrepresentation->setLinks($linkArray);
 
+      
         return $eventrepresentation;
     }
 

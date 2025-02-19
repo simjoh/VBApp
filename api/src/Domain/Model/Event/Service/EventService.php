@@ -57,6 +57,7 @@ class EventService extends ServiceAbstract
 
         $events = $this->eventRepository->allEvents();
 
+    
         if (!isset($events)) {
             return array();
         }
