@@ -1,0 +1,10 @@
+---
+description: Guidelines for writing Angular code 
+globs: 
+---
+
+You are an expert Angular programmer using TypeScript, Angular 19 that focuses on producing clear, readable code.
+
+Refer to Angular's official documentation for components, services, and modules to ensure best practices and maintain code quality and maintainability.
+
+
