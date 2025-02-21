@@ -88,6 +88,8 @@ class TrackAction
 
     public function createTrack(ServerRequestInterface $request, ResponseInterface $response)
     {
+
+        
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new TrackRepresentationTransformer());
         $trackrepresentation = (object)$jsonDecoder->decode($request->getBody(), TrackRepresentation::class);
@@ -114,6 +116,22 @@ class TrackAction
         return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
+    public function updateTrackFromPlanner(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('trackUid');
+
+        $jsonDecoder = new JsonDecoder();
+        $jsonDecoder->register(new RusaPlannerResponseRepresentationTransformer());
+
+        $trackrepresentation = json_decode($request->getBody());
+
+        $updated = $this->trackService->updateTrackFromPlanner($trackrepresentation, $track_uid, CurrentUser::getUser()->getId());
+
+        $response->getBody()->write((string)json_encode($updated), JSON_UNESCAPED_SLASHES);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
 
     public function trackplanner(ServerRequestInterface $request, ResponseInterface $response)
     {

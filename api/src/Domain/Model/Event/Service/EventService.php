@@ -74,6 +74,7 @@ class EventService extends ServiceAbstract
             return null;
         }
         $permissions = $this->getPermissions(CurrentUser::getUser()->getId());
+     
         return $this->eventAssembly->toRepresentation($event, $permissions);
     }
 

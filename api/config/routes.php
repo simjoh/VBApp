@@ -97,7 +97,7 @@ return function (App $app) {
         $app->post('/trackplanner', \App\Action\Track\TrackAction::class . ':trackplanner');
 
         $app->post('/trackplanner/createtrackfromplanner', \App\Action\Track\TrackAction::class . ':createTrackFromPlanner');
-
+        $app->put('/trackplanner/updatetrackfromplanner/{trackUid}', \App\Action\Track\TrackAction::class . ':updateTrackFromPlanner');
 
         // event
         $app->get('/events', \App\Action\Event\EventAction::class . ':allEvents');

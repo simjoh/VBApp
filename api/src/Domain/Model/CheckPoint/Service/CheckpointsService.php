@@ -103,9 +103,13 @@ class CheckpointsService extends ServiceAbstract
 
     }
 
-    public function createCheckpoint(?string $checkpoint_uid, CheckpointRepresentation $checkpoint)
+    public function createCheckpoint(string $track_uid, CheckpointRepresentation $checkpoint)
     {
-        $checkpoint =  $this->checkpointRepository->createCheckpoint($checkpoint_uid, $this->toCheckpoint($checkpoint));
+        if (empty($track_uid)) {
+            throw new \InvalidArgumentException('track_uid cannot be null or empty');
+        }
+
+        $checkpoint =  $this->checkpointRepository->createCheckpoint($track_uid, $this->toCheckpoint($checkpoint));
         return $this->toRepresentation($checkpoint);
     }
 
@@ -144,9 +148,7 @@ class CheckpointsService extends ServiceAbstract
     }
 
     private function toCheckpoint(CheckpointRepresentation $checkpointRepresentation): Checkpoint {
-
-
-        $checkpoint =new Checkpoint();
+        $checkpoint = new Checkpoint();
         if(!empty($checkpointRepresentation->getSite())){
             $checkpoint->setSiteUid($checkpointRepresentation->getSite()->getSiteUid());
         }
@@ -156,7 +158,13 @@ class CheckpointsService extends ServiceAbstract
         $checkpoint->setDescription($checkpointRepresentation->getDescription() == null ? "" : $checkpointRepresentation->getDescription());
         $checkpoint->setOpens($checkpointRepresentation->getOpens() == null ? null : $checkpointRepresentation->getOpens());
         $checkpoint->setClosing($checkpointRepresentation->getClosing());
-        $checkpoint->setCheckpointUid($checkpointRepresentation->getCheckpointUid());
+        
+        // Only set checkpoint_uid if it exists and is not empty
+        $checkpoint_uid = $checkpointRepresentation->getCheckpointUid();
+        if ($checkpoint_uid !== null && $checkpoint_uid !== '') {
+            $checkpoint->setCheckpointUid($checkpoint_uid);
+        }
+        
         return $checkpoint;
     }
 

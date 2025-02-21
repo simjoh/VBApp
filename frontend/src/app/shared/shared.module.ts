@@ -60,7 +60,6 @@ import { CheckpointPreviewDialogComponent } from "./components/checkpoint-previe
 import { CheckpointComponent } from "./components/checkpoint/checkpoint.component";
 import { TrackInfoComponent } from "./components/track-info/track-info.component";
 import { TracksForEventSelectorComponent } from './components/tracks-for-event-selector/tracks-for-event-selector.component';
-import { EventSelectorComponent } from './components/event-selector/event-selector.component';
 import { SiteSelectorComponent } from './components/site-selector/site-selector.component';
 import { SvgDisplayComponent } from "./components/svg-display/svg-display.component";
 import {Step, StepList, Stepper} from "primeng/stepper";
@@ -86,9 +85,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
     CheckpointComponent,
     TrackInfoComponent,
     TracksForEventSelectorComponent,
-    EventSelectorComponent,
-    SiteSelectorComponent// ✅ Ensure it's declared before exporting
-
+    SiteSelectorComponent
   ],
   imports: [
     CommonModule,
@@ -151,7 +148,6 @@ import { FloatLabelModule } from 'primeng/floatlabel';
     StepsModule,
     ListboxModule,
     SiteSelectorComponent,
-    EventSelectorComponent,
     InputNumberModule,
     TracksForEventSelectorComponent,
     CheckpointComponent,
@@ -199,7 +195,6 @@ import { FloatLabelModule } from 'primeng/floatlabel';
     RemoveAfterPipe,
     CheckpointTableComponent,
     TrackInfoComponent,
-
   ],
   providers: [DatePipe, DialogService]
 })

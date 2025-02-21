@@ -71,13 +71,31 @@ export interface RusaControlResponseRepresentation {
 
 }
 
-export interface RusaPlannerResponseRepresentation{
+export interface RusaTrackRepresentation {
+  EVENT_DISTANCE_KM: number;
+  EVENT_DISTANCE_MILE: number;
+  ROUTE_DISTANCE_KM: number;
+  ROUTE_DISTANCE_MILE: number;
+  MAX_TIME: string;
+  MIN_TIME: string;
+  START_DATE: string;
+  START_TIME: string;
+  START_DATE_PRINTABLE: string;
+  GRAVEL_DISTANCE_KM: number;
+  GRAVEL_DISTANCE_MILE: number;
+  GRAVEL_PERCENT: number;
+  GRAVEL_EXTRA_TIME: string;
+  GRAVEL_MAX_TIME: string;
+  CALC_METHOD: string;
+  TRACK_TITLE: string;
+  LINK_TO_TRACK: string;
+}
+
+export interface RusaPlannerResponseRepresentation {
   rusaMetaRepresentation: META;
   eventRepresentation: EventRepresentation;
-  rusaTrackRepresentation: EVENT;
-  rusaplannercontrols: Array<RusaControlResponseRepresentation>
-
-
+  rusaTrackRepresentation: RusaTrackRepresentation;
+  rusaplannercontrols: Array<RusaControlResponseRepresentation>;
 }
 
 

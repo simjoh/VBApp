@@ -28,6 +28,7 @@ use League\Csv\Statement;
 use PrestaShop\Decimal\DecimalNumber;
 use Psr\Container\ContainerInterface;
 use stdClass;
+use Ramsey\Uuid\Uuid;
 
 class TrackService extends ServiceAbstract
 {
@@ -266,10 +267,8 @@ class TrackService extends ServiceAbstract
 
     private function createControl($rad, array $track): array
     {
-
         $checkpoints = [];
         foreach ($rad->controls as $key => $value) {
-
             $checkpoint = new Checkpoint();
             $sites = $track;
             foreach ($sites as $rowIndex => $record) {
@@ -284,8 +283,10 @@ class TrackService extends ServiceAbstract
                     $sss = $this->checkpointRepository->existsBySiteUidAndDistance($checkpoint->getSiteUid(), $checkpoint->getDistance(), $checkpoint->getOpens(), $checkpoint->getClosing());
 
                     if ($sss == null) {
-                        $this->checkpointRepository->createCheckpoint(null, $checkpoint);
-                        array_push($checkpoints, $checkpoint);
+                        // Use Ramsey UUID for temporary track ID
+                        $tempTrackUid = Uuid::uuid4()->toString();
+                        $createdCheckpoint = $this->checkpointRepository->createCheckpoint($tempTrackUid, $checkpoint);
+                        array_push($checkpoints, $createdCheckpoint);
                     } else {
                         array_push($checkpoints, $sss);
                     }
@@ -410,44 +411,143 @@ class TrackService extends ServiceAbstract
 
     }
 
-    public function createTrackFromPlanner(stdClass $trackrepresentation, string $currentUserUId): TrackRepresentation
-    {
+    public function createTrackFromPlanner(stdClass $trackrepresentation, string $currentUserUId): TrackRepresentation {
+        try {
+            $event = $this->eventRepository->eventFor($trackrepresentation->eventRepresentation->event_uid);
 
-        $event = $this->eventRepository->eventFor($trackrepresentation->eventRepresentation->event_uid);
+            $trackToCreate = new Track();
+            $trackToCreate->setTrackUid(Uuid::uuid4()->toString());
+            $trackToCreate->setEventUid($event->getEventUid());
+            $trackToCreate->setDescription("");
+            $trackToCreate->setTitle($trackrepresentation->rusaTrackRepresentation->TRACK_TITLE);
+            $trackToCreate->setLink($trackrepresentation->rusaTrackRepresentation->LINK_TO_TRACK);
+            $trackToCreate->setActive(true);
+            $trackToCreate->setHeightdifference(2000);
+            $trackToCreate->setDistance($trackrepresentation->rusaTrackRepresentation->EVENT_DISTANCE_KM);
+            $trackToCreate->setStartDateTime($trackrepresentation->rusaTrackRepresentation->START_DATE . ' ' . $trackrepresentation->rusaTrackRepresentation->START_TIME);
 
-        $trackToCreate = new Track();
-        $trackToCreate->setEventUid($event->getEventUid());
-        $trackToCreate->setDescription("");
-        $trackToCreate->setTitle($trackrepresentation->rusaTrackRepresentation->TRACK_TITLE);
-        $trackToCreate->setLink($trackrepresentation->rusaTrackRepresentation->LINK_TO_TRACK);
-        $trackToCreate->setActive(true);
-        $trackToCreate->setHeightdifference(2000);
-        $trackToCreate->setDistance($trackrepresentation->rusaTrackRepresentation->EVENT_DISTANCE_KM);
-        $trackToCreate->setStartDateTime($trackrepresentation->rusaTrackRepresentation->START_DATE . ' ' . $trackrepresentation->rusaTrackRepresentation->START_TIME);
+            // Create the track first
+            $track = $this->trackRepository->createTrack($trackToCreate);
+            $track_uid = $track->getTrackUid();
 
+            $checkUids = array();
+            if (isset($trackrepresentation->rusaplannercontrols) && is_array($trackrepresentation->rusaplannercontrols)) {
+                foreach ($trackrepresentation->rusaplannercontrols as $checkpointiput) {
+                    if (!isset($checkpointiput->siteRepresentation) || !isset($checkpointiput->rusaControlRepresentation)) {
+                        continue;
+                    }
 
-        $checkpoints = array();
-        foreach ($trackrepresentation->rusaplannercontrols as $checkpointiput) {
-            $checkpoint = new Checkpoint();
-            $checkpoint->setSiteUid($checkpointiput->siteRepresentation->site_uid);
-            $checkpoint->setDistance($checkpointiput->rusaControlRepresentation->CONTROL_DISTANCE_KM);
-            $open = date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->OPEN));
-            $close = date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->CLOSE));
-            $checkpoint->setOpens($open);
-            $checkpoint->setClosing($close);
-            array_push($checkpoints, $this->checkpointRepository->createCheckpoint(null, $checkpoint));
+                    // Check if checkpoint already exists with these exact parameters
+                    $existingCheckpoint = $this->checkpointRepository->existsBySiteUidAndDistance(
+                        $checkpointiput->siteRepresentation->site_uid,
+                        $checkpointiput->rusaControlRepresentation->CONTROL_DISTANCE_KM,
+                        date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->OPEN)),
+                        date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->CLOSE))
+                    );
+
+                    if ($existingCheckpoint) {
+                        // If checkpoint exists, just use its ID
+                        array_push($checkUids, $existingCheckpoint->getCheckpointUid());
+                    } else {
+                        // Create new checkpoint
+                        $checkpoint = new Checkpoint();
+                        $checkpoint->setSiteUid($checkpointiput->siteRepresentation->site_uid);
+                        $checkpoint->setDistance($checkpointiput->rusaControlRepresentation->CONTROL_DISTANCE_KM);
+                        $checkpoint->setOpens(date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->OPEN)));
+                        $checkpoint->setClosing(date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->CLOSE)));
+                        
+                        // Create checkpoint with the actual track_uid
+                        $createdCheckpoint = $this->checkpointRepository->createCheckpoint($track_uid, $checkpoint);
+                        if ($createdCheckpoint && $createdCheckpoint->getCheckpointUid()) {
+                            array_push($checkUids, $createdCheckpoint->getCheckpointUid());
+                        }
+                    }
+                }
+            }
+
+            // Update track with checkpoint associations
+            $track->setCheckpoints($checkUids);
+            $track = $this->trackRepository->updateTrack($track);
+
+            return $this->trackAssembly->toRepresentation($track, array(), $currentUserUId);
+        } catch (\PDOException $e) {
+            error_log("Database error in createTrackFromPlanner: " . $e->getMessage());
+            throw new BrevetException("Failed to create track: " . $e->getMessage(), 5);
+        } catch (\Exception $e) {
+            error_log("Error in createTrackFromPlanner: " . $e->getMessage());
+            throw new BrevetException("Failed to create track: " . $e->getMessage(), 5);
         }
-
-        $checkUids = array();
-        foreach ($checkpoints as $check){
-            array_push($checkUids, $check->getCheckpointUid());
-        }
-
-        $trackToCreate->setCheckpoints($checkUids);
-        $track = $this->trackRepository->createTrack($trackToCreate);
-
-        return $this->trackAssembly->toRepresentation($track, array(), $currentUserUId);
     }
 
+    public function updateTrackFromPlanner(stdClass $trackrepresentation, string $track_uid, string $currentUserUId): TrackRepresentation {
+        try {
+            $track = $this->trackRepository->getTrackByUid($track_uid);
+            if ($track == null) {
+                throw new BrevetException("No track found with given uid", 5);
+            }
+            // Check if race has started
+            $startDateTime = new \DateTime($track->getStartDateTime());
+            $now = new \DateTime();
+            
+            if ($startDateTime < $now) {
+                throw new BrevetException("Cannot update track after race has started", 5);
+            }
+
+            
+            // First update track data
+            $track->setDescription("");
+            $track->setTitle($trackrepresentation->rusaTrackRepresentation->TRACK_TITLE);
+            $track->setLink($trackrepresentation->rusaTrackRepresentation->LINK_TO_TRACK);
+            $track->setActive(true);
+            $track->setHeightdifference(2000);
+            $track->setDistance($trackrepresentation->rusaTrackRepresentation->EVENT_DISTANCE_KM);
+            $track->setStartDateTime($trackrepresentation->rusaTrackRepresentation->START_DATE . ' ' . $trackrepresentation->rusaTrackRepresentation->START_TIME);
+
+            // Update track first to ensure it exists
+            $track = $this->trackRepository->updateTrack($track);
+
+            // Get existing checkpoints and delete them
+            $existingCheckpoints = $track->getCheckpoints();
+            if (!empty($existingCheckpoints)) {
+                foreach ($existingCheckpoints as $checkpoint_uid) {
+                    $this->checkpointService->deleteCheckpoint($checkpoint_uid);
+                }
+            }
+
+            $checkUids = array();
+            if (isset($trackrepresentation->rusaplannercontrols) && is_array($trackrepresentation->rusaplannercontrols)) {
+                foreach ($trackrepresentation->rusaplannercontrols as $checkpointiput) {
+                    if (!isset($checkpointiput->siteRepresentation) || !isset($checkpointiput->rusaControlRepresentation)) {
+                        continue;
+                    }
+
+                    // Create new checkpoint
+                    $checkpoint = new Checkpoint();
+                    $checkpoint->setSiteUid($checkpointiput->siteRepresentation->site_uid);
+                    $checkpoint->setDistance($checkpointiput->rusaControlRepresentation->CONTROL_DISTANCE_KM);
+                    $checkpoint->setOpens(date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->OPEN)));
+                    $checkpoint->setClosing(date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->CLOSE)));
+
+                    // Create checkpoint with the actual track_uid
+                    $createdCheckpoint = $this->checkpointRepository->createCheckpoint($track_uid, $checkpoint);
+                    if ($createdCheckpoint && $createdCheckpoint->getCheckpointUid()) {
+                        array_push($checkUids, $createdCheckpoint->getCheckpointUid());
+                    }
+                }
+            }
+
+            // Update track with new checkpoint associations
+            $track->setCheckpoints($checkUids);
+            $track = $this->trackRepository->updateTrack($track);
+
+            return $this->trackAssembly->toRepresentation($track, array(), $currentUserUId);
+        } catch (\PDOException $e) {
+            error_log("Database error in updateTrackFromPlanner: " . $e->getMessage());
+            throw new BrevetException("Failed to update track: " . $e->getMessage(), 5);
+        } catch (\Exception $e) {
+            error_log("Error in updateTrackFromPlanner: " . $e->getMessage());
+            throw new BrevetException("Failed to update track: " . $e->getMessage(), 5);
+        }
+    }
 
 }

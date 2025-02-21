@@ -1,42 +1,169 @@
 <p-card>
-<!--  {{model|json}}-->
-  <div class="grid p-fluid">
+  <ng-template pTemplate="header">
+    <div class="flex align-items-center gap-2 mb-3">
+      <i class="pi pi-map text-xl"></i>
+      <h2 class="m-0">Skapa ny bana</h2>
+    </div>
+  </ng-template>
 
-    <div class="col-12 lg:col-12 md:col-12">
-      <span><strong>Arrangemang</strong></span>
-      <brevet-event-selector (trackChange)="addEvent($event)"></brevet-event-selector>
-    </div>
-  </div>
-  <div class="grid p-fluid">
-    <div class="col-12 lg:col-6 md:col-6">
-      <span><strong>Bana</strong></span>
-      <div class="p-inputgroup">
-        <input  (blur)="add()" [(ngModel)]="model.trackname"  pTooltip="Banans namn tex MSR 1200 " type="text" id="trackname" pInputText placeholder="Ange ett namn på banan">
-      </div>
-    </div>
-    <div class="col-12 lg:col-6 md:col-6">
-      <span><strong>Distans</strong></span>
-      <div class="p-inputgroup">
-        <p-inputNumber  (onBlur)="add()"  pTooltip="Banans sträcka tex 200" [(ngModel)]="model.trackdistance" max="2000"  placeholder="Ange banans längd" [showButtons]="true" id="tracklength"  suffix=" km"></p-inputNumber>
+  <!-- Step indicator -->
+  <div class="flex align-items-center mb-4">
+    <div class="flex-1">
+      <div class="flex align-items-center">
+        <div class="surface-card border-round p-2 border-1 border-primary">
+          <i class="pi pi-info-circle mr-2"></i>
+          <span class="font-medium">Allmän information</span>
+        </div>
+        <div class="border-1 border-300 w-3rem mx-2" style="border-style: dashed;"></div>
+        <div class="surface-card border-round p-2 border-1" [ngClass]="{'border-primary': model.id, 'border-300': !model.id}">
+          <i class="pi pi-map-marker mr-2"></i>
+          <span class="font-medium">Kontroller</span>
+        </div>
       </div>
     </div>
   </div>
-  <div class="grid p-fluid">
-    <div class="col-12 lg:col-6 md:col-6">
-      <span><strong>Startdatum</strong></span>
-      <div class="p-inputgroup">
-        <input  (blur)="add()" [(ngModel)]="model.startdate" pTooltip="Om fältet lämnas tomt sätt startdatum  automatiskt till nästkommande dag" tooltipPosition="top" type="text" id="startdate" pInputText placeholder="YYYY-MM-DD">
+
+  <form #trackForm="ngForm" class="p-fluid">
+    <!-- Event Selection - Full Width -->
+    <div class="field mb-3">
+      <label class="block mb-2">Arrangemang *</label>
+      <brevet-event-selector
+        (trackChange)="addEvent($event)"
+        [ngClass]="{'ng-invalid ng-dirty': trackForm.submitted && !model.trackname}">
+      </brevet-event-selector>
+      <small class="p-error block" *ngIf="trackForm.submitted && !model.trackname">Välj ett arrangemang</small>
+    </div>
+
+    <div class="grid formgrid p-0 gap-3">
+      <!-- Left Column -->
+      <div class="col-12 md:col-6">
+        <!-- Track Name -->
+        <div class="field mb-3">
+          <label class="block mb-2">Bana *</label>
+          <input
+            type="text"
+            class="w-full"
+            pInputText
+            [(ngModel)]="model.trackname"
+            name="trackname"
+            required
+            #trackName="ngModel"
+            (blur)="add()"
+            placeholder="t.ex. MSR 1200"
+            [ngClass]="{'ng-invalid ng-dirty': trackForm.submitted && !model.trackname}">
+          <small class="p-error block" *ngIf="trackForm.submitted && !model.trackname">Ange banans namn</small>
+        </div>
+
+        <!-- Distance -->
+        <div class="field mb-3">
+          <label class="block mb-2">Distans *</label>
+          <p-inputNumber
+            [(ngModel)]="model.trackdistance"
+            name="trackdistance"
+            required
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            spinnerMode="horizontal"
+            [min]="0"
+            [max]="2000"
+            [step]="50"
+            decrementButtonClass="p-button-secondary"
+            incrementButtonClass="p-button-secondary"
+            incrementButtonIcon="pi pi-plus"
+            decrementButtonIcon="pi pi-minus"
+            suffix=" km"
+            placeholder="Ange distans"
+            (onBlur)="add()"
+            [ngClass]="{'ng-invalid ng-dirty': trackForm.submitted && !model.trackdistance}">
+          </p-inputNumber>
+          <small class="p-error block" *ngIf="trackForm.submitted && !model.trackdistance">Ange banans distans</small>
+        </div>
+
+        <!-- Track Link -->
+        <div class="field mb-3">
+          <label class="block mb-2">Länk till bana</label>
+          <div class="p-inputgroup">
+            <input
+              type="url"
+              pInputText
+              [(ngModel)]="model.link"
+              name="link"
+              (blur)="add()"
+              placeholder="https://www.strava.com/routes/...">
+            <button
+              *ngIf="model.link"
+              pButton
+              type="button"
+              icon="pi pi-external-link"
+              class="p-button-secondary"
+              (click)="openStravaLink()"
+              pTooltip="Öppna i Strava"
+              tooltipPosition="left">
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="col-12 md:col-6">
+        <!-- Start Date -->
+        <div class="field mb-3">
+          <label class="block mb-2">Startdatum</label>
+          <p-calendar
+            [(ngModel)]="model.startdate"
+            name="startdate"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true"
+            [showButtonBar]="true"
+            placeholder="Välj datum"
+            (onBlur)="add()"
+            [readonlyInput]="true"
+            class="w-full">
+            <ng-template pTemplate="footer">
+              <small class="text-secondary">Lämnas tomt för nästkommande dag</small>
+            </ng-template>
+          </p-calendar>
+        </div>
+
+        <!-- Start Time -->
+        <div class="field mb-3">
+          <label class="block mb-2">Starttid</label>
+          <p-calendar
+            [(ngModel)]="model.starttime"
+            name="starttime"
+            [timeOnly]="true"
+            [showIcon]="true"
+            hourFormat="24"
+            [stepMinute]="5"
+            placeholder="Välj tid"
+            (onBlur)="add()"
+            [readonlyInput]="true"
+            class="w-full">
+            <ng-template pTemplate="footer">
+              <small class="text-secondary">Lämnas tomt för automatisk tid 07:00</small>
+            </ng-template>
+          </p-calendar>
+        </div>
       </div>
     </div>
-    <div class="col-12 lg:col-6 md:col-6">
-      <span><strong>Starttid</strong></span>
-      <div class="p-inputgroup">
-        <input (blur)="add()" [(ngModel)]="model.starttime" pTooltip="Om fältet lämnas tomt sätt starttiden automatiskt till 07:00" tooltipPosition="top" type="text" id="starttime" pInputText placeholder="HH:MM">
+
+    <!-- Action Buttons -->
+    <div class="flex justify-content-between mt-4">
+      <p-button
+        label="Avbryt"
+        icon="pi pi-times"
+        styleClass="p-button-text"
+        (onClick)="cancel()">
+      </p-button>
+      <div class="flex gap-2">
+        <p-button
+          label="Spara bana"
+          icon="pi pi-save"
+          [loading]="saving"
+          [disabled]="!trackForm.form.valid"
+          (onClick)="trackForm.form.valid && saveTrack()">
+        </p-button>
       </div>
     </div>
-    <div class="col-12">
-      <span><strong>Banan på Strava</strong></span>
-      <input  (blur)="add()" [(ngModel)]="model.link"  pTooltip="Banans namn tex MSR 1200 " type="text" id="linktostrava" pInputText placeholder="Länk till strava">
-    </div>
-  </div>
+  </form>
 </p-card>

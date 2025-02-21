@@ -11,21 +11,21 @@ use JsonSerializable;
 class CheckpointRepresentation implements JsonSerializable
 {
 
-    private string $checkpoint_uid;
+    private ?string $checkpoint_uid = null;
     private ?SiteRepresentation $site;
     private ?string $title = "";
     private ?string $description = "";
     private ?float $distance = 0;
     private $opens = "";
-    private $closing = "";
+    private ?string $closing = null;
     private ?Link $link;
 
 
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getCheckpointUid(): string
+    public function getCheckpointUid(): ?string
     {
         return $this->checkpoint_uid;
     }
@@ -119,17 +119,17 @@ class CheckpointRepresentation implements JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getClosing(): string
+    public function getClosing(): ?string
     {
         return $this->closing;
     }
 
     /**
-     * @param string $closing
+     * @param string|null $closing
      */
-    public function setClosing(string $closing): void
+    public function setClosing(?string $closing): void
     {
         $this->closing = $closing;
     }

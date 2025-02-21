@@ -13,10 +13,13 @@ class Track
    private string $description;
    private string $link = "";
    private string $distance;
-   private bool $active;
+   private bool $active = true;
    private array $checkpoints = [];
-   private  $start_date_time = "";
+   private string $start_date_time;
 
+   public function __construct() {
+       $this->start_date_time = date('Y-m-d H:i:s');
+   }
 
     /**
      * @param string $track_uid

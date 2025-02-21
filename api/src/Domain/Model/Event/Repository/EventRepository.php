@@ -52,24 +52,15 @@ class EventRepository extends BaseRepository
     public function eventFor(string $event_uid): ?Event
     {
         try {
-            $results = $this->executeQuery($this->sqls('getEventByUid'), ['event_uid' => $event_uid]);
+            $statement = $this->connection->prepare($this->sqls('getEventByUid'));
+            $statement->bindParam(':event_uid', $event_uid);
+            $statement->execute();
+            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Event::class, null);
             
-            if (empty($results)) {
-                return null;
-            }
-            
-            $event = new Event();
-            // Hydrate event object with first result
-            foreach ($results[0] as $key => $value) {
-                $setter = 'set' . ucfirst($key);
-                if (method_exists($event, $setter)) {
-                    $event->$setter($value);
-                }
-            }
-            return $event;
+            return empty($events) ? null : $events[0];
         } catch (PDOException $e) {
-            error_log("Error: " . $e->getMessage());
-            return null;
+            error_log("Error fetching event: " . $e->getMessage());
+            throw $e; // Rethrow to allow proper error handling upstream
         }
     }
 

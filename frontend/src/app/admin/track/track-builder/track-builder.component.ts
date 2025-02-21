@@ -1,42 +1,44 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import {TrackBuilderComponentService} from "./track-builder-component.service";
-import {RusaTimeCalculationApiService} from "./rusa-time-calculation-api.service";
-import {RusaTimeAssemblerService} from "./rusa-time-assembler.service";
-import {Router} from "@angular/router";
-import {BehaviorSubject} from "rxjs";
+import { Component } from '@angular/core';
+import { TrackBuilderComponentService } from './track-builder-component.service';
+import { map } from 'rxjs/operators';
+import { CommonModule } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
+import { TrackBuilderSummaryComponent } from './track-builder-summary/track-builder-summary.component';
+import { TrackBuilderTrackInfoFormComponent } from './track-builder-track-info-form/track-builder-track-info-form.component';
+import { TrackBuilderControlsFormComponent } from './track-builder-controls-form/track-builder-controls-form.component';
 
 @Component({
-    selector: 'brevet-track-builder',
-    templateUrl: './track-builder.component.html',
-    styleUrls: ['./track-builder.component.scss'],
-    providers: [TrackBuilderComponentService, RusaTimeAssemblerService],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'brevet-track-builder',
+  templateUrl: './track-builder.component.html',
+  styleUrls: ['./track-builder.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    ButtonModule,
+    TrackBuilderSummaryComponent,
+    TrackBuilderTrackInfoFormComponent,
+    TrackBuilderControlsFormComponent
+  ],
+  providers: [TrackBuilderComponentService]
 })
-export class TrackBuilderComponent implements OnInit {
+export class TrackBuilderComponent {
+  editMode$ = this.trackbuildercomponentService.$rusaPlannerInput.pipe(
+    map(input => {
+      return Object.keys(input).length > 0;
+    })
+  );
 
-  items = [];
-  testa$ = this.test.aktuell;
-  value13 = 25;
-
-  editModeSubject = new BehaviorSubject<boolean>(false);
-  editMode$ = this.editModeSubject.asObservable();
-
-
-  constructor(private test: TrackBuilderComponentService,private router: Router) { }
-
-  ngOnInit(): void {
-
-    this.items = [
-      {label: 'Step 1'},
-      {label: 'Step 2'},
-      {label: 'Step 3'}
-    ];
-     // this.test.read();
-  }
+  constructor(private trackbuildercomponentService: TrackBuilderComponentService) { }
 
   setMode() {
-    // this.router.navigate(['/admin/clubadmin'])
-    this.editModeSubject.next(!this.editModeSubject.value)
+    this.trackbuildercomponentService.rusaInput({
+      event_distance: 0,
+      start_time: "",
+      start_date: "",
+      event_uid: "",
+      track_title: "",
+      controls: [],
+      link: ""
+    });
   }
 }

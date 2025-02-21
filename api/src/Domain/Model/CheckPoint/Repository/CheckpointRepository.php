@@ -40,41 +40,45 @@ class CheckpointRepository extends BaseRepository
         return null;
     }
 
-    public function updateCheckpoint($checkpoint_uid ,Checkpoint $checkpoint): Checkpoint {
-
-        $checkpoint_uid = $checkpoint->getCheckpointUid();
-        $site_uid = $checkpoint->getSiteUid();
-        $title = $checkpoint->getTitle();
-        $distance = $checkpoint->getDistance();
-        $description = $checkpoint->getDescription();
-        if(!empty($checkpoint->getOpens())){
-            $opens = strtotime("g:i a",$checkpoint->getOpens());
-        } else {
-            $closing = null;
-        }
-        if(!empty($checkpoint->getClosing())){
-            $closing = strtotime("g:i a",$checkpoint->getClosing());
-        } else {
-            $closing = null;
-        }
+    public function updateCheckpoint($checkpoint_uid, Checkpoint $checkpoint): Checkpoint {
         try {
+            $site_uid = $checkpoint->getSiteUid();
+            $title = $checkpoint->getTitle();
+            $distance = $checkpoint->getDistance();
+            $description = $checkpoint->getDescription();
+            $opens = $checkpoint->getOpens();
+            $closing = $checkpoint->getClosing();
+
+            // Begin transaction
+            $this->connection->beginTransaction();
+
             $statement = $this->connection->prepare($this->sqls('updateCheckpoint'));
             $statement->bindParam(':checkpoint_uid', $checkpoint_uid);
-            $statement->bindParam(':site_uid',$site_uid );
+            $statement->bindParam(':site_uid', $site_uid);
             $statement->bindParam(':title', $title);
             $statement->bindParam(':distance', $distance);
             $statement->bindParam(':description', $description);
             $statement->bindParam(':opens', $opens);
             $statement->bindParam(':closing', $closing);
             $statement->execute();
+
+            // Commit transaction
+            $this->connection->commit();
         } catch (PDOException $e) {
-            echo 'Kunde inte uppdatera site: ' . $e->getMessage();
+            // Rollback transaction on error
+            $this->connection->rollBack();
+            echo 'Error updating checkpoint: ' . $e->getMessage();
+            throw $e;
         }
 
         return $checkpoint;
     }
 
-    public function createCheckpoint($checkpoint_uid, Checkpoint $checkpoint): Checkpoint {
+    public function createCheckpoint(string $track_uid, Checkpoint $checkpoint): Checkpoint {
+        if (empty($track_uid)) {
+            throw new \InvalidArgumentException('track_uid cannot be null or empty');
+        }
+
         try {
             $checkpoint_uid = Uuid::uuid4();
             $site_uid = $checkpoint->getSiteUid();
@@ -83,22 +87,23 @@ class CheckpointRepository extends BaseRepository
             $description = $checkpoint->getDescription();
             if(!empty($checkpoint->getOpens())){
                 if($checkpoint->getOpens() != null && $checkpoint->getOpens() != '-'){
-                 //   $opens =  date('Y-m-d H:i:s',floatval(date('Y-m-d') . $checkpoint->getOpens()));
                     $opens =  $checkpoint->getOpens();
                 }
             } else {
-                $closing = null;
+                $opens = null;
             }
             if(!empty($checkpoint->getClosing())){
                 if($checkpoint->getClosing() != null && $checkpoint->getClosing() != '-'){
-                    $closing =    $checkpoint->getClosing();
-                  //  $closing =   date('Y-m-d H:i:s',floatval($checkpoint->getClosing()));
+                    $closing = $checkpoint->getClosing();
                 }
-
             } else {
                 $closing = null;
             }
 
+            // Begin transaction
+            $this->connection->beginTransaction();
+
+            // Create checkpoint
             $stmt = $this->connection->prepare($this->sqls('createCheckpoint'));
             $stmt->bindParam(':checkpoint_uid', $checkpoint_uid);
             $stmt->bindParam(':site_uid',$site_uid );
@@ -108,11 +113,22 @@ class CheckpointRepository extends BaseRepository
             $stmt->bindParam(':opens', $opens);
             $stmt->bindParam(':closing', $closing);
             $stmt->execute();
+
+            // Create track_checkpoint association
+            $stmt = $this->connection->prepare($this->sqls('createTrackCheckpoint'));
+            $stmt->bindParam(':track_uid', $track_uid);
+            $stmt->bindParam(':checkpoint_uid', $checkpoint_uid);
+            $stmt->execute();
+
+            // Commit transaction
+            $this->connection->commit();
         }
         catch(PDOException $e)
         {
-
+            // Rollback transaction on error
+            $this->connection->rollBack();
             echo "Error: " . $e->getMessage();
+            throw $e;
         }
         $checkpoint->setCheckpointUid($checkpoint_uid);
         return $checkpoint;
@@ -265,13 +281,28 @@ class CheckpointRepository extends BaseRepository
     }
     public function deleteCheckpoint(string $checkpoint_uid): void {
         try {
+            // Begin transaction
+            $this->connection->beginTransaction();
+
+            // First delete from track_checkpoint
+            $stmt = $this->connection->prepare($this->sqls('deleteTrackCheckpoint'));
+            $stmt->bindParam(':checkpoint_uid', $checkpoint_uid);
+            $stmt->execute();
+
+            // Then delete the checkpoint
             $stmt = $this->connection->prepare($this->sqls('deleteCheckpoint'));
             $stmt->bindParam(':checkpoint_uid', $checkpoint_uid);
             $stmt->execute();
+
+            // Commit transaction
+            $this->connection->commit();
         }
         catch(PDOException $e)
         {
+            // Rollback transaction on error
+            $this->connection->rollBack();
             echo "Error: " . $e->getMessage();
+            throw $e;
         }
     }
 
@@ -312,8 +343,10 @@ class CheckpointRepository extends BaseRepository
         $tracksqls['getCheckpointByUID'] = 'select *  from checkpoint t where t.checkpoint_uid=:checkpoint_uid;';
         $tracksqls['getCheckpointsFor'] = 'select * from checkpoint where checkpoint_uid in (?);';
         $tracksqls['createCheckpoint']  = "INSERT INTO checkpoint(checkpoint_uid, site_uid, title, description, distance, opens, closing) VALUES (:checkpoint_uid, :site_uid,:title,:description,:distance, :opens,:closing)";
-        $tracksqls['updateCheckpoint']  = "UPDATE checkpoint SET  title=:title , site_uid=:site_uid description=:description , distance=:distance, opens=:opens, closing=:closing  WHERE checkpoint_uid=:checkpoint_uid";
-        $tracksqls['deleteCheckpoint'] = 'delete from checkpoint  where checkpoint_uid=:checkpoint_uid;';
+        $tracksqls['createTrackCheckpoint'] = "INSERT INTO track_checkpoint(track_uid, checkpoint_uid) VALUES (:track_uid, :checkpoint_uid)";
+        $tracksqls['updateCheckpoint']  = "UPDATE checkpoint SET title=:title, site_uid=:site_uid, description=:description, distance=:distance, opens=:opens, closing=:closing WHERE checkpoint_uid=:checkpoint_uid";
+        $tracksqls['deleteCheckpoint'] = 'DELETE FROM checkpoint WHERE checkpoint_uid=:checkpoint_uid;';
+        $tracksqls['deleteTrackCheckpoint'] = 'DELETE FROM track_checkpoint WHERE checkpoint_uid=:checkpoint_uid;';
         $tracksqls['getCheckpointByTrackUid'] = 'select checkpoint_uid from track_checkpoint where track_uid=:track_uid;';
         $tracksqls['countCheckpointforTrack'] = 'select count(checkpoint_uid) from track_checkpoint where track_uid=:track_uid;';
         $tracksqls['existsBySiteUidAndDistance'] = 'select * from checkpoint e where e.site_uid=:site_uid and e.distance=:distance and opens=:opens and closing=:closing;';

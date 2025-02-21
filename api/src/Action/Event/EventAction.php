@@ -39,6 +39,8 @@ class EventAction
         $route = $routeContext->getRoute();
         $event_uid = $route->getArgument('eventUid');
 
+
+
         $event = $this->eventService->eventFor($event_uid);
 
         if (!isset($event)) {

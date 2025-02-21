@@ -1,18 +1,33 @@
 <div class="flex justify-content-start mt-4">
-  <p-button (click)="addControl()" label="Lägg till kontroll"  icon="" styleClass="p-button-sm p-button-success"></p-button>
+  <p-button
+    (click)="addControl()"
+    label="Lägg till kontroll"
+    icon="pi pi-plus"
+    [disabled]="!(trackSaved$ | async)"
+    [pTooltip]="!(trackSaved$ | async) ? 'Spara banan först för att lägga till kontroller' : null"
+    tooltipPosition="right"
+    styleClass="p-button-sm p-button-success">
+  </p-button>
 </div>
 <!--{{rusatimeControls |json}}-->
 <ng-container *ngFor="let control of rusatimeControls; index as i">
-<p-card styleClass="mt-1">
-  <div class="grid p-fluid">
-    <div class="col-12 lg:col-6 md:col-6 ">
-      <span><strong>Kontrollplats</strong></span>
-      <brevet-site-selector (SiteChange)="addSite($event, i)" [styleClass]="''"></brevet-site-selector>
+  <p-card styleClass="mt-1">
+    <div class="grid p-fluid">
+      <div class="col-11 lg:col-11 md:col-11">
+        <div class="grid">
+          <div class="col-12 lg:col-6 md:col-6">
+            <span><strong>Kontrollplats</strong></span>
+            <brevet-site-selector (SiteChange)="addSite($event, i)" [styleClass]="''"></brevet-site-selector>
+          </div>
+          <div class="col-12 lg:col-6 md:col-6">
+            <span><strong>Distans</strong></span>
+            <p-inputNumber [(ngModel)]="control.DISTANCE" (onBlur)="updateDistance(i)" max="2000" [showButtons]="true" suffix=" km"></p-inputNumber>
+          </div>
+        </div>
+      </div>
+      <div class="col-1 lg:col-1 md:col-1 flex align-items-center justify-content-center">
+        <button pButton type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" (click)="removeControl(i)"></button>
+      </div>
     </div>
-    <div class="col-12 lg:col-6 md:col-6">
-      <span><strong>Distans</strong></span>
-      <p-inputNumber (onBlur)="publish($event)" [(ngModel)]="control.DISTANCE" max="2000"  id="controllength" [showButtons]="true"   suffix=" km"></p-inputNumber>
-    </div>
-  </div>
-</p-card>
+  </p-card>
 </ng-container>

@@ -14,8 +14,7 @@ use Slim\Routing\RouteContext;
 
 class CheckpointAction
 {
-
-
+    private CheckpointsService $checkpointsService;
 
     public function __construct(ContainerInterface $c, CheckpointsService $checkpointsService)
     {
@@ -45,13 +44,22 @@ class CheckpointAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
     public function createCheckpoint(ServerRequestInterface $request, ResponseInterface $response){
-        $routeContext = RouteContext::fromRequest($request);
-        $route = $routeContext->getRoute();
-        $checkpoint_uid = $route->getArgument('checkpointUID');
+        // Read the request body once
+        $body = $request->getBody()->getContents();
+        $data = json_decode($body, true);
+        
+        // Get track_uid from request body
+        $track_uid = $data['track_uid'] ?? null;
+        if (!$track_uid) {
+            throw new \InvalidArgumentException('track_uid is required in request body');
+        }
+        
+        // Decode the checkpoint data
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new CheckpointRepresentationTranformer());
-        $checkpoint = $jsonDecoder->decode($request->getBody()->getContents(), CheckpointRepresentation::class);
-        $response->getBody()->write(json_encode($this->checkpointsService->createCheckpoint($checkpoint_uid,$checkpoint)));
+        $checkpoint = $jsonDecoder->decode($body, CheckpointRepresentation::class);
+        
+        $response->getBody()->write(json_encode($this->checkpointsService->createCheckpoint($track_uid, $checkpoint)));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 

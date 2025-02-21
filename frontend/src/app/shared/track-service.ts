@@ -4,9 +4,15 @@ import {LinkService} from "../core/link.service";
 import {Link, TrackRepresentation} from "./api/api";
 import {environment} from "../../environments/environment";
 import {catchError, map, shareReplay, take, tap} from "rxjs/operators";
-import {BehaviorSubject, firstValueFrom, Observable, throwError} from "rxjs";
+import {BehaviorSubject, firstValueFrom, Observable, throwError, of, mergeMap} from "rxjs";
 import {HttpMethod} from "../core/HttpMethod";
-import {RusaPlannerResponseRepresentation, RusaTimeRepresentation} from './api/rusaTimeApi';
+import {RusaPlannerResponseRepresentation, RusaTimeRepresentation, RusaPlannerInputRepresentation, RusaPlannerControlInputRepresentation} from './api/rusaTimeApi';
+import { v4 as uuidv4 } from 'uuid';  // Import UUID generator
+
+export interface SaveControlsRequest {
+  track_uid: string;
+  controls: RusaPlannerControlInputRepresentation[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -100,7 +106,29 @@ export class TrackService {
     return await this.publishresultaction(this.linkService.findByRel(trackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT ))
   }
 
-  createTrack(s: RusaPlannerResponseRepresentation) {
-      firstValueFrom(this.httpClient.post(environment.backend_url + "trackplanner/createtrackfromplanner",s))
+  createTrack(trackData: RusaPlannerResponseRepresentation): Observable<any> {
+    console.log('Creating track with data:', JSON.stringify(trackData, null, 2));
+    return this.httpClient.post(`${environment.backend_url}trackplanner/createtrackfromplanner`, trackData).pipe(
+      tap(response => {
+        console.log('Track created:', response);
+      }),
+      catchError(error => {
+        console.error('Error creating track:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  updateTrack(trackData: RusaPlannerResponseRepresentation, track_uid: string): Observable<any> {
+    console.log('Updating track with data:', JSON.stringify(trackData, null, 2));
+    return this.httpClient.put(`${environment.backend_url}trackplanner/updatetrackfromplanner/${track_uid}`, trackData).pipe(
+      tap(response => {
+        console.log('Track updated:', response);
+      }),
+      catchError(error => {
+        console.error('Error updating track:', error);
+        return throwError(() => error);
+      })
+    );
   }
 }

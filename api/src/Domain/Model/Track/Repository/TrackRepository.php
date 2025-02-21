@@ -159,6 +159,9 @@ class TrackRepository extends BaseRepository
         $heightdifference = $track->getHeightdifference();
         $link = $track->getLink();
         try {
+            $this->connection->beginTransaction();
+
+            // Update track data
             $statement = $this->connection->prepare($this->sqls('updateTrack'));
             $statement->bindParam(':title', $title);
             $statement->bindParam(':heightdifference', $heightdifference);
@@ -167,19 +170,28 @@ class TrackRepository extends BaseRepository
             $statement->bindParam(':distance', $distance);
             $statement->bindParam(':track_uid', $track_uid);
             $statement->bindParam(':link', $link);
-            $status = $statement->execute();
-            if ($status) {
-                $sql = "UPDATE track_checkpoint SET checkpoint_uid=:checkpoint_uid WHERE track_uid=:track_uid";
-                $query = $this->connection->prepare($sql);
-                foreach ($track->getCheckpoints() as $s => $ro) {
-                    $query->bindparam(':checkpoint_uid', $ro);
-                    $query->bindparam(':track_uid', $track_uid);
-                    $query->execute();
+            $statement->execute();
+
+            // Delete existing track-checkpoint associations
+            $deleteStmt = $this->connection->prepare("DELETE FROM track_checkpoint WHERE track_uid = :track_uid");
+            $deleteStmt->bindParam(':track_uid', $track_uid);
+            $deleteStmt->execute();
+
+            // Insert new track-checkpoint associations
+            if (!empty($track->getCheckpoints())) {
+                $insertStmt = $this->connection->prepare("INSERT IGNORE INTO track_checkpoint (track_uid, checkpoint_uid) VALUES (:track_uid, :checkpoint_uid)");
+                foreach ($track->getCheckpoints() as $checkpoint_uid) {
+                    $insertStmt->bindParam(':track_uid', $track_uid);
+                    $insertStmt->bindParam(':checkpoint_uid', $checkpoint_uid);
+                    $insertStmt->execute();
                 }
             }
 
+            $this->connection->commit();
         } catch (PDOException $e) {
-            echo 'Kunde inte uppdatera Track: ' . $e->getMessage();
+            $this->connection->rollBack();
+            error_log('Could not update Track: ' . $e->getMessage());
+            throw new BrevetException("Failed to update track: " . $e->getMessage(), 5);
         }
         return $track;
     }
@@ -196,6 +208,9 @@ class TrackRepository extends BaseRepository
         $start_date_time = $track->getStartDateTime();
 
         try {
+            $this->connection->beginTransaction();
+
+            // Create track
             $statement = $this->connection->prepare($this->sqls('createTrack'));
             $statement->bindParam(':title', $title);
             $statement->bindParam(':heightdifference', $heightdifference);
@@ -205,22 +220,26 @@ class TrackRepository extends BaseRepository
             $statement->bindParam(':track_uid', $track_uid);
             $statement->bindParam(':link', $link);
             $statement->bindParam(':start_date_time', $start_date_time);
-            $data = $statement->execute();
+            $statement->execute();
 
-            if ($data && !empty($track->getCheckpoints())) {
-
-                $query = $this->connection->prepare($this->sqls('createTrackCheckpoint'));
-                foreach ($track->getCheckpoints() as $s => $ro) {
-                    $query->bindparam(':checkpoint_uid', $ro);
-                    $query->bindparam(':track_uid', $track_uid);
-                    $query->execute();
+            // Insert track-checkpoint associations
+            if (!empty($track->getCheckpoints())) {
+                $insertStmt = $this->connection->prepare("INSERT IGNORE INTO track_checkpoint (track_uid, checkpoint_uid) VALUES (:track_uid, :checkpoint_uid)");
+                foreach ($track->getCheckpoints() as $checkpoint_uid) {
+                    $insertStmt->bindParam(':track_uid', $track_uid);
+                    $insertStmt->bindParam(':checkpoint_uid', $checkpoint_uid);
+                    $insertStmt->execute();
                 }
             }
+
+            $this->connection->commit();
+            $track->setTrackUid($track_uid);
+            return $track;
         } catch (PDOException $e) {
-            echo 'Kunde inte uppdatera Track: ' . $e->getMessage();
+            $this->connection->rollBack();
+            error_log('Could not create Track: ' . $e->getMessage());
+            throw new BrevetException("Failed to create track: " . $e->getMessage(), 5);
         }
-        $track->setTrackUid($track_uid);
-        return $track;
     }
 
 
@@ -387,7 +406,6 @@ class TrackRepository extends BaseRepository
         $tracksqls['updateTrack'] = "UPDATE track SET  title=:title, link=:link , heightdifference=:heightdifference, event_uid=:event_uid , description=:description, distance=:distance  WHERE track_uid=:track_uid";
         $tracksqls['updateTrackCheckpoint'] = 'UPDATE track_checkpoint SET checkpoint_uid=:checkpoint_uid where track_uid=:track_uid';
         $tracksqls['createTrack']  = "INSERT INTO track(track_uid, title ,link, heightdifference , event_uid,description, distance, start_date_time) VALUES (:track_uid,:title ,:link, :heightdifference ,:event_uid, :description ,:distance, :start_date_time)";
-        $tracksqls['createTrackCheckpoint']  = "INSERT INTO track_checkpoint(track_uid, checkpoint_uid) VALUES (:track_uid,:checkpoint_uid)";
         $tracksqls['trackWithStartdateExists']  = "select * from track where event_uid=:event_uid and title=:title and start_date_time=:start_date_time;";
         $tracksqls['trackdatesPassed']  = "SELECT max(c.distance) as distance ,min(c.opens) as opens , c.checkpoint_uid, max(c.closing) as closing FROM `track` t inner join track_checkpoint tc on tc.track_uid = t.track_uid inner join checkpoint c on c.checkpoint_uid = tc.checkpoint_uid where t.track_uid =:track_uid;";
         $tracksqls['lastCheckpointOnTrack']  =  "select s.adress from track t inner join track_checkpoint tc on tc.track_uid = t.track_uid inner join checkpoint c on c.checkpoint_uid = tc.checkpoint_uid inner join site s on s.site_uid = c.site_uid where tc.track_uid=:track_uid and c.distance in (select max(distance) from checkpoint);";
@@ -400,4 +418,6 @@ class TrackRepository extends BaseRepository
 
 
 }
+
+
 
