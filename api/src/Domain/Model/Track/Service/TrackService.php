@@ -481,19 +481,20 @@ class TrackService extends ServiceAbstract
 
     public function updateTrackFromPlanner(stdClass $trackrepresentation, string $track_uid, string $currentUserUId): TrackRepresentation {
         try {
+            // Get existing track
             $track = $this->trackRepository->getTrackByUid($track_uid);
-            if ($track == null) {
+            if ($track === null) {
                 throw new BrevetException("No track found with given uid", 5);
             }
-            // Check if race has started
-            $startDateTime = new \DateTime($track->getStartDateTime());
-            $now = new \DateTime();
-            
-            if ($startDateTime < $now) {
-                throw new BrevetException("Cannot update track after race has started", 5);
-            }
 
-            
+//            // Check if race has started
+//            $startDateTime = new \DateTime($track->getStartDateTime());
+//            $now = new \DateTime();
+//
+//            if ($startDateTime < $now) {
+//                throw new BrevetException("Cannot update track after race has started", 5);
+//            }
+
             // First update track data
             $track->setDescription("");
             $track->setTitle($trackrepresentation->rusaTrackRepresentation->TRACK_TITLE);
@@ -506,11 +507,19 @@ class TrackService extends ServiceAbstract
             // Update track first to ensure it exists
             $track = $this->trackRepository->updateTrack($track);
 
-            // Get existing checkpoints and delete them
+            // Delete existing track-checkpoint associations
+            $this->trackRepository->deleteTrackCheckpoint([$track_uid]);
+
+            // Get existing checkpoints and delete them if they're not used by other tracks
             $existingCheckpoints = $track->getCheckpoints();
             if (!empty($existingCheckpoints)) {
                 foreach ($existingCheckpoints as $checkpoint_uid) {
-                    $this->checkpointService->deleteCheckpoint($checkpoint_uid);
+                    try {
+                        $this->checkpointService->deleteCheckpoint($checkpoint_uid);
+                    } catch (\Exception $e) {
+                        // Log error but continue - checkpoint might be used by other tracks
+                        error_log("Error deleting checkpoint {$checkpoint_uid}: " . $e->getMessage());
+                    }
                 }
             }
 
@@ -521,17 +530,30 @@ class TrackService extends ServiceAbstract
                         continue;
                     }
 
-                    // Create new checkpoint
-                    $checkpoint = new Checkpoint();
-                    $checkpoint->setSiteUid($checkpointiput->siteRepresentation->site_uid);
-                    $checkpoint->setDistance($checkpointiput->rusaControlRepresentation->CONTROL_DISTANCE_KM);
-                    $checkpoint->setOpens(date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->OPEN)));
-                    $checkpoint->setClosing(date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->CLOSE)));
+                    // Check if checkpoint already exists with these exact parameters
+                    $existingCheckpoint = $this->checkpointRepository->existsBySiteUidAndDistance(
+                        $checkpointiput->siteRepresentation->site_uid,
+                        $checkpointiput->rusaControlRepresentation->CONTROL_DISTANCE_KM,
+                        date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->OPEN)),
+                        date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->CLOSE))
+                    );
 
-                    // Create checkpoint with the actual track_uid
-                    $createdCheckpoint = $this->checkpointRepository->createCheckpoint($track_uid, $checkpoint);
-                    if ($createdCheckpoint && $createdCheckpoint->getCheckpointUid()) {
-                        array_push($checkUids, $createdCheckpoint->getCheckpointUid());
+                    if ($existingCheckpoint) {
+                        // If checkpoint exists, just use its ID
+                        array_push($checkUids, $existingCheckpoint->getCheckpointUid());
+                    } else {
+                        // Create new checkpoint
+                        $checkpoint = new Checkpoint();
+                        $checkpoint->setSiteUid($checkpointiput->siteRepresentation->site_uid);
+                        $checkpoint->setDistance($checkpointiput->rusaControlRepresentation->CONTROL_DISTANCE_KM);
+                        $checkpoint->setOpens(date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->OPEN)));
+                        $checkpoint->setClosing(date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->CLOSE)));
+
+                        // Create checkpoint with the actual track_uid
+                        $createdCheckpoint = $this->checkpointRepository->createCheckpoint($track_uid, $checkpoint);
+                        if ($createdCheckpoint && $createdCheckpoint->getCheckpointUid()) {
+                            array_push($checkUids, $createdCheckpoint->getCheckpointUid());
+                        }
                     }
                 }
             }
@@ -545,7 +567,7 @@ class TrackService extends ServiceAbstract
             error_log("Database error in updateTrackFromPlanner: " . $e->getMessage());
             throw new BrevetException("Failed to update track: " . $e->getMessage(), 5);
         } catch (\Exception $e) {
-            error_log("Error in updateTrackFromPlanner: " . $e->getMessage());
+            error_log("Error in updateTrackFromPlanner: " . $e->getTraceAsString());
             throw new BrevetException("Failed to update track: " . $e->getMessage(), 5);
         }
     }

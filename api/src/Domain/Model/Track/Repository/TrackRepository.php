@@ -158,6 +158,7 @@ class TrackRepository extends BaseRepository
         $event_uid = $track->getEventUid();
         $heightdifference = $track->getHeightdifference();
         $link = $track->getLink();
+        $start_date_time = $track->getStartDateTime();
         try {
             $this->connection->beginTransaction();
 
@@ -170,6 +171,7 @@ class TrackRepository extends BaseRepository
             $statement->bindParam(':distance', $distance);
             $statement->bindParam(':track_uid', $track_uid);
             $statement->bindParam(':link', $link);
+            $statement->bindParam(':start_date_time', $start_date_time);
             $statement->execute();
 
             // Delete existing track-checkpoint associations
@@ -188,12 +190,12 @@ class TrackRepository extends BaseRepository
             }
 
             $this->connection->commit();
-        } catch (PDOException $e) {
+            return $track;
+        } catch (\PDOException $e) {
             $this->connection->rollBack();
             error_log('Could not update Track: ' . $e->getMessage());
             throw new BrevetException("Failed to update track: " . $e->getMessage(), 5);
         }
-        return $track;
     }
 
     public function createTrack(Track $track): Track
@@ -403,7 +405,7 @@ class TrackRepository extends BaseRepository
         $tracksqls['trackByUid'] = 'select * from track where track_uid=:track_uid;';
         $tracksqls['tracksByEvent'] = 'select * from track where event_uid=:event_uid;';
         $tracksqls['getCheckpoints'] = 'select checkpoint_uid  from track_checkpoint where track_uid=:track_uid;';
-        $tracksqls['updateTrack'] = "UPDATE track SET  title=:title, link=:link , heightdifference=:heightdifference, event_uid=:event_uid , description=:description, distance=:distance  WHERE track_uid=:track_uid";
+        $tracksqls['updateTrack'] = "UPDATE track SET title=:title, link=:link, heightdifference=:heightdifference, event_uid=:event_uid, description=:description, distance=:distance, start_date_time=:start_date_time WHERE track_uid=:track_uid";
         $tracksqls['updateTrackCheckpoint'] = 'UPDATE track_checkpoint SET checkpoint_uid=:checkpoint_uid where track_uid=:track_uid';
         $tracksqls['createTrack']  = "INSERT INTO track(track_uid, title ,link, heightdifference , event_uid,description, distance, start_date_time) VALUES (:track_uid,:title ,:link, :heightdifference ,:event_uid, :description ,:distance, :start_date_time)";
         $tracksqls['trackWithStartdateExists']  = "select * from track where event_uid=:event_uid and title=:title and start_date_time=:start_date_time;";
