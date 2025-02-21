@@ -1,7 +1,7 @@
 <p-card>
   <ng-template pTemplate="header">
     <div class="flex align-items-center gap-2 mb-3">
-      <i class="pi pi-map text-xl"></i>
+      <i class="pi pi-map text-2xl text-primary"></i>
       <h2 class="m-0">Skapa ny bana</h2>
     </div>
   </ng-template>
@@ -10,13 +10,13 @@
   <div class="flex align-items-center mb-4">
     <div class="flex-1">
       <div class="flex align-items-center">
-        <div class="surface-card border-round p-2 border-1 border-primary">
-          <i class="pi pi-info-circle mr-2"></i>
+        <div class="surface-card border-round p-3 border-2 border-primary shadow-1">
+          <i class="pi pi-info-circle mr-2 text-primary"></i>
           <span class="font-medium">Allmän information</span>
         </div>
-        <div class="border-1 border-300 w-3rem mx-2" style="border-style: dashed;"></div>
-        <div class="surface-card border-round p-2 border-1" [ngClass]="{'border-primary': model.id, 'border-300': !model.id}">
-          <i class="pi pi-map-marker mr-2"></i>
+        <div class="border-1 border-300 w-4rem mx-3" style="border-style: dashed;"></div>
+        <div class="surface-card border-round p-3 border-2 shadow-1" [ngClass]="{'border-primary': model.id, 'border-300': !model.id}">
+          <i class="pi pi-map-marker mr-2" [ngClass]="{'text-primary': model.id}"></i>
           <span class="font-medium">Kontroller</span>
         </div>
       </div>
@@ -24,22 +24,33 @@
   </div>
 
   <form #trackForm="ngForm" class="p-fluid">
-    <!-- Event Selection - Full Width -->
-    <div class="field mb-3">
-      <label class="block mb-2">Arrangemang *</label>
-      <brevet-event-selector
-        (trackChange)="addEvent($event)"
-        [ngClass]="{'ng-invalid ng-dirty': trackForm.submitted && !model.trackname}">
-      </brevet-event-selector>
-      <small class="p-error block" *ngIf="trackForm.submitted && !model.trackname">Välj ett arrangemang</small>
-    </div>
+    <div class="grid formgrid p-0">
+      <!-- Event Selection -->
+      <div class="col-12 field mb-4">
+        <div class="grid m-0 p-0">
+          <div class="col-12 md:col-10 p-0">
+            <brevet-event-selector
+              styleClass="w-full"
+              (trackChange)="addEvent($event)"
+              [ngClass]="{'ng-invalid ng-dirty': trackForm.submitted && !model.trackname}">
+            </brevet-event-selector>
+            <small class="p-error block mt-1" *ngIf="trackForm.submitted && !model.trackname">Välj ett arrangemang</small>
+          </div>
+        </div>
+      </div>
 
-    <div class="grid formgrid p-0 gap-3">
       <!-- Left Column -->
-      <div class="col-12 md:col-6">
+      <div class="col-12 md:col-6 pr-md-3">
         <!-- Track Name -->
-        <div class="field mb-3">
-          <label class="block mb-2">Bana *</label>
+        <div class="field mb-4">
+          <div class="flex align-items-center mb-2">
+            <i class="pi pi-tag text-primary text-lg"></i>
+            <label class="font-medium ml-2 flex align-items-center">
+              Bana
+              <i class="pi pi-info-circle text-primary text-sm ml-2" pTooltip="Ange namn på banan" tooltipPosition="right"></i>
+              <span class="text-primary ml-1">*</span>
+            </label>
+          </div>
           <input
             type="text"
             class="w-full"
@@ -51,12 +62,19 @@
             (blur)="add()"
             placeholder="t.ex. MSR 1200"
             [ngClass]="{'ng-invalid ng-dirty': trackForm.submitted && !model.trackname}">
-          <small class="p-error block" *ngIf="trackForm.submitted && !model.trackname">Ange banans namn</small>
+          <small class="p-error block mt-1" *ngIf="trackForm.submitted && !model.trackname">Ange banans namn</small>
         </div>
 
         <!-- Distance -->
-        <div class="field mb-3">
-          <label class="block mb-2">Distans *</label>
+        <div class="field mb-4">
+          <div class="flex align-items-center mb-2">
+            <i class="pi pi-arrows-h text-primary text-lg"></i>
+            <label class="font-medium ml-2 flex align-items-center">
+              Distans
+              <i class="pi pi-info-circle text-primary text-sm ml-2" pTooltip="Ange banans distans i kilometer" tooltipPosition="right"></i>
+              <span class="text-primary ml-1">*</span>
+            </label>
+          </div>
           <p-inputNumber
             [(ngModel)]="model.trackdistance"
             name="trackdistance"
@@ -76,19 +94,26 @@
             (onBlur)="add()"
             [ngClass]="{'ng-invalid ng-dirty': trackForm.submitted && !model.trackdistance}">
           </p-inputNumber>
-          <small class="p-error block" *ngIf="trackForm.submitted && !model.trackdistance">Ange banans distans</small>
+          <small class="p-error block mt-1" *ngIf="trackForm.submitted && !model.trackdistance">Ange banans distans</small>
         </div>
 
         <!-- Track Link -->
-        <div class="field mb-3">
-          <label class="block mb-2">Länk till bana</label>
-          <div class="p-inputgroup">
+        <div class="field mb-4">
+          <div class="flex align-items-center mb-2">
+            <i class="pi pi-link text-primary text-lg"></i>
+            <label class="font-medium ml-2 flex align-items-center">
+              Länk till bana
+              <i class="pi pi-info-circle text-primary text-sm ml-2" pTooltip="Lägg till en länk till banan på Strava" tooltipPosition="right"></i>
+            </label>
+          </div>
+          <div class="p-inputgroup w-full">
             <input
               type="url"
               pInputText
               [(ngModel)]="model.link"
               name="link"
               (blur)="add()"
+              class="w-full"
               placeholder="https://www.strava.com/routes/...">
             <button
               *ngIf="model.link"
@@ -105,10 +130,16 @@
       </div>
 
       <!-- Right Column -->
-      <div class="col-12 md:col-6">
+      <div class="col-12 md:col-6 pl-md-3">
         <!-- Start Date -->
-        <div class="field mb-3">
-          <label class="block mb-2">Startdatum</label>
+        <div class="field mb-4">
+          <div class="flex align-items-center mb-2">
+            <i class="pi pi-calendar text-primary text-lg"></i>
+            <label class="font-medium ml-2 flex align-items-center">
+              Startdatum
+              <i class="pi pi-info-circle text-primary text-sm ml-2" pTooltip="Välj startdatum för banan" tooltipPosition="right"></i>
+            </label>
+          </div>
           <p-calendar
             [(ngModel)]="model.startdate"
             name="startdate"
@@ -126,8 +157,14 @@
         </div>
 
         <!-- Start Time -->
-        <div class="field mb-3">
-          <label class="block mb-2">Starttid</label>
+        <div class="field mb-4">
+          <div class="flex align-items-center mb-2">
+            <i class="pi pi-clock text-primary text-lg"></i>
+            <label class="font-medium ml-2 flex align-items-center">
+              Starttid
+              <i class="pi pi-info-circle text-primary text-sm ml-2" pTooltip="Välj starttid för banan" tooltipPosition="right"></i>
+            </label>
+          </div>
           <p-calendar
             [(ngModel)]="model.starttime"
             name="starttime"
@@ -148,7 +185,7 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex justify-content-between mt-4">
+    <div class="flex justify-content-between mt-5 pt-3 border-top-1 border-300">
       <p-button
         label="Avbryt"
         icon="pi pi-times"

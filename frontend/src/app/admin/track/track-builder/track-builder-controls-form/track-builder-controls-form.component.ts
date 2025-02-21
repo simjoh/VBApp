@@ -8,6 +8,7 @@ import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TooltipModule } from 'primeng/tooltip';
+import { DropdownModule } from 'primeng/dropdown';
 import { SharedModule } from '../../../../shared/shared.module';
 
 @Component({
@@ -22,6 +23,7 @@ import { SharedModule } from '../../../../shared/shared.module';
     ButtonModule,
     InputNumberModule,
     TooltipModule,
+    DropdownModule,
     SharedModule
   ]
 })

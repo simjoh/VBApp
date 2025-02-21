@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { CalendarModule } from 'primeng/calendar';
 import { TooltipModule } from 'primeng/tooltip';
+import { DropdownModule } from 'primeng/dropdown';
 import { EventSelectorComponent } from '../../../../shared/components/event-selector/event-selector.component';
 
 @Component({
@@ -25,6 +26,7 @@ import { EventSelectorComponent } from '../../../../shared/components/event-sele
     InputNumberModule,
     CalendarModule,
     TooltipModule,
+    DropdownModule,
     EventSelectorComponent
   ]
 })

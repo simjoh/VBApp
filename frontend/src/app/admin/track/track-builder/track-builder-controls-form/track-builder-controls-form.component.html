@@ -1,33 +1,103 @@
-<div class="flex justify-content-start mt-4">
-  <p-button
-    (click)="addControl()"
-    label="Lägg till kontroll"
-    icon="pi pi-plus"
-    [disabled]="!(trackSaved$ | async)"
-    [pTooltip]="!(trackSaved$ | async) ? 'Spara banan först för att lägga till kontroller' : null"
-    tooltipPosition="right"
-    styleClass="p-button-sm p-button-success">
-  </p-button>
-</div>
-<!--{{rusatimeControls |json}}-->
-<ng-container *ngFor="let control of rusatimeControls; index as i">
-  <p-card styleClass="mt-1">
-    <div class="grid p-fluid">
-      <div class="col-11 lg:col-11 md:col-11">
-        <div class="grid">
-          <div class="col-12 lg:col-6 md:col-6">
-            <span><strong>Kontrollplats</strong></span>
-            <brevet-site-selector (SiteChange)="addSite($event, i)" [styleClass]="''"></brevet-site-selector>
-          </div>
-          <div class="col-12 lg:col-6 md:col-6">
-            <span><strong>Distans</strong></span>
-            <p-inputNumber [(ngModel)]="control.DISTANCE" (onBlur)="updateDistance(i)" max="2000" [showButtons]="true" suffix=" km"></p-inputNumber>
+<div class="mt-4">
+  <!-- Header with explanation -->
+  <div class="flex align-items-center justify-content-between mb-3">
+    <div class="flex align-items-center">
+      <i class="pi pi-map-marker text-primary text-xl"></i>
+      <h3 class="m-0 ml-2">Kontroller</h3>
+    </div>
+    <p-button
+      (click)="addControl()"
+      label="Lägg till kontroll"
+      icon="pi pi-plus"
+      [disabled]="!(trackSaved$ | async)"
+      [pTooltip]="!(trackSaved$ | async) ? 'Spara banan först för att lägga till kontroller' : null"
+      tooltipPosition="left"
+      styleClass="p-button-sm p-button-success">
+    </p-button>
+  </div>
+
+  <!-- Info message when track needs to be saved -->
+  <div *ngIf="!(trackSaved$ | async)" class="flex align-items-center justify-content-center p-3 surface-200 border-round mb-3">
+    <i class="pi pi-info-circle mr-2 text-600"></i>
+    <span class="text-600">Spara banan först för att hantera kontroller</span>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="rusatimeControls.length === 0 && (trackSaved$ | async)" class="flex flex-column align-items-center justify-content-center p-5 surface-ground border-round">
+    <i class="pi pi-map-marker text-primary text-4xl mb-3"></i>
+    <span class="text-xl font-medium mb-2">Inga kontroller än</span>
+    <span class="text-500 text-center mb-3">Lägg till kontroller för att definiera banans sträckning</span>
+    <p-button
+      (click)="addControl()"
+      label="Lägg till första kontrollen"
+      icon="pi pi-plus"
+      styleClass="p-button-sm p-button-outlined">
+    </p-button>
+  </div>
+
+  <!-- Control list -->
+  <div class="control-list">
+    <ng-container *ngFor="let control of rusatimeControls; index as i">
+      <p-card styleClass="mb-3">
+        <div class="grid p-fluid">
+          <!-- Control fields -->
+          <div class="col-12">
+            <div class="formgrid grid">
+              <!-- Site selector column -->
+              <div class="field col-12 lg:col-6 md:col-6">
+                <label class="block font-medium mb-2">
+                  <i class="pi pi-map-marker text-primary mr-2"></i>
+                  Kontrollplats
+                </label>
+                <brevet-site-selector
+                  (SiteChange)="addSite($event, i)"
+                  [styleClass]="'w-full'">
+                </brevet-site-selector>
+              </div>
+
+              <!-- Distance input column -->
+              <div class="field col-12 lg:col-5 md:col-5">
+                <label class="block font-medium mb-2">
+                  <i class="pi pi-arrows-h text-primary mr-2"></i>
+                  Distans
+                </label>
+                <p-inputNumber
+                  [(ngModel)]="control.DISTANCE"
+                  (onBlur)="updateDistance(i)"
+                  [min]="0"
+                  [max]="2000"
+                  [showButtons]="true"
+                  buttonLayout="horizontal"
+                  spinnerMode="horizontal"
+                  [step]="5"
+                  suffix=" km"
+                  placeholder="Ange distans"
+                  styleClass="w-full">
+                </p-inputNumber>
+              </div>
+
+              <!-- Delete button column -->
+              <div class="field col-12 lg:col-1 md:col-1 flex align-items-end justify-content-center">
+                <button
+                  pButton
+                  type="button"
+                  icon="pi pi-trash"
+                  class="p-button-rounded p-button-danger p-button-text"
+                  (click)="removeControl(i)"
+                  pTooltip="Ta bort kontroll"
+                  tooltipPosition="left">
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="col-1 lg:col-1 md:col-1 flex align-items-center justify-content-center">
-        <button pButton type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" (click)="removeControl(i)"></button>
-      </div>
-    </div>
-  </p-card>
-</ng-container>
+      </p-card>
+    </ng-container>
+  </div>
+
+  <!-- Help text when controls exist -->
+  <div *ngIf="rusatimeControls.length > 0" class="text-500 text-sm text-center mt-3">
+    <i class="pi pi-info-circle mr-2"></i>
+    Kontrollerna sorteras automatiskt efter distans
+  </div>
+</div>
