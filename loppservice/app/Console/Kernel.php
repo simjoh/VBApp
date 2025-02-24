@@ -3,12 +3,11 @@
 namespace App\Console;
 
 use App\Console\Commands\CountryUpdate;
-use App\Models\Country;
-use Exception;
+use App\Console\Commands\PingEbrevetEventApp;
+use App\Console\Commands\RemoveIncompletedRegistrations;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
+
 
 class Kernel extends ConsoleKernel
 {
@@ -17,9 +16,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-
         $schedule->command(CountryUpdate::class)
             ->daily();
+        $schedule->command(RemoveIncompletedRegistrations::class)
+            ->daily();
+        $schedule->command(PingEbrevetEventApp::class)
+            ->hourly();
 
 //        $schedule->call(function () {
 //
