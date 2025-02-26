@@ -15,19 +15,12 @@ class Organizer extends Model
      */
     protected $fillable = [
         'organization_name',
-        'organization_number',
         'description',
         'website',
         'logo_svg',
         'contact_person_name',
         'email',
-        'phone',
-        'address',
-        'postal_code',
-        'city',
-        'active',
-        'gdpr_consent',
-        'gdpr_consent_given_at'
+        'active'
     ];
 
     /**
@@ -36,9 +29,7 @@ class Organizer extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'active' => 'boolean',
-        'gdpr_consent' => 'boolean',
-        'gdpr_consent_given_at' => 'datetime',
+        'active' => 'boolean'
     ];
 
     /**
@@ -49,39 +40,6 @@ class Organizer extends Model
         return $this->hasMany(Event::class);
     }
 
-    /**
-     * Record GDPR consent for the organizer.
-     *
-     * @return void
-     */
-    public function giveGdprConsent(): void
-    {
-        $this->gdpr_consent = true;
-        $this->gdpr_consent_given_at = now();
-        $this->save();
-    }
-
-    /**
-     * Withdraw GDPR consent for the organizer.
-     *
-     * @return void
-     */
-    public function withdrawGdprConsent(): void
-    {
-        $this->gdpr_consent = false;
-        $this->gdpr_consent_given_at = null;
-        $this->save();
-    }
-
-    /**
-     * Check if the organizer has given GDPR consent.
-     *
-     * @return bool
-     */
-    public function hasGdprConsent(): bool
-    {
-        return $this->gdpr_consent;
-    }
 
     /**
      * Validate and set the logo SVG.
