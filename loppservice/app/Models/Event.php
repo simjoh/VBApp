@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Event extends Model
 {
@@ -27,5 +28,33 @@ class Event extends Model
     // protected $keyType = "string";
     protected $startlisturl;
 
+    protected $fillable = [
+        'county_id',
+        'event_group_uid',
+        'organizer_id'
+    ];
 
+    /**
+     * Get the county that the event belongs to.
+     */
+    public function county(): BelongsTo
+    {
+        return $this->belongsTo(County::class);
+    }
+
+    /**
+     * Get the event group that the event belongs to (optional).
+     */
+    public function eventGroup(): BelongsTo
+    {
+        return $this->belongsTo(EventGroup::class, 'event_group_uid', 'eventgroup_uid');
+    }
+
+    /**
+     * Get the organizer of this event.
+     */
+    public function organizer(): BelongsTo
+    {
+        return $this->belongsTo(Organizer::class);
+    }
 }

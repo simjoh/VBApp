@@ -40,4 +40,11 @@ class EventConfiguration extends Model
     protected $table = 'eventconfigurations';
     protected $dateFormat = 'Y-m-d H:i';
 
+    protected $fillable = [
+        'max_registrations',
+        'registration_opens',
+        'registration_closes',
+        'resarvation_on_event',
+        'use_stripe_payment'
+    ];
 }

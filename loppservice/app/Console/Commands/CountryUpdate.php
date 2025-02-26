@@ -28,30 +28,30 @@ class CountryUpdate extends Command
     public function handle()
     {
 
-        $resp = Http::get('https://restcountries.com/v3.1/all');
-        if ($resp->status() == 200) {
-            $response = $resp->json();
-
-            foreach ($response as $key => $value) {
-                    if (!Country::where('country_code', $value['altSpellings'][0])->exists()) {
-                        $country = new Country();
-                        $country->country_name_en = $value['name']['common'];
-                        $country->country_name_sv = $value['translations']['swe']['common'];
-                        $country->country_code = $value['altSpellings'][0];
-                        $country->flag_url_svg = $value['flags']['svg'];
-                        $country->flag_url_png = $value['flags']['png'];
-                        $country->save();
-                    } else {
-                        Country::where('country_code', $value['altSpellings'][0])
-                            ->update([
-                                'country_name_en' => $value['name']['common'],
-                                'country_name_sv' => $value['translations']['swe']['common'],
-                                'country_code' => $value['altSpellings'][0],
-                                'flag_url_svg' => $value['flags']['svg'],
-                                'flag_url_png' => $value['flags']['png']
-                            ]);
-                    }
-            }
-        }
+//        $resp = Http::get('https://restcountries.com/v3.1/all');
+//        if ($resp->status() == 200) {
+//            $response = $resp->json();
+//
+//            foreach ($response as $key => $value) {
+//                    if (!Country::where('country_code', $value['altSpellings'][0])->exists()) {
+//                        $country = new Country();
+//                        $country->country_name_en = $value['name']['common'];
+//                        $country->country_name_sv = $value['translations']['swe']['common'];
+//                        $country->country_code = $value['altSpellings'][0];
+//                        $country->flag_url_svg = $value['flags']['svg'];
+//                        $country->flag_url_png = $value['flags']['png'];
+//                        $country->save();
+//                    } else {
+//                        Country::where('country_code', $value['altSpellings'][0])
+//                            ->update([
+//                                'country_name_en' => $value['name']['common'],
+//                                'country_name_sv' => $value['translations']['swe']['common'],
+//                                'country_code' => $value['altSpellings'][0],
+//                                'flag_url_svg' => $value['flags']['svg'],
+//                                'flag_url_png' => $value['flags']['png']
+//                            ]);
+//                    }
+//            }
+//        }
     }
 }

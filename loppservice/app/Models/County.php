@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class EventGroup extends Model
+class County extends Model
 {
-    use HasFactory;
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'countys';
 
     /**
      * The attributes that are mass assignable.
@@ -16,17 +20,23 @@ class EventGroup extends Model
      * @var array<string>
      */
     protected $fillable = [
+        'county_code',
         'name',
-        'description'
     ];
 
     /**
-     * Get the events in this group.
+     * Get the municipalities for the county.
+     */
+    public function municipalities(): HasMany
+    {
+        return $this->hasMany(Municipality::class);
+    }
+
+    /**
+     * Get the events in this county.
      */
     public function events(): HasMany
     {
         return $this->hasMany(Event::class);
     }
-
-    protected $dateFormat = 'Y-m-d';
 }
