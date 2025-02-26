@@ -13,35 +13,17 @@ return new class extends Migration
     {
         Schema::create('organizers', function (Blueprint $table) {
             $table->id();
-            // Organization details
-            $table->string('organization_name', 100);
-            $table->string('organization_number', 20)->nullable(); // Swedish organizational number
             $table->text('description')->nullable();
             $table->string('website')->nullable();
             $table->mediumText('logo_svg')->nullable(); // Store SVG as text, medium size (up to 16MB)
-
             // Contact person details
             $table->string('contact_person_name', 100);
             $table->string('email');
-            $table->string('phone', 20);
-
-            // Address details
-            $table->string('address')->nullable();
-            $table->string('postal_code', 10)->nullable();
-            $table->string('city', 100)->nullable();
-
-            // GDPR consent
-            $table->boolean('gdpr_consent')->default(false);
-            $table->timestamp('gdpr_consent_given_at')->nullable();
-
             // Status
             $table->boolean('active')->default(true);
             $table->timestamps();
-
             // Indexes
             $table->index('organization_name');
-            $table->index('organization_number');
-            $table->index('email');
         });
 
         // Add organizer_id to events table

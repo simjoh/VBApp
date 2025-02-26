@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
+use App\Models\Organizer;
 
 return new class extends Migration
 {
@@ -10,36 +10,31 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::table('organizers')->insert([
-            [
-                'organization_name' => 'Cykelintresset',
-                'description' => 'Cykelintresset - organizing cycling events in Västerbotten',
-                'website' => 'https://cykelintresset.se',
-                'contact_person_name' => 'Jon Olsson',
-                'email' => 'jon.olsson@cykelintresset.se',
-                'phone' => '070-123 45 67',
-                'city' => 'Umeå',
-                'active' => true,
-                'gdpr_consent' => true,
-                'gdpr_consent_given_at' => now(),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'organization_name' => 'Randonneurs Laponia',
-                'description' => 'Randonneurs Laponia - organizing BRM events in northern Sweden',
-                'website' => 'https://randonneurslaponia.se',
-                'contact_person_name' => 'Florian Kynman',
-                'email' => 'florian@randonneurslaponia.se', // Placeholder - please update
-                'phone' => '070-987 65 43', // Placeholder - please update
-                'city' => 'Umeå',
-                'active' => true,
-                'gdpr_consent' => true,
-                'gdpr_consent_given_at' => now(),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        $cykelintresset = new Organizer([
+            'organization_name' => 'Cykelintresset',
+            'description' => 'Cykelintresset - organizing cycling events in Västerbotten',
+            'website' => 'https://cykelintresset.se',
+            'contact_person_name' => 'Jon Olsson',
+            'email' => 'jon.olsson@cykelintresset.se',
+            'active' => true,
+            'logo_svg' => '',
+            'created_at' => now(),
+            'updated_at' => now()
         ]);
+        $cykelintresset->save();
+
+        $randonneursLaponia = new Organizer([
+            'organization_name' => 'Randonneurs Laponia',
+            'description' => 'Randonneurs Laponia - organizing BRM events in northern Sweden',
+            'website' => 'https://randonneurslaponia.se',
+            'contact_person_name' => 'Florian Kynman',
+            'email' => 'florian@randonneurslaponia.se',
+            'active' => true, // Placeholder - please update
+            'logo_svg' => '',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+        $randonneursLaponia->save();
     }
 
     /**
@@ -47,8 +42,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::table('organizers')
-            ->whereIn('organization_name', ['Cykelintresset', 'Randonneurs Laponia'])
-            ->delete();
+        Organizer::whereIn('organization_name', ['Cykelintresset', 'Randonneurs Laponia'])->delete();
     }
 };
