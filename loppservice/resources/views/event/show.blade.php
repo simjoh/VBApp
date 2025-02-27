@@ -15,37 +15,184 @@
 		<p>Distanserna kan slutföras i valfri ordning och genomföras som individuella lopp. Brevet populaire-lopp på 100 km arrangeras
 			tillsammans med 200 km-breveterna</p>
 	</div>
-	@foreach ($allevents as $key => $event)
-	<div class="relative flex py-5 items-center">
-		<div class="flex-grow border-t border-4 border-black"></div>
-		<span class="flex-shrink mx-4 text-black  text-3xl font-semibold  flex-container-bold">{{$key}}</span>
-		<div class="flex-grow border-t border-4  border-black"></div>
-	</div>
-	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pt-4">
-		@foreach ($event as $monthevent)
-		<div class="max-w-lg rounded overflow-hidden shadow-lg">
-			<div class="strava-embed-placeholder" data-embed-type="route" data-embed-id="{{$monthevent->embedid}}" data-units="metric"
-				 data-full-width="true" data-style="standard" data-from-embed="false"></div>
-			<script src="https://strava-embeds.com/embed.js"></script>
-			<div class="h-12 ml-7 mt-2 mr-3">
-				{{$monthevent->description}}
+	<div class="container mx-auto px-4 py-6 sm:p-4 font-sans">
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-6">
+			<div class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center h-[800px]">
+				<!-- Placeholder for SVG logo -->
+				<div class="w-48 h-48 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+					<span class="text-gray-400">Logo placeholder</span>
+				</div>
+				
+				<div class="flex-1 w-full">
+					<h2 class="text-xl font-bold mb-4">BRM 200 UPPSALA</h2>
+					
+					<div class="w-full space-y-2">
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Distans:</span>
+							<span>200 KM</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Höjdmeter:</span>
+							<span>1310 M</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Startdatum:</span>
+							<span>11 maj</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Starttid:</span>
+							<span>07:00</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Sista anmälan:</span>
+							<span>10 maj</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Startort:</span>
+							<span>Umeå</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Arrangör:</span>
+							<span>Randonneur Stockholm</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Övrigt:</span>
+							<span>Cykelintresset brevet-serie</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="w-full space-y-2 mt-4">
+					<a href="#" class="block w-full text-[#4B5563] hover:text-[#6B7280] hover:underline">
+						Länk till bana
+					</a>
+					<a href="#" class="block w-full text-center bg-[#6B7280] hover:bg-[#4B5563] text-white py-2 rounded">
+						Startlista
+					</a>
+					<a href="#" class="block w-full text-center bg-[#6B7280] hover:bg-[#4B5563] text-white py-2 rounded">
+						Länk till anmälan och betalning
+					</a>
+				</div>
 			</div>
-			<div class="px-6 pt-4 pb-2">
-				<button
-					onclick="window.location='{{ route('register', $monthevent->event_uid)  . '?' . http_build_query(['event_type'=> $monthevent->event_type ]) }}'"
-					class="w-full bg-black hover:bg-gray-500 text-white font-bold py-2 px-4 border text-bold border-black rounded">
-					ANMÄL DIG HÄR
-				</button>
-				<button
-					onclick="window.location='{{ url($monthevent->startlisturl)}}'"
-					class="mt-3 w-full bg-black hover:bg-gray-500 text-white py-2 px-4 border text-bold border-black rounded">
-					SE STARTLISTA
-				</button>
+
+			<!-- Duplicate cards for example -->
+			<div class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center h-[800px]">
+				<!-- Placeholder for SVG logo -->
+				<div class="w-48 h-48 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+					<span class="text-gray-400">Logo placeholder</span>
+				</div>
+				
+				<div class="flex-1 w-full">
+					<h2 class="text-xl font-bold mb-4">BRM 200 OTTONTRÄSK</h2>
+					
+					<div class="w-full space-y-2">
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Distans:</span>
+							<span>200 KM</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Höjdmeter:</span>
+							<span>1310 M</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Startdatum:</span>
+							<span>11 maj</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Starttid:</span>
+							<span>07:00</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Sista anmälan:</span>
+							<span>10 maj</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Startort:</span>
+							<span>Umeå</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Arrangör:</span>
+							<span>Randonneur Stockholm</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Övrigt:</span>
+							<span>Cykelintresset brevet-serie</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="w-full space-y-2 mt-4">
+					<a href="#" class="block w-full text-[#4B5563] hover:text-[#6B7280] hover:underline">
+						Länk till bana
+					</a>
+					<a href="#" class="block w-full text-center bg-[#6B7280] hover:bg-[#4B5563] text-white py-2 rounded">
+						Startlista
+					</a>
+					<a href="#" class="block w-full text-center bg-[#6B7280] hover:bg-[#4B5563] text-white py-2 rounded">
+						Länk till anmälan och betalning
+					</a>
+				</div>
+			</div>
+
+			<div class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center h-[800px]">
+				<!-- Placeholder for SVG logo -->
+				<div class="w-48 h-48 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+					<span class="text-gray-400">Logo placeholder</span>
+				</div>
+				
+				<div class="flex-1 w-full">
+					<h2 class="text-xl font-bold mb-4">BRM 200 OTTONTRÄSK</h2>
+					
+					<div class="w-full space-y-2">
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Distans:</span>
+							<span>200 KM</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Höjdmeter:</span>
+							<span>1310 M</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Startdatum:</span>
+							<span>11 maj</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Starttid:</span>
+							<span>07:00</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Sista anmälan:</span>
+							<span>10 maj</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Startort:</span>
+							<span>Umeå</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Arrangör:</span>
+							<span>Randonneur Stockholm</span>
+						</div>
+						<div class="flex items-baseline">
+							<span class="font-semibold mr-1">Övrigt:</span>
+							<span>Cykelintresset brevet-serie</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="w-full space-y-2 mt-4">
+					<a href="#" class="block w-full text-[#4B5563] hover:text-[#6B7280] hover:underline">
+						Länk till bana
+					</a>
+					<a href="#" class="block w-full text-center bg-[#6B7280] hover:bg-[#4B5563] text-white py-2 rounded">
+						Startlista
+					</a>
+					<a href="#" class="block w-full text-center bg-[#6B7280] hover:bg-[#4B5563] text-white py-2 rounded">
+						Länk till anmälan och betalning
+					</a>
+				</div>
 			</div>
 		</div>
-		@endforeach
 	</div>
-	@endforeach
 </div>
 </body>
 </html>

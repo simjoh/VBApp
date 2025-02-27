@@ -17,7 +17,7 @@ return new class extends Migration
             'contact_person_name' => 'Jon Olsson',
             'email' => 'jon.olsson@cykelintresset.se',
             'active' => true,
-            'logo_svg' => '',
+           
             'created_at' => now(),
             'updated_at' => now()
         ]);
@@ -30,7 +30,7 @@ return new class extends Migration
             'contact_person_name' => 'Florian Kynman',
             'email' => 'florian@randonneurslaponia.se',
             'active' => true, // Placeholder - please update
-            'logo_svg' => '',
+        
             'created_at' => now(),
             'updated_at' => now()
         ]);

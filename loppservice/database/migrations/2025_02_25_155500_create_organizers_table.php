@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('organizers', function (Blueprint $table) {
             $table->id();
+            $table->text('organization_name');
             $table->text('description')->nullable();
             $table->string('website')->nullable();
             $table->mediumText('logo_svg')->nullable(); // Store SVG as text, medium size (up to 16MB)
