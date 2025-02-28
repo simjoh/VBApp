@@ -45,7 +45,6 @@ class EventController extends Controller
             $months = Config::get('app.swedish_month');
             return $months[$date->format('m')] . " " . $date->format('Y');
         });
-dd($events);
         return view('event.show')->with(['allevents' => $events]);
     }
 
