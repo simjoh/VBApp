@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Nonstandard\Uuid;
+use Illuminate\Support\Facades\Log;
 
 
 class EventController extends Controller
@@ -21,12 +22,22 @@ class EventController extends Controller
 
     public function index(Request $request)
     {
+        // Load events with their organizer relationship
+        $events = Event::with('organizer')
+            ->where('event_type', 'BRM')
+            ->get()
+            ->sortBy("startdate");
 
-        $events = Event::where('event_type', 'BRM')->get()->sortBy("startdate");
-
-
+        // Debug: Check if organizer data is present
         foreach ($events as $event) {
             $event->startlisturl = env("APP_URL") . '/startlist/event/' . $event->event_uid . '/showall';
+            Log::debug('Event: ' . $event->title . ', Organizer Data: ', [
+                'organizer_id' => $event->organizer_id,
+                'has_organizer' => $event->organizer ? 'Yes' : 'No',
+                'organizer_name' => $event->organizer ? $event->organizer->organization_name : 'None',
+                'has_logo' => $event->organizer && $event->organizer->logo_svg ? 'Yes' : 'No',
+                'logo_length' => $event->organizer && $event->organizer->logo_svg ? strlen($event->organizer->logo_svg) : 0
+            ]);
         }
 
         $events = $events->groupBy(function ($val) {
@@ -34,10 +45,8 @@ class EventController extends Controller
             $months = Config::get('app.swedish_month');
             return $months[$date->format('m')] . " " . $date->format('Y');
         });
-
-
+dd($events);
         return view('event.show')->with(['allevents' => $events]);
-
     }
 
     public function all()
@@ -155,6 +164,23 @@ class EventController extends Controller
             return response()->json($event, 200);
         }
         return response()->json(null, 204);
+    }
+
+    public function getLogin(Request $request)
+    {
+        $eventType = $request->query('event_type');
+        $event = Event::where('event_uid', '=', $request['uid'])->first();
+
+//        if (!$event) {
+//            return response()->json(['message' => 'Event not found'], 404);
+//        }
+
+        // TODO: Implement login functionality based on event type
+        return response()->json([
+            'message' => 'Not implemented yet',
+            'event_type' => $eventType,
+            'event' => $event
+        ], 501);
     }
 
 

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->text('organization_name');
             $table->text('description')->nullable();
             $table->string('website')->nullable();
-            $table->mediumText('logo_svg')->nullable(); // Store SVG as text, medium size (up to 16MB)
+            $table->text('logo_svg')->nullable(); // Changed from mediumText to text (max 65KB)
             // Contact person details
             $table->string('contact_person_name', 100);
             $table->string('email');

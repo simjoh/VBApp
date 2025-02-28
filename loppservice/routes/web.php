@@ -46,7 +46,7 @@ Route::post('/tool/event/{eventUid}', [ToolController::class, 'publishToCyclinga
 
 
 
-Route::get('/events/{uid}/register', [RegistrationController::class, 'index'])->name('register');;
+Route::get('/events/{uid}/register', [RegistrationController::class, 'index'])->name('register');
 Route::post('/events/{uid}/register', [RegistrationController::class, 'create']);
 Route::post('/events/{uid}/reserve', [RegistrationController::class, 'reserve']);
 Route::get('/events/{uid}/registration/{regsitrationUid}/complete', [RegistrationController::class, 'complete']);
@@ -74,3 +74,9 @@ Route::get('/optionals/checkout/cancel', [NoRegisterCheckoutController::class, '
 Route::get('/profile', function () {
     // Only authenticated users may access this route...
 })->middleware('auth.basic');
+
+Route::get('/registration/{uid}', [App\Http\Controllers\RegistrationController::class, 'index'])
+    ->name('registration.index');
+
+Route::get('/events/{uid}/login', [EventController::class, 'getLogin'])
+    ->name('event.login');

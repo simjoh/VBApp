@@ -53,8 +53,8 @@ class Event extends Model
     /**
      * Get the organizer of this event.
      */
-    public function organizer(): BelongsTo
+    public function organizer()
     {
-        return $this->belongsTo(Organizer::class);
+        return $this->belongsTo(Organizer::class, 'organizer_id', 'id');
     }
 }

@@ -40,30 +40,28 @@ class Organizer extends Model
         return $this->hasMany(Event::class);
     }
 
-
     /**
-     * Validate and set the logo SVG.
+     * Set the logo SVG attribute with validation
      *
      * @param string|null $value
      * @return void
      */
-    public function setLogoSvgAttribute(?string $value): void
+    public function setLogoSvgAttribute($value)
     {
         if ($value === null) {
             $this->attributes['logo_svg'] = null;
             return;
         }
 
-        // Basic SVG validation
-        if (!Str::startsWith(trim($value), '<svg') || !Str::endsWith(trim($value), '</svg>')) {
+        // Basic SVG validation - allow XML declaration before SVG tag
+        $value = trim($value);
+        if (!preg_match('/<\?xml.*?>.*?<svg|<svg/i', $value) || !Str::endsWith($value, '</svg>')) {
             throw new \InvalidArgumentException('Invalid SVG format');
         }
 
-        // Remove any potentially harmful content
-        $value = strip_tags($value, [
-            'svg', 'path', 'rect', 'circle', 'ellipse', 'line', 'polyline',
-            'polygon', 'g', 'text', 'tspan', 'defs', 'style'
-        ]);
+        // Basic XSS prevention - remove script tags and potentially harmful attributes
+        $value = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $value);
+        $value = preg_replace('/on\w+="[^"]*"/', '', $value);
 
         $this->attributes['logo_svg'] = $value;
     }
@@ -80,8 +78,8 @@ class Organizer extends Model
             return null;
         }
 
-        // Ensure it's a valid SVG before returning
-        if (!Str::startsWith(trim($value), '<svg') || !Str::endsWith(trim($value), '</svg>')) {
+        // Ensure it's a valid SVG before returning - allow XML declaration
+        if (!preg_match('/<\?xml.*?>.*?<svg|<svg/i', trim($value)) || !Str::endsWith(trim($value), '</svg>')) {
             return null;
         }
 
