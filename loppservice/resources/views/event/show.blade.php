@@ -18,13 +18,12 @@
 		@foreach($allevents as $month => $events)
 			<div class="month-section flex flex-col items-center">
 				<div class="flex items-center justify-center mb-8 relative w-full max-w-[95%] sm:max-w-full">
-					<div class="absolute w-full border-t-2 border-gray-600"></div>
-					<h2 class="text-xl md:text-2xl font-bold text-gray-800 bg-white px-6 relative">
-						{{ $month }}
-					</h2>
+					<div class="absolute w-full bg-[#4A5568] flex items-center justify-center">
+						<span class="text-lg md:text-xl font-bold text-white px-10 py-0.5">{{ $month }}</span>
+					</div>
 				</div>
 
-				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-3 w-full place-items-center">
+				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-3 w-full place-items-center mt-3">
 					@foreach($events as $event)
 						<div class="bg-white rounded-lg shadow-md p-4 flex flex-col items-center h-auto min-h-[520px] w-[95%] sm:w-full sm:max-w-xs">
 							<!-- Placeholder for SVG logo -->
