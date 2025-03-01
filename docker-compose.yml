@@ -79,8 +79,8 @@ services:
       MYSQL_PASSWORD: secret
     networks:
       - sample_network
-    #    ports:
-    #      - 8088:3306
+    ports:
+        - 8088:3306
     volumes:
       -  db2_data:/var/lib/mysql
       - ./docker/database/schema_create.sql:/docker-entrypoint-initdb.d/1.sql

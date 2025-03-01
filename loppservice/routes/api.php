@@ -49,16 +49,13 @@ Route::prefix('/api')->group(function () {
         Route::prefix('/event')->group(function () {
             Route::get('/{eventUid}/event', function () {
             });
-            Route::get('/events/all', function () {
-            });
 
-            Route::post('/create', function () {
-            });
 
             Route::post('/' , [EventController::class, 'create']);
             Route::get('/all' , [EventController::class, 'all']);
             Route::put('/' , [EventController::class, 'update']);
-            Route::get('/event/{eventUid}' , [EventController::class, 'eventbyid']);
+            Route::get('/{eventUid}', [EventController::class, 'eventbyid']);
+            Route::delete('/{eventUid}' , [EventController::class, 'delete']);
 
             // Route detail endpoints
             Route::get('/event/{event_uid}/route-details', [EventController::class, 'getRouteDetails']);

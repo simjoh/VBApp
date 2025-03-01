@@ -12,7 +12,12 @@ class EventResource extends JsonResource
             'startdate' => $this->startdate,
             'enddate' => $this->enddate,
             'completed' => $this->completed,
-            'eventconfiguration' => $this->eventconfiguration
+            'event_type' => $this->event_type,
+            'organizer_id' => $this->organizer_id,
+            'county_id' => $this->county_id,
+            'event_group_uid' => $this->event_group_uid,
+            'eventconfiguration' => $this->eventconfiguration,
+            'route_detail' => $this->routeDetail
         ];
     }
 }
