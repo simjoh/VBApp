@@ -59,6 +59,11 @@ Route::prefix('/api')->group(function () {
             Route::get('/all' , [EventController::class, 'all']);
             Route::put('/' , [EventController::class, 'update']);
             Route::get('/event/{eventUid}' , [EventController::class, 'eventbyid']);
+
+            // Route detail endpoints
+            Route::get('/event/{event_uid}/route-details', [EventController::class, 'getRouteDetails']);
+            Route::post('/event/{event_uid}/route-details', [EventController::class, 'updateRouteDetails']);
+            Route::put('/event/{event_uid}/route-details', [EventController::class, 'updateRouteDetails']);
         });
     });
 

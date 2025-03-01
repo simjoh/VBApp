@@ -53,27 +53,27 @@
 								<div class="w-full space-y-0">
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Distans:</span>
-										<span>{{ $event->distance ?? '200' }} KM</span>
+										<span>{{ $event->routeDetail->distance ?? '200' }} KM</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Höjdmeter:</span>
-										<span>{{ $event->elevation ?? '1310' }} M</span>
+										<span>{{ $event->routeDetail->height_difference ?? '' }} M</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Startdatum:</span>
-										<span>{{ \Carbon\Carbon::parse($event->startdate)->format('d M') }}</span>
+										<span>{{ $event->formatted_start_date }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Starttid:</span>
-										<span>07:00</span>
+										<span>{{ $event->routeDetail->start_time ?? '07:00' }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Sista anmälan:</span>
-										<span>10 maj</span>
+										<span>{{ $event->formatted_closing_date }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Startort:</span>
-										<span>Umeå</span>
+										<span>{{ $event->routeDetail->start_place ?? 'Umeå' }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Arrangör:</span>
@@ -87,12 +87,21 @@
 							</div>
 
 							<div class="w-full space-y-1 mt-auto">
-								<a href="#" class="block w-full text-[#E4432D] hover:text-[#B32D1B] hover:underline text-sm flex items-center">
-									<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-									</svg>
-									Länk till bana
-								</a>
+								@if($event->routeDetail && $event->routeDetail->track_link)
+									<a href="{{ $event->routeDetail->track_link }}" target="_blank" class="block w-full text-[#E4432D] hover:text-[#B32D1B] hover:underline text-sm flex items-center">
+										<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+										</svg>
+										Länk till bana
+									</a>
+								@else
+									<span class="block w-full text-gray-400 text-sm flex items-center cursor-not-allowed">
+										<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+										</svg>
+										Länk till bana
+									</span>
+								@endif
 								<a href="{{ $event->startlisturl }}" class="block w-full text-[#E4432D] hover:text-[#B32D1B] hover:underline text-sm flex items-center">
 									<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>

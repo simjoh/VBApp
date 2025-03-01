@@ -75,10 +75,10 @@ return new class extends Migration
         try {
             $randonneursLaponia = new Organizer([
                 'organization_name' => 'Randonneurs Laponia',
-                'description' => 'Randonneurs Laponia - organizing BRM events in northern Sweden',
+                'description' => 'Randonneurs Laponia - organizing cycling events in northern Sweden',
                 'website' => 'https://randonneurslaponia.se',
                 'contact_person_name' => 'Florian Kynman',
-                'email' => 'florian@randonneurslaponia.se',
+                'email' => 'info@randonneurslaponia.se',
                 'active' => true,
                 'logo_svg' => '<?xml version="1.0" encoding="UTF-8"?>
 <svg id="a" xmlns="http://www.w3.org/2000/svg" width="20.2847mm" height="20.2847mm" viewBox="0 0 57.4999 57.4999">

@@ -16,10 +16,10 @@ return new class extends Migration
         // Create BRM event group for 2024
         $group = [
             'eventgroup_uid' => Str::uuid(),
-            'title' => 'BRM Events 2024',
-            'description' => 'Brevets Randonneurs Mondiaux events for the year 2024',
-            'startdate' => '2024-05-18', // First BRM event
-            'enddate' => '2024-09-28',   // Last BRM event
+            'title' => app()->environment('production') ? 'VSRS 2024' : 'TEST VSRS 2024',
+            'description' => 'Cykelintressets brevet-serie 2024',
+            'startdate' => '2024-05-11', // First BRM event
+            'enddate' => '2024-07-13',   // Last BRM event
             'active' => true,
             'canceled' => false,
             'completed' => false,
@@ -50,7 +50,7 @@ return new class extends Migration
 
         // Delete the BRM event group
         DB::table('event_groups')
-            ->where('title', 'like', 'BRM Events 2024')
+            ->where('title', 'like', app()->environment('production') ? 'VSRS 2024' : 'TEST VSRS 2024')
             ->delete();
     }
 };

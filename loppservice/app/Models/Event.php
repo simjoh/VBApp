@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Event extends Model
 {
@@ -56,5 +57,22 @@ class Event extends Model
     public function organizer()
     {
         return $this->belongsTo(Organizer::class, 'organizer_id', 'id');
+    }
+
+    /**
+     * Get the route details for this event.
+     *
+     * Each Event has exactly one RouteDetail that contains information about:
+     * - distance (in kilometers)
+     * - height_difference (in meters)
+     * - start_time
+     * - name (optional)
+     * - description (optional)
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function routeDetail()
+    {
+        return $this->hasOne(RouteDetail::class, 'event_uid', 'event_uid');
     }
 }

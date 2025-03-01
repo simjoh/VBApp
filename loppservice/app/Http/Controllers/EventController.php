@@ -11,10 +11,12 @@ use App\Models\StartNumberConfig;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Nonstandard\Uuid;
 use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
 
 
 class EventController extends Controller
@@ -23,14 +25,37 @@ class EventController extends Controller
     public function index(Request $request)
     {
         // Load events with their organizer relationship
-        $events = Event::with('organizer')
+        $events = Event::with(['organizer', 'routeDetail'])
             ->where('event_type', 'BRM')
             ->get()
             ->sortBy("startdate");
 
+        // Check if we're in development environment
+        $isDevEnvironment = in_array(env('APP_ENV'), ['local', 'development']);
+
         // Debug: Check if organizer data is present
         foreach ($events as $event) {
-            $event->startlisturl = env("APP_URL") . '/startlist/event/' . $event->event_uid . '/showall';
+            // Create a dynamic property for the startlist URL
+            $event->setAttribute('startlisturl', env("APP_URL") . '/startlist/event/' . $event->event_uid . '/showall');
+
+            // Format dates in Swedish
+            $startDate = Carbon::parse($event->startdate);
+            $months = Config::get('app.swedish_month');
+
+            // Format start date (e.g., "10 Maj")
+            $event->setAttribute('formatted_start_date', $startDate->format('j') . ' ' . $months[$startDate->format('m')]);
+
+            // Format registration closing date if available
+            if ($event->eventconfiguration && $event->eventconfiguration->registration_closes) {
+                $closingDate = Carbon::parse($event->eventconfiguration->registration_closes);
+                $event->setAttribute('formatted_closing_date', $closingDate->format('j') . ' ' . $months[$closingDate->format('m')]);
+            } else {
+                $event->setAttribute('formatted_closing_date', '10 Maj'); // Default value
+            }
+
+            // Note: We always show track links if they are present in the database
+            // The migration only generates links in development environment
+
             Log::debug('Event: ' . $event->title . ', Organizer Data: ', [
                 'organizer_id' => $event->organizer_id,
                 'has_organizer' => $event->organizer ? 'Yes' : 'No',
@@ -165,6 +190,75 @@ class EventController extends Controller
         return response()->json(null, 204);
     }
 
+    /**
+     * Get route details for a specific event.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getRouteDetails(Request $request): JsonResponse
+    {
+        $event = Event::with('routeDetail')
+            ->where('event_uid', '=', $request['event_uid'])
+            ->first();
+
+        if ($event && $event->routeDetail) {
+            // Note: We always show track links if they are present in the database
+            // The migration only generates links in development environment
+            return response()->json($event->routeDetail, 200);
+        }
+
+        return response()->json(['message' => 'Route details not found'], 404);
+    }
+
+    /**
+     * Create or update route details for an event.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function updateRouteDetails(Request $request): JsonResponse
+    {
+        $eventUid = $request['event_uid'];
+        $event = Event::where('event_uid', '=', $eventUid)->first();
+
+        if (!$event) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+
+        // Validate request data
+        $request->validate([
+            'distance' => 'required|numeric',
+            'height_difference' => 'required|numeric',
+            'start_time' => 'required|string',
+            'start_place' => 'nullable|string',
+            'name' => 'nullable|string',
+            'description' => 'nullable|string',
+            'track_link' => 'nullable|url',
+        ]);
+
+        // Find existing route detail or create new one
+        $routeDetail = $event->routeDetail ?? new \App\Models\RouteDetail(['event_uid' => $eventUid]);
+
+        // Update route detail properties
+        $routeDetail->distance = $request->input('distance');
+        $routeDetail->height_difference = $request->input('height_difference');
+        $routeDetail->start_time = $request->input('start_time');
+        $routeDetail->start_place = $request->input('start_place');
+        $routeDetail->name = $request->input('name');
+        $routeDetail->description = $request->input('description');
+        $routeDetail->track_link = $request->input('track_link');
+
+        // Save route detail
+        if ($event->routeDetail) {
+            $routeDetail->save();
+        } else {
+            $event->routeDetail()->save($routeDetail);
+        }
+
+        return response()->json($routeDetail, 200);
+    }
+
     public function getLogin(Request $request)
     {
         $eventType = $request->query('event_type');
@@ -182,6 +276,21 @@ class EventController extends Controller
         ], 501);
     }
 
+    public function show(string $eventUid): View
+    {
+        $event = Event::where('event_uid', '=', $eventUid)->first();
+
+        if (!$event) {
+            abort(404);
+        }
+
+        // Note: We always show track links if they are present in the database
+        // The migration only generates links in development environment
+
+        return view('event.show', [
+            'event' => $event,
+        ]);
+    }
 
 }
 
