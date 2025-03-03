@@ -15,6 +15,7 @@
 
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ToolController;
+use App\Http\Controllers\EventGroupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -50,7 +51,6 @@ Route::prefix('/api')->group(function () {
             Route::get('/{eventUid}/event', function () {
             });
 
-
             Route::post('/' , [EventController::class, 'create']);
             Route::get('/all' , [EventController::class, 'all']);
             Route::put('/' , [EventController::class, 'update']);
@@ -61,6 +61,14 @@ Route::prefix('/api')->group(function () {
             Route::get('/event/{event_uid}/route-details', [EventController::class, 'getRouteDetails']);
             Route::post('/event/{event_uid}/route-details', [EventController::class, 'updateRouteDetails']);
             Route::put('/event/{event_uid}/route-details', [EventController::class, 'updateRouteDetails']);
+        });
+
+        Route::prefix('/event-group')->group(function () {
+            Route::post('/', [EventGroupController::class, 'create']);
+            Route::put('/', [EventGroupController::class, 'update']);
+            Route::get('/all', [EventGroupController::class, 'all']);
+            Route::get('/{uid}', [EventGroupController::class, 'get']);
+            Route::delete('/{uid}', [EventGroupController::class, 'delete']);
         });
     });
 

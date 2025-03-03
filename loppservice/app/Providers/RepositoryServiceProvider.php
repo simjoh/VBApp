@@ -16,6 +16,8 @@ use App\Repositories\OrganizerRepository;
 use App\Repositories\PublishedEventRepository;
 use App\Repositories\Interfaces\ClubRepositoryInterface;
 use App\Repositories\ClubRepository;
+use App\Repositories\EventGroupRepository;
+use App\Repositories\Interfaces\EventGroupRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -32,6 +34,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ClubRepositoryInterface::class, ClubRepository::class);
         $this->app->bind(PublishedEventRepositoryInterface::class, PublishedEventRepository::class);
         $this->app->bind(ErrorEventRepositoryInterface::class, ErrorEventRepository::class);
+        $this->app->bind(EventGroupRepositoryInterface::class, EventGroupRepository::class);
     }
 
     /**

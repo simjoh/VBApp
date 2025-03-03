@@ -27,6 +27,7 @@ services:
       dockerfile: ./loppservice/Dockerfile
       target: dev
     volumes:
+      - ./loppservice:/var/www/html/loppservice
       - working_dir2:/var/www/html
     ports:
       - "8082:80"

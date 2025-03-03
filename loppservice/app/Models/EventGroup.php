@@ -16,8 +16,29 @@ class EventGroup extends Model
      * @var array<string>
      */
     protected $fillable = [
+        'uid',
         'name',
-        'description'
+        'description',
+        'startdate',
+        'enddate'
+    ];
+
+    protected $hidden = [
+        'id',
+        'created_at',
+        'updated_at'
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'startdate' => 'date:Y-m-d',
+        'enddate' => 'date:Y-m-d',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     /**
@@ -25,8 +46,6 @@ class EventGroup extends Model
      */
     public function events(): HasMany
     {
-        return $this->hasMany(Event::class);
+        return $this->hasMany(Event::class, 'event_group_uid', 'uid');
     }
-
-    protected $dateFormat = 'Y-m-d';
 }
