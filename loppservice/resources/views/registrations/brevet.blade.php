@@ -7,19 +7,18 @@
 <!--		<img alt="brm logotyp" width="75%" height="800" src="{{ asset('cykelintresset.svg') }}"/>-->
 <!--	</div>-->
 </header>
-<div class="mx-auto p-0 font-sans">
+<div class="container mx-auto p-0 font-sans">
 
 	@if ($errors->any())
 	<div class="alert alert-danger">
 		<ul>
-
 			<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
 				<strong class="font-bold">Something went wrong</strong>
 				@foreach ($errors->all() as $error)
 				<span class="block sm:inline"><li>{{ $error }}</li></span>
 				@endforeach
 
-				<span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+				<span class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.parentElement.style.display='none';">
     <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg"
 		 viewBox="0 0 20 20"><title>Close</title><path
 			d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
@@ -63,20 +62,20 @@
 			<div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">
 				<div class="mt-2">
 
-					<label for="email" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Epost address*</label>
+					<label for="email" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Epost address <span class="text-red-500">*</span></label>
 					<input id="email" name="email" type="email" autocomplete="email"
 						   class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
 				</div>
 				<div class="mt-2 mb-4">
 					<label for="email-confirm" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Bekräfta
-						epost adress*</label>
+						epost adress <span class="text-red-500">*</span></label>
 					<input id="email-confirm" name="email-confirm" type="email"
 						   class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
 				</div>
 			</div>
 
 			<div class="mt-2 w-1/2">
-				<label for="tel" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Telefon</label>
+				<label for="tel" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Telefon <span class="text-red-500">*</span></label>
 				<input type="text" name="tel" id="tel" autocomplete="tel-level2" autocomplete="tel"
 					   class=" w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
 			</div>
@@ -204,11 +203,19 @@
 			</div>
 
 		</div>
-		<div class="mt-2 mb-4">
-			<label for="club" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Klubb</label>
-			<input type="text" name="club" id="club"
-				   class="md:w-1/2  sm:w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
-		</div>
+        <div class="mt-2 mb-4 md:w-1/2 sm:w-full">
+            <label for="club" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Klubb</label>
+            <select name="club_uid" id="club" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                <option value="">Välj klubb</option>
+                @foreach ($clubs as $club)
+                <option value="{{ $club->club_uid }}">
+                    {{ $club->name }} {{ $club->acp_code ? '('.$club->acp_code.')' : '' }}
+                </option>
+                @endforeach
+            </select>
+            <p class="text-sm text-gray-500 mt-1">För BRM-evenemang måste du välja en officiell klubb som erkänns av Audax Club Parisien</p>
+        </div>
+
 
 		<div class="mt-5 mb-5 md:w-1/2 sm:w-full">
 			<label for="extra-info" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Övrig information</label>
@@ -236,23 +243,38 @@
 
 
 		<div class="flex items-center">
-			<input type="checkbox" name="gdpr" id="gdpr" class="mr-2">
+			<input type="checkbox" name="gdpr" id="gdpr" class="mr-2" onchange="toggleSubmitButtons()">
 			<label for="gdpr" class="text-gray-900 font-semibold sm:text-base sm:leading-10">Jag godkänner att websidan sparar informationen som jag postar i detta formulär<a
-					href="https://www.ebrevet.org/datapolicy" target="_blank" class="text-black-500 underline">Läs mer här om de allmäna vilkorer</a></label>
+					href="https://www.ebrevet.org/datapolicy" target="_blank" class="text-black-500 underline"> Läs mer här om de allmäna vilkorer</a></label>
 		</div>
 
-		@if ( $availabledetails['isRegistrationOpen'] == true)
-		<button  type="submit" value="{{$registrationproduct}}" name="save"
-				 class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
-			REGISTRERA
-		</button>
-		@else
-		<button disabled type="submit" value="{{$registrationproduct}}" name="save"
-				class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
-			REGISTRERING - ÖPPNAR {{ $availabledetails['opens']}}
-		</button>
-		@endif
+		<div class="grid md:grid-cols-1 gap-3 mt-4 sm:grid-cols-1">
+
+
+			@if ($availabledetails['isRegistrationOpen'] == true)
+			<button id="checkout-button" type="submit" value="{{$registrationproduct}}" name="save"
+					class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600" disabled>
+				REGISTRERA
+			</button>
+			@else
+			<button disabled type="submit" value="{{$registrationproduct}}" name="save"
+					class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
+				REGISTRERING - ÖPPNAR {{ $availabledetails['opens']}}
+			</button>
+			@endif
+		</div>
 	</form>
 </div>
+
+<script>
+	function toggleSubmitButtons() {
+		const gdprCheckbox = document.getElementById('gdpr');
+		const checkoutButton = document.getElementById('checkout-button');
+
+		// Enable or disable buttons based on the checkbox state
+		const isChecked = gdprCheckbox.checked;
+		checkoutButton.disabled = !isChecked;
+	}
+</script>
 </body>
 </html>

@@ -44,7 +44,7 @@ class RegistrationController extends Controller
         $event = Event::find($request['uid']);
 
         if (!$event) {
-            return view('registrations.updatesuccess')->with(['text' => __('Yo try to acesss registration form for non existing event')]);
+            return view('registrations.updatesuccess')->with(['text' => __('You tried to access registration form for non-existing event')]);
         }
 
         $count = Registration::where('course_uid', $request['uid'])->count();
@@ -65,8 +65,6 @@ class RegistrationController extends Controller
         $isRegistrationOpen = Carbon::now()->gt($registrationopen);
 
 
-
-
         if ($eventType === 'BRM') {
 
             $registrationConfig = [
@@ -75,10 +73,25 @@ class RegistrationController extends Controller
                 'isRegistrationOpen' => $isRegistrationOpen,
             ];
 
+            // Add clubs query for BRM events
 
-            return view('registrations.brevet')->with(['showreservationbutton' => $reservationactive,
-                'countries' => Country::all()->sortBy("country_name_en"), 'event' => $event->event_uid,
-                'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID, 'genders' => $this->gendersSv(), 'isRegistrationOpen' => $isRegistrationOpen, 'availabledetails' => $registrationConfig]);
+            $clubs = Club::where('official_club', true)
+                ->orWhere('acp_code', 'LIKE', 'SE%')
+                ->orderBy('name')
+                ->get();
+
+            return view('registrations.brevet')->with([
+                'showreservationbutton' => $reservationactive,
+                'countries' => Country::all()->sortBy("country_name_en"),
+                'event' => $event->event_uid,
+                'years' => range(date('Y', strtotime('-18 year')), 1950),
+                'registrationproduct' => $registration_product->productID,
+                'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID,
+                'genders' => $this->gendersSv(),
+                'isRegistrationOpen' => $isRegistrationOpen,
+                'availabledetails' => $registrationConfig,
+                'clubs' => $clubs  // Add clubs to the view data
+            ]);
         }
 
         $registrationConfig = [
@@ -152,26 +165,24 @@ class RegistrationController extends Controller
 
         $contact = $person->contactinformation;
         $contact->tel = $request['tel'];
-        $email = $contact->email;
-        $contact->email = $email;
+        $contact->email = $contact->email;
         $person->contactinformation->update();
 
         $registration->additional_information = $request['extra-info'];
 
-        $club = Club::whereRaw('LOWER(`name`) LIKE ? ', [trim(strtolower($request['club'])) . '%'])->first();
+        // Update club_uid directly from the dropdown selection
+        if ($request->has('club_uid')) {
 
-        if (!$club) {
-            $club_uid = Uuid::uuid4();
-            $club = new Club();
-            $club->club_uid = $club_uid;
-            $club->name = $request['club'];
-            $club->description = null;
-            $club->official_club = false;
-            $club->save();
-            $registration->club_uid = $club_uid;
-        } else {
-            $registration->club_uid = $club->club_uid;
         }
+
+        // Get the event associated with this registration
+        $event = Event::where('event_uid', $registration->course_uid)->first();
+
+        if ($event && $event->event_type === 'BRM') {
+            // This is a BRM event
+            $registration->club_uid = $request['club_uid'];
+        }
+
         $person->update();
         $registration->update();
 
@@ -260,19 +271,52 @@ class RegistrationController extends Controller
             $year = $birthdate[0];
         }
 
+        // Get the registration model to access the relationship with event
+        $registrationModel = Registration::where('registration_uid', $request['registrationUid'])->first();
+
+        // Get the event using the course_uid from the registration
+        $event = Event::where('event_uid', $registrationModel->course_uid)->first();
 
         $optionalsforreg = Optional::where('registration_uid', $registration->registration_uid)->pluck('productID');
 
-        return view('registrations.edit')->with(['countries' => Country::all()->sortByDesc("country_name_en"), 'years' =>
-            range(date('Y'), 1950), 'days' => $this->daysforSelect(), 'months' => $this->monthsforSelect(),
-            'registration' => $registration, 'day' => $day, 'month' => $month,
-            'birthyear' => $year, 'optionalsforregistration' => $optionalsforreg, 'genders' => $this->gendersEn()]);
+        // Default clubs list - all clubs sorted by name
+        $clubs = Club::orderBy('name')->get();
+
+        $viewData = [
+            'countries' => Country::all()->sortByDesc("country_name_en"),
+            'years' => range(date('Y'), 1950),
+            'days' => $this->daysforSelect(),
+            'months' => $this->monthsforSelect(),
+            'registration' => $registration,
+            'day' => $day,
+            'month' => $month,
+            'birthyear' => $year,
+            'optionalsforregistration' => $optionalsforreg,
+            'genders' => $this->gendersEn(),
+            'clubs' => $clubs
+        ];
+
+        // Check if the event exists and its type is BRM
+        if ($event && $event->event_type === 'BRM') {
+            // For BRM events, only show official clubs or clubs with ACP codes
+            $brmClubs = Club::where('official_club', true)
+                ->orWhere('acp_code', 'LIKE', 'SE%')
+                ->orderBy('name')
+                ->get();
+
+            $viewData['clubs'] = $brmClubs;
+
+            // Return a different blade view for BRM event type
+            return view('registrations.edit_brm')->with($viewData);
+        }
+
+        // Return the default blade view
+        return view('registrations.edit')->with($viewData);
     }
 
 
     public function create(Request $request): RedirectResponse
     {
-
         $event = Event::where('event_uid', $request['uid'])->get()->first();
 
         if (!$event) {
@@ -295,7 +339,7 @@ class RegistrationController extends Controller
         if (Person::where('checksum', $this->hashsumfor($string_to_hash))->exists()) {
             $person = Person::where('checksum', $this->hashsumfor($string_to_hash))->first();
             $person->gender = $request['gender'];
-            if($request['gdpr'] == 'on'){
+            if ($request['gdpr'] == 'on') {
                 $person->gdpr_approved = true;
             } else {
 //                return back()->withErrors(['gdpr' => 'You need to approve GDPR'])->withInput();
@@ -335,7 +379,7 @@ class RegistrationController extends Controller
             $person->birthdate = $request['year'] . "-" . $request['month'] . "-" . $request['day'];
             $person->registration_registration_uid = '1111111';
             $person->checksum = $this->hashsumfor($string_to_hash);
-            if($request['gdpr'] == 'on'){
+            if ($request['gdpr'] == 'on') {
                 $person->gdpr_approved = true;
             } else {
                 $person->gdpr_approved = false;
@@ -359,7 +403,9 @@ class RegistrationController extends Controller
             $person->save();
             $person->adress()->save($adress);
             $person->contactinformation()->save($contact);
-            $person->adress()->country = $country->country_id;
+            // Set the country_id directly on the address relationship
+            $adress->country_id = $request['country'];
+            $adress->save();
         }
 
 
@@ -381,20 +427,37 @@ class RegistrationController extends Controller
             $registration->reservation = false;
         }
 
-        // Kolla om vi sparat klubben sen tidigare
-        $club = Club::whereRaw('LOWER(`name`) LIKE ? ', [trim(strtolower($request['club'])) . '%'])->first();
+        // Check if the event type is BRM
+        if ($event->event_type === 'BRM') {
+            // Check if the club exists with the provided ID
+            $club = Club::where('club_uid', $request['club_uid'])->first();
 
-        if (!$club) {
-            $club_uid = Uuid::uuid4();
-            $club = new Club();
-            $club->club_uid = $club_uid;
-            $club->name = $request['club'];
-            $club->description = null;
-            $club->official_club = false;
-            $club->save();
-            $registration->club_uid = $club_uid;
-        } else {
+            if (!$club) {
+                return back()->withErrors(['club' => 'The selected club does not exist.'])->withInput();
+            }
+
+            // For BRM events, validate that the club is an official club or has an ACP code
+            if (!$club->official_club && !str_starts_with($club->acp_code ?? '', 'SE')) {
+                return back()->withErrors(['club' => 'For BRM events, you must select an official club recognized by Audax Club Parisien.'])->withInput();
+            }
+
+            // Set the club_uid to the registration if the club exists and is valid
             $registration->club_uid = $club->club_uid;
+        } else {
+            // Existing way to check club for MSR
+            $club = Club::whereRaw('LOWER(`name`) LIKE ? ', [trim(strtolower($request['club'])) . '%'])->first();
+            if (!$club) {
+                $club_uid = Uuid::uuid4();
+                $club = new Club();
+                $club->club_uid = $club_uid;
+                $club->name = $request['club'];
+                $club->description = null;
+                $club->official_club = false;
+                $club->save();
+                $registration->club_uid = $club_uid;
+            } else {
+                $registration->club_uid = $club->club_uid;
+            }
         }
 
         $person->registration()->save($registration);
@@ -432,21 +495,13 @@ class RegistrationController extends Controller
                 $optional->productID = $product['productID'];
                 $optional->save();
             }
-
-
-            if (strval($request['medal']) == strval($product['productID'])) {
-                $optional = new Optional();
-                $optional->registration_uid = $reg->registration_uid;
-                $optional->productID = $product['productID'];
-                $optional->save();
-            }
-
-
         }
 
 
         if (App::isProduction()) {
-            $use_stripe = env("USE_STRIPE_PAYMENT_INTEGRATION");
+            $use_stripe = isset($event->eventConfiguration) && isset($event->eventConfiguration->use_stripe_payment)
+                ? $event->eventConfiguration->use_stripe_payment
+                : env("USE_STRIPE_PAYMENT_INTEGRATION");
             if ($use_stripe) {
                 return to_route('checkout', ["reg" => $reg->registration_uid, 'price_id' => $reg_product->price_id, 'event_type' => $event->event_type]);
             } else {
@@ -454,7 +509,9 @@ class RegistrationController extends Controller
                 return to_route('checkoutsuccess', ["reg" => $reg->registration_uid, 'price_id' => $reg_product->price_id, 'event_type' => $event->event_type]);
             }
         } else {
-            $use_stripe = env("USE_STRIPE_PAYMENT_INTEGRATION");
+            $use_stripe = isset($event->eventConfiguration) && isset($event->eventConfiguration->use_stripe_payment)
+                ? $event->eventConfiguration->use_stripe_payment
+                : env("USE_STRIPE_PAYMENT_INTEGRATION");
             if ($use_stripe) {
                 if ($reg_product->categoryID === 7) {
                     $price = env("STRIPE_TEST_PRODUCT_RESERVATION");
@@ -462,15 +519,13 @@ class RegistrationController extends Controller
                     $price = env("STRIPE_TEST_PRODUCT");
                 }
                 return to_route('checkout', ["reg" => $reg->registration_uid, 'price_id' => $price, "event_type" => $event->event_type]);
-
             } else {
                 event(new CompletedRegistrationSuccessEvent($registration));
                 return to_route('checkoutsuccess', ["reg" => $reg->registration_uid, 'price_id' => $reg_product->price_id, 'event_type' => $event->event_type]);
-
             }
         }
-
     }
+
 
     private function isExistingregistrationWithTelOnCourse(string $tel, string $course_uid): bool
     {

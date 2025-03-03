@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Event;
+use App\Models\Organizer;
 use App\Models\Person;
 use App\Models\Registration;
 use Illuminate\Bus\Queueable;
@@ -24,11 +25,12 @@ class CompletedRegistrationEmail extends Mailable
     private string $startlistlink;
     private string $updatelink;
     private Person $person;
+    private Organizer $organizer;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Registration $registration, Collection $products, Event $event, string $club, string $country, string $startlistlink, string $updatelink, Person $person)
+    public function __construct(Registration $registration, Collection $products, Event $event, string $club, string $country, string $startlistlink, string $updatelink, Person $person, Organizer $organizer)
     {
         $this->person = $person;
         $this->updatelink = $updatelink;
@@ -38,6 +40,7 @@ class CompletedRegistrationEmail extends Mailable
         $this->event = $event;
         $this->registration = $registration;
         $this->products = $products;
+        $this->organizer = $organizer;
     }
 
     /**
@@ -58,7 +61,7 @@ class CompletedRegistrationEmail extends Mailable
 
         return new Content(
             view: 'Mail.completedregistration-sucess-mail-template',
-            with: ['country' => $this->country, 'club' => $this->club, 'startlistlink' => $this->startlistlink, 'registration' => $this->registration, 'adress' => $this->person->adress, 'contact' => $this->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event, 'updatelink' => $this->updatelink, 'person' => $this->person],
+            with: ['organizer' => $this->organizer->organization_name ,'country' => $this->country, 'club' => $this->club, 'startlistlink' => $this->startlistlink, 'registration' => $this->registration, 'adress' => $this->person->adress, 'contact' => $this->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event, 'updatelink' => $this->updatelink, 'person' => $this->person],
         );
     }
 

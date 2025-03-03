@@ -1,42 +1,52 @@
-#FROM php:7.4-apache
-#FROM php:8.1-apache
-#RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
-#RUN docker-php-ext-install pdo pdo_mysql && docker-php-ext-enable pdo_mysql
-#RUN docker-php-ext-install ext ext_zip && docker-php-ext-enable ext_zip
-#RUN apt-get update && apt-get upgrade -y
-#
-#RUN a2enmod rewrite
+FROM php:8.1-apache-bullseye
 
-FROM php:8.1-apache
+# Install system dependencies in a single RUN command to reduce image layers
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cron \
+    g++ \
+    gettext \
+    libicu-dev \
+    openssl \
+    libc-client-dev \
+    libkrb5-dev \
+    libxml2-dev \
+    libfreetype6-dev \
+    libgd-dev \
+    libbz2-dev \
+    libtidy-dev \
+    libcurl4-openssl-dev \
+    libz-dev \
+    libmemcached-dev \
+    libxslt-dev \
+    git \
+    libpq-dev \
+    libzip-dev \
+    libwebp-dev && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && \
-    apt-get install --yes --force-yes \
-    cron g++ gettext libicu-dev openssl \
-    libc-client-dev libkrb5-dev  \
-    libxml2-dev libfreetype6-dev \
-    libgd-dev libmcrypt-dev bzip2 \
-    libbz2-dev libtidy-dev libcurl4-openssl-dev \
-    libz-dev libmemcached-dev libxslt-dev git-core libpq-dev \
-    libzip4 libzip-dev libwebp-dev
+# Install PHP extensions
+RUN docker-php-ext-install zip bcmath bz2 calendar dba exif gettext iconv intl soap tidy xsl mysqli pgsql pdo pdo_mysql pdo_pgsql && \
+    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp && \
+    docker-php-ext-install gd && \
+    docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
+    docker-php-ext-install imap && \
+    docker-php-ext-configure hash --with-mhash && \
+    pecl install xdebug mongodb redis && \
+    docker-php-ext-enable xdebug mongodb redis
 
-RUN docker-php-ext-install  zip && docker-php-ext-enable zip
+# Xdebug configuration
+RUN echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.client_port=9003" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    echo "xdebug.idekey=PHPSTORM" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-
-# PHP Configuration
-RUN docker-php-ext-install bcmath bz2 calendar  dba exif gettext iconv intl  soap tidy xsl zip&&\
-    docker-php-ext-install mysqli pgsql pdo pdo_mysql pdo_pgsql  &&\
-    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp &&\
-    docker-php-ext-install gd &&\
-    docker-php-ext-configure imap --with-kerberos --with-imap-ssl &&\
-    docker-php-ext-install imap &&\
-    docker-php-ext-configure hash --with-mhash &&\
-    pecl install xdebug && docker-php-ext-enable xdebug &&\
-    pecl install mongodb && docker-php-ext-enable mongodb &&\
-    pecl install redis && docker-php-ext-enable redis && \
-    curl -sS https://getcomposer.org/installer | php \
-            && mv composer.phar /usr/bin/composer
-
-
-# Apache Configuration
+# Apache configuration
 RUN a2enmod rewrite
+
+# Set working directory (optional but recommended)
+WORKDIR /var/www/html

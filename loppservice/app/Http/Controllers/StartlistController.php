@@ -29,7 +29,6 @@ class StartlistController extends Controller
 
         } else {
             $startlist = DB::table('registrations')
-                ->join('orders', 'orders.registration_uid', '=', 'registrations.registration_uid')
                 ->join('person', 'person.person_uid', '=', 'registrations.person_uid')
                 ->join('adress', 'adress.person_person_uid', '=', 'person.person_uid')
                 ->join('countries', 'countries.country_id', '=', 'adress.country_id')

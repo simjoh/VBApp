@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Event;
+use App\Models\Organizer;
 use App\Models\Person;
 use App\Models\Registration;
 use Illuminate\Bus\Queueable;
@@ -26,12 +27,13 @@ class BRMCompletedRegistrationEmail extends Mailable
     private string $startlistlink;
     private string $updatelink;
     private Person $person;
+    private Organizer $organizer;
 
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Registration $registration, Collection $products, Event $event, string $club, string $country, string $startlistlink, string $updatelink, Person $person)
+    public function __construct(Registration $registration, Collection $products, Event $event, string $club, string $country, string $startlistlink, string $updatelink, Person $person, Organizer $organizer)
     {
         $this->person = $person;
         $this->updatelink = $updatelink;
@@ -41,6 +43,7 @@ class BRMCompletedRegistrationEmail extends Mailable
         $this->event = $event;
         $this->registration = $registration;
         $this->products = $products;
+        $this->organizer = $organizer;
     }
 
     /**
@@ -49,7 +52,7 @@ class BRMCompletedRegistrationEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'VSRS 2024: bekräftelse på anmälan',
+            subject: 'Bekräftelse på anmälan till '. $this->event->title,
         );
     }
 
@@ -60,7 +63,7 @@ class BRMCompletedRegistrationEmail extends Mailable
     {
         return new Content(
             view: 'Mail.brmcompletedregistration-sucess-mail-template',
-            with: ['country' => $this->country, 'club' => $this->club, 'startlistlink' => $this->startlistlink, 'registration' => $this->registration, 'adress' => $this->person->adress, 'contact' => $this->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event, 'updatelink' => $this->updatelink, 'person' => $this->person],
+            with: ['organizer' => $this->organizer->organization_name  ,'country' => $this->country, 'club' => $this->club, 'startlistlink' => $this->startlistlink, 'registration' => $this->registration, 'adress' => $this->person->adress, 'contact' => $this->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event, 'updatelink' => $this->updatelink, 'person' => $this->person],
         );
     }
 

@@ -200,7 +200,7 @@
 			<p style="text-indent: 0pt;text-align: left;"></p>
 			<p class="s1" style="padding-left: 0pt;text-indent: 0pt;text-align: left;">Organisatör:</p>
 			<p style="text-indent: 0pt;text-align: left;"></p>
-			<p class="s3" style="padding-left: 0pt;text-indent: 0pt;text-align: left;">Cykelintresset</p>
+			<p class="s3" style="padding-left: 0pt;text-indent: 0pt;text-align: left;">{{$organizer}}</p>
 		</td>
 		<td style="width:14pt">
 			<p style="text-indent: 0pt;text-align: left;"></p>
@@ -548,6 +548,9 @@
 <!--  <p class="s10" style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;line-height: 133%;text-align: left;"><a href="https://www.vasterbottenbrevet.se/program">Event program 15-21 june</a></p>-->
 <p class="s10" style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">
 	<a href="{{$startlistlink}}">Startlista</a>
+</p>
+<p class="s10" style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">
+	<a href="{{$updatelink}}">Redigera dina uppgifter</a>
 </p>
 <p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://www.ebrevet.org/datapolicy" style="font-size: 12pt">Allmänna villkor</a><br />
 </p>

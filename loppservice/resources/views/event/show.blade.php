@@ -108,20 +108,23 @@
 									</svg>
 									Startlista
 								</a>
-								<a href="{{ route('register', ['uid' => $event->event_uid, 'event_type' => $event->event_type]) }}"
-								   class="block w-full text-[#E4432D] hover:text-[#B32D1B] hover:underline text-sm flex items-center">
-									<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-									</svg>
-									Länk till anmälan och betalning
-								</a>
-								<a href="{{ route('event.login', ['uid' => $event->event_uid, 'event_type' => $event->event_type]) }}"
-								   class="block w-full text-center bg-[#666666] hover:bg-[#4D4D4D] text-white py-1 rounded text-sm flex items-center justify-center">
-									<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
-									</svg>
-									HÄMTA LOGIN
-								</a>
+								@if(isset($event->eventConfiguration) && isset($event->eventConfiguration->use_stripe_payment) && $event->eventConfiguration->use_stripe_payment)
+									<a href="{{ route('register', ['uid' => $event->event_uid, 'event_type' => $event->event_type]) }}"
+									   class="block w-full text-center bg-[#666666] hover:bg-[#4D4D4D] text-white py-1 rounded text-sm flex items-center justify-center mb-1">
+										<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+										</svg>
+										ANMÄLAN & BETALNING
+									</a>
+								@else
+									<a href="{{ route('register', ['uid' => $event->event_uid, 'event_type' => $event->event_type]) }}"
+									   class="block w-full text-center bg-[#666666] hover:bg-[#4D4D4D] text-white py-1 rounded text-sm flex items-center justify-center">
+										<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+										</svg>
+										HÄMTA LOGIN
+									</a>
+								@endif
 							</div>
 						</div>
 					@endforeach

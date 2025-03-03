@@ -89,8 +89,13 @@
                     </div>
                     <div class="mt-2 mb-4">
                         <label for="club" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Club</label>
-                        <input type="text" name="club" id="club" value="{{$registration->club_name}}"
-                               class="md:w-full  sm:w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+                        <select name="club_uid" id="club" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                            @foreach ($clubs as $club)
+                                <option value="{{ $club->club_uid }}" {{ $registration->club_uid == $club->club_uid ? 'selected' : '' }}>
+                                    {{ $club->name }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
 
                 </div>
