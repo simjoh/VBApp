@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('base')
 
-<body class="antialiased bg-stone-100">
+<body class="antialiased bg-gray-50">
     <!-- Header -->
     <header class="bg-white py-4">
         <div class="container sm:p-1 mx-auto">

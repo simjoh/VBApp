@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('base')
 
-<body>
+<body class="antialiased bg-gray-50">
 <header class="bg-white py-4">
 	<div class="container sm:p-1 mx-auto">
 		<img alt="msr logotyp" class="mx-auto w-1/2 sm:w-1/2 md:w-[600px] max-w-[600px]" src="{{ asset('ebrevet-kalender.svg') }}"/>
@@ -18,14 +18,14 @@
 		@foreach($allevents as $month => $events)
 			<div class="month-section flex flex-col items-center">
 				<div class="flex items-center justify-center mb-8 relative w-full max-w-[95%] sm:max-w-full">
-					<div class="absolute w-full bg-[#4A5568] flex items-center justify-center">
-						<span class="text-lg md:text-xl font-bold text-white px-10 py-0.5">{{ $month }}</span>
+					<div class="absolute w-full bg-[#f3ea4d] flex items-center justify-center">
+						<span class="text-lg md:text-xl font-bold text-black px-10 py-0.5">{{ $month }}</span>
 					</div>
 				</div>
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-3 w-full place-items-center mt-3">
 					@foreach($events as $event)
-						<div class="bg-white rounded-lg shadow-md p-4 flex flex-col items-center h-auto min-h-[520px] w-[95%] sm:w-full sm:max-w-xs">
+						<div class="bg-white rounded-lg shadow-md p-4 flex flex-col items-center h-full min-h-[520px] w-[95%] sm:w-full sm:max-w-xs">
 							<!-- Placeholder for SVG logo -->
 							<div class="w-40 h-40 mb-3 flex items-center justify-center">
 								@if($event->organizer && $event->organizer->logo_svg)
@@ -80,48 +80,47 @@
 										<span>{{ $event->organizer ? $event->organizer->organization_name : 'Arrangör ej angiven' }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
+							
+										<span>
+											@if($event->organizer && $event->organizer->website)
+												<a href="{{ $event->organizer->website }}" target="_blank" class="text-blue-500 hover:underline">Hemsida</a>
+											@else
+												Hemsida ej angiven
+											@endif
+										</span>
+									</div>
+									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Övrigt:</span>
-										<span>Cykelintresset brevet-serie</span>
+										<span>
+											@if($event->routeDetail->description)
+												{{ $event->routeDetail->description }}
+											@endif
+										</span>
 									</div>
 								</div>
 							</div>
 
 							<div class="w-full space-y-1 mt-auto">
 								@if($event->routeDetail && $event->routeDetail->track_link)
-									<a href="{{ $event->routeDetail->track_link }}" target="_blank" class="block w-full text-[#E4432D] hover:text-[#B32D1B] hover:underline text-sm flex items-center">
-										<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-										</svg>
+									<a href="{{ $event->routeDetail->track_link }}" target="_blank" class="block w-full text-[#0081b9] hover:text-[#B32D1B] hover:underline text-sm flex items-center">
 										Länk till bana
 									</a>
 								@else
 									<span class="block w-full text-gray-400 text-sm flex items-center cursor-not-allowed">
-										<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-										</svg>
 										Länk till bana
 									</span>
 								@endif
-								<a href="{{ $event->startlisturl }}" class="block w-full text-[#E4432D] hover:text-[#B32D1B] hover:underline text-sm flex items-center">
-									<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-									</svg>
+								<a href="{{ $event->startlisturl }}" class="block w-full text-[#0081b9] hover:text-[#B32D1B] hover:underline text-sm flex items-center">
 									Startlista
 								</a>
 								@if(isset($event->eventConfiguration) && isset($event->eventConfiguration->use_stripe_payment) && $event->eventConfiguration->use_stripe_payment)
 									<a href="{{ route('register', ['uid' => $event->event_uid, 'event_type' => $event->event_type]) }}"
-									   class="block w-full text-center bg-[#666666] hover:bg-[#4D4D4D] text-white py-1 rounded text-sm flex items-center justify-center mb-1">
-										<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-										</svg>
+									   class="block w-full text-center bg-[#666666] hover:bg-[#4D4D4D] text-white py-2 rounded text-lg font-bold uppercase flex items-center justify-center mb-1">
 										ANMÄLAN & BETALNING
 									</a>
 								@else
 									<a href="{{ route('register', ['uid' => $event->event_uid, 'event_type' => $event->event_type]) }}"
-									   class="block w-full text-center bg-[#666666] hover:bg-[#4D4D4D] text-white py-1 rounded text-sm flex items-center justify-center">
-										<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
-										</svg>
+									   class="block w-full text-center bg-[#666666] hover:bg-[#4D4D4D] text-white py-2 rounded text-lg font-bold uppercase flex items-center justify-center">
 										HÄMTA LOGIN
 									</a>
 								@endif

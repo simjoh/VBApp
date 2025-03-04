@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('base')
-<body class="antialiased">
+<body class="antialiased bg-gray-50">
 <header class="bg-white py-4">
 <!--	<div class="container sm:p-1 mx-auto">-->
 <!--		<img alt="brm logotyp" width="75%" height="800" src="{{ asset('cykelintresset.svg') }}"/>-->
 <!--	</div>-->
 </header>
-<div class="container mx-auto p-0 font-sans">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 font-sans max-w-7xl">
 
 	@if ($errors->any())
 	<div class="alert alert-danger">
@@ -28,124 +28,105 @@
 	</div>
 	@endif
 
-<!--	<div class="mb-5">-->
-<!--		<p class="mb-3">Startavgift per brevet: 100 kr (ej återbetalbar dock överförbar). ACP utfärdar distansmedaljer till respektive-->
-<!--			distans.</p>-->
-<!--		<p>Distansmedaljer utfärdas endast för officiella brevet-distanser och inte för brevet populaire-distanser under 200 km. Tillägg-->
-<!--			för distansmedalj (inkluderar porto): 150 kr (återbetalas ej vid DNS/DNF).</p>-->
-<!---->
-<!--	</div>-->
 
-	<form method="post" action="{{url('registration.create')}}" class="grid sm:grid-cols-1 gap-4">
+	<form method="post" action="{{url('registration.create')}}" class="space-y-6">
 		@csrf
 		@method('POST')
 		<input type="text" value="{{$event}}" hidden="hidden" id="uid"
 			   name="uid">
 		<!--		<hr class="h-1 my-4 bg-gray-900 border-t border-4 border-black dark:bg-gray-700">-->
 		<div class="mt-2 flex-grow border-t border-4 border-black"></div>
-		<div class="border-gray-900/10 pb-3">
-			<div class="grid md:grid-cols-2 gap-3 mt-3 sm:grid-cols-1">
+		<div class="space-y-6">
+			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 				<div>
-					<label for="first-name" class="block text-gray-900 font-semibold sm:text-base sm:leading-6">Förnamn</label>
+					<label for="first-name" class="block text-gray-900 font-semibold text-sm sm:text-base">Förnamn</label>
 					<input type="text" id="first-name" name="first_name"
-						   class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600"
+						   class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600"
 						   autocomplete="given-name" required>
 				</div>
 				<div>
-					<label for="last-name" class="block text-gray-900 font-semibold sm:text-base sm:leading-6">Efternamn</label>
+					<label for="last-name" class="block text-gray-900 font-semibold text-sm sm:text-base">Efternamn</label>
 					<input type="text" id="last-name" name="last_name"
-						   class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600"
+						   class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600"
 						   autocomplete="family-name" required>
 				</div>
 			</div>
 
-			<div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">
-				<div class="mt-2">
-
-					<label for="email" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Epost address <span class="text-red-500">*</span></label>
+			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+				<div>
+					<label for="email" class="block text-gray-900 font-semibold text-sm sm:text-base">Epost address <span class="text-red-500">*</span></label>
 					<input id="email" name="email" type="email" autocomplete="email"
-						   class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+						   class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
 				</div>
-				<div class="mt-2 mb-4">
-					<label for="email-confirm" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Bekräfta
-						epost adress <span class="text-red-500">*</span></label>
+				<div>
+					<label for="email-confirm" class="block text-gray-900 font-semibold text-sm sm:text-base">Bekräfta epost adress <span class="text-red-500">*</span></label>
 					<input id="email-confirm" name="email-confirm" type="email"
-						   class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+						   class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
 				</div>
 			</div>
 
-			<div class="mt-2 w-1/2">
-				<label for="tel" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Telefon <span class="text-red-500">*</span></label>
-				<input type="text" name="tel" id="tel" autocomplete="tel-level2" autocomplete="tel"
-					   class=" w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+				<div>
+					<label for="tel" class="block text-gray-900 font-semibold text-sm sm:text-base">Telefon <span class="text-red-500">*</span></label>
+					<input type="text" name="tel" id="tel" autocomplete="tel"
+						   class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
+				</div>
+				<div>
+					<label for="street-adress" class="block text-gray-900 font-semibold text-sm sm:text-base">Adress</label>
+					<input type="text" name="street-address" id="street-address" autocomplete="street-address"
+						   class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
+				</div>
 			</div>
 
-			<div class="mt-2">
-				<label for="street-adress" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Adress</label>
-				<input type="text" name="street-address" id="street-address" autocomplete="street-address"
-					   class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
-			</div>
-
-			<div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">
-				<div class="mt-2">
-					<label for="postal-code" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Postnummer</label>
+			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+				<div>
+					<label for="postal-code" class="block text-gray-900 font-semibold text-sm sm:text-base">Postnummer</label>
 					<input type="text" name="postal-code" id="postal-code" autocomplete="postal-code"
-						   class=" w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+						   class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
 				</div>
-				<div class="mt-2 mb-4">
-					<label for="city" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Ort</label>
+				<div>
+					<label for="city" class="block text-gray-900 font-semibold text-sm sm:text-base">Ort</label>
 					<input type="text" name="city" id="city" autocomplete="address-level2"
-						   class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+						   class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
 				</div>
 			</div>
-		</div>
-		<div class="mt-3">
-			<label for="gender" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Kön</label>
-			<select id="gender" name="gender" autocomplete="gender-name"
-					class="sm:w-full px-3 py-2 md:w-1/2 lg:w-1/2 py-2 border-2 focus:outline-none focus:border-gray-600"
-					required>
-				<option>Välj kön</option>
-				@foreach ($genders as $key => $gender)
-				<option value="{{$key}}">
-					{{$gender}}
-				</option>
-				@endforeach
-			</select>
-		</div>
 
-		<div class="mt-3">
-			<label for="country" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Land</label>
-			<select id="country" name="country" autocomplete="country-name"
-					class="sm:w-full px-3 py-2 md:w-1/2 lg:w-1/2 py-2 border-2 focus:outline-none focus:border-gray-600"
-					required>
-				<option>Välj land</option>
-				@foreach ($countries as $country)
-				<option value="{{$country->country_id}}">
-					{{$country->country_name_sv}}
-				</option>
-				@endforeach
-			</select>
-		</div>
+			<div>
+				<label for="gender" class="block text-gray-900 font-semibold text-sm sm:text-base">Kön</label>
+				<select id="gender" name="gender" autocomplete="gender-name"
+						class="mt-1 block w-full sm:w-1/2 px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600"
+						required>
+					<option>Välj kön</option>
+					@foreach ($genders as $key => $gender)
+					<option value="{{$key}}">{{$gender}}</option>
+					@endforeach
+				</select>
+			</div>
 
-		<p class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Födelsedag</p>
-		<div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">
-			<div class="grid md:grid-cols-3 sm:grid-cols-1 gap-3">
-				<div class="mt-2">
+			<div>
+				<label for="country" class="block text-gray-900 font-semibold text-sm sm:text-base">Land</label>
+				<select id="country" name="country" autocomplete="country-name"
+						class="mt-1 block w-full sm:w-1/2 px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600"
+						required>
+					<option>Välj land</option>
+					@foreach ($countries as $country)
+					<option value="{{$country->country_id}}">{{$country->country_name_sv}}</option>
+					@endforeach
+				</select>
+			</div>
 
+			<div>
+				<p class="block text-gray-900 font-semibold text-sm sm:text-base">Födelsedag</p>
+				<div class="grid grid-cols-3 gap-4 sm:w-1/2">
 					<select name="year" id="year"
-							class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+							class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
 						<option>År</option>
 						@foreach ($years as $year)
-						<option value="{{$year}}">
-							{{$year}}
-						</option>
+						<option value="{{$year}}">{{$year}}</option>
 						@endforeach
 					</select>
-				</div>
-				<div class="mt-2">
-
 					<select name="month" id="month"
-							class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+							class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
 						<option value="">Månad</option>
 						<option value="01">Januari</option>
 						<option value="02">Februari</option>
@@ -160,11 +141,8 @@
 						<option value="11">November</option>
 						<option value="12">December</option>
 					</select>
-				</div>
-				<div class="mt-2">
-
 					<select name="day" id="day"
-							class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+							class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
 						<option value="">Dag</option>
 						<option value="01">01</option>
 						<option value="02">02</option>
@@ -199,69 +177,70 @@
 						<option value="31">31</option>
 					</select>
 				</div>
-
 			</div>
 
-		</div>
-        <div class="mt-2 mb-4 md:w-1/2 sm:w-full">
-            <label for="club" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Klubb</label>
-            <select name="club_uid" id="club" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
-                <option value="">Välj klubb</option>
-                @foreach ($clubs as $club)
-                <option value="{{ $club->club_uid }}">
-                    {{ $club->name }} {{ $club->acp_code ? '('.$club->acp_code.')' : '' }}
-                </option>
-                @endforeach
-            </select>
-            <p class="text-sm text-gray-500 mt-1">För BRM-evenemang måste du välja en officiell klubb som erkänns av Audax Club Parisien</p>
-        </div>
+			<div>
+				<label for="club" class="block text-gray-900 font-semibold text-sm sm:text-base">Klubb</label>
+				<select name="club_uid" id="club" 
+						class="mt-1 block w-full sm:w-1/2 px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
+					<option value="">Välj klubb</option>
+					@foreach ($clubs as $club)
+					<option value="{{ $club->club_uid }}">
+						{{ $club->name }} {{ $club->acp_code ? '('.$club->acp_code.')' : '' }}
+					</option>
+					@endforeach
+				</select>
+				<p class="text-sm text-gray-500 mt-1">För BRM-evenemang måste du välja en officiell klubb som erkänns av Audax Club Parisien</p>
+			</div>
 
+			<div>
+				<label for="extra-info" class="block text-gray-900 font-semibold text-sm sm:text-base">Övrig information</label>
+				<p class="mt-1 text-sm text-gray-600">Övrig information</p>
+				<textarea id="extra-info" name="extra-info" rows="3"
+						  class="mt-1 block w-full sm:w-1/2 px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600"></textarea>
+			</div>
 
-		<div class="mt-5 mb-5 md:w-1/2 sm:w-full">
-			<label for="extra-info" class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Övrig information</label>
-			<p class="mt-1 mb-2 text-base leading-6 text-gray-600">Övrig information</p>
-			<textarea id="extra-info" name="extra-info" rows="1"
-					  class="sm:w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600"></textarea>
-		</div>
-
-		<fieldset class="mt-5">
-			<p class="block text-gray-900 font-semibold sm:text-base sm:leading-10">Medalj</p>
-			<div class="mt-1 space-y-1 mb-6">
-				<div class="flex items-center gap-x-3">
-					<input id="medal" name="medal" value="1014" type="radio"
-						   class="h-4 w-4 border-black text-black focus:ring-indigo-600">
-					<label for="buffe_dinner" class="block sm:text-base font-sm leading-6 text-gray-600">Förbetala distansmedalj,
-						150:-</label>
+			<fieldset>
+				<p class="block text-gray-900 font-semibold text-sm sm:text-base">Medalj</p>
+				<div class="mt-4 space-y-4">
+					<div class="flex items-center gap-x-3">
+						<input id="medal" name="medal" value="1014" type="radio"
+							   class="h-4 w-4 border-black text-black focus:ring-indigo-600">
+						<label for="medal" class="text-sm sm:text-base text-gray-600">Förbetala distansmedalj, 150:-</label>
+					</div>
+					<div class="flex items-center gap-x-3">
+						<input id="no-medal" name="medal" value="nomedal" type="radio" checked
+							   class="h-4 w-4 border-black text-black focus:ring-indigo-600">
+						<label for="no-medal" class="text-sm sm:text-base text-gray-600">Ingen distansmedalj</label>
+					</div>
 				</div>
-				<div class="flex items-center gap-x-3">
-					<input id="no-medal" name="medal" value="nomedal" type="radio" checked
-						   class="h-4 w-4 border-black text-black focus:ring-indigo-600">
-					<label for="no-buffedinner" class="block sm:text-base font-sm leading-6 text-gray-600">Ingen distansmedalj</label>
+			</fieldset>
+
+			<div class="flex items-start">
+				<div class="flex items-center h-5">
+					<input type="checkbox" name="gdpr" id="gdpr" class="h-4 w-4 rounded border-gray-300" onchange="toggleSubmitButtons()">
+				</div>
+				<div class="ml-3">
+					<label for="gdpr" class="text-sm sm:text-base text-gray-900">
+						Jag godkänner att websidan sparar informationen som jag postar i detta formulär
+						<a href="https://www.ebrevet.org/datapolicy" target="_blank" class="text-black-500 underline">Läs mer här om de allmäna vilkorer</a>
+					</label>
 				</div>
 			</div>
-		</fieldset>
 
-
-		<div class="flex items-center">
-			<input type="checkbox" name="gdpr" id="gdpr" class="mr-2" onchange="toggleSubmitButtons()">
-			<label for="gdpr" class="text-gray-900 font-semibold sm:text-base sm:leading-10">Jag godkänner att websidan sparar informationen som jag postar i detta formulär<a
-					href="https://www.ebrevet.org/datapolicy" target="_blank" class="text-black-500 underline"> Läs mer här om de allmäna vilkorer</a></label>
-		</div>
-
-		<div class="grid md:grid-cols-1 gap-3 mt-4 sm:grid-cols-1">
-
-
-			@if ($availabledetails['isRegistrationOpen'] == true)
-			<button id="checkout-button" type="submit" value="{{$registrationproduct}}" name="save"
-					class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600" disabled>
-				REGISTRERA
-			</button>
-			@else
-			<button disabled type="submit" value="{{$registrationproduct}}" name="save"
-					class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600">
-				REGISTRERING - ÖPPNAR {{ $availabledetails['opens']}}
-			</button>
-			@endif
+			<div>
+				@if ($availabledetails['isRegistrationOpen'] == true)
+				<button id="checkout-button" type="submit" value="{{$registrationproduct}}" name="save"
+						class="w-full sm:w-auto px-6 py-3 bg-orange-500 text-white font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600 disabled:opacity-50" disabled>
+					REGISTRERA
+				</button>
+				@else
+				<button disabled type="submit" value="{{$registrationproduct}}" name="save"
+						class="w-full sm:w-auto px-6 py-3 bg-orange-500 text-white font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600 disabled:opacity-50">
+					REGISTRERING - ÖPPNAR {{ $availabledetails['opens']}}
+				</button>
+				@endif
+			</div>
 		</div>
 	</form>
 </div>
@@ -270,10 +249,7 @@
 	function toggleSubmitButtons() {
 		const gdprCheckbox = document.getElementById('gdpr');
 		const checkoutButton = document.getElementById('checkout-button');
-
-		// Enable or disable buttons based on the checkbox state
-		const isChecked = gdprCheckbox.checked;
-		checkoutButton.disabled = !isChecked;
+		checkoutButton.disabled = !gdprCheckbox.checked;
 	}
 </script>
 </body>
