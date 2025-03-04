@@ -6,7 +6,7 @@
 <header class="bg-white py-4">
     <div class="container sm:p-1 mx-auto">
         <img alt="msr logotyp" class="mx-auto" width="200" src="{{ asset('ebrevet-kalender.svg') }}"/>
-    </div>
+	</div>
 </header>
 <div class="container mx-auto px-2 sm:px-4 font-sans max-w-7xl">
 	<div class="p-4 sm:p-6">
@@ -53,11 +53,11 @@
 								<div class="w-full space-y-0">
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Distans:</span>
-										<span>{{ $event->routeDetail->distance ?? '200' }} KM</span>
+										<span>{{ $event->routeDetail->distance ? $event->routeDetail->distance . ' KM' : '' }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Höjdmeter:</span>
-										<span>{{ $event->routeDetail->height_difference ? $event->routeDetail->height_difference . ' M' : '' }}</span>
+										<span>{{ $event->routeDetail && isset($event->routeDetail->height_difference) ? $event->routeDetail->height_difference . ' M' : '' }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Startdatum:</span>

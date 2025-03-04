@@ -3,7 +3,7 @@
 namespace App\Domain\Model\Track\Service;
 
 use App\common\Exceptions\BrevetException;
-use App\common\Rest\RusaTimeRestClient;
+use App\common\Rest\Client\RusaTimeRestClient;
 use App\Domain\Model\Checkpoint\Repository\CheckpointRepository;
 use App\Domain\Model\Event\Repository\EventRepository;
 use App\Domain\Model\Partisipant\Repository\ParticipantRepository;

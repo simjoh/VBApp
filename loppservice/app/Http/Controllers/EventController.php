@@ -126,6 +126,14 @@ class EventController extends Controller
             return response()->json(['message' => 'Invalid organizer_id. Organizer does not exist'], 400);
         }
 
+        // Validate route_detail required fields
+        if (isset($data['route_detail'])) {
+            $routeDetailData = $data['route_detail'];
+            if (!isset($routeDetailData['distance']) || !isset($routeDetailData['start_time'])) {
+                return response()->json(['message' => 'Missing required route_detail fields (distance, start_time)'], 400);
+            }
+        }
+
         if (Event::where('title', $data['title'])->exists()) {
             return response()->json("alreadyexists", 500);
         }
@@ -309,9 +317,9 @@ class EventController extends Controller
             $routeDetail = new \App\Models\RouteDetail(['event_uid' => $event->event_uid]);
 
             // Set route detail properties
-            $routeDetail->distance = $routeDetailData['distance'] ?? null;
-            $routeDetail->height_difference = $routeDetailData['height_difference'] ?? null;
-            $routeDetail->start_time = $routeDetailData['start_time'] ?? null;
+            $routeDetail->distance = $routeDetailData['distance'];
+            $routeDetail->height_difference = $routeDetailData['height_difference'] ?? 0;
+            $routeDetail->start_time = $routeDetailData['start_time'];
             $routeDetail->start_place = $routeDetailData['start_place'] ?? null;
             $routeDetail->name = $routeDetailData['name'] ?? null;
             $routeDetail->description = $routeDetailData['description'] ?? null;
@@ -544,11 +552,11 @@ class EventController extends Controller
 
             // Set route detail properties
             if (isset($routeDetailData['distance'])) {
-                $routeDetail->distance = $routeDetailData['distance'];
+                $routeDetail->distance = $routeDetailData['distance'] ?? null;
             }
 
             if (isset($routeDetailData['height_difference'])) {
-                $routeDetail->height_difference = $routeDetailData['height_difference'];
+                $routeDetail->height_difference = $routeDetailData['height_difference'] ?? 0;
             }
 
             if (isset($routeDetailData['start_time'])) {
@@ -641,7 +649,7 @@ class EventController extends Controller
         // Validate request data
         $request->validate([
             'distance' => 'required|numeric',
-            'height_difference' => 'required|numeric',
+            'height_difference' => 'nullable|numeric',
             'start_time' => 'required|string',
             'start_place' => 'nullable|string',
             'name' => 'nullable|string',
@@ -654,7 +662,7 @@ class EventController extends Controller
 
         // Update route detail properties
         $routeDetail->distance = $request->input('distance');
-        $routeDetail->height_difference = $request->input('height_difference');
+        $routeDetail->height_difference = $request->input('height_difference', 0);
         $routeDetail->start_time = $request->input('start_time');
         $routeDetail->start_place = $request->input('start_place');
         $routeDetail->name = $request->input('name');

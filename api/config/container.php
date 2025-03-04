@@ -1,7 +1,7 @@
 <?php
 
 
-use App\common\Rest\RusaTimeRestClient;
+use App\common\Rest\Client\RusaTimeRestClient;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\App;

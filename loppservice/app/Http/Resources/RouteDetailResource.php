@@ -19,7 +19,7 @@ class RouteDetailResource extends JsonResource
             'id' => $this->id,
             'event_uid' => $this->event_uid,
             'distance' => $this->distance,
-            'height_difference' => $this->height_difference,
+            'height_difference' => $this->height_difference == 0 ? '' : $this->height_difference,
             'start_time' => $this->start_time,
             'start_place' => $this->start_place,
             'name' => $this->name,

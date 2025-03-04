@@ -1,11 +1,16 @@
 <?php
 
-namespace App\common\Rest;
+namespace App\common\Rest\Client;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * REST client for the RUSA Time API
+ * 
+ * @package App\common\Rest\Client
+ */
 class RusaTimeRestClient
 {
 

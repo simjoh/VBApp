@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->uuid('event_uid');
             $table->float('distance')->comment('Distance in kilometers');
-            $table->float('height_difference')->comment('Height difference in meters');
+            $table->float('height_difference')->nullable()->comment('Height difference in meters');
             $table->string('start_time')->comment('Start time for this route (HH:MM)');
             $table->string('start_place')->nullable()->comment('Starting location for this route');
             $table->string('name')->nullable();
