@@ -4,9 +4,9 @@
 
 <body class="antialiased bg-gray-50">
 <header class="bg-white py-4">
-	<div class="container sm:p-1 mx-auto">
-		<img alt="msr logotyp" class="mx-auto w-1/2 sm:w-1/2 md:w-[600px] max-w-[600px]" src="{{ asset('ebrevet-kalender.svg') }}"/>
-	</div>
+    <div class="container sm:p-1 mx-auto">
+        <img alt="msr logotyp" class="mx-auto" width="200" src="{{ asset('ebrevet-kalender.svg') }}"/>
+    </div>
 </header>
 <div class="container mx-auto px-2 sm:px-4 font-sans max-w-7xl">
 	<div class="p-4 sm:p-6">
@@ -57,7 +57,7 @@
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Höjdmeter:</span>
-										<span>{{ $event->routeDetail->height_difference ?? '' }} M</span>
+										<span>{{ $event->routeDetail->height_difference ? $event->routeDetail->height_difference . ' M' : '' }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Startdatum:</span>
@@ -73,14 +73,14 @@
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Startort:</span>
-										<span>{{ $event->routeDetail->start_place ?? 'Umeå' }}</span>
+										<span>{{ $event->routeDetail->start_place ?? '' }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Arrangör:</span>
 										<span>{{ $event->organizer ? $event->organizer->organization_name : 'Arrangör ej angiven' }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
-							
+
 										<span>
 											@if($event->organizer && $event->organizer->website)
 												<a href="{{ $event->organizer->website }}" target="_blank" class="text-blue-500 hover:underline">Hemsida</a>
@@ -92,7 +92,7 @@
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Övrigt:</span>
 										<span>
-											@if($event->routeDetail->description)
+											@if($event->routeDetail->description ?? false)
 												{{ $event->routeDetail->description }}
 											@endif
 										</span>

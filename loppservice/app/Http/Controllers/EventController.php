@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\EventResource;
+use App\Http\Resources\EventCollection;
+use App\Http\Resources\RouteDetailResource;
 use App\Models\Event;
 use App\Models\EventConfiguration;
+use App\Models\Organizer;
 use App\Models\Product;
 use App\Models\Reservationconfig;
 use App\Models\StartNumberConfig;
@@ -64,107 +67,245 @@ class EventController extends Controller
 
     public function all()
     {
-        $events = Event::all();
-        if ($events) {
-            return \response()->json($events, 200);
-        }
-        return \response()->json($events, 204);
+        // Get pagination parameters with defaults
+        $perPage = request()->input('per_page', 15);
+        $page = request()->input('page', 1);
 
+        // Get filter parameters
+        $eventType = request()->input('event_type');
+        $organizerId = request()->input('organizer_id');
+        $completed = request()->input('completed');
+
+        // Build query
+        $query = Event::query();
+
+        // Apply filters if provided
+        if ($eventType !== null) {
+            $query->where('event_type', $eventType);
+        }
+
+        if ($organizerId !== null) {
+            $query->where('organizer_id', $organizerId);
+        }
+
+        if ($completed !== null) {
+            $query->where('completed', filter_var($completed, FILTER_VALIDATE_BOOLEAN));
+        }
+
+        // Apply sorting
+        $sortBy = request()->input('sort_by', 'startdate');
+        $sortDir = request()->input('sort_dir', 'asc');
+        $allowedSortFields = ['event_uid', 'title', 'startdate', 'enddate', 'created_at', 'updated_at'];
+
+        if (in_array($sortBy, $allowedSortFields)) {
+            $query->orderBy($sortBy, strtolower($sortDir) === 'desc' ? 'desc' : 'asc');
+        }
+
+        // Get paginated results
+        $events = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return new EventCollection($events);
     }
 
     public function create(Request $request)
     {
-        $jsonfromfrom = $request->json()->all();
+        $data = $request->json()->all();
 
-        if (Event::where('title', $jsonfromfrom['title'])->exists()) {
-            return \response()->json("alreadyexists", 500);
+        // Validate required fields
+        if (!isset($data['title']) || !isset($data['description']) || !isset($data['startdate']) || !isset($data['enddate'])) {
+            return response()->json(['message' => 'Missing required fields'], 400);
+        }
+
+        // Validate organizer_id is present and valid
+        if (!isset($data['organizer_id'])) {
+            return response()->json(['message' => 'organizer_id is required'], 400);
+        }
+
+        // Check if organizer exists
+        if (!Organizer::where('id', $data['organizer_id'])->exists()) {
+            return response()->json(['message' => 'Invalid organizer_id. Organizer does not exist'], 400);
+        }
+
+        if (Event::where('title', $data['title'])->exists()) {
+            return response()->json("alreadyexists", 500);
         }
 
         $event = new Event();
         $event->event_uid = Uuid::uuid4();
-        $event->title = $jsonfromfrom['title'];
-        $event->description = $jsonfromfrom['description'];
-        $event->startdate = $jsonfromfrom['startdate'];
-        $event->enddate = $jsonfromfrom['enddate'];
+        $event->title = $data['title'];
+        $event->description = $data['description'];
+        $event->startdate = $data['startdate'];
+        $event->enddate = $data['enddate'];
         $event->completed = false;
 
         // Set event_type if provided, default to env value or BRM
-        $event->event_type = $jsonfromfrom['event_type'] ?? env('EVENT_DEFAULT_TYPE', 'BRM');
+        $event->event_type = $data['event_type'] ?? env('EVENT_DEFAULT_TYPE', 'BRM');
 
         // Set organizer_id if provided
-        if (isset($jsonfromfrom['organizer_id'])) {
-            $event->organizer_id = $jsonfromfrom['organizer_id'];
+        if (isset($data['organizer_id'])) {
+            $event->organizer_id = $data['organizer_id'];
         }
 
         // Set county_id if provided
-        if (isset($jsonfromfrom['county_id'])) {
-            $event->county_id = $jsonfromfrom['county_id'];
+        if (isset($data['county_id'])) {
+            $event->county_id = $data['county_id'];
         }
 
         // Set event_group_uid if provided
-        if (isset($jsonfromfrom['event_group_uid'])) {
-            $event->event_group_uid = $jsonfromfrom['event_group_uid'];
+        if (isset($data['event_group_uid'])) {
+            $event->event_group_uid = $data['event_group_uid'];
         }
 
         $event->save();
 
+        // Create event configuration
         $eventconfiguration = new EventConfiguration();
-        $config = $jsonfromfrom['eventconfig'];
-        $eventconfiguration->registration_opens = $config['registration_opens'];
 
-        // Set registration_closes to 23:59 the day before event if not provided
-        if (isset($config['registration_closes'])) {
-            $eventconfiguration->registration_closes = $config['registration_closes'];
+        if (isset($data['eventconfiguration'])) {
+            $config = $data['eventconfiguration'];
+
+            // Set registration_opens if provided
+            if (isset($config['registration_opens'])) {
+                $eventconfiguration->registration_opens = $config['registration_opens'];
+            }
+
+            // Set use_stripe_payment if provided
+            if (isset($config['use_stripe_payment'])) {
+                $eventconfiguration->use_stripe_payment = $config['use_stripe_payment'];
+            } else {
+                $eventconfiguration->use_stripe_payment = false;
+            }
+
+            // Set registration_closes to 23:59 the day before event if not provided
+            if (isset($config['registration_closes'])) {
+                $eventconfiguration->registration_closes = $config['registration_closes'];
+            } else {
+                // Always set to 23:59 the day before event starts
+                $eventStartDate = Carbon::parse($data['startdate']);
+                $dayBefore = $eventStartDate->copy()->subDay()->format('Y-m-d') . ' 23:59:00';
+                $eventconfiguration->registration_closes = $dayBefore;
+            }
+
+            // Set resarvation_on_event if provided
+            if (isset($config['resarvation_on_event'])) {
+                $eventconfiguration->resarvation_on_event = $config['resarvation_on_event'];
+            } else {
+                $eventconfiguration->resarvation_on_event = false;
+            }
+
+            // Set max_registrations if provided
+            if (isset($config['max_registrations'])) {
+                $eventconfiguration->max_registrations = $config['max_registrations'];
+            } else {
+                $eventconfiguration->max_registrations = env('EVENT_DEFAULT_MAX_REGISTRATIONS', 300);
+            }
         } else {
-            // Always set to 23:59 the day before event starts
-            $eventStartDate = Carbon::parse($jsonfromfrom['startdate']);
+            // Set default values if eventconfiguration is not provided
+            $eventStartDate = Carbon::parse($data['startdate']);
             $dayBefore = $eventStartDate->copy()->subDay()->format('Y-m-d') . ' 23:59:00';
+
+            $eventconfiguration->registration_opens = $eventStartDate->copy()->subDays(30)->format('Y-m-d') . ' 00:00:00';
             $eventconfiguration->registration_closes = $dayBefore;
-        }
-
-        $eventconfiguration->resarvation_on_event = false;
-
-        // Set max_registrations to env default if not provided
-        if (isset($config['max_registrations'])) {
-            $eventconfiguration->max_registrations = $config['max_registrations'];
-        } else {
+            $eventconfiguration->resarvation_on_event = false;
+            $eventconfiguration->use_stripe_payment = false;
             $eventconfiguration->max_registrations = env('EVENT_DEFAULT_MAX_REGISTRATIONS', 300);
         }
 
         $event->eventconfiguration()->save($eventconfiguration);
 
-        $startnumberfrom = $config['startnumberconfig'];
+        // Create start number configuration
         $startnumberconfig = new StartNumberConfig();
-        $startnumberconfig->begins_at = $startnumberfrom['begins_at'];
-        $startnumberconfig->ends_at = $startnumberfrom['ends_at'];
-        $startnumberconfig->increments = $startnumberfrom['increment'];
+
+        if (isset($data['eventconfiguration']['startnumberconfig'])) {
+            $startnumberfrom = $data['eventconfiguration']['startnumberconfig'];
+            $startnumberconfig->begins_at = $startnumberfrom['begins_at'] ?? 1;
+            $startnumberconfig->ends_at = $startnumberfrom['ends_at'] ?? 1000;
+            $startnumberconfig->increments = $startnumberfrom['increments'] ?? 1;
+        } else {
+            // Default values
+            $startnumberconfig->begins_at = 1;
+            $startnumberconfig->ends_at = 1000;
+            $startnumberconfig->increments = 1;
+        }
+
         $eventconfiguration->startnumberconfig()->save($startnumberconfig);
 
         // Handle products if provided
-        if (isset($jsonfromfrom['products']) && is_array($jsonfromfrom['products'])) {
-            $products = $jsonfromfrom['products'];
+        if (isset($data['eventconfiguration']['products']) && is_array($data['eventconfiguration']['products'])) {
+            $products = $data['eventconfiguration']['products'];
+            $addedProducts = [];
+            $has1013 = false;
+            $has1014 = false;
 
             foreach ($products as $productId) {
                 if (Product::where('productID', $productId)->exists()) {
-                    $eventconfiguration->products()->save((Product::where('productID', '=', $productId)->firstOrFail()));
+                    $product = Product::where('productID', '=', $productId)->firstOrFail();
+                    $eventconfiguration->products()->save($product);
+                    $addedProducts[] = $productId;
+
+                    if ($productId == '1013') {
+                        $has1013 = true;
+                    }
+                    if ($productId == '1014') {
+                        $has1014 = true;
+                    }
+                }
+            }
+
+            // For BRM events, ensure at least 2 products
+            if ($event->event_type === 'BRM' && count($addedProducts) < 2) {
+                // Add default products if not already added
+                if (!$has1013) {
+                    $product1013 = Product::where('productID', '=', '1013')->first();
+                    if ($product1013) {
+                        $eventconfiguration->products()->save($product1013);
+                        $addedProducts[] = '1013';
+                    }
+                }
+
+                // If we still don't have 2 products, add 1014 if not already added
+                if (count($addedProducts) < 2 && !$has1014) {
+                    $product1014 = Product::where('productID', '=', '1014')->first();
+                    if ($product1014) {
+                        $eventconfiguration->products()->save($product1014);
+                        $addedProducts[] = '1014';
+                    }
+                }
+            }
+        } else {
+            // For BRM events, add default products if no products provided
+            if ($event->event_type === 'BRM') {
+                // Add default product 1013
+                $product1013 = Product::where('productID', '=', '1013')->first();
+                if ($product1013) {
+                    $eventconfiguration->products()->save($product1013);
+                }
+
+                // Add default product 1014 (medal)
+                $product1014 = Product::where('productID', '=', '1014')->first();
+                if ($product1014) {
+                    $eventconfiguration->products()->save($product1014);
                 }
             }
         }
 
         // Create reservation config
         $reservationconfig = new Reservationconfig();
-        $reservationconfig->use_reservation_until = null;
 
-        // Default to false, but use true if specified in the request
-        $useReservation = isset($config['reservation_on_event']) &&
-                          \filter_var($config['reservation_on_event'], \FILTER_VALIDATE_BOOLEAN) === true;
-        $reservationconfig->use_reservation_on_event = $useReservation;
+        if (isset($data['eventconfiguration']['reservationconfig'])) {
+            $reservationData = $data['eventconfiguration']['reservationconfig'];
+            $reservationconfig->use_reservation_until = $reservationData['use_reservation_until'] ?? null;
+            $reservationconfig->use_reservation_on_event = $reservationData['use_reservation_on_event'] ?? false;
+        } else {
+            $reservationconfig->use_reservation_until = null;
+            $reservationconfig->use_reservation_on_event = false;
+        }
 
         $eventconfiguration->reservationconfig()->save($reservationconfig);
 
         // Handle route details if provided
-        if (isset($jsonfromfrom['route_detail'])) {
-            $routeDetailData = $jsonfromfrom['route_detail'];
+        if (isset($data['route_detail'])) {
+            $routeDetailData = $data['route_detail'];
             $routeDetail = new \App\Models\RouteDetail(['event_uid' => $event->event_uid]);
 
             // Set route detail properties
@@ -183,126 +324,262 @@ class EventController extends Controller
         return (new EventResource($event))->response()->setStatusCode(201);
     }
 
-    public function update(Request $request)
+    public function update(Request $request, string $eventUid)
     {
-        $jsonfromfrom = $request->json()->all();
+        $data = $request->json()->all();
 
-        $eventtoupdate = Event::where('event_uid', '=', $jsonfromfrom['event_uid'])->first();
-        $eventtoupdate->title = $jsonfromfrom['title'];
-        $eventtoupdate->description = $jsonfromfrom['description'];
-        $eventtoupdate->startdate = $jsonfromfrom['startdate'];
-        $eventtoupdate->enddate = $jsonfromfrom['enddate'];
-        $eventtoupdate->completed = false;
+        // Validate required fields
+        if (!isset($data['title']) || !isset($data['description']) || !isset($data['startdate']) || !isset($data['enddate'])) {
+            return response()->json(['message' => 'Missing required fields'], 400);
+        }
+
+        // Validate organizer_id is present and valid
+        if (!isset($data['organizer_id'])) {
+            return response()->json(['message' => 'organizer_id is required'], 400);
+        }
+
+        // Check if organizer exists
+        if (!Organizer::where('id', $data['organizer_id'])->exists()) {
+            return response()->json(['message' => 'Invalid organizer_id. Organizer does not exist'], 400);
+        }
+
+        $event = Event::where('event_uid', '=', $eventUid)->first();
+
+        if (!$event) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+
+        $event->title = $data['title'];
+        $event->description = $data['description'];
+        $event->startdate = $data['startdate'];
+        $event->enddate = $data['enddate'];
+
+        // Update completed if provided
+        if (isset($data['completed'])) {
+            $event->completed = $data['completed'];
+        }
 
         // Update event_type if provided
-        if (isset($jsonfromfrom['event_type'])) {
-            $eventtoupdate->event_type = $jsonfromfrom['event_type'];
+        if (isset($data['event_type'])) {
+            $event->event_type = $data['event_type'];
         }
 
         // Update organizer_id if provided
-        if (isset($jsonfromfrom['organizer_id'])) {
-            $eventtoupdate->organizer_id = $jsonfromfrom['organizer_id'];
+        if (isset($data['organizer_id'])) {
+            $event->organizer_id = $data['organizer_id'];
         }
 
         // Update county_id if provided
-        if (isset($jsonfromfrom['county_id'])) {
-            $eventtoupdate->county_id = $jsonfromfrom['county_id'];
+        if (isset($data['county_id'])) {
+            $event->county_id = $data['county_id'];
         }
 
         // Update event_group_uid if provided
-        if (isset($jsonfromfrom['event_group_uid'])) {
-            $eventtoupdate->event_group_uid = $jsonfromfrom['event_group_uid'];
+        if (isset($data['event_group_uid'])) {
+            $event->event_group_uid = $data['event_group_uid'];
         }
 
-        $eventtoupdate->save();
+        $event->save();
 
-        $eventconfig = $eventtoupdate->eventconfiguration;
-        $config = $jsonfromfrom['eventconfig'];
-        $eventconfig->registration_opens = $config['registration_opens'];
+        // Update event configuration
+        if (isset($data['eventconfiguration'])) {
+            $config = $data['eventconfiguration'];
+            $eventconfig = $event->eventconfiguration;
 
-        // Set registration_closes to 23:59 the day before event if not provided
-        if (isset($config['registration_closes'])) {
-            $eventconfig->registration_closes = $config['registration_closes'];
-        } else {
-            // Always set to 23:59 the day before event starts
-            $eventStartDate = Carbon::parse($jsonfromfrom['startdate']);
-            $dayBefore = $eventStartDate->copy()->subDay()->format('Y-m-d') . ' 23:59:00';
-            $eventconfig->registration_closes = $dayBefore;
-        }
+            if (!$eventconfig) {
+                $eventconfig = new EventConfiguration();
+                $event->eventconfiguration()->save($eventconfig);
+            }
 
-        $eventconfig->resarvation_on_event = false;
+            // Update registration_opens if provided
+            if (isset($config['registration_opens'])) {
+                $eventconfig->registration_opens = $config['registration_opens'];
+            }
 
-        // Set max_registrations to env default if not provided
-        if (isset($config['max_registrations'])) {
-            $eventconfig->max_registrations = $config['max_registrations'];
-        } else {
-            $eventconfig->max_registrations = env('EVENT_DEFAULT_MAX_REGISTRATIONS', 300);
-        }
+            // Update use_stripe_payment if provided
+            if (isset($config['use_stripe_payment'])) {
+                $eventconfig->use_stripe_payment = $config['use_stripe_payment'];
+            }
 
-        $startnumberfrom = $config['startnumberconfig'];
-        $startnumberconfig = $eventconfig->startnumberconfig;
-        $startnumberconfig->begins_at = $startnumberfrom['begins_at'];
-        $startnumberconfig->ends_at = $startnumberfrom['ends_at'];
-        $startnumberconfig->increments = $startnumberfrom['increment'];
-        $startnumberconfig->save();
+            // Update registration_closes if provided
+            if (isset($config['registration_closes'])) {
+                $eventconfig->registration_closes = $config['registration_closes'];
+            } else {
+                // Always set to 23:59 the day before event starts
+                $eventStartDate = Carbon::parse($data['startdate']);
+                $dayBefore = $eventStartDate->copy()->subDay()->format('Y-m-d') . ' 23:59:00';
+                $eventconfig->registration_closes = $dayBefore;
+            }
 
-        // Handle products if provided
-        if (isset($jsonfromfrom['products']) && is_array($jsonfromfrom['products'])) {
-            // First remove existing products
-            $eventconfig->products()->detach();
+            // Update resarvation_on_event if provided
+            if (isset($config['resarvation_on_event'])) {
+                $eventconfig->resarvation_on_event = $config['resarvation_on_event'];
+            }
 
-            // Then add the new products
-            $products = $jsonfromfrom['products'];
-            foreach ($products as $productId) {
-                if (Product::where('productID', $productId)->exists()) {
-                    $eventconfig->products()->save((Product::where('productID', '=', $productId)->firstOrFail()));
+            // Update max_registrations if provided
+            if (isset($config['max_registrations'])) {
+                $eventconfig->max_registrations = $config['max_registrations'];
+            }
+
+            $eventconfig->save();
+
+            // Update start number configuration
+            if (isset($config['startnumberconfig'])) {
+                $startnumberfrom = $config['startnumberconfig'];
+                $startnumberconfig = $eventconfig->startnumberconfig;
+
+                if (!$startnumberconfig) {
+                    $startnumberconfig = new StartNumberConfig();
+                    $eventconfig->startnumberconfig()->save($startnumberconfig);
+                }
+
+                if (isset($startnumberfrom['begins_at'])) {
+                    $startnumberconfig->begins_at = $startnumberfrom['begins_at'];
+                }
+
+                if (isset($startnumberfrom['ends_at'])) {
+                    $startnumberconfig->ends_at = $startnumberfrom['ends_at'];
+                }
+
+                if (isset($startnumberfrom['increments'])) {
+                    $startnumberconfig->increments = $startnumberfrom['increments'];
+                }
+
+                $startnumberconfig->save();
+            }
+
+            // Handle products if provided
+            if (isset($config['products']) && is_array($config['products'])) {
+                // First remove existing products
+                $eventconfig->products()->detach();
+
+                // Then add the new products
+                $products = $config['products'];
+                $addedProducts = [];
+                $has1013 = false;
+                $has1014 = false;
+
+                foreach ($products as $productId) {
+                    if (Product::where('productID', $productId)->exists()) {
+                        $product = Product::where('productID', '=', $productId)->firstOrFail();
+                        $eventconfig->products()->save($product);
+                        $addedProducts[] = $productId;
+
+                        if ($productId == '1013') {
+                            $has1013 = true;
+                        }
+                        if ($productId == '1014') {
+                            $has1014 = true;
+                        }
+                    }
+                }
+
+                // For BRM events, ensure at least 2 products
+                if ($event->event_type === 'BRM' && count($addedProducts) < 2) {
+                    // Add default products if not already added
+                    if (!$has1013) {
+                        $product1013 = Product::where('productID', '=', '1013')->first();
+                        if ($product1013) {
+                            $eventconfig->products()->save($product1013);
+                            $addedProducts[] = '1013';
+                        }
+                    }
+
+                    // If we still don't have 2 products, add 1014 if not already added
+                    if (count($addedProducts) < 2 && !$has1014) {
+                        $product1014 = Product::where('productID', '=', '1014')->first();
+                        if ($product1014) {
+                            $eventconfig->products()->save($product1014);
+                            $addedProducts[] = '1014';
+                        }
+                    }
+                }
+            } else if ($event->event_type === 'BRM' && isset($config)) {
+                // For BRM events, if config is provided but no products, add default products
+                // First check if there are any existing products
+                if ($eventconfig->products()->count() === 0) {
+                    // Add default product 1013
+                    $product1013 = Product::where('productID', '=', '1013')->first();
+                    if ($product1013) {
+                        $eventconfig->products()->save($product1013);
+                    }
+
+                    // Add default product 1014 (medal)
+                    $product1014 = Product::where('productID', '=', '1014')->first();
+                    if ($product1014) {
+                        $eventconfig->products()->save($product1014);
+                    }
                 }
             }
-        }
 
-        // Update or create reservation config
-        if ($eventconfig->reservationconfig) {
-            $reservationconfig = $eventconfig->reservationconfig;
-        } else {
-            $reservationconfig = new Reservationconfig();
-        }
+            // Update reservation config
+            if (isset($config['reservationconfig'])) {
+                $reservationData = $config['reservationconfig'];
 
-        // Default to false, but use true if specified in the request
-        $reservationconfig->use_reservation_until = null;
-        $useReservation = isset($config['reservation_on_event']) &&
-                          \filter_var($config['reservation_on_event'], \FILTER_VALIDATE_BOOLEAN) === true;
-        $reservationconfig->use_reservation_on_event = $useReservation;
+                if ($eventconfig->reservationconfig) {
+                    $reservationconfig = $eventconfig->reservationconfig;
+                } else {
+                    $reservationconfig = new Reservationconfig();
+                    $eventconfig->reservationconfig()->save($reservationconfig);
+                }
 
-        $eventconfig->reservationconfig()->save($reservationconfig);
+                if (isset($reservationData['use_reservation_until'])) {
+                    $reservationconfig->use_reservation_until = $reservationData['use_reservation_until'];
+                }
 
-        $eventconfig->save();
-        $eventtoupdate->save();
+                if (isset($reservationData['use_reservation_on_event'])) {
+                    $reservationconfig->use_reservation_on_event = $reservationData['use_reservation_on_event'];
+                }
 
-        // Handle route details if provided
-        if (isset($jsonfromfrom['route_detail'])) {
-            $routeDetailData = $jsonfromfrom['route_detail'];
-
-            // Find existing route detail or create new one
-            $routeDetail = $eventtoupdate->routeDetail ?? new \App\Models\RouteDetail(['event_uid' => $eventtoupdate->event_uid]);
-
-            // Set route detail properties
-            $routeDetail->distance = $routeDetailData['distance'] ?? $routeDetail->distance;
-            $routeDetail->height_difference = $routeDetailData['height_difference'] ?? $routeDetail->height_difference;
-            $routeDetail->start_time = $routeDetailData['start_time'] ?? $routeDetail->start_time;
-            $routeDetail->start_place = $routeDetailData['start_place'] ?? $routeDetail->start_place;
-            $routeDetail->name = $routeDetailData['name'] ?? $routeDetail->name;
-            $routeDetail->description = $routeDetailData['description'] ?? $routeDetail->description;
-            $routeDetail->track_link = $routeDetailData['track_link'] ?? $routeDetail->track_link;
-
-            // Save route detail
-            if ($eventtoupdate->routeDetail) {
-                $routeDetail->save();
-            } else {
-                $eventtoupdate->routeDetail()->save($routeDetail);
+                $reservationconfig->save();
             }
         }
 
-        return (new EventResource($eventtoupdate))->response()->setStatusCode(200);
+        // Handle route details if provided
+        if (isset($data['route_detail'])) {
+            $routeDetailData = $data['route_detail'];
+
+            // Find existing route detail or create new one
+            $routeDetail = $event->routeDetail ?? new \App\Models\RouteDetail(['event_uid' => $event->event_uid]);
+
+            // Set route detail properties
+            if (isset($routeDetailData['distance'])) {
+                $routeDetail->distance = $routeDetailData['distance'];
+            }
+
+            if (isset($routeDetailData['height_difference'])) {
+                $routeDetail->height_difference = $routeDetailData['height_difference'];
+            }
+
+            if (isset($routeDetailData['start_time'])) {
+                $routeDetail->start_time = $routeDetailData['start_time'];
+            }
+
+            if (isset($routeDetailData['start_place'])) {
+                $routeDetail->start_place = $routeDetailData['start_place'];
+            }
+
+            if (isset($routeDetailData['name'])) {
+                $routeDetail->name = $routeDetailData['name'];
+            }
+
+            if (isset($routeDetailData['description'])) {
+                $routeDetail->description = $routeDetailData['description'];
+            }
+
+            if (isset($routeDetailData['track_link'])) {
+                $routeDetail->track_link = $routeDetailData['track_link'];
+            }
+
+            // Save route detail
+            if ($event->routeDetail) {
+                $routeDetail->save();
+            } else {
+                $event->routeDetail()->save($routeDetail);
+            }
+        }
+
+        return new EventResource($event);
     }
 
     public function delete(Request $request): JsonResponse
@@ -310,8 +587,9 @@ class EventController extends Controller
         $event = Event::where('event_uid', '=', $request['event_uid'])->first();
         if ($event) {
             $event->delete();
+            return response()->json(['message' => 'Event deleted successfully'], 200);
         }
-        return \response()->json(null, 204);
+        return response()->json(['message' => 'Event not found'], 404);
     }
 
 
@@ -319,9 +597,9 @@ class EventController extends Controller
     {
         $event = Event::where('event_uid', '=', $request['event_uid'])->first();
         if ($event) {
-            return \response()->json($event, 200);
+            return response()->json(new EventResource($event), 200);
         }
-        return \response()->json(null, 204);
+        return response()->json(['message' => 'Event not found'], 404);
     }
 
     /**
@@ -339,10 +617,10 @@ class EventController extends Controller
         if ($event && $event->routeDetail) {
             // Note: We always show track links if they are present in the database
             // The migration only generates links in development environment
-            return \response()->json($event->routeDetail, 200);
+            return response()->json(new RouteDetailResource($event->routeDetail), 200);
         }
 
-        return \response()->json(['message' => 'Route details not found'], 404);
+        return response()->json(['message' => 'Route details not found'], 404);
     }
 
     /**
@@ -357,7 +635,7 @@ class EventController extends Controller
         $event = Event::where('event_uid', '=', $eventUid)->first();
 
         if (!$event) {
-            return \response()->json(['message' => 'Event not found'], 404);
+            return response()->json(['message' => 'Event not found'], 404);
         }
 
         // Validate request data
@@ -390,7 +668,7 @@ class EventController extends Controller
             $event->routeDetail()->save($routeDetail);
         }
 
-        return \response()->json($routeDetail, 200);
+        return response()->json(new RouteDetailResource($routeDetail), 200);
     }
 
     public function getLogin(Request $request)

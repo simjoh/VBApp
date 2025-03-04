@@ -16,6 +16,7 @@
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ToolController;
 use App\Http\Controllers\EventGroupController;
+use App\Http\Controllers\OrganizerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -38,7 +39,7 @@ Route::prefix('/api')->group(function () {
         return 'Testar kontroll av apinyckel';
     }]);
 
-    Route::prefix('/integration')->group(function () {
+    Route::prefix('/integration')->middleware('apikey')->group(function () {
 
         Route::prefix('/registration')->group(function () {
             Route::get('/registrations/event/{eventUid}/all', function () {
@@ -51,24 +52,40 @@ Route::prefix('/api')->group(function () {
             Route::get('/{eventUid}/event', function () {
             });
 
-            Route::post('/' , [EventController::class, 'create']);
-            Route::get('/all' , [EventController::class, 'all']);
-            Route::put('/' , [EventController::class, 'update']);
-            Route::get('/{eventUid}', [EventController::class, 'eventbyid']);
-            Route::delete('/{eventUid}' , [EventController::class, 'delete']);
+            Route::post('/' , [EventController::class, 'create'])->name('api.events.create');
+            Route::get('/all' , [EventController::class, 'all'])->name('api.events.index');
+            Route::put('/{eventUid}' , [EventController::class, 'update'])->name('api.events.update');
+            Route::get('/{eventUid}', [EventController::class, 'eventbyid'])->name('api.events.show');
+            Route::delete('/{eventUid}' , [EventController::class, 'delete'])->name('api.events.delete');
 
             // Route detail endpoints
-            Route::get('/event/{event_uid}/route-details', [EventController::class, 'getRouteDetails']);
-            Route::post('/event/{event_uid}/route-details', [EventController::class, 'updateRouteDetails']);
+            Route::get('/event/{event_uid}/route-details', [EventController::class, 'getRouteDetails'])->name('api.events.route_details');
+            Route::post('/event/{event_uid}/route-details', [EventController::class, 'updateRouteDetails'])->name('api.events.update_route_details');
             Route::put('/event/{event_uid}/route-details', [EventController::class, 'updateRouteDetails']);
+
+            // Registration endpoint
+            Route::get('/{eventUid}/registrations', function () {
+                // This will be implemented later
+                return response()->json(['message' => 'Not implemented yet'], 501);
+            })->name('api.events.registrations');
         });
 
         Route::prefix('/event-group')->group(function () {
-            Route::post('/', [EventGroupController::class, 'create']);
-            Route::put('/', [EventGroupController::class, 'update']);
-            Route::get('/all', [EventGroupController::class, 'all']);
-            Route::get('/{uid}', [EventGroupController::class, 'get']);
-            Route::delete('/{uid}', [EventGroupController::class, 'delete']);
+            Route::post('/', [EventGroupController::class, 'create'])->name('api.event_groups.create');
+            Route::put('/', [EventGroupController::class, 'update'])->name('api.event_groups.update');
+            Route::get('/all', [EventGroupController::class, 'all'])->name('api.event_groups.index');
+            Route::get('/{uid}', [EventGroupController::class, 'get'])->name('api.event_groups.show');
+            Route::delete('/{uid}', [EventGroupController::class, 'delete'])->name('api.event_groups.delete');
+        });
+
+        // Organizer API routes
+        Route::prefix('/organizers')->group(function () {
+            Route::get('/', [OrganizerController::class, 'index'])->name('api.organizers.index');
+            Route::post('/', [OrganizerController::class, 'store'])->name('api.organizers.store');
+            Route::get('/{id}', [OrganizerController::class, 'show'])->name('api.organizers.show');
+            Route::put('/{id}', [OrganizerController::class, 'update'])->name('api.organizers.update');
+            Route::delete('/{id}', [OrganizerController::class, 'destroy'])->name('api.organizers.destroy');
+            Route::get('/{id}/events', [OrganizerController::class, 'events'])->name('api.organizers.events');
         });
     });
 
