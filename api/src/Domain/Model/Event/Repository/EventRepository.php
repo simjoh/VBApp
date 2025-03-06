@@ -67,8 +67,10 @@ class EventRepository extends BaseRepository
         return null;
     }
 
-
-
+    public function getEvent(string $event_uid): ?Event
+    {
+        return $this->eventFor($event_uid);
+    }
 
     public function tracksOnEvent(string $event_uid): ?array {
         try {
@@ -114,7 +116,6 @@ class EventRepository extends BaseRepository
 
     public function updateEvent(string $event_uid , Event $event): Event
     {
-
         $title = $event->getTitle();
         $description = $event->getDescription();
         $completed = $event->isCompleted();
@@ -123,10 +124,11 @@ class EventRepository extends BaseRepository
         $start_date = $event->getStartdate();
         $end_date = $event->getEnddate();
         $eve_U = $event->getEventUid();
+        
         try {
             $statement = $this->connection->prepare($this->sqls('updateEvent'));
 
-           $statement->bindValue(':event_uid', $eve_U);
+            $statement->bindValue(':event_uid', $eve_U);
             $statement->bindValue(':title', $title);
             $statement->bindValue(':description', $description);
             $statement->bindValue(':completed',$completed ,PDO::PARAM_BOOL);
@@ -135,12 +137,10 @@ class EventRepository extends BaseRepository
             $statement->bindValue(':end_date', $end_date);
             $statement->bindValue(':start_date', $start_date);
 
-
-
-           $status = $statement->execute();
-           if($status){
-               return $event;
-           }
+            $status = $statement->execute();
+            if($status){
+                return $event;
+            }
 
         } catch (PDOException $e) {
             echo 'Kunde inte uppdatera site: ' . $e->getMessage();
@@ -150,7 +150,6 @@ class EventRepository extends BaseRepository
 
     public function createEvent(Event $event): Event
     {
-
         $event_uid = Uuid::uuid4();
         $title = $event->getTitle();
         $description = $event->getDescription();
@@ -159,6 +158,7 @@ class EventRepository extends BaseRepository
         $canceled = $event->isCanceled();
         $start_date = $event->getStartdate();
         $end_date = $event->getEnddate();
+        
         try {
             $statement = $this->connection->prepare($this->sqls('createEvent'));
 
@@ -170,8 +170,8 @@ class EventRepository extends BaseRepository
             $statement->bindParam(':canceled', $canceled, PDO::PARAM_BOOL);
             $statement->bindParam(':end_date', $end_date);
             $statement->bindParam(':start_date', $start_date);
+            
             $status = $statement->execute();
-
 
             if($status){
                 $event->setEventUid($event_uid);
@@ -229,7 +229,7 @@ class EventRepository extends BaseRepository
         $eventqls['getEventByUid'] = 'select *  from event e where e.event_uid=:event_uid;';
         $eventqls['deleteEvent'] = 'delete from event  where event_uid=:event_uid;';
         $eventqls['updateEvent']  = "UPDATE event SET  title=:title , description=:description , active=:active, completed=:completed, canceled=:canceled, active=:active , start_date=:start_date, end_date=:end_date WHERE event_uid=:event_uid";
-        $eventqls['createEvent']  = "INSERT INTO event(event_uid, title, start_date, end_date, active, canceled, completed,description) VALUES (:event_uid, :title,:start_date,:end_date,:active, :canceled, :completed, :description)";
+        $eventqls['createEvent']  = "INSERT INTO event(event_uid, title, start_date, end_date, active, canceled, completed, description) VALUES (:event_uid, :title, :start_date, :end_date, :active, :canceled, :completed, :description)";
         $eventqls['createEventTrack'] = 'INSERT INTO event_tracks(track_uid, event_uid) VALUES (:track_uid , :event_uid)';
         $eventqls['existsByTitleAndStartDate'] = 'select *  from event e where e.title=:title;';
 
@@ -238,5 +238,14 @@ class EventRepository extends BaseRepository
 
     }
 
+    /**
+     * Get the database connection
+     * 
+     * @return PDO The database connection
+     */
+    public function getConnection(): PDO
+    {
+        return $this->connection;
+    }
 
 }

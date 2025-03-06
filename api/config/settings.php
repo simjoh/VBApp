@@ -94,4 +94,6 @@ $settings['rusaurl'] = 'https://rusa.jkassen.org/time/rusa-time-api.php';
 
 $settings['loppserviceurl'] = 'http://app:80/loppservice';
 
+$settings['apikey'] = 'testkey';
+
 return $settings;
