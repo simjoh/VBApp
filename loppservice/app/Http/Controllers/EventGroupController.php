@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
 
 class EventGroupController extends Controller
 {
@@ -22,6 +23,7 @@ class EventGroupController extends Controller
     public function create(Request $request): JsonResponse
     {
         $validated = $request->validate([
+            'uid' => 'required|string',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'startdate' => 'required|date',
@@ -54,10 +56,9 @@ class EventGroupController extends Controller
         }
     }
 
-    public function update(Request $request): JsonResponse
+    public function update(Request $request, string $uid): JsonResponse
     {
         $validated = $request->validate([
-            'uid' => 'required|string|exists:event_groups,uid',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'startdate' => 'required|date',
@@ -69,7 +70,7 @@ class EventGroupController extends Controller
         try {
             DB::beginTransaction();
 
-            $eventGroup = $this->eventGroupRepository->update($validated['uid'], $validated);
+            $eventGroup = $this->eventGroupRepository->update($uid, $validated);
 
             if (isset($validated['event_uids'])) {
                 $this->eventGroupRepository->syncEvents($eventGroup, $validated['event_uids']);
@@ -103,13 +104,12 @@ class EventGroupController extends Controller
                 ], Response::HTTP_NOT_FOUND);
             }
 
-            if ($this->eventGroupRepository->hasEventsWithRegistrationsOrOpen($eventGroup)) {
-                return response()->json([
-                    'message' => 'Cannot delete event group. Some events have registrations or are open for registration.',
-                ], Response::HTTP_UNPROCESSABLE_ENTITY);
-            }
 
-            $this->eventGroupRepository->delete($uid);
+            $deleted = $this->eventGroupRepository->delete($uid);
+
+            if (!$deleted) {
+                throw new \Exception('Failed to delete event group');
+            }
 
             DB::commit();
 
@@ -118,6 +118,7 @@ class EventGroupController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Failed to delete event group: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Failed to delete event group',
                 'error' => $e->getMessage()

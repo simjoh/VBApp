@@ -63,8 +63,13 @@ class LoppServiceEventGroupRestClient
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
-                'apikey' => $this->apiKey
-            ]
+                'apikey' => $this->apiKey,
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Methods' => 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+                'Access-Control-Allow-Headers' => 'Content-Type, Accept, Authorization, apikey'
+            ],
+            'http_errors' => true,
+            'verify' => false  // Only if you're dealing with self-signed certificates in development
         ]);
     }
 
@@ -313,12 +318,29 @@ class LoppServiceEventGroupRestClient
             // Ensure the UID is set in the DTO
             $eventGroup->uid = $uid;
             
-            $response = $this->client->request('PUT', $this->baseUrl . '/api/integration/event-group', [
-                'json' => $eventGroup->toArray()
+            // Debug log
+            error_log("Sending update request to LoppService: " . json_encode([
+                'url' => $this->baseUrl . '/api/integration/event-group/' . $uid,
+                'data' => $eventGroup->toArray()
+            ]));
+            
+            $response = $this->client->request('PUT', $this->baseUrl . '/api/integration/event-group/' . $uid, [
+                'json' => $eventGroup->toArray(),
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                    'apikey' => $this->apiKey
+                ]
             ]);
+            
             $data = json_decode($response->getBody()->getContents(), true);
             return EventGroupDTO::fromArray($data['data'] ?? []);
         } catch (RequestException $e) {
+            // Log the full error details
+            error_log("LoppService update error: " . $e->getMessage());
+            if ($e->hasResponse()) {
+                error_log("Response body: " . $e->getResponse()->getBody()->getContents());
+            }
             $this->handleException($e);
             return null;
         }
@@ -359,8 +381,13 @@ class LoppServiceEventGroupRestClient
         // Ensure the UID is set in the DTO
         $eventGroup->uid = $uid;
         
-        $promise = $this->client->requestAsync('PUT', $this->baseUrl . '/api/integration/event-group', [
-            'json' => $eventGroup->toArray()
+        $promise = $this->client->requestAsync('PUT', $this->baseUrl . '/api/integration/event-group/' . $uid, [
+            'json' => $eventGroup->toArray(),
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                'apikey' => $this->apiKey
+            ]
         ]);
         
         return $promise->then(
@@ -369,6 +396,10 @@ class LoppServiceEventGroupRestClient
                 return EventGroupDTO::fromArray($data['data'] ?? []);
             },
             function (RequestException $e) {
+                error_log("LoppService async update error: " . $e->getMessage());
+                if ($e->hasResponse()) {
+                    error_log("Response body: " . $e->getResponse()->getBody()->getContents());
+                }
                 $this->handleException($e);
                 return null;
             }

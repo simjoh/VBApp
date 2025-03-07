@@ -1,32 +1,32 @@
 {
-  "/api/*": {
+  "/api": {
     "target": "http://localhost:8090",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
-  "/fejk-fejk/*": {
+  "/fejk-fejk": {
     "target": "http://localhost:3000",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
-  "/docker/api/*": {
+  "/docker/api": {
     "target": "http://php-vasterbottenbrevetapp:80",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
-  "/test/planner/*": {
+  "/test/planner": {
     "target": "https://rusa.jkassen.org/time/rusa-time-api.php",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",
     "pathRewrite": {
-      "^/test/planner/": ""
+      "^/test/planner": ""
     }
   },
-  "/loppservice/*": {
+  "/loppservice": {
     "target": "http://localhost:8082",
     "secure": false,
     "changeOrigin": true,

@@ -5,10 +5,40 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class EventGroup extends Model
 {
     use HasFactory;
+    use HasUuids;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'event_groups';
+
+    /**
+     * The primary key for the model.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'uid';
+
+    /**
+     * The "type" of the primary key ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
+
+    /**
+     * Indicates if the model's ID is auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
 
     /**
      * The attributes that are mass assignable.
@@ -23,8 +53,12 @@ class EventGroup extends Model
         'enddate'
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<string>
+     */
     protected $hidden = [
-        'id',
         'created_at',
         'updated_at'
     ];
@@ -32,7 +66,7 @@ class EventGroup extends Model
     /**
      * The attributes that should be cast.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'startdate' => 'date:Y-m-d',
@@ -47,5 +81,25 @@ class EventGroup extends Model
     public function events(): HasMany
     {
         return $this->hasMany(Event::class, 'event_group_uid', 'uid');
+    }
+
+    /**
+     * Get the columns that should receive a unique identifier.
+     *
+     * @return array
+     */
+    public function uniqueIds(): array
+    {
+        return ['uid'];
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uid';
     }
 }

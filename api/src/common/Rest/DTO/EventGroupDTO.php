@@ -40,6 +40,24 @@ class EventGroupDTO extends BaseDTO
     public string $enddate;
     
     /**
+     * Whether the event group is active
+     * @var bool
+     */
+    public bool $active = false;
+    
+    /**
+     * Whether the event group is canceled
+     * @var bool
+     */
+    public bool $canceled = false;
+    
+    /**
+     * Whether the event group is completed
+     * @var bool
+     */
+    public bool $completed = false;
+    
+    /**
      * Array of event UIDs associated with this group
      * @var array|null
      */
@@ -90,6 +108,11 @@ class EventGroupDTO extends BaseDTO
                 $dto->event_uids = array_filter($dto->event_uids);
             }
         }
+        
+        // Set default values for boolean fields if not present
+        $dto->active = $data['active'] ?? false;
+        $dto->canceled = $data['canceled'] ?? false;
+        $dto->completed = $data['completed'] ?? false;
         
         return $dto;
     }

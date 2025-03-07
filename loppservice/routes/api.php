@@ -72,7 +72,7 @@ Route::prefix('/api')->group(function () {
 
         Route::prefix('/event-group')->group(function () {
             Route::post('/', [EventGroupController::class, 'create'])->name('api.event_groups.create');
-            Route::put('/', [EventGroupController::class, 'update'])->name('api.event_groups.update');
+            Route::put('/{uid}', [EventGroupController::class, 'update'])->name('api.event_groups.update');
             Route::get('/all', [EventGroupController::class, 'all'])->name('api.event_groups.index');
             Route::get('/{uid}', [EventGroupController::class, 'get'])->name('api.event_groups.show');
             Route::delete('/{uid}', [EventGroupController::class, 'delete'])->name('api.event_groups.delete');

@@ -18,6 +18,9 @@ use App\Domain\Permission\PermissionRepository;
 use Psr\Container\ContainerInterface;
 use App\common\Rest\Client\LoppServiceEventGroupRestClient;
 use App\common\Rest\DTO\EventGroupDTO;
+use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpFoundation\Response;
+use Fig\Http\Message\StatusCodeInterface;
 
 class EventService extends ServiceAbstract
 {
@@ -84,7 +87,13 @@ class EventService extends ServiceAbstract
     {
         $event = $this->toEvent($eventRepresentation);
         $permissions = $this->getPermissions($currentUserUid);
-        
+
+        $eventexists = $this->eventRepository->eventFor($event_uid);
+
+        if(!$eventexists){
+            throw new BrevetException("Event not found", 1, null);
+        }
+    
         // Get the database connection from the repository
         $connection = $this->eventRepository->getConnection();
         
@@ -95,41 +104,50 @@ class EventService extends ServiceAbstract
             // Update event in local database
             $event = $this->eventRepository->updateEvent($event_uid, $event);
             
-            // Update corresponding event group in loppservice
-            // Try to get the event group by event UID (which should match the event group UID in loppservice)
-            $eventGroup = $this->eventGroupRestClient->getEventGroupById($event_uid);
-            
+            // Try to get the event group by event UID
+            $eventGroup = $this->eventGroupRestClient->getEventGroupById($event->getEventUid());
+    
             if ($eventGroup) {
                 // Update the existing event group
                 $eventGroupDTO = $this->updateEventGroupFromEvent($eventGroup, $event);
-                $updatedEventGroup = $this->eventGroupRestClient->updateEventGroup($event_uid, $eventGroupDTO);
                 
-                if ($updatedEventGroup) {
-                    $connection->commit();
-                    return $this->eventAssembly->toRepresentation($event, $permissions);
-                } else {
+           
+                
+                $updatedEventGroup = $this->eventGroupRestClient->updateEventGroup($event->getEventUid(), $eventGroupDTO);
+                
+                if (!$updatedEventGroup) {
                     $connection->rollBack();
                     throw new BrevetException("Det gick inte att uppdatera eventgrupp i loppservice: Inget svar mottogs", 12, null);
                 }
             } else {
-                // Create a new event group if it doesn't exist
+                // Event group doesn't exist in LoppService, create it
                 $eventGroupDTO = $this->createEventGroupFromEvent($event);
+                
+          
                 $createdEventGroup = $this->eventGroupRestClient->createEventGroup($eventGroupDTO);
                 
-                if ($createdEventGroup) {
-                    $connection->commit();
-                    return $this->eventAssembly->toRepresentation($event, $permissions);
-                } else {
+                if (!$createdEventGroup) {
                     $connection->rollBack();
                     throw new BrevetException("Det gick inte att skapa eventgrupp i loppservice: Inget svar mottogs", 13, null);
                 }
             }
+            
+            $connection->commit();
+            return $this->eventAssembly->toRepresentation($event, $permissions);
+            
         } catch (\Exception $e) {
             // Rollback the transaction if any exception occurs
             $connection->rollBack();
             
-            // Log the error
+            // Log the error with more details
             error_log("Failed to update event with rollback: " . $e->getMessage());
+            error_log("Event data: " . json_encode([
+                'uid' => $event->getEventUid(),
+                'title' => $event->getTitle(),
+                'description' => $event->getDescription(),
+                'startdate' => $event->getStartdate(),
+                'enddate' => $event->getEnddate()
+            ]));
             
             // Re-throw the exception to be handled by the caller
             throw new BrevetException("Det gick inte att uppdatera event: " . $e->getMessage(), 14, $e);
@@ -139,6 +157,10 @@ class EventService extends ServiceAbstract
     public function createEvent(EventRepresentation $eventRepresentation, string $currentUserUid)
     {
         $event = $this->toEvent($eventRepresentation);
+        
+        // Always generate UUID in API first
+        $event->setEventUid((string) Uuid::uuid4());
+        
         $permissions = $this->getPermissions($currentUserUid);
         
         // Get the database connection from the repository
@@ -148,30 +170,43 @@ class EventService extends ServiceAbstract
         $connection->beginTransaction();
         
         try {
-            // Create event in local database
+            // Create event in local database first
             $event = $this->eventRepository->createEvent($event);
-            
-            // Create corresponding event group in loppservice
+
+            // Create corresponding event group in loppservice with our UID
             $eventGroupDTO = $this->createEventGroupFromEvent($event);
-        
+            
+            // Debug log
+            error_log("Creating event group with data: " . json_encode([
+                'uid' => $eventGroupDTO->uid,
+                'name' => $eventGroupDTO->name,
+                'description' => $eventGroupDTO->description,
+                'startdate' => $eventGroupDTO->startdate,
+                'enddate' => $eventGroupDTO->enddate
+            ]));
+            
             $createdEventGroup = $this->eventGroupRestClient->createEventGroup($eventGroupDTO);
     
-            // If loppservice API call was successful, commit the transaction
             if ($createdEventGroup) {
                 $connection->commit();
                 return $this->eventAssembly->toRepresentation($event, $permissions);
             } else {
-              
-                // If loppservice API call failed but didn't throw an exception, rollback
                 $connection->rollBack();
                 throw new BrevetException("Det gick inte att skapa eventgrupp i loppservice: Inget svar mottogs", 10, null);
             }
         } catch (\Exception $e) {
             // Rollback the transaction if any exception occurs
             $connection->rollBack();
-           
-            // Log the error
-            error_log("Failed to create event with rollback: " . $e->getMessage());
+            print_r($e->getMessage());
+            // Log the error with more details
+            error_log("Failed to create event with rollback. Error: " . $e->getMessage());
+            error_log("Event data: " . json_encode([
+                'uid' => $event->getEventUid(),
+                'title' => $event->getTitle(),
+                'description' => $event->getDescription(),
+                'startdate' => $event->getStartdate(),
+                'enddate' => $event->getEnddate()
+            ]));
             
             // Re-throw the exception to be handled by the caller
             throw new BrevetException("Det gick inte att skapa event: " . $e->getMessage(), 11, $e);
@@ -182,36 +217,40 @@ class EventService extends ServiceAbstract
     {
         $tracks = $this->trackservice->tracksForEvent($currentUserUid, $event_uid);
 
-        if ($tracks == null || count($tracks) == 0) {
-            // Get the database connection from the repository
-            $connection = $this->eventRepository->getConnection();
-            
-            // Begin transaction
-            $connection->beginTransaction();
-            
-            try {
-                // Delete the event
-                $this->eventRepository->deleteEvent($event_uid);
-                
-                // Delete corresponding event group in loppservice
-                $deleted = $this->eventGroupRestClient->deleteEventGroup($event_uid);
-                
-                if ($deleted) {
-                    $connection->commit();
-                } else {
-                    $connection->rollBack();
-                    throw new BrevetException("Det gick inte att ta bort eventgrupp i loppservice: Inget svar mottogs", 15, null);
-                }
-            } catch (\Exception $e) {
-                // Rollback the transaction if any exception occurs
-                $connection->rollBack();
-                
-                
-                // Re-throw the exception to be handled by the caller
-                throw new BrevetException("Det gick inte att ta bort event: " . $e->getMessage(), 16, $e);
-            }
-        } else {
+        if (!empty($tracks)) {
             throw new BrevetException("Det finns banor kopplade till eventet. Banorna måste tas bort från eventet", 5, null);
+        }
+
+        // Get the database connection from the repository
+        $connection = $this->eventRepository->getConnection();
+        
+        try {
+            $connection->beginTransaction();
+
+            // Delete the event locally first
+            $this->eventRepository->deleteEvent($event_uid);
+            
+            // Try to delete in LoppService
+            try {
+                $this->eventGroupRestClient->deleteEventGroup($event_uid);
+                $connection->commit();
+            } catch (\Exception $e) {
+                // Check if the error message indicates the group wasn't found
+                if (strpos($e->getMessage(), 'Event group not found') !== false) {
+                    error_log("Event group not found in LoppService (this is OK): " . $e->getMessage());
+                    $connection->commit();
+                    return;
+                }
+                
+                // For any other error, rollback and throw
+                $connection->rollBack();
+                throw new BrevetException("Det gick inte att ta bort eventgrupp i loppservice: " . $e->getMessage(), 15, $e);
+            }
+        } catch (\Exception $e) {
+            if ($connection->inTransaction()) {
+                $connection->rollBack();
+            }
+            throw new BrevetException("Det gick inte att ta bort event: " . $e->getMessage(), 16, $e);
         }
     }
 
@@ -284,6 +323,9 @@ class EventService extends ServiceAbstract
         $eventGroupDTO->description = $event->getDescription();
         $eventGroupDTO->startdate = $this->formatDate($event->getStartdate());
         $eventGroupDTO->enddate = $this->formatDate($event->getEnddate());
+        $eventGroupDTO->active = $event->isActive();
+        $eventGroupDTO->canceled = $event->isCanceled();
+        $eventGroupDTO->completed = $event->isCompleted();
         
         // Get tracks associated with this event using the current user's UID
         // Since we're in a system context, we'll use a special system user UID
@@ -299,7 +341,7 @@ class EventService extends ServiceAbstract
                 $eventGroupDTO->event_uids[] = $track->getTrackUid();
             }
         }
-        
+
         return $eventGroupDTO;
     }
     
@@ -316,6 +358,9 @@ class EventService extends ServiceAbstract
         $eventGroupDTO->description = $event->getDescription();
         $eventGroupDTO->startdate = $this->formatDate($event->getStartdate());
         $eventGroupDTO->enddate = $this->formatDate($event->getEnddate());
+        $eventGroupDTO->active = $event->isActive();
+        $eventGroupDTO->canceled = $event->isCanceled();
+        $eventGroupDTO->completed = $event->isCompleted();
         
         // Get tracks associated with this event using the current user's UID
         // Since we're in a system context, we'll use a special system user UID

@@ -1,4 +1,4 @@
-FROM php:8.1-apache-bullseye
+FROM php:8.1-apache
 
 # Install system dependencies in a single RUN command to reduce image layers
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -44,6 +44,8 @@ RUN echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/docker-php-ext-
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
 # Apache configuration
 RUN a2enmod rewrite
