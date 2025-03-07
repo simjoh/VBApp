@@ -339,8 +339,7 @@
 
 				<div class="flex items-center">
 					<input type="checkbox" name="gdpr" id="gdpr" class="mr-2" onchange="toggleButtons()">
-					<label for="gdpr" class="text-gray-900 font-semibold sm:text-base sm:leading-10">I allow the website to collect and store my data I submit through this form<a
-							href="https://www.ebrevet.org/datapolicy" target="_blank" class="text-black-500 underline">Read more about our general terms and conditions</a></label>
+					<label for="gdpr" class="text-gray-900 font-semibold sm:text-base sm:leading-10"><a href="https://www.ebrevet.org/datapolicy/#data-policy" target="_blank" class="text-black-500 underline"> I give my permission for Randonneurs Laponia to process the data given in this form in accordance with the General data protection regulation (GDPR), Regulation (EU) 2016/679)</a></label>
 				</div>
 
                 <div class="grid md:grid-cols-1 gap-3 mt-4 sm:grid-cols-1">

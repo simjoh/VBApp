@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('base')
-
-<body class="antialiased bg-gray-50">
-<header class="bg-white py-4">
-    <div class="container sm:p-1 mx-auto">
-        <img alt="msr logotyp" class="mx-auto" width="200" src="{{ asset('ebrevet-kalender.svg') }}"/>
+<header class="bg-gray-200 py-0">
+    <div class="container mx-auto px-2 sm:px-4 max-w-7xl">
+        <img alt="msr logotyp" class="mx-auto w-[200px] w-full" src="{{ asset('ebrevet-hamta3.svg') }}"/>
 	</div>
 </header>
+<body class="antialiased bg-gray-200">
+
 <div class="container mx-auto px-2 sm:px-4 font-sans max-w-7xl">
 	<div class="p-4 sm:p-6">
-		<p class="mb-3">Cykelintressets brevet-serie består av distanserna: 200, 300, 400 och 600 km och pågår mellan 11 maj och 13 juli</p>
-		<p>Distanserna kan slutföras i valfri ordning och genomföras som individuella lopp. Brevet populaire-lopp på 100 km arrangeras tillsammans med 200 km-breveterna</p>
+		<p class="mb-3">Anmäl dig till ditt valda lopp genom att klicka på länken Anmälan och betalning. Hämta därefter inloggningsuppgifter till valda loppet genom att klicka på knappen hämta login. Efter att du registrerat dig får du ett mail där du kan hitta dina inloggningsuppgifter</p>
+		<p>Obs. om du anmäler dig till RandonneursLaponia och Cykelintressets lopp får du dina inloggningsuppgifter när du anmäler dig och betalat startavgiften uppgifter</p>
 	</div>
 
 	<div class="space-y-12">
@@ -23,9 +23,9 @@
 					</div>
 				</div>
 
-				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-3 w-full place-items-center mt-3">
+				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-4 w-full place-items-center mt-3">
 					@foreach($events as $event)
-						<div class="bg-white rounded-lg shadow-md p-4 flex flex-col items-center h-full min-h-[520px] w-[95%] sm:w-full sm:max-w-xs">
+						<div class="bg-white rounded-lg shadow-md p-4 flex flex-col items-center h-full min-h-[520px] w-full max-w-[95%] sm:max-w-xs mx-auto">
 							<!-- Placeholder for SVG logo -->
 							<div class="w-40 h-40 mb-3 flex items-center justify-center">
 								@if($event->organizer && $event->organizer->logo_svg)
@@ -77,15 +77,15 @@
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Arrangör:</span>
-										<span>{{ $event->organizer ? $event->organizer->organization_name : 'Arrangör ej angiven' }}</span>
-									</div>
-									<div class="flex items-baseline text-sm">
-
 										<span>
-											@if($event->organizer && $event->organizer->website)
-												<a href="{{ $event->organizer->website }}" target="_blank" class="text-blue-500 hover:underline">Hemsida</a>
+											@if($event->organizer)
+												@if($event->organizer->website)
+													<a href="{{ $event->organizer->website }}" target="_blank" class="text-blue-500 hover:underline">{{ $event->organizer->organization_name }}</a>
+												@else
+													{{ $event->organizer->organization_name }}
+												@endif
 											@else
-												Hemsida ej angiven
+												Arrangör ej angiven
 											@endif
 										</span>
 									</div>

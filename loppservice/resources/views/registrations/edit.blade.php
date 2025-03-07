@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('base')
-<body class="antialiased bg-stone-100">
-<!-- Header -->
-<header class="bg-white py-4">
+<header class="bg-gray-200 py-0">
     <div class="container sm:p-1 mx-auto">
         <img alt="msr logotyp" width="75%" height="800" src="{{ asset('logo2025.svg') }}"/>
     </div>
 </header>
+<body class="antialiased bg-stone-100">
 <!-- Main Content -->
 <div class="container mx-auto p-0 font-sans">
     <div class="bg-orange-50 p-6 rounded-md shadow-md">

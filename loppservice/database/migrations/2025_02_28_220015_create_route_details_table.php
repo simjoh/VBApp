@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('start_place')->nullable()->comment('Starting location for this route');
             $table->string('name')->nullable();
             $table->text('description')->nullable();
+            $table->text('route_contactperson_email')->nullable();
             $table->string('track_link')->nullable()->comment('URL to track on Strava, Komoot, etc.');
             $table->timestamps();
 

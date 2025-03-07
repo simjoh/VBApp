@@ -13,10 +13,10 @@ return new class extends Migration
     {
         $cykelintresset = new Organizer([
             'organization_name' => 'Cykelintresset',
-            'description' => 'Cykelintresset - organizing cycling events in Västerbotten',
-            'website' => 'https://cykelintresset.se',
-            'contact_person_name' => 'Jon Olsson',
-            'email' => 'jon.olsson@cykelintresset.se',
+            'description' => '',
+            'website' => 'https://www.cykelintresset.se',
+            'contact_person_name' => 'Simon Johansson',
+            'email' => 'cykelintresset@gmail.com',
             'active' => true,
             'logo_svg' => '<?xml version="1.0" encoding="UTF-8"?>
 <svg id="a" xmlns="http://www.w3.org/2000/svg" width="20.2847mm" height="20.2847mm" viewBox="0 0 57.4999 57.4999">
@@ -75,10 +75,10 @@ return new class extends Migration
         try {
             $randonneursLaponia = new Organizer([
                 'organization_name' => 'Randonneurs Laponia',
-                'description' => 'Randonneurs Laponia - organizing cycling events in northern Sweden',
-                'website' => 'https://randonneurslaponia.se',
+                'description' => '',
+                'website' => 'https://www.ebrevet.org',
                 'contact_person_name' => 'Florian Kynman',
-                'email' => 'info@randonneurslaponia.se',
+                'email' => 'floriank2@gmail.com',
                 'active' => true,
                 'logo_svg' => '<?xml version="1.0" encoding="UTF-8"?>
 <svg id="a" xmlns="http://www.w3.org/2000/svg" width="20.2847mm" height="20.2847mm" viewBox="0 0 57.4999 57.4999">

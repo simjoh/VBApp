@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('base')
-<body class="antialiased bg-gray-50">
-<header class="bg-white py-4">
-<!--	<div class="container sm:p-1 mx-auto">-->
-<!--		<img alt="brm logotyp" width="75%" height="800" src="{{ asset('cykelintresset.svg') }}"/>-->
-<!--	</div>-->
+<header class="bg-gray-200 py-0">
+    <div class="container mx-auto px-2 sm:px-4 max-w-7xl">
+        <img alt="msr logotyp" class="mx-auto w-[200px] w-full" src="{{ asset('ebrevet-hamta3.svg') }}"/>
+    </div>
 </header>
+<body class="antialiased bg-gray-200">
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 font-sans max-w-7xl">
 
 	@if ($errors->any())
@@ -181,7 +181,7 @@
 
 			<div>
 				<label for="club" class="block text-gray-900 font-semibold text-sm sm:text-base">Klubb</label>
-				<select name="club_uid" id="club" 
+				<select name="club_uid" id="club"
 						class="mt-1 block w-full sm:w-1/2 px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
 					<option value="">Välj klubb</option>
 					@foreach ($clubs as $club)
@@ -222,8 +222,8 @@
 				</div>
 				<div class="ml-3">
 					<label for="gdpr" class="text-sm sm:text-base text-gray-900">
-						Jag godkänner att websidan sparar informationen som jag postar i detta formulär
-						<a href="https://www.ebrevet.org/datapolicy" target="_blank" class="text-black-500 underline">Läs mer här om de allmäna vilkorer</a>
+
+						<a href="https://www.ebrevet.org/datapolicy" target="_blank" class="text-black-500 underline">Jag ger Randonneurs Laponia tillstånd att lagra uppgifterna jag lämnat i ovanstående formulär i enlighet med dataskyddsförordningen (GDPR), Regulation (EU) 2016/679)</a>
 					</label>
 				</div>
 			</div>
