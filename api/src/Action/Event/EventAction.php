@@ -74,6 +74,7 @@ class EventAction
 
     public function updateEvent(ServerRequestInterface $request, ResponseInterface $response)
     {
+ 
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $event_uid = $route->getArgument('eventUid');
