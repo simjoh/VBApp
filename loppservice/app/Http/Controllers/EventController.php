@@ -27,19 +27,40 @@ class EventController extends Controller
 
     public function index(Request $request)
     {
+        // Calculate date 3 months ago from now
+        $threeMonthsAgo = Carbon::now()->subMonths(3);
+
         // Load events with their organizer relationship
         $events = Event::with(['organizer', 'routeDetail'])
             ->where('event_type', 'BRM')
+            ->where('enddate', '>=', $threeMonthsAgo)
             ->get()
             ->sortBy("startdate");
 
         // Check if we're in development environment
         $isDevEnvironment = \in_array(\env('APP_ENV'), ['local', 'development']);
 
+        // Debug: Log events count
+        Log::info('Events count: ' . $events->count());
+
         // Debug: Check if organizer data is present
         foreach ($events as $event) {
+            // Debug: Log event details
+            Log::info('Event: ' . $event->title . ', Has RouteDetail: ' . ($event->routeDetail ? 'Yes' : 'No'));
+            if ($event->routeDetail) {
+                Log::info('RouteDetail for ' . $event->title . ': ' . json_encode([
+                    'distance' => $event->routeDetail->distance,
+                    'height_difference' => $event->routeDetail->height_difference,
+                    'start_time' => $event->routeDetail->start_time,
+                    'start_place' => $event->routeDetail->start_place
+                ]));
+            }
+
             // Create a dynamic property for the startlist URL
-            $event->setAttribute('startlisturl', \env("APP_URL") . '/startlist/event/' . $event->event_uid . '/showall');
+            $event->setAttribute('startlisturl', \env("APP_ENV") === 'production' ? \env("APP_URL") . '/public/startlist/event/' . $event->event_uid . '/showall' : \env("APP_URL") . '/startlist/event/' . $event->event_uid . '/showall');
+
+            // We don't create default route details anymore, as they should not be mandatory
+            // The view will handle null route details
 
             // Format dates in Swedish
             $startDate = Carbon::parse($event->startdate);
@@ -698,17 +719,47 @@ class EventController extends Controller
 
     public function show(string $eventUid): View
     {
-        $event = Event::where('event_uid', '=', $eventUid)->first();
+        // Debug: Log the event UID being requested
+        Log::info('Show method called for event UID: ' . $eventUid);
+
+        $event = Event::with(['routeDetail', 'organizer'])->where('event_uid', '=', $eventUid)->first();
 
         if (!$event) {
+            Log::error('Event not found: ' . $eventUid);
             \abort(404);
         }
+
+        // Debug: Log if the event has a route detail
+        Log::info('Event found: ' . $event->title . ', Has RouteDetail: ' . ($event->routeDetail ? 'Yes' : 'No'));
+
+        // Format dates in Swedish
+        $startDate = Carbon::parse($event->startdate);
+        $months = Config::get('app.swedish_month');
+
+        // Format start date (e.g., "10 Maj")
+        $event->setAttribute('formatted_start_date', $startDate->format('j') . ' ' . $months[$startDate->format('m')]);
+
+        // Format registration closing date if available
+        if ($event->eventconfiguration && $event->eventconfiguration->registration_closes) {
+            $closingDate = Carbon::parse($event->eventconfiguration->registration_closes);
+            $event->setAttribute('formatted_closing_date', $closingDate->format('j') . ' ' . $months[$closingDate->format('m')]);
+        } else {
+            $event->setAttribute('formatted_closing_date', '10 Maj'); // Default value
+        }
+
+        // Create a dynamic property for the startlist URL
+        $event->setAttribute('startlisturl', \env("APP_ENV") === 'production' ? \env("APP_URL") . '/public/startlist/event/' . $event->event_uid . '/showall' : \env("APP_URL") . '/startlist/event/' . $event->event_uid . '/showall');
+
+        // Group the event by month and year
+        $month = $months[$startDate->format('m')] . " " . $startDate->format('Y');
+        $events = collect([$event]);
+        $allevents = [$month => $events];
 
         // Note: We always show track links if they are present in the database
         // The migration only generates links in development environment
 
         return \view('event.show', [
-            'event' => $event,
+            'allevents' => $allevents,
         ]);
     }
 

@@ -16,6 +16,7 @@ return new class extends Migration
             'organization_name' => 'IOGT/NTO Skövde',
             'description' => '',
             'website' => '',
+            'website_pay' => '',
             'contact_person_name' => 'Ulf Sandberg',
             'email' => 'sandberg@artech.se',
             'active' => true,

@@ -3,6 +3,7 @@
 use App\Models\Organizer;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -16,6 +17,7 @@ return new class extends Migration
             'organization_name' => 'Örebrocyklisterna',
             'description' => '',
             'website' => 'https://orebrocyklisterna.se',
+            'website_pay' => 'https://orebrocyklisterna.se/tjanster/randonneur',
             'contact_person_name' => 'Per-Erik Egebäck',
             'email' => 'randonneur@orebrocyklisterna.se',
             'active' => true,

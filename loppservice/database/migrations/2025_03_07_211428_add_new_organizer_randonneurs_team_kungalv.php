@@ -17,6 +17,7 @@ return new class extends Migration
             'organization_name' => 'Team Kungälv',
             'description' => '',
             'website' => 'https://www.svenskalag.se/tranasck',
+            'website_pay' => 'https://www.svenskalag.se/tranasck/sida/91841/randonneur',
             'contact_person_name' => 'Martin Bonta',
             'email' => 'martin.bonta@gmail.com',
             'active' => true,

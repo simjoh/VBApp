@@ -17,6 +17,7 @@ return new class extends Migration
             'organization_name' => 'Randonneurs Sverige',
             'description' => '',
             'website' => 'https://www.randonneurgoth.com',
+            'website_pay' => 'https://www.randonneurgoth.com/nästa-lopp',
             'contact_person_name' => 'Daniel Ridings',
             'email' => 'daniel.ridings@randonneurs.se',
             'active' => true,

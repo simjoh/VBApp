@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('logo_svg')->nullable(); // Changed from mediumText to text (max 65KB)
             // Contact person details
             $table->string('contact_person_name', 100);
+            $table->string('website_pay', 250)->nullable();
             $table->string('email');
             // Status
             $table->boolean('active')->default(true);

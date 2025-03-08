@@ -17,7 +17,7 @@ return new class extends Migration
             'organization_name' => 'Tranås CK',
             'description' => '',
             'website' => 'https://www.svenskalag.se/tranasck',
-            'contact_person_name' => 'Martin Bonta',
+            'website_pay' => 'https://www.svenskalag.se/tranasck/sida/91841/randonneur',            'contact_person_name' => 'Martin Bonta',
             'email' => 'martin.bonta@gmail.com',
             'active' => true,
             'logo_svg' => '<?xml version="1.0" encoding="UTF-8"?>

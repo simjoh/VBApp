@@ -30,15 +30,11 @@
 							<div class="w-40 h-40 mb-3 flex items-center justify-center">
 								@if($event->organizer && $event->organizer->logo_svg)
 									<div class="w-full h-full">
-										<svg viewBox="0 0 57.4999 57.4999" xmlns="http://www.w3.org/2000/svg"
-											 class="w-full h-full">
-											@php
-												$svgContent = preg_replace('/<\?xml.*?\?>/', '', $event->organizer->logo_svg);
-												$svgContent = preg_replace('/<svg[^>]*>/', '', $svgContent);
-												$svgContent = str_replace('</svg>', '', $svgContent);
-											@endphp
-											{!! $svgContent !!}
-										</svg>
+
+
+									<img width="200" height="200" src="data:image/svg+xml;base64,{{ base64_encode($event->organizer->logo_svg) }}" alt="SVG Image">
+
+
 									</div>
 								@else
 									<svg class="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -53,27 +49,27 @@
 								<div class="w-full space-y-0">
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Distans:</span>
-										<span>{{ $event->routeDetail->distance ? $event->routeDetail->distance . ' KM' : '' }}</span>
+										<span>{{ isset($event->routeDetail) && $event->routeDetail->distance ? $event->routeDetail->distance . ' KM' : 'N/A' }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Höjdmeter:</span>
-										<span>{{ $event->routeDetail && isset($event->routeDetail->height_difference) ? $event->routeDetail->height_difference . ' M' : '' }}</span>
+										<span>{{ isset($event->routeDetail) && $event->routeDetail->height_difference ? $event->routeDetail->height_difference . ' M' : 'N/A' }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Startdatum:</span>
-										<span>{{ $event->formatted_start_date }}</span>
+										<span>{{ $event->formatted_start_date ?? 'N/A' }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Starttid:</span>
-										<span>{{ $event->routeDetail->start_time ?? '07:00' }}</span>
+										<span>{{ isset($event->routeDetail) && $event->routeDetail->start_time ? $event->routeDetail->start_time : 'N/A' }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Sista anmälan:</span>
-										<span>{{ $event->formatted_closing_date }}</span>
+										<span>{{ $event->formatted_closing_date ?? 'N/A' }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Startort:</span>
-										<span>{{ $event->routeDetail->start_place ?? '' }}</span>
+										<span>{{ isset($event->routeDetail) && $event->routeDetail->start_place ? $event->routeDetail->start_place : 'N/A' }}</span>
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Arrangör:</span>
@@ -91,29 +87,25 @@
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Övrigt:</span>
-										<span>
-											@if($event->routeDetail->description ?? false)
-												{{ $event->routeDetail->description }}
-											@endif
-										</span>
+										<span>{{ isset($event->routeDetail) && $event->routeDetail->description ? $event->routeDetail->description : '' }}</span>
 									</div>
 								</div>
 							</div>
 
 							<div class="w-full space-y-1 mt-auto">
-								@if($event->routeDetail && $event->routeDetail->track_link)
+								@if(isset($event->routeDetail) && $event->routeDetail->track_link)
 									<a href="{{ $event->routeDetail->track_link }}" target="_blank" class="block w-full text-[#0081b9] hover:text-[#B32D1B] hover:underline text-sm flex items-center">
 										Länk till bana
 									</a>
 								@else
 									<span class="block w-full text-gray-400 text-sm flex items-center cursor-not-allowed">
-										Länk till bana
+										Länk till bana (ej tillgänglig)
 									</span>
 								@endif
-								<a href="{{ $event->startlisturl }}" class="block w-full text-[#0081b9] hover:text-[#B32D1B] hover:underline text-sm flex items-center">
+								<a href="{{ $event->startlisturl ?? '#' }}" class="block w-full text-[#0081b9] hover:text-[#B32D1B] hover:underline text-sm flex items-center">
 									Startlista
 								</a>
-								@if(isset($event->eventConfiguration) && isset($event->eventConfiguration->use_stripe_payment) && $event->eventConfiguration->use_stripe_payment)
+								@if(isset($event->eventConfiguration?->use_stripe_payment) && $event->eventConfiguration->use_stripe_payment)
 									<a href="{{ route('register', ['uid' => $event->event_uid, 'event_type' => $event->event_type]) }}"
 									   class="block w-full text-center bg-[#666666] hover:bg-[#4D4D4D] text-white py-2 rounded text-lg font-bold uppercase flex items-center justify-center mb-1">
 										ANMÄLAN & BETALNING

@@ -38,7 +38,7 @@ class StartlistController extends Controller
                 ->get();
 
         }
-        $event = Event::where('event_uid', $request['eventuid'])->get()->first();
+        $event = Event::with('routeDetail')->where('event_uid', $request['eventuid'])->get()->first();
         if ($event->event_type === 'BRM') {
             return view('startlist.brmshow', ['startlista' => $startlist, 'countries' => Country::all(), 'clubs' => Club::all(), 'event' => $event]);
         } else {

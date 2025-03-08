@@ -22,6 +22,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->text('route_contactperson_email')->nullable();
             $table->string('track_link')->nullable()->comment('URL to track on Strava, Komoot, etc.');
+            $table->string('pay_link')->nullable()->comment('URL to pay for this route');
             $table->timestamps();
 
             $table->foreign('event_uid')

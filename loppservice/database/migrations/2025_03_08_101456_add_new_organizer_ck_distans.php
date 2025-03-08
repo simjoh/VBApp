@@ -5,7 +5,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use App\Models\Organizer;
 use Illuminate\Support\Facades\App;
-
 return new class extends Migration
 {
     /**
@@ -13,18 +12,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Only run in production environment
-
-            // Create a new organizer
-            $newOrganizer = new Organizer([
-                'organization_name' => 'Milslukaren',
-                'description' => '',
-                'website' => 'https://milslukaren.se',
-                'website_pay' => 'https://milslukaren.se/?page_id=42'
-                'contact_person_name' => 'Nils Calmsund',
-                'email' => 'nils.calmsund@gmail.com',
-                'active' => true,
-                'logo_svg' => '<?xml version="1.0" encoding="UTF-8"?>
+        $newOrganizer = new Organizer([
+            'organization_name' => 'CK Distans',
+            'description' => '',
+            'website' => 'https://ckdistans.wordpress.com',
+             'website_pay' => 'https://ckdistans.wordpress.com/vasterasbreveter/norrkoping',
+            'contact_person_name' => 'Benjamin Hell',
+            'email' => 'rando@bhell.net',
+            'active' => true,
+            'logo_svg' => '<?xml version="1.0" encoding="UTF-8"?>
 <svg id="a" xmlns="http://www.w3.org/2000/svg" width="20.2847mm" height="20.2847mm" viewBox="0 0 57.4999 57.4999">
   <defs>
     <style>
@@ -96,10 +92,9 @@ return new class extends Migration
     </g>
   </g>
 </svg>', // Add logo SVG if available
-            ]);
+        ]);
 
-            $newOrganizer->save();
-
+        $newOrganizer->save();
     }
 
     /**
@@ -107,10 +102,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Only run in production environment
-        if (App::isProduction()) {
-            // Remove the added organizer
-            Organizer::where('organization_name', 'Milslukaren')->delete();
-        }
+        //
     }
 };
