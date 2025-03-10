@@ -1,5 +1,9 @@
 <?php
 
+namespace App\common\Brevetcalculator;
+
+use DateTime;
+
 /**
  * ACPBrevetCalculator
  * 
@@ -9,27 +13,27 @@
  * 
  * 
  * 
- * // Create calculator with initial settings
- * $calculator = new ACPBrevetCalculator(600, '2025-03-10 06:00:00');
-
- * // Get times based on the current start time
- * $controls1 = $calculator->calculateControls([200, 400, 600]);
-
- * // Override start time for future calculations
- *$calculator->setStartTime('2025-03-15 08:00:00');
- * $controls2 = $calculator->calculateControls([200, 400, 600]);
-
- * // Use a custom start time for a single calculation without changing the stored time
- * $customStart = new DateTime('2025-03-20 10:00:00');
- * $controls3 = $calculator->calculateControls([200, 400, 600], $customStart);
-
- * // The calculator's internal start time remains '2025-03-15 08:00:00'
- * echo "Current start time: " . $calculator->getStartTime()->format('Y-m-d H:i') . "\n";
+ * 
+ * // Create a calculator for a 600km brevet starting at 8am on March 15, 2025
+ * $calculator = new ACPBrevetCalculator(600, '2025-03-15 08:00:00');
+ * // Get the brevet's overall time limits
+ * $limits = $calculator->getBrevetTimeLimits();
+ * echo "Brevet distance: {$limits['distance']}km (official: {$limits['official_distance']}km)\n";
+ * echo "Minimum completion time: {$limits['min_time']} ({$limits['min_datetime']->format('Y-m-d H:i')})\n";
+ * echo "Maximum completion time: {$limits['max_time']} ({$limits['max_datetime']->format('Y-m-d H:i')})\n";
+ * // You can also access these methods individually
+ * $minHours = $calculator->getMinimumCompletionTime();
+ * $maxHours = $calculator->getMaximumCompletionTime();
+ *   echo "Fastest allowed time: " . $calculator->formatTime($minHours) . "\n";
+ *   echo "Time limit: " . $calculator->formatTime($maxHours) . "\n";
  * 
  * 
  * 
  * 
  */
+
+
+
 class ACPBrevetCalculator
 {
     /**
@@ -115,68 +119,7 @@ class ACPBrevetCalculator
         $this->setOfficialDistance();
 
         // Set start time
-        $this->setStartTime($startTime);
-    }
-
-    /**
-     * Set the start time of the brevet
-     * 
-     * @param string|DateTime $startTime Start time as string or DateTime object
-     * @return self Returns $this for method chaining
-     */
-    public function setStartTime($startTime)
-    {
-        if ($startTime instanceof DateTime) {
-            $this->startTime = clone $startTime;
-        } else {
-            $this->startTime = new DateTime($startTime);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get the current start time
-     * 
-     * @return DateTime Current start time
-     */
-    public function getStartTime()
-    {
-        return clone $this->startTime;
-    }
-
-    /**
-     * Set the total distance of the brevet
-     * 
-     * @param float $distance Total brevet distance in kilometers
-     * @return self Returns $this for method chaining
-     */
-    public function setDistance($distance)
-    {
-        $this->brevetDistance = floor($distance);
-        $this->setOfficialDistance();
-
-        return $this;
-    }
-
-    /**
-     * Get the total distance of the brevet
-     * 
-     * @return float Total brevet distance in kilometers
-     */
-    public function getDistance()
-    {
-        return $this->brevetDistance;
-    }
-
-    /**
-     * Get the official distance of the brevet
-     * 
-     * @return int Official brevet distance
-     */
-    public function getOfficialDistance()
-    {
-        return $this->officialDistance;
+        $this->startTime = new DateTime($startTime);
     }
 
     /**
@@ -324,117 +267,111 @@ class ACPBrevetCalculator
      * Get control opening datetime
      * 
      * @param float $controlDistance Distance of the control in kilometers
-     * @param DateTime|null $customStartTime Optional custom start time
      * @return DateTime Opening datetime
      */
-    public function getOpeningDateTime($controlDistance, $customStartTime = null)
+    public function getOpeningDateTime($controlDistance)
     {
         $openingTime = $this->calculateOpeningTime($controlDistance);
         $hours = floor($openingTime);
         $minutes = round(($openingTime - $hours) * 60);
 
-        $startTime = $customStartTime ? clone $customStartTime : clone $this->startTime;
-        $startTime->modify("+{$hours} hours");
-        $startTime->modify("+{$minutes} minutes");
+        $datetime = clone $this->startTime;
+        $datetime->modify("+{$hours} hours");
+        $datetime->modify("+{$minutes} minutes");
 
-        return $startTime;
+        return $datetime;
     }
 
     /**
      * Get control closing datetime
      * 
      * @param float $controlDistance Distance of the control in kilometers
-     * @param DateTime|null $customStartTime Optional custom start time
      * @return DateTime Closing datetime
      */
-    public function getClosingDateTime($controlDistance, $customStartTime = null)
+    public function getClosingDateTime($controlDistance)
     {
         $closingTime = $this->calculateClosingTime($controlDistance);
         $hours = floor($closingTime);
         $minutes = round(($closingTime - $hours) * 60);
 
-        $startTime = $customStartTime ? clone $customStartTime : clone $this->startTime;
-        $startTime->modify("+{$hours} hours");
-        $startTime->modify("+{$minutes} minutes");
+        $datetime = clone $this->startTime;
+        $datetime->modify("+{$hours} hours");
+        $datetime->modify("+{$minutes} minutes");
 
-        return $startTime;
+        return $datetime;
     }
 
     /**
      * Get minimum completion datetime (earliest allowed finish)
      * 
-     * @param DateTime|null $customStartTime Optional custom start time
      * @return DateTime Minimum completion datetime
      */
-    public function getMinimumCompletionDateTime($customStartTime = null)
+    public function getMinimumCompletionDateTime()
     {
         $minTime = $this->getMinimumCompletionTime();
         $hours = floor($minTime);
         $minutes = round(($minTime - $hours) * 60);
 
-        $startTime = $customStartTime ? clone $customStartTime : clone $this->startTime;
-        $startTime->modify("+{$hours} hours");
-        $startTime->modify("+{$minutes} minutes");
+        $datetime = clone $this->startTime;
+        $datetime->modify("+{$hours} hours");
+        $datetime->modify("+{$minutes} minutes");
 
-        return $startTime;
+        return $datetime;
     }
 
     /**
      * Get maximum completion datetime (time limit)
      * 
-     * @param DateTime|null $customStartTime Optional custom start time
      * @return DateTime Maximum completion datetime
      */
-    public function getMaximumCompletionDateTime($customStartTime = null)
+    public function getMaximumCompletionDateTime()
     {
         $maxTime = $this->getMaximumCompletionTime();
         $hours = floor($maxTime);
         $minutes = round(($maxTime - $hours) * 60);
 
-        $startTime = $customStartTime ? clone $customStartTime : clone $this->startTime;
-        $startTime->modify("+{$hours} hours");
-        $startTime->modify("+{$minutes} minutes");
+        $datetime = clone $this->startTime;
+        $datetime->modify("+{$hours} hours");
+        $datetime->modify("+{$minutes} minutes");
 
-        return $startTime;
+        return $datetime;
     }
 
     /**
      * Get control times as formatted strings
      * 
      * @param float $controlDistance Distance of the control in kilometers
-     * @param DateTime|null $customStartTime Optional custom start time
      * @return array Associative array with opening and closing times
      */
-    public function getControlTimes($controlDistance, $customStartTime = null)
+    public function getControlTimes($controlDistance)
     {
         return [
             'distance' => $controlDistance,
             'opening_hours' => $this->calculateOpeningTime($controlDistance),
             'opening_time' => $this->formatTime($this->calculateOpeningTime($controlDistance)),
-            'opening_datetime' => $this->getOpeningDateTime($controlDistance, $customStartTime),
+            'opening_datetime' => $this->getOpeningDateTime($controlDistance),
             'closing_hours' => $this->calculateClosingTime($controlDistance),
             'closing_time' => $this->formatTime($this->calculateClosingTime($controlDistance)),
-            'closing_datetime' => $this->getClosingDateTime($controlDistance, $customStartTime)
+            'closing_datetime' => $this->getClosingDateTime($controlDistance)
         ];
     }
 
     /**
      * Get brevets's overall time limits
      * 
-     * @param DateTime|null $customStartTime Optional custom start time
      * @return array Associative array with min and max completion times
      */
-    public function getBrevetTimeLimits($customStartTime = null)
+    public function getBrevetTimeLimits()
     {
         return [
             'distance' => $this->brevetDistance,
             'official_distance' => $this->officialDistance,
             'min_hours' => $this->getMinimumCompletionTime(),
             'min_time' => $this->formatTime($this->getMinimumCompletionTime()),
-            'min_datetime' => $this->getMinimumCompletionDateTime($customStartTime),
+            'min_datetime' => $this->getMinimumCompletionDateTime(),
             'max_hours' => $this->getMaximumCompletionTime(),
             'max_time' => $this->formatTime($this->getMaximumCompletionTime()),
-            'max_datetime' => $this->getMaximumCompletionDateTime($customStartTime)
+            'max_datetime' => $this->getMaximumCompletionDateTime()
         ];
     }
 
@@ -442,15 +379,14 @@ class ACPBrevetCalculator
      * Calculate control times for multiple controls
      * 
      * @param array $controlDistances Array of control distances
-     * @param DateTime|null $customStartTime Optional custom start time
      * @return array Array of control times
      */
-    public function calculateControls(array $controlDistances, $customStartTime = null)
+    public function calculateControls(array $controlDistances)
     {
         $results = [];
 
         foreach ($controlDistances as $distance) {
-            $results[] = $this->getControlTimes($distance, $customStartTime);
+            $results[] = $this->getControlTimes($distance);
         }
 
         return $results;

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Model\Track\Service;
 
+use App\common\Brevetcalculator\ACPBrevetCalculator;
 use App\common\Exceptions\BrevetException;
 use App\common\Rest\Client\RusaTimeRestClient;
 use App\Domain\Model\Checkpoint\Repository\CheckpointRepository;
@@ -23,7 +24,6 @@ class RusaTimeTrackPlannerService
     private $participantRepository;
     private $rusatimeClient;
     private $rusaresponseAssembler;
-
     public function __construct(ContainerInterface    $c,
                                 SiteRepository        $siteRepository,
                                 EventRepository       $eventRepository,
@@ -42,6 +42,8 @@ class RusaTimeTrackPlannerService
     public function getresponseFromRusaTime(RusaPlannerInputRepresentation $rusaPlannnerInput, string $currentUseruid): object
     {
         $data = new stdClass();;
+
+        $brevetLimits = $this->brevetCalculatorService->getBrevetLimits();  
 
         $event = $this->eventRepository->eventFor($rusaPlannnerInput->getEventUid());
         if ($rusaPlannnerInput->getEventDistance() != "") {
