@@ -52,7 +52,7 @@ return new class extends Migration
             // Step 5: Create reservation configuration
             $reservationconfig = new Reservationconfig();
             $reservationconfig->use_reservation_until = null;
-            $reservationconfig->use_resarvation_on_event = false;
+            $reservationconfig->use_reservation_on_event = false;
 
             // Step 6: Create event configuration
             $eventconfiguration = new EventConfiguration();
