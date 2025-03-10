@@ -43,7 +43,7 @@ class RusaTimeTrackPlannerService
     {
         $data = new stdClass();;
 
-        $brevetLimits = $this->brevetCalculatorService->getBrevetLimits();  
+ 
 
         $event = $this->eventRepository->eventFor($rusaPlannnerInput->getEventUid());
         if ($rusaPlannnerInput->getEventDistance() != "") {
@@ -177,6 +177,137 @@ class RusaTimeTrackPlannerService
         return json_last_error() === JSON_ERROR_NONE;
     }
 
+    /**
+     * Calculate control times using ACP Brevet Calculator instead of RUSA Time API
+     * 
+     * @param RusaPlannerInputRepresentation $rusaPlannnerInput Input data 
+     * @param string $currentUseruid Current user's UID
+     * @return \App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation Response with calculated control times
+     */
+    public function getResponseFromACPCalculator(RusaPlannerInputRepresentation $rusaPlannnerInput, string $currentUseruid): \App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation
+    {
+        try {
+            // Validate input
+            if (!$rusaPlannnerInput) {
+                return new \App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation();
+            }
+            
+            // Get the event distance
+            $eventDistance = $rusaPlannnerInput->getEventDistance();
+            if (!$eventDistance) {
+                return new \App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation();
+            }
+            
+            // Get the start time
+            $startDate = $rusaPlannnerInput->getStartDate();
+            $startTime = $rusaPlannnerInput->getStartTime();
+            
+            if (!$startDate || !$startTime) {
+                return new \App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation();
+            }
+            
+            // Create datetime for start
+            $startDateTime = $startDate . ' ' . $startTime;
+            
+            // Initialize ACP calculator
+            $acpCalculator = new \App\common\Brevetcalculator\ACPBrevetCalculator($eventDistance, $startDateTime);
+            
+            // Get controls from input
+            $controls = $rusaPlannnerInput->getControls();
+            if (count($controls) === 0) {
+                return new \App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation();
+            }
+            
+            // Create an array with control information including distances
+            $controlData = [];
+            foreach ($controls as $index => $control) {
+                $data = new \stdClass();
+                $data->original_index = $index;
+                $data->control = $control;
+                
+                // Get control distance
+                if (method_exists($control, 'getDistance')) {
+                    $data->distance = $control->getDistance();
+                } else if (property_exists($control, 'distance')) {
+                    $data->distance = $control->distance;
+                } else if (property_exists($control, 'DISTANCE')) {
+                    $data->distance = $control->DISTANCE;
+                } else if (method_exists($control, 'getDISTANCE')) {
+                    $data->distance = $control->getDISTANCE();
+                } else {
+                    // Default to 0 if no distance found
+                    $data->distance = 0;
+                }
+                
+                // Get control site information if available
+                if (method_exists($control, 'getSITE')) {
+                    try {
+                        $site = $this->siteRepository->siteFor($control->getSITE());
+                        if ($site) {
+                            $data->name = $site->getPlace();
+                        }
+                    } catch (\Exception $e) {
+                        // Handle exception
+                    }
+                }
+                
+                $controlData[] = $data;
+            }
+            
+            // Sort controls by distance (ascending)
+            usort($controlData, function($a, $b) {
+                return $a->distance <=> $b->distance;
+            });
+            
+            // Get event from repository if needed
+            $event = null;
+            try {
+                if ($rusaPlannnerInput->getEventUid()) {
+                    $event = $this->eventRepository->eventFor($rusaPlannnerInput->getEventUid());
+                    
+                    // Use the dedicated assembler method if we have an event
+                    if ($event) {
+                        // Try to use the new method
+                        try {
+                            return $this->rusaresponseAssembler->fromACPCalculator(
+                                $acpCalculator,
+                                $controlData,
+                                $rusaPlannnerInput,
+                                $currentUseruid,
+                                $event
+                            );
+                        } catch (\Exception $innerEx) {
+                            // Fall back to original method if the new one fails
+                            error_log("Error in fromACPCalculator: " . $innerEx->getMessage());
+                            
+                            // Build a simple response like before
+                            $response = new \stdClass();
+                            $response->EVENT = new \stdClass();
+                            $response->EVENT->EVENT_DISTANCE_KM = (float)$eventDistance;
+                            $response->EVENT->MAX_TIME = $acpCalculator->formatTime($acpCalculator->getMaximumCompletionTime());
+                            $response->EVENT->MIN_TIME = $acpCalculator->formatTime($acpCalculator->getMinimumCompletionTime());
+                            
+                            // Try to use the original toRepresentation method
+                            try {
+                                return $this->rusaresponseAssembler->toRepresentation($response, $currentUseruid, $rusaPlannnerInput, $event);
+                            } catch (\Exception $e2) {
+                                error_log("Error in toRepresentation fallback: " . $e2->getMessage());
+                                return new \App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation();
+                            }
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                error_log("Error getting event: " . $e->getMessage());
+            }
+            
+            // If we couldn't get the event or there was an error, return an empty response
+            return new \App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation();
+        } catch (\Exception $e) {
+            error_log("Uncaught exception in getResponseFromACPCalculator: " . $e->getMessage());
+            return new \App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation();
+        }
+    }
 
 }
 

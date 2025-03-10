@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
-import {map, mergeMap, switchMap, tap} from "rxjs/operators";
+import {map, mergeMap, switchMap, take, tap} from "rxjs/operators";
 import {RusaTimeCalculationApiService} from "./rusa-time-calculation-api.service";
 import {BehaviorSubject, combineLatest, of} from "rxjs";
+import {MessageService} from "primeng/api";
 
 import {EventService} from "../../shared/service/event.service";
 import {EventRepresentation} from "../../../shared/api/api";
@@ -72,16 +73,27 @@ export class TrackBuilderComponentService {
 
   $all = combineLatest([this.$currentEvent, this.$rusaPlannerInput, this.$rusaPlannerControlsInput]).pipe(
     map(([event, rusaplanner, controls]) => {
-      rusaplanner.controls = controls;
-      rusaplanner.event_uid = event.event_uid;
+      if (!rusaplanner || !event || !event.event_uid) {
+        return null;
+      }
 
-      return rusaplanner
+      const inputData = { ...rusaplanner };
+      inputData.controls = [...controls];
+      inputData.event_uid = event.event_uid;
+
+      return inputData;
     }),
     switchMap((input) => {
+      if (!input) {
+        return of(null);
+      }
+
+      input.use_acp_calculator = true;
+
       return this.rusatimeService.addSite(input);
     }),
     tap((rusa) => {
-       console.log(rusa);
+      console.log('RUSA/ACP response:', rusa);
     })
   );
 
@@ -96,7 +108,7 @@ export class TrackBuilderComponentService {
     })
   )
 
-  constructor(private rusatimeService: RusaTimeCalculationApiService, private trackService: TrackService, private eventService: EventService,  private httpClient: HttpClient) {
+  constructor(private rusatimeService: RusaTimeCalculationApiService, private trackService: TrackService, private eventService: EventService,  private httpClient: HttpClient, private messageService: MessageService) {
   }
 
 
@@ -116,11 +128,35 @@ export class TrackBuilderComponentService {
     this.$rusaPlannerControlsSubject.next(rusatimeControls);
   }
 
-  createTrack() {
-    this.$all.pipe(
-      map((s:RusaPlannerResponseRepresentation) => {
-        this.trackService.createTrack(s)
-      })
-    ).toPromise()
+  async createTrack() {
+    try {
+      const trackData = await this.$all.pipe(take(1)).toPromise();
+      if (!trackData) {
+        this.messageService.add({
+          key: 'tc',
+          severity: 'error',
+          summary: 'Fel',
+          detail: 'Ingen bandata att spara.'
+        });
+        return;
+      }
+
+      await this.trackService.createTrack(trackData as RusaPlannerResponseRepresentation);
+
+      this.messageService.add({
+        key: 'tc',
+        severity: 'success',
+        summary: 'Bana sparad',
+        detail: 'Banan har sparats framgångsrikt!'
+      });
+    } catch (error) {
+      console.error('Error creating track:', error);
+      this.messageService.add({
+        key: 'tc',
+        severity: 'error',
+        summary: 'Sparande misslyckades',
+        detail: 'Det gick inte att spara banan. Försök igen senare.'
+      });
+    }
   }
 }

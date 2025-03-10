@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MessageService } from 'primeng/api';
 
 import { TrackRoutingModule } from './track-routing.module';
 import { TrackAdminComponent } from './track-admin.component';
@@ -40,6 +41,9 @@ import { TrackBuilderSummaryComponent } from './track-builder/track-builder-summ
     TrackRoutingModule,
     FileUploadModule,
     SharedModule
+  ],
+  providers: [
+    MessageService
   ]
 })
 export class TrackModule { }

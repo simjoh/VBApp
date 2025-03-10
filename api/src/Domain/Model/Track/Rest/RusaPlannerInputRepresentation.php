@@ -14,6 +14,7 @@ class RusaPlannerInputRepresentation implements JsonSerializable
     private ?string $event_uid = "";
     private ?string $track_title = "";
     private ?string $link = "";
+    private ?bool $use_acp_calculator = false;
 
     /**
      * @return string|null
@@ -127,6 +128,22 @@ class RusaPlannerInputRepresentation implements JsonSerializable
     public function setStartTime($start_time): void
     {
         $this->start_time = $start_time;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getUseAcpCalculator(): ?bool
+    {
+        return $this->use_acp_calculator;
+    }
+
+    /**
+     * @param bool|null $use_acp_calculator
+     */
+    public function setUseAcpCalculator(?bool $use_acp_calculator): void
+    {
+        $this->use_acp_calculator = $use_acp_calculator;
     }
 
     public function jsonSerialize(): mixed

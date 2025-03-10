@@ -100,7 +100,11 @@ export class TrackService {
     return await this.publishresultaction(this.linkService.findByRel(trackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT ))
   }
 
-  createTrack(s: RusaPlannerResponseRepresentation) {
-      firstValueFrom(this.httpClient.post(environment.backend_url + "trackplanner/createtrackfromplanner",s))
+  async createTrack(s: RusaPlannerResponseRepresentation): Promise<any> {
+      return firstValueFrom(this.httpClient.post(environment.backend_url + "trackplanner/createtrackfromplanner", s))
+        .catch(error => {
+          console.error('Error creating track:', error);
+          throw error; // Re-throw to allow handling by the caller
+        });
   }
 }

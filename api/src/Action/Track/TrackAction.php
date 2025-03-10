@@ -115,19 +115,35 @@ class TrackAction
 
 
     public function trackplanner(ServerRequestInterface $request, ResponseInterface $response){
+        try {
+            $currentuserUid = $request->getBody()->getContents();
 
-        $currentuserUid = $request->getBody()->getContents();
-
-        $jsonDecoder = new JsonDecoder();
-        $jsonDecoder->register(new RusaPlannerInputRepresentationTransformer());
-        $rusaPlannnerInput = (object) $jsonDecoder->decode($currentuserUid, RusaPlannerInputRepresentation::class);
-
-
-
-       $result = $this->trackService->planTrack($rusaPlannnerInput,$currentuserUid);
-
-       $response->getBody()->write(json_encode($result),JSON_UNESCAPED_SLASHES);
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+            $jsonDecoder = new JsonDecoder();
+            $jsonDecoder->register(new RusaPlannerInputRepresentationTransformer());
+            
+            try {
+                $rusaPlannnerInput = (object) $jsonDecoder->decode($currentuserUid, RusaPlannerInputRepresentation::class);
+                
+                $result = $this->trackService->planTrack($rusaPlannnerInput, $currentuserUid);
+                
+                $response->getBody()->write(json_encode($result), JSON_UNESCAPED_SLASHES);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+            } catch (\Exception $e) {
+                // Handle JSON decode errors or other exceptions
+                error_log("Error processing track plan request: " . $e->getMessage());
+                $errorResponse = new \stdClass();
+                $errorResponse->error = "Failed to process request: " . $e->getMessage();
+                $response->getBody()->write(json_encode($errorResponse));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+        } catch (\Throwable $t) {
+            // Catch-all for any uncaught errors
+            error_log("Uncaught error in trackplanner: " . $t->getMessage());
+            $errorResponse = new \stdClass();
+            $errorResponse->error = "An unexpected error occurred";
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
     }
 
 

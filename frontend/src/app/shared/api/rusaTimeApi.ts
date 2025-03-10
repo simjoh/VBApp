@@ -56,13 +56,14 @@ export interface RusaPlannerControlInputRepresentation {
 }
 
 export interface RusaPlannerInputRepresentation {
-  controls: RusaPlannerControlInputRepresentation[];
+  controls: Array<RusaPlannerControlInputRepresentation>;
   event_distance: number;
   start_date: string;
   start_time: string;
   event_uid: string;
   track_title: string;
   link: string;
+  use_acp_calculator?: boolean;
 }
 
 export interface RusaControlResponseRepresentation {

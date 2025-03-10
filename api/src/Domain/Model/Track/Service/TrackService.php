@@ -410,8 +410,19 @@ class TrackService extends ServiceAbstract
 
     public function planTrack(RusaPlannerInputRepresentation $rusaPlannnerInput, string $currentuserUid): object
     {
-        return $this->rusaTimeTrackPlannerService->getresponseFromRusaTime($rusaPlannnerInput, $currentuserUid);
-
+        try {
+            // Check if the use_acp_calculator flag is set to true
+            if ($rusaPlannnerInput->getUseAcpCalculator()) {
+                return $this->rusaTimeTrackPlannerService->getResponseFromACPCalculator($rusaPlannnerInput, $currentuserUid);
+            } else {
+                // Use original RUSA Time calculation
+                return $this->rusaTimeTrackPlannerService->getresponseFromRusaTime($rusaPlannnerInput, $currentuserUid);
+            }
+        } catch (\Exception $e) {
+            // Log error and return empty response instead of letting the error bubble up
+            error_log("Error in planTrack: " . $e->getMessage());
+            return new \App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation();
+        }
     }
 
     public function createTrackFromPlanner(stdClass $trackrepresentation, string $currentUserUId): TrackRepresentation
