@@ -1,58 +1,152 @@
-<p-table [value]="$eventsandtrack | async " styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped" dataKey="event.title"
-         responsiveLayout="scroll">
-  <ng-template pTemplate="header">
-    <tr>
-      <th style="width: 3rem"></th>
-      <th pSortableColumn="event.title">Event
-        <p-sortIcon field="event.title"></p-sortIcon>
-      </th>
-      <th pSortableColumn="event.startdate">Startdatum
-        <p-sortIcon field="event.startdate"></p-sortIcon>
-      </th>
-      <th pSortableColumn="event.enddate">Slutdatum
-        <p-sortIcon field="event.enddate"></p-sortIcon>
-      </th>
-      <th pSortableColumn="inventoryStatus">Status
-        <p-sortIcon field="inventoryStatus"></p-sortIcon>
-      </th>
-      <th>Länk till trackingsida
-      </th>
-      <th>Åtgärd
-      </th>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-product let-expanded="expanded">
-    <tr>
-      <td>
-        <button type="button" pButton pRipple [pRowToggler]="product" class="p-button-text p-button-rounded p-button-plain"
-                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
-      </td>
-      <td>{{product.event.title}}</td>
-      <td>{{product.event.startdate}}</td>
-      <td>{{product.event.enddate}}</td>
-      <td>{{product.event.completed === true ? 'Genomförd' : product.event.active === true ? "Pågående" : product.event.canceled === true ? "Inställd" : ""}}</td>
-      <td>
-        <brevet-html-link [target]="'_blank'" [text]="'Följ deltagare på event'" [rel]="'relation.event.track'"
-                          [link]="product.event.links"></brevet-html-link>
-      </td>
-      <td>
-        <button [disabled]="!isPossibleToDelete(product.event)" (click)="remove(product.event)" pButton pRipple icon="pi pi-trash"
-                class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1"></button>
-      </td>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="rowexpansion" let-product>
-    <td colspan="12">
-      <div class="col-12 sm:col-12 lg:11 lg:pl-8">
-        <brevet-track-table (reload)="reload()" [tracks]="product.tracks"></brevet-track-table>
+<div class="card">
+  <p-table 
+    #dt 
+    [value]="$eventsandtrack | async"
+    dataKey="event.title"
+    [tableStyle]="{'min-width': '60rem'}"
+    styleClass="p-datatable-customers p-datatable-striped p-datatable-sm p-datatable-gridlines shadow-2"
+    [rowHover]="true"
+    [rows]="10"
+    [showCurrentPageReport]="true"
+    [loading]="false"
+    responsiveLayout="scroll"
+    [scrollable]="true"
+    scrollHeight="flex">
+    <ng-template pTemplate="caption">
+      <div class="flex flex-wrap justify-content-between align-items-center gap-3 p-3">
+        <span class="p-input-icon-left flex-auto sm:flex-none">
+          <i class="pi pi-search"></i>
+          <input 
+            pInputText 
+            #filter 
+            (input)="dt.filterGlobal($event.target.value, 'contains')" 
+            placeholder="Sök banor..." 
+            class="w-full sm:w-auto"
+            style="padding-left: 2.5rem"/>
+        </span>
       </div>
-  </ng-template>
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td colspan="7">Det finns inga banor</td>
-    </tr>
-  </ng-template>
-</p-table>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3rem"></th>
+        <th pSortableColumn="event.title" class="min-w-200">
+          <div class="flex align-items-center gap-2">
+            <span>Event</span>
+            <p-sortIcon field="event.title"></p-sortIcon>
+          </div>
+        </th>
+        <th pSortableColumn="event.startdate" class="min-w-200">
+          <div class="flex align-items-center gap-2">
+            <span>Startdatum</span>
+            <p-sortIcon field="event.startdate"></p-sortIcon>
+          </div>
+        </th>
+        <th pSortableColumn="event.enddate" class="min-w-200">
+          <div class="flex align-items-center gap-2">
+            <span>Slutdatum</span>
+            <p-sortIcon field="event.enddate"></p-sortIcon>
+          </div>
+        </th>
+        <th pSortableColumn="event.status" class="min-w-150">
+          <div class="flex align-items-center gap-2">
+            <span>Status</span>
+            <p-sortIcon field="event.status"></p-sortIcon>
+          </div>
+        </th>
+        <th class="min-w-200">Länk till trackingsida</th>
+        <th class="min-w-150">
+          <div class="text-right">Åtgärd</div>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-product let-expanded="expanded">
+      <tr class="p-selectable-row">
+        <td>
+          <button 
+            type="button" 
+            pButton 
+            pRipple 
+            [pRowToggler]="product" 
+            class="p-button-text p-button-rounded p-button-plain"
+            [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'">
+          </button>
+        </td>
+        <td>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-map text-primary"></i>
+            <span class="font-semibold">{{product.event.title}}</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-clock text-primary-600"></i>
+            <span>{{product.event.startdate}}</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-clock text-primary-600"></i>
+            <span>{{product.event.enddate}}</span>
+          </div>
+        </td>
+        <td>
+          <p-tag 
+            [value]="product.event.completed ? 'Genomförd' : product.event.active ? 'Pågående' : 'Inställd'"
+            [severity]="product.event.completed ? 'info' : product.event.active ? 'success' : 'danger'"
+            [rounded]="false"
+            styleClass="text-xs"
+            [style]="{'padding': '0.15rem 0.5rem', 'border-radius': '2px'}">
+          </p-tag>
+        </td>
+        <td>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-link text-primary-600"></i>
+            <brevet-html-link 
+              [target]="'_blank'" 
+              [text]="'Följ deltagare på event'" 
+              [rel]="'relation.event.track'"
+              [link]="product.event.links">
+            </brevet-html-link>
+          </div>
+        </td>
+        <td>
+          <div class="flex justify-content-end gap-2">
+            <button 
+              [disabled]="!isPossibleToDelete(product.event)" 
+              (click)="remove(product.event)" 
+              pButton 
+              pRipple 
+              icon="pi pi-trash"
+              class="p-button-rounded p-button-danger p-button-text"
+              pTooltip="Ta bort"
+              tooltipPosition="top">
+            </button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="rowexpansion" let-product>
+      <tr>
+        <td colspan="7">
+          <div class="col-12 sm:col-12 lg:11">
+            <brevet-track-table (reload)="reload()" [tracks]="product.tracks"></brevet-track-table>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" class="text-center p-6">
+          <div class="flex flex-column align-items-center">
+            <i class="pi pi-folder-open text-primary" style="font-size: 3rem"></i>
+            <span class="font-bold text-xl mt-3">Inga banor hittades</span>
+            <span class="text-600 mt-2">Det finns inga banor att visa.</span>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
 
 
 

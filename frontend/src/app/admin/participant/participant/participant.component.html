@@ -1,7 +1,10 @@
-<div class="mt-0 sm:col-12 lg:col-8">
-<h4><i class="pi pi-users" style="font-size: 1.3rem"></i> Deltagare</h4>
-<p-tabMenu styleClass="mr-2" [model]="designTabs"></p-tabMenu>
-  <div class="mt-0">
+<div class="mt-2 sm:col-12 lg:col-8">
+  <h4 class="flex align-items-center">
+    <i class="pi pi-users mr-2" style="font-size: 1.5rem; color: var(--primary-color)"></i>
+    <span style="font-size: 1.5rem; font-weight: 600">Deltagare</span>
+  </h4>
+  <p-tabMenu styleClass="mr-2" [model]="designTabs"></p-tabMenu>
+  <div class="mt-4 ml-2">
     <router-outlet></router-outlet>
   </div>
 </div>

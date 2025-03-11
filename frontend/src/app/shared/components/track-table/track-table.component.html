@@ -1,54 +1,162 @@
 <ng-container *ngIf="$tracksviewinformation | async as tracks">
-  <p-table [value]="tracks" styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped" dataKey="trackRepresentation.track_uid"
-           responsiveLayout="scroll">
-    <ng-template pTemplate="header">
-      <tr>
-        <th class="w-auto"></th>
-        <th class="lg:col-3 sm:col-2">Bana</th>
-        <th  class="lg:col-1 hide">Länk till strava</th>
-        <th class="lg:col-2">Datum</th>
-        <th class="lg:col-1">Distans</th>
-        <th  class="lg:col-2 md:col-2 sm:col-2">Mer</th>
-        <th  class="lg:col-2 md:col-2 sm:col-2">Länk till trackingsida</th>
-        <th class="lg:col-2 sm:col-3">Åtgärd</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-track let-expanded="expanded">
-      <tr>
-        <td>
-          <button type="button" pButton pRipple [pRowToggler]="track" class="p-button-text p-button-rounded p-button-plain"
-                  [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
-        </td>
-        <td>{{track.trackRepresentation.title}}</td>
-        <td class="hide"><a target="_blank" href="{{track.trackRepresentation.linktotrack}}">Karta</a>
-        </td>
-        <td>{{track.trackRepresentation.start_date_time}}</td>
-        <td>{{track.trackRepresentation.distance}}</td>
-        <td class="md:justify-content-center"><brevet-checkpoint-preview [track_uid]="track.trackRepresentation.track_uid"></brevet-checkpoint-preview></td>
-        <td class="md:justify-content-center">  <brevet-html-link [target]="'_blank'" [text]="'Följ deltagare på bana'" [rel]="'relation.track.tracktrack'"
-                                                                  [link]="track.trackRepresentation.links"></brevet-html-link></td>
-
-
-        <td>
-          <p-button [styleClass]="'p-button-rounded p-button-warning ml-2  lg:mb-2 md:mb-8 p-mr-1 sm:mb-2 sm:mt-1 '" [disabled]="!isPossibleToDelete(track.trackRepresentation)" (click)="remove(track.trackRepresentation)"   icon="pi pi-trash"></p-button>
-
-          <p-button [styleClass]="'ml-2 sm:mt-1 md:mt-2 p-button-outlined p-button-rounded p-button-success'" [hidden]="track.trackMetricsRepresentation.countParticipants == 0 || isPossibleToPublishResults(track.trackRepresentation) " (click)="publish(track.trackRepresentation) "  pTooltip="Publicera resultat"  icon="pi pi-wifi" pRipple type="button"></p-button>
-          <p-button [styleClass]="'ml-2 sm:mt-1 md:mt-2 p-button-outlined p-button-rounded p-button-danger'" [hidden]="track.trackMetricsRepresentation.countParticipants == 0 || !isPossibleToPublishResults(track.trackRepresentation)"  (click)="publish(track.trackRepresentation) "  pTooltip="Ångra publicera resultat"  icon="pi pi-wifi" pRipple type="button" ></p-button>
-
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="rowexpansion" let-track>
-      <td colspan="8">
-        <brevet-checkpoint-table [checkpoints]="track.trackRepresentation.checkpoints"></brevet-checkpoint-table>
-      </td>
-    </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="7">Det finns inga banor på det här eventet.</td>
-      </tr>
-    </ng-template>
-  </p-table>
+  <div class="w-full">
+    <p-table 
+      [value]="tracks" 
+      styleClass="p-datatable-customers p-datatable-sm p-datatable-gridlines p-datatable-striped shadow-2" 
+      [tableStyle]="{'width': '100%'}"
+      [rowHover]="true"
+      dataKey="trackRepresentation.track_uid"
+      responsiveLayout="scroll"
+      [scrollable]="true"
+      scrollHeight="flex">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3rem"></th>
+          <th style="width: 20%">
+            <div class="flex align-items-center gap-2">
+              <span>Bana</span>
+            </div>
+          </th>
+          <th style="width: 10%" class="hide">
+            <div class="flex align-items-center gap-2">
+              <span>Länk till strava</span>
+            </div>
+          </th>
+          <th style="width: 15%">
+            <div class="flex align-items-center gap-2">
+              <span>Datum</span>
+            </div>
+          </th>
+          <th style="width: 10%">
+            <div class="flex align-items-center gap-2">
+              <span>Distans</span>
+            </div>
+          </th>
+          <th style="width: 15%">
+            <div class="flex align-items-center gap-2">
+              <span>Mer</span>
+            </div>
+          </th>
+          <th style="width: 15%">
+            <div class="flex align-items-center gap-2">
+              <span>Länk till trackingsida</span>
+            </div>
+          </th>
+          <th style="width: 10%">
+            <div class="text-right">Åtgärd</div>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-track let-expanded="expanded">
+        <tr class="p-selectable-row">
+          <td>
+            <button 
+              type="button" 
+              pButton 
+              pRipple 
+              [pRowToggler]="track" 
+              class="p-button-text p-button-rounded p-button-plain"
+              [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'">
+            </button>
+          </td>
+          <td>
+            <div class="flex align-items-center gap-2">
+              <i class="pi pi-map text-primary"></i>
+              <span class="font-semibold">{{track.trackRepresentation.title}}</span>
+            </div>
+          </td>
+          <td class="hide">
+            <div class="flex align-items-center gap-2">
+              <i class="pi pi-link text-primary-600"></i>
+              <a target="_blank" href="{{track.trackRepresentation.linktotrack}}">Karta</a>
+            </div>
+          </td>
+          <td>
+            <div class="flex align-items-center gap-2">
+              <i class="pi pi-calendar text-primary-600"></i>
+              <span>{{track.trackRepresentation.start_date_time}}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex align-items-center gap-2">
+              <i class="pi pi-arrows-h text-primary-600"></i>
+              <span>{{track.trackRepresentation.distance}}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex align-items-center justify-content-center">
+              <brevet-checkpoint-preview [track_uid]="track.trackRepresentation.track_uid"></brevet-checkpoint-preview>
+            </div>
+          </td>
+          <td>
+            <div class="flex align-items-center gap-2">
+              <i class="pi pi-link text-primary-600"></i>
+              <brevet-html-link 
+                [target]="'_blank'" 
+                [text]="'Följ deltagare på bana'" 
+                [rel]="'relation.track.tracktrack'"
+                [link]="track.trackRepresentation.links">
+              </brevet-html-link>
+            </div>
+          </td>
+          <td>
+            <div class="flex justify-content-end gap-2">
+              <button 
+                [disabled]="!isPossibleToDelete(track.trackRepresentation)" 
+                (click)="remove(track.trackRepresentation)" 
+                pButton 
+                pRipple 
+                icon="pi pi-trash"
+                class="p-button-rounded p-button-danger p-button-text"
+                pTooltip="Ta bort"
+                tooltipPosition="top">
+              </button>
+              <button 
+                [hidden]="track.trackMetricsRepresentation.countParticipants == 0 || isPossibleToPublishResults(track.trackRepresentation)"
+                (click)="publish(track.trackRepresentation)"
+                pButton 
+                pRipple 
+                icon="pi pi-wifi"
+                class="p-button-rounded p-button-success p-button-text"
+                pTooltip="Publicera resultat"
+                tooltipPosition="top">
+              </button>
+              <button 
+                [hidden]="track.trackMetricsRepresentation.countParticipants == 0 || !isPossibleToPublishResults(track.trackRepresentation)"
+                (click)="publish(track.trackRepresentation)"
+                pButton 
+                pRipple 
+                icon="pi pi-wifi"
+                class="p-button-rounded p-button-danger p-button-text"
+                pTooltip="Ångra publicera resultat"
+                tooltipPosition="top">
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="rowexpansion" let-track>
+        <tr>
+          <td colspan="8" style="padding: 0; background: var(--surface-ground)">
+            <div class="w-full">
+              <brevet-checkpoint-table [checkpoints]="track.trackRepresentation.checkpoints"></brevet-checkpoint-table>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center p-4">
+            <div class="flex align-items-center justify-content-center gap-2">
+              <i class="pi pi-folder-open text-primary" style="font-size: 1.5rem"></i>
+              <span class="font-bold text-lg">Inga banor hittades</span>
+              <span class="text-600">- Det finns inga banor på det här eventet.</span>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </ng-container>
 
 

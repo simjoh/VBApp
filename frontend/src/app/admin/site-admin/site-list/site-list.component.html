@@ -1,77 +1,165 @@
-<ng-container *ngIf="$sites | async as users">
-  <p-table #dt [value]="users" [(selection)]="selectedCustomers" dataKey="id" styleClass="p-datatable-customers p-datatable-gridlines  sm:col-12"
-           [rowHover]="true"
-           [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="loading"
-           [paginator]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-           [filterDelay]="0" [globalFilterFields]="['place','familyname','username','status']">
-    <ng-template pTemplate="caption">
-      <div class="table-header">
-      <span class="p-input-icon-left  sm:inline-flex">
-          <button pButton pRipple label="New" icon="pi pi-plus" class="thin p-button-success p-mr-2 ml-2" (click)="openNew()"></button>
-      </span>
-        <span class="p-input-icon-left sm:inline-flex">
-        <i class="pi pi-search"></i>
-        <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Sök"/>
-      </span>
-      </div>
-    </ng-template>
-    <ng-template pTemplate="header">
-      <tr>
-        <th class="lg:w-4rem" pSortableColumn="place">
-          <div class="p-d-flex p-jc-between p-ai-center">
-            Plats
-            <p-sortIcon field="place"></p-sortIcon>
+<div class="card">
+  <ng-container *ngIf="$sites | async as users">
+    <p-table 
+      #dt 
+      [value]="users" 
+      [(selection)]="selectedCustomers" 
+      dataKey="id" 
+      [tableStyle]="{'min-width': '60rem'}"
+      styleClass="p-datatable-customers p-datatable-striped p-datatable-sm p-datatable-gridlines shadow-2" 
+      [rowHover]="true"
+      [rows]="10" 
+      [showCurrentPageReport]="true" 
+      [rowsPerPageOptions]="[10,25,50]" 
+      [loading]="loading"
+      [paginator]="true" 
+      [paginatorTemplate]="paginatorTemplate"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      [filterDelay]="0" 
+      [globalFilterFields]="['place','adress']"
+      responsiveLayout="scroll"
+      [scrollable]="true"
+      scrollHeight="flex">
+      <ng-template pTemplate="caption">
+        <div class="flex flex-wrap justify-content-between align-items-center gap-3 p-3">
+          <span class="p-input-icon-left flex-auto sm:flex-none">
+            <i class="pi pi-search"></i>
+            <input 
+              pInputText 
+              #filter 
+              (input)="dt.filterGlobal($event.target.value, 'contains')" 
+              placeholder="Search sites..." 
+              class="w-full sm:w-auto"
+              style="padding-left: 2.5rem"/>
+          </span>
+          <div class="flex align-items-center gap-2">
+            <button 
+              pButton 
+              pRipple 
+              label="New Site" 
+              icon="pi pi-plus" 
+              class="p-button-success" 
+              (click)="openNew()">
+            </button>
+            <button 
+              pButton 
+              pRipple 
+              icon="pi pi-refresh" 
+              class="p-button-text p-button-rounded" 
+              (click)="dt.reset()">
+            </button>
           </div>
-        </th>
-        <th class="lg:w-3rem" pSortableColumn="adress">
-          <div class="p-d-flex p-jc-between p-ai-center">
-            Adress
-            <p-sortIcon field="adress"></p-sortIcon>
-          </div>
-        </th>
-        <th class="lg:w-1">
-          <div class="p-d-flex p-jc-between p-ai-center">
-            Bild
-          </div>
-        </th>
-        <th class="lg:w-1rem">
-          <div class="p-d-flex p-jc-between pi-align-right">
-            Åtgärder
-          </div>
-        </th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-site>
-      <tr class="p-selectable-row">
-        <td>
-          <span class="p-column-title">Place</span>
-          {{site.place}}
-        </td>
-        <td>
-          <span class="p-column-title">Adress</span>
-          <span class="image-text">{{site.adress}}</span>
-        </td>
-        <td class="align-content-center">
-          <span class="p-column-title">Bild</span>
-          <img width="30" height="30" class="p-shadow-4" [src]="site.image" src="assets/brevet.PNG" alt="Bild på site">
-        </td>
-        <td>
-          <span class="p-column-title">Åtgärder</span>
-          <brevet-site-info-popover [site]="site"></brevet-site-info-popover>
-          <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success sm-0 p-ml-1"
-                  (click)="editProduct(site)"></button>
-          <button [disabled]="!canDelete(site)"  pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning ml-2 sm-0 p-mr-1"
-                  (click)="deleteProduct(site.site_uid)"></button>
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="8">No users found.</td>
-      </tr>
-    </ng-template>
-  </p-table>
-  <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
-
-
-</ng-container>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="place" class="min-w-200">
+            <div class="flex align-items-center gap-2">
+              <span>Place</span>
+              <p-sortIcon field="place"></p-sortIcon>
+              <p-columnFilter type="text" field="place" display="menu" [showMatchModes]="true" [showOperator]="false"></p-columnFilter>
+            </div>
+          </th>
+          <th pSortableColumn="adress" class="min-w-200">
+            <div class="flex align-items-center gap-2">
+              <span>Address</span>
+              <p-sortIcon field="adress"></p-sortIcon>
+              <p-columnFilter type="text" field="adress" display="menu"></p-columnFilter>
+            </div>
+          </th>
+          <th class="min-w-150">
+            <div class="flex align-items-center justify-content-center">
+              <span>Image</span>
+            </div>
+          </th>
+          <th class="min-w-150">
+            <div class="text-right">Actions</div>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-site>
+        <tr class="p-selectable-row">
+          <td>
+            <div class="flex align-items-center gap-2">
+              <i class="pi pi-map-marker text-primary"></i>
+              <span class="font-semibold">{{site.place}}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex align-items-center gap-2">
+              <i class="pi pi-home text-primary-600"></i>
+              <span>{{site.adress}}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex align-items-center justify-content-center">
+              <ng-container *ngIf="site.image; else noImage">
+                <img 
+                  [src]="site.image" 
+                  [alt]="site.place"
+                  class="shadow-2 border-round-xl object-fit-cover"
+                  style="width: 40px; height: 40px;">
+              </ng-container>
+              <ng-template #noImage>
+                <div class="shadow-2 border-round-xl flex align-items-center justify-content-center bg-primary-100" style="width: 40px; height: 40px;">
+                  <i class="pi pi-image text-primary" style="font-size: 1.2rem"></i>
+                </div>
+              </ng-template>
+            </div>
+          </td>
+          <td>
+            <div class="flex justify-content-end gap-2">
+              <brevet-site-info-popover [site]="site" class="scale-50"></brevet-site-info-popover>
+              <button 
+                pButton 
+                pRipple 
+                icon="pi pi-pencil" 
+                class="p-button-rounded p-button-success p-button-text scale-50" 
+                (click)="editProduct(site)"
+                pTooltip="Edit Site"
+                tooltipPosition="top">
+              </button>
+              <button 
+                pButton 
+                pRipple 
+                icon="pi pi-trash" 
+                class="p-button-rounded p-button-danger p-button-text scale-50" 
+                [disabled]="!canDelete(site)" 
+                (click)="deleteProduct(site.site_uid)"
+                pTooltip="Delete Site"
+                tooltipPosition="top">
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="4" class="text-center p-6">
+            <div class="flex flex-column align-items-center">
+              <i class="pi pi-map text-primary" style="font-size: 3rem"></i>
+              <span class="font-bold text-xl mt-3">No Sites Found</span>
+              <span class="text-600 mt-2">Start by adding a new site.</span>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #paginatorTemplate let-state>
+        <div class="flex align-items-center justify-content-between gap-3 px-3">
+          <p-paginator 
+            [rows]="state.rows" 
+            [first]="state.first" 
+            [totalRecords]="state.totalRecords"
+            [rowsPerPageOptions]="state.rowsPerPageOptions"
+            (onPageChange)="dt.onPageChange($event)"
+            [showCurrentPageReport]="true"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} sites"
+            [showFirstLastIcon]="true"
+            styleClass="flex-auto">
+          </p-paginator>
+        </div>
+      </ng-template>
+    </p-table>
+    <p-confirmDialog [style]="{width: '450px'}" [baseZIndex]="10000" styleClass="shadow-7"></p-confirmDialog>
+  </ng-container>
+</div>

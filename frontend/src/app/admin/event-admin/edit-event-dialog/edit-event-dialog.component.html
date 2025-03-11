@@ -1,47 +1,103 @@
-
-<form #eventFormName="ngForm" (ngSubmit)="editEvent(eventFormName)" novalidate>
+<form #eventFormName="ngForm" (ngSubmit)="editEvent(eventFormName)" novalidate class="p-fluid">
   <div class="p-dynamicdialog">
     <div class="p-dialog-content">
-      <div class="form-group">
-        <div class="form-group">
-          <label class="col-form-label" for="title">Titel</label>
-          <input pInputText pTooltip="Titel"  tooltipPosition="left"   #title="ngModel" type="text" name="title" class="form-control" id="title" [(ngModel)]="eventForm.title" placeholder="Tex Månskensbrevet" required>
+      <div class="grid">
+        <!-- Title Field -->
+        <div class="col-12 field">
+          <label for="title" class="font-medium">Title</label>
+          <span class="p-input-icon-left w-full">
+            <i class="pi pi-tag"></i>
+            <input pInputText 
+                   id="title" 
+                   name="title" 
+                   #title="ngModel" 
+                   [(ngModel)]="eventForm.title" 
+                   placeholder="Ex: Månskensbrevet" 
+                   required
+                   class="w-full">
+          </span>
+          <small *ngIf="title.invalid && (title.dirty || title.touched)" class="p-error">Title is required</small>
         </div>
-        <div class="form-group">
-          <div class="form-row">
-            <div class="col-6">
-              Startdatum
-              <p-calendar yearRange="2021:2030" pTooltip="Startdatum för eventet" tooltipPosition="left" [monthNavigator]="true" [yearNavigator]="true"  placeholder="YYYY-MM-DD" appendTo="body" name="startdate" dateFormat="yy-mm-dd" [(ngModel)]="eventForm.startdate" [showIcon]="true" [style]="{ 'position': 'relative' , 'overflow': 'visible' }"
-              ></p-calendar>
-            </div>
-            <div class="col-6">
-              Slutdatum <p-calendar  pTooltip="Slutdatum för eventet" tooltipPosition="right" yearRange="2021:2030" [monthNavigator]="true" [yearNavigator]="true"  placeholder="YYYY-MM-DD" name="endddate" appendTo="body" dateFormat="yy-mm-dd" [(ngModel)]="eventForm.enddate" [showIcon]="true" [style]="{ 'position': 'relative' , 'overflow': 'visible' }"></p-calendar>
-            </div>
+
+        <!-- Date Fields -->
+        <div class="col-12 date-fields">
+          <div class="field">
+            <label for="startdate" class="font-medium">Start Date</label>
+            <p-calendar id="startdate"
+                       [(ngModel)]="eventForm.startdate"
+                       name="startdate"
+                       [showIcon]="true"
+                       [monthNavigator]="true"
+                       [yearNavigator]="true"
+                       yearRange="2021:2030"
+                       dateFormat="yy-mm-dd"
+                       placeholder="YYYY-MM-DD"
+                       [showButtonBar]="true">
+            </p-calendar>
+          </div>
+
+          <div class="field">
+            <label for="enddate" class="font-medium">End Date</label>
+            <p-calendar id="enddate"
+                       [(ngModel)]="eventForm.enddate"
+                       name="enddate"
+                       [showIcon]="true"
+                       [monthNavigator]="true"
+                       [yearNavigator]="true"
+                       yearRange="2021:2030"
+                       dateFormat="yy-mm-dd"
+                       placeholder="YYYY-MM-DD"
+                       [showButtonBar]="true">
+            </p-calendar>
           </div>
         </div>
-        <div class="form-group">
-          <div class="form-row">
-            <div *ngFor="let category of categories" class="p-field-checkbox">
-              <div class="flex align-items-center ml-1">
-                <p-radioButton (onClick)="changeStatus($event)" [inputId]="category.key" name="category"  [value]="category" [(ngModel)]="city"
-                               [disabled]="category.key === 'R'"></p-radioButton>
-                <label [for]="category.key">{{category.name}}</label>
-              </div>
+
+        <!-- Categories -->
+        <div class="col-12 field">
+          <label class="font-medium mb-2 block">Category</label>
+          <div class="grid">
+            <div *ngFor="let category of categories" class="col-12 md:col-4 lg:col-3">
+              <p-radioButton [inputId]="category.key"
+                           name="category"
+                           [value]="category"
+                           [(ngModel)]="city"
+                           [disabled]="category.key === 'R'"
+                           (onClick)="changeStatus($event)">
+              </p-radioButton>
+              <label [for]="category.key" class="ml-2">{{category.name}}</label>
             </div>
           </div>
         </div>
 
-        <div class="form-group">
-          Description
-          <textarea  pTooltip="Beskrivning av eventet" tooltipPosition="left" [(ngModel)]="eventForm.description" name="description" placeholder="" class="col-12" rows="5"  pInputTextarea autoResize="autoResize"></textarea>
+        <!-- Description -->
+        <div class="col-12 field">
+          <label for="description" class="font-medium">Description</label>
+          <textarea pInputTextarea
+                    id="description"
+                    [(ngModel)]="eventForm.description"
+                    name="description"
+                    rows="5"
+                    autoResize="autoResize"
+                    placeholder="Enter event description..."
+                    class="w-full">
+          </textarea>
         </div>
       </div>
     </div>
+
+    <!-- Footer -->
     <div class="p-dialog-footer">
-  <span class="p-buttonset">
-    <button pTooltip="Klicka för att spara" type="submit"  [disabled]="!eventFormName.valid" tooltipPosition="left" pButton pRipple label="Save"  icon="pi pi-check" class="p-button-sm"></button>
-    <button pTooltip="Klicka för att avbryta" pButton pRipple label="Cancel" (click)="cancel()"  icon="pi pi-times" class="p-button-sm"></button>
-</span>
+      <div class="flex justify-content-end gap-2">
+        <p-button icon="pi pi-times" 
+                  label="Cancel" 
+                  (click)="cancel()" 
+                  styleClass="p-button-outlined p-button-secondary"></p-button>
+        <p-button icon="pi pi-check" 
+                  label="Save" 
+                  type="submit" 
+                  [disabled]="!eventFormName.valid"
+                  styleClass="p-button-primary"></p-button>
+      </div>
     </div>
   </div>
 </form>
