@@ -75,6 +75,9 @@ return function (App $app) {
         $app->get('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':track');
         $app->put('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':updateTrack');
         $app->post('/track', \App\Action\Track\TrackAction::class . ':createTrack');
+        $app->post('/track/withoutcheckpoints', \App\Action\Track\TrackAction::class . ':createTrackWithOutCheckpoints');
+        $app->post('/track/{trackUid}/addTotrack', \App\Action\Track\TrackAction::class . ':addCheckpointsToTrack');
+
         $app->get('/tracks/event/{eventUid}', \App\Action\Track\TrackAction::class . ':tracksForEvent');
         $app->delete('/track/{trackUid}', \App\Action\Track\TrackAction::class . ':deleteTrack');
         $app->put('/publishresults/track/{trackUid}', \App\Action\Track\TrackAction::class . ':publishresults');

@@ -8,17 +8,17 @@ use JsonSerializable;
 class TrackRepresentation implements JsonSerializable
 {
 
-    private string $title;
-    private string $descriptions;
-    private array $checkpoints;
-    private string $linktotrack;
-    private ?string $heightdifference;
-    private string $distance;
-    private String $track_uid;
-    private string $event_uid;
-    private string $start_date_time;
-    private ?bool $active;
-    private ?Link $link;
+    private string $title = "";
+    private string $descriptions = "";
+    private array $checkpoints = [];
+    private ?string $linktotrack = "";
+    private ?string $heightdifference = "";
+    private ?string $distance = "";
+    private ?string $track_uid = "";
+    private ?string $event_uid = "";
+    private string $start_date_time = "";
+    private ?bool $active = false;
+    private ?Link $link = null;
     private array $links = [];
 
 

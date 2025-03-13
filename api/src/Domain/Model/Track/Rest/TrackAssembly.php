@@ -95,22 +95,28 @@ class TrackAssembly
     public function totrack(TrackRepresentation $trackrepresentation): Track
     {
         $track = new Track();
-        $track->setDescription($trackrepresentation->getDescriptions());
-        $track->setTitle($trackrepresentation->getTitle());
-        $track->setLink($trackrepresentation->getLinktotrack());
-        $track->setHeightdifference($trackrepresentation->getHeightdifference());
-        $track->setDistance($trackrepresentation->getDistance());
-        $track->setTrackUid($trackrepresentation->getTrackUid());
-        $track->setEventUid($trackrepresentation->getEventUid());
-        if($trackrepresentation->getCheckpoints() !== null){
-            $checkpoints = $trackrepresentation->getCheckpoints();
-            if(!empty($checkpoints)){
-                $checkpoints_uid = [];
-                foreach ($checkpoints as $chp => $checkpoint){
-                    $checkpoints_uid[]  =  $checkpoint['checkpoint_uid'];
+        $track->setDescription($trackrepresentation->getDescriptions() ?? '');
+        $track->setTitle($trackrepresentation->getTitle() ?? '');
+        $track->setLink($trackrepresentation->getLinktotrack() ?? '');
+        $track->setHeightdifference($trackrepresentation->getHeightdifference() ?? '');
+        $track->setDistance($trackrepresentation->getDistance() ?? '');
+        $track->setStartDateTime($trackrepresentation->getStartDateTime() ?? '');
+        $trackUid = $trackrepresentation->getTrackUid();
+        if ($trackUid !== null && $trackUid !== '') {
+            $track->setTrackUid($trackUid);
+        }
+        $track->setEventUid($trackrepresentation->getEventUid() ?? '');
+        $track->setActive($trackrepresentation->getActive() ?? false);
+
+        $checkpoints = $trackrepresentation->getCheckpoints();
+        if ($checkpoints !== null && !empty($checkpoints)) {
+            $checkpoints_uid = [];
+            foreach ($checkpoints as $checkpoint) {
+                if (isset($checkpoint['checkpoint_uid'])) {
+                    $checkpoints_uid[] = $checkpoint['checkpoint_uid'];
                 }
-                $track->setCheckpoints($checkpoints_uid);
             }
+            $track->setCheckpoints($checkpoints_uid);
         }
 
         return $track;

@@ -15,7 +15,7 @@ use Slim\Routing\RouteContext;
 class CheckpointAction
 {
 
-
+    private $checkpointsService;
 
     public function __construct(ContainerInterface $c, CheckpointsService $checkpointsService)
     {
@@ -64,6 +64,17 @@ class CheckpointAction
         $route = $routeContext->getRoute();
         $this->checkpointsService->deleteCheckpoint($route->getArgument('checkpointUID'));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+    public function addCheckpointsToTrack(ServerRequestInterface $request, ResponseInterface $response){
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('trackUid');
+        $jsonDecoder = new JsonDecoder();
+        $jsonDecoder->register(new CheckpointRepresentationTranformer());
+        $checkpoints = json_decode($request->getBody()->getContents());
+        $response->getBody()->write(json_encode($this->checkpointsService->addCheckpointsToTrack($track_uid, $checkpoints)));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
 

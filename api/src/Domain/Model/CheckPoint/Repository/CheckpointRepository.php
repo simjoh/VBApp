@@ -314,9 +314,20 @@ class CheckpointRepository extends BaseRepository
         $tracksqls['getCheckpointByTrackUid'] = 'select checkpoint_uid from track_checkpoint where track_uid=:track_uid;';
         $tracksqls['countCheckpointforTrack'] = 'select count(checkpoint_uid) from track_checkpoint where track_uid=:track_uid;';
         $tracksqls['existsBySiteUidAndDistance'] = 'select * from checkpoint e where e.site_uid=:site_uid and e.distance=:distance and opens=:opens and closing=:closing;';
+        $tracksqls['addCheckpointToTrack'] = 'INSERT INTO track_checkpoint(track_uid, checkpoint_uid) VALUES (:track_uid, :checkpoint_uid)';
         return $tracksqls[$type];
-        // TODO: Implement sqls() method.
     }
 
+    public function addCheckpointToTrack(string $track_uid, string $checkpoint_uid): void
+    {
+        try {
+            $stmt = $this->connection->prepare($this->sqls('addCheckpointToTrack'));
+            $stmt->bindParam(':track_uid', $track_uid);
+            $stmt->bindParam(':checkpoint_uid', $checkpoint_uid);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
 
 }

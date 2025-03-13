@@ -10,40 +10,50 @@ use App\Domain\Model\CheckPoint\Rest\CheckpointRepresentation;
 use App\Domain\Model\Site\Service\SiteService;
 use App\Domain\Permission\PermissionRepository;
 use Psr\Container\ContainerInterface;
+use App\Domain\Model\Track\Repository\TrackRepository;
+use App\common\Brevetcalculator\ACPBrevetCalculator;
+use App\common\Exceptions\BrevetException;
+use App\Domain\Model\CheckPoint\Rest\CheckpointAssembly;
 
 class CheckpointsService extends ServiceAbstract
 {
     private $checkpointRepository;
     private $siteservice;
     private $permissionrepository;
+    private $trackRepository;
+    private $checkpointAssembly;
 
-    public function __construct(ContainerInterface $c,
-                                CheckpointRepository $checkpointRepository,
-                                SiteService $siteService, PermissionRepository
-                                $permissionRepository)
-    {
+    public function __construct(
+        ContainerInterface $c,
+        CheckpointRepository $checkpointRepository,
+        SiteService $siteService,
+        PermissionRepository $permissionRepository,
+        TrackRepository $trackRepository,
+        CheckpointAssembly $checkpointAssembly
+    ) {
         $this->checkpointRepository = $checkpointRepository;
         $this->siteservice = $siteService;
         $this->permissionrepository = $permissionRepository;
+        $this->trackRepository = $trackRepository;
+        $this->checkpointAssembly = $checkpointAssembly;
     }
 
     public function allCheckpoints(): array
     {
         $checkpoints = $this->checkpointRepository->allCheckpoints();
-        return $this->toRepresentations($checkpoints);
+        return $this->checkpointAssembly->toRepresentations($checkpoints);
     }
 
     public function checkpointsFor(array $checkpoints_uid, string $currentUserUid): array
     {
         $permissions = $this->getPermissions($currentUserUid);
         $checkpoints = $this->checkpointRepository->checkpointsFor($checkpoints_uid);
-        return $this->toRepresentations($checkpoints);
+        return $this->checkpointAssembly->toRepresentations($checkpoints);
     }
 
     public function checkpointFor(?string $checkpoint_uid): CheckpointRepresentation
     {
-
-        return $this->toRepresentation($this->checkpointRepository->checkpointFor($checkpoint_uid));
+        return $this->checkpointAssembly->toRepresentation($this->checkpointRepository->checkpointFor($checkpoint_uid));
     }
 
     public function checkpointForTrack(?string $track_uid): array
@@ -53,7 +63,7 @@ class CheckpointsService extends ServiceAbstract
 
         $checkpoints = $this->checkpointRepository->checkpointsFor($checkpointUIDS);
 
-        return $this->toRepresentations($checkpoints);
+        return $this->checkpointAssembly->toRepresentations($checkpoints);
     }
 
     public function countCheckpointsForTrack(?string $track_uid): int {
@@ -91,16 +101,16 @@ class CheckpointsService extends ServiceAbstract
 
     public function updateCheckpoint(?string $checkpoint_uid, CheckpointRepresentation $checkpointRepresentation): CheckpointRepresentation
     {
-        $checkpoint = $this->toCheckpoint($checkpointRepresentation);
+        $checkpoint = $this->checkpointAssembly->toCheckpoint($checkpointRepresentation);
         $checkpointtoreturn =  $this->checkpointRepository->updateCheckpoint($checkpoint_uid, $checkpoint);
-        return  $this->toRepresentation($checkpointtoreturn);
+        return  $this->checkpointAssembly->toRepresentation($checkpointtoreturn);
 
     }
 
     public function createCheckpoint(?string $checkpoint_uid, CheckpointRepresentation $checkpoint)
     {
-        $checkpoint =  $this->checkpointRepository->createCheckpoint($checkpoint_uid, $this->toCheckpoint($checkpoint));
-        return $this->toRepresentation($checkpoint);
+        $checkpoint = $this->checkpointRepository->createCheckpoint($checkpoint_uid, $this->checkpointAssembly->toCheckpoint($checkpoint));
+        return $this->checkpointAssembly->toRepresentation($checkpoint);
     }
 
     public function deleteCheckpoint(?string $checkpoint_uid)
@@ -108,52 +118,63 @@ class CheckpointsService extends ServiceAbstract
         $this->checkpointRepository->deleteCheckpoint($checkpoint_uid);
     }
 
-
-    //To och from representation
-    private function toRepresentations($checkpointsArray): array
+    public function addCheckpointsToTrack(string $track_uid, array $checkpoints): array
     {
-        $checkpoints = array();
-        foreach ($checkpointsArray as $x =>  $checkpoint) {
-            array_push($checkpoints, (object) $this->toRepresentation($checkpoint));
-        }
-        return $checkpoints;
-    }
-
-    private function toRepresentation(Checkpoint $checkpoint): CheckpointRepresentation
-    {
-        $checkpointRepresentation =  new CheckpointRepresentation();
-        $checkpointRepresentation->setCheckpointUid($checkpoint->getCheckpointUid());
-        $checkpointRepresentation->setDescription($checkpoint->getDescription());
-        $checkpointRepresentation->setTitle($checkpoint->getTitle());
-
-
-        $checkpointRepresentation->setDistance($checkpoint->getDistance());
-        $checkpointRepresentation->setOpens($checkpoint->getOpens());
-        if($checkpoint->getClosing() !== null){
-            $checkpointRepresentation->setClosing($checkpoint->getClosing());
+        // Get track information
+        $track = $this->trackRepository->getTrackByUid($track_uid);
+        if (!isset($track)) {
+            throw new BrevetException("Track not exists", 5, null);
         }
 
-        $checkpointRepresentation->setSite($this->siteservice->siteFor($checkpoint->getSiteUid(),'s'));
-        return $checkpointRepresentation;
-    }
+        // Initialize ACP calculator with track distance and start time
+        $calculator = new ACPBrevetCalculator(
+            floatval($track->getDistance()),
+            $track->getStartDateTime()
+        );
 
-    private function toCheckpoint(CheckpointRepresentation $checkpointRepresentation): Checkpoint {
+        // Create checkpoints with calculated times
+        $createdCheckpoints = [];
+        foreach ($checkpoints as $index => $checkpoint) {
+            // Validate required distance
+            if (!isset($checkpoint->distance)) {
+                throw new BrevetException("Distance is required for checkpoint " . ($index + 1), 1, null);
+            }
+            
+            $distance = floatval($checkpoint->distance);
+            if ($distance < 0) {
+                throw new BrevetException("Distance cannot be negative for checkpoint " . ($index + 1), 1, null);
+            }
+            
+            // Calculate opening and closing times for this checkpoint
+            $openDateTime = $calculator->getOpeningDateTime($distance);
+            $closeDateTime = $calculator->getClosingDateTime($distance);
+            
+            // Convert checkpoint to representation format
+            $checkpointRep = new CheckpointRepresentation();
+            $checkpointRep->setDistance($distance);
+            $checkpointRep->setTitle($checkpoint->title ?? '');
+            $checkpointRep->setDescription($checkpoint->description ?? '');
+            // Always set the calculated open/close times from ACP calculator
+            $checkpointRep->setOpens($openDateTime->format('Y-m-d H:i:s'));
+            $checkpointRep->setClosing($closeDateTime->format('Y-m-d H:i:s'));
+            if (isset($checkpoint->site) && isset($checkpoint->site->site_uid)) {
+                $siteRepresentation = $this->siteservice->siteFor($checkpoint->site->site_uid, 's');
+                if ($siteRepresentation) {
+                    $checkpointRep->setSite($siteRepresentation);
+                }
+            }
 
-
-        $checkpoint =new Checkpoint();
-        if(!empty($checkpointRepresentation->getSite())){
-            $checkpoint->setSiteUid($checkpointRepresentation->getSite()->getSiteUid());
+            // Create checkpoint with null UID since it's a new checkpoint
+            $createdCheckpoint = $this->createCheckpoint(null, $checkpointRep);
+            
+            // Add checkpoint to track
+            $this->checkpointRepository->addCheckpointToTrack($track_uid, $createdCheckpoint->getCheckpointUid());
+            
+            $createdCheckpoints[] = $createdCheckpoint;
         }
 
-        $checkpoint->setDistance($checkpointRepresentation->getDistance() == null ? 0 : $checkpointRepresentation->getDistance());
-        $checkpoint->setTitle($checkpointRepresentation->getTitle() == null ? "" : $checkpointRepresentation->getTitle());
-        $checkpoint->setDescription($checkpointRepresentation->getDescription() == null ? "" : $checkpointRepresentation->getDescription());
-        $checkpoint->setOpens($checkpointRepresentation->getOpens() == null ? null : $checkpointRepresentation->getOpens());
-        $checkpoint->setClosing($checkpointRepresentation->getClosing());
-        $checkpoint->setCheckpointUid($checkpointRepresentation->getCheckpointUid());
-        return $checkpoint;
+        return $createdCheckpoints;
     }
-
 
     public function getPermissions($user_uid): array
     {

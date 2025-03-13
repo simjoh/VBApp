@@ -10,9 +10,9 @@ class Track
    private string $title;
    private ?string $heightdifference;
    private string $event_uid;
-   private string $description;
-   private string $link = "";
-   private string $distance;
+   private ?string $description;
+   private ?string $link = "";
+   private ?string $distance;
    private bool $active;
    private array $checkpoints = [];
    private  $start_date_time = "";

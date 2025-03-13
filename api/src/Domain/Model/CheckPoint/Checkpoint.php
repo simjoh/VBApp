@@ -4,7 +4,7 @@ namespace App\Domain\Model\CheckPoint;
 
 class Checkpoint
 {
-    private string $checkpoint_uid = "";
+    private ?string $checkpoint_uid = null;
     private ?string $site_uid;
     private ?string $title = "";
     private ?string $description = "";
@@ -12,17 +12,17 @@ class Checkpoint
     private $opens;
     private $closing;
     /**
-     * @return string
+     * @return string|null
      */
-    public function getCheckpointUid(): string
+    public function getCheckpointUid(): ?string
     {
         return $this->checkpoint_uid;
     }
 
     /**
-     * @param string $checkpoint_uid
+     * @param string|null $checkpoint_uid
      */
-    public function setCheckpointUid(string $checkpoint_uid): void
+    public function setCheckpointUid(?string $checkpoint_uid): void
     {
         $this->checkpoint_uid = $checkpoint_uid;
     }

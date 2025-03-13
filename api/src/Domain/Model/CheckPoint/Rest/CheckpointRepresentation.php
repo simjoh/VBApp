@@ -11,7 +11,7 @@ use JsonSerializable;
 class CheckpointRepresentation implements JsonSerializable
 {
 
-    private string $checkpoint_uid;
+    private ?string $checkpoint_uid = null;
     private ?SiteRepresentation $site;
     private ?string $title = "";
     private ?string $description = "";
@@ -23,9 +23,9 @@ class CheckpointRepresentation implements JsonSerializable
 
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getCheckpointUid(): string
+    public function getCheckpointUid(): ?string
     {
         return $this->checkpoint_uid;
     }
@@ -39,7 +39,7 @@ class CheckpointRepresentation implements JsonSerializable
     }
 
     /**
-     * @return Site
+     * @return SiteRepresentation
      */
     public function getSite(): SiteRepresentation
     {
@@ -47,7 +47,7 @@ class CheckpointRepresentation implements JsonSerializable
     }
 
     /**
-     * @param Site $site
+     * @param SiteRepresentation $site
      */
     public function setSite(SiteRepresentation $site): void
     {

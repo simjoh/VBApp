@@ -126,6 +126,46 @@ class TrackService extends ServiceAbstract
         return $this->trackAssembly->toRepresentation($createdTrack, $permissions, $currentuserUid);
     }
 
+    public function createTrackWithOutCheckpoints(TrackRepresentation $trackrepresentation, string $currentuserUid): TrackRepresentation
+    {
+        $permissions = $this->getPermissions($currentuserUid);
+        
+        // Initialize all required properties with default values
+        
+        // Validate event_uid first
+        $eventUid = $trackrepresentation->getEventUid();
+        if (empty($eventUid)) {
+            throw new BrevetException("Event UID is required for creating a track", 5, null);
+        }
+        
+        // Validate event exists
+        $event = $this->eventRepository->eventFor($eventUid);
+        if (!$event) {
+            throw new BrevetException("Event with UID {$eventUid} does not exist", 5, null);
+        }
+     
+        // Create track and ensure track_uid is set
+        $track = $this->trackAssembly->totrack($trackrepresentation);
+    
+     
+        $track->setCheckpoints([]); // Ensure no checkpoints are set
+        $createdTrack = $this->trackRepository->createTrack($track);
+        
+        if (!$createdTrack || !$createdTrack->getTrackUid()) {
+            throw new BrevetException("Failed to create track - no track UID generated", 5, null);
+        }
+        
+        // Create a new representation with the generated track_uid
+        $representation = $this->trackAssembly->toRepresentation($createdTrack, $permissions, $currentuserUid);
+        
+        // Double check the representation has the track_uid
+        if (!$representation->getTrackUid()) {
+            throw new BrevetException("Track was created but representation is missing track UID", 5, null);
+        }
+        
+        return $representation;
+    }
+
     public function getPermissions($user_uid): array
     {
         return $this->permissionrepository->getPermissionsTodata("TRACK", $user_uid);

@@ -11,6 +11,9 @@ use App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentationTransformer;
 use App\Domain\Model\Track\Rest\TrackRepresentation;
 use App\Domain\Model\Track\Rest\TrackRepresentationTransformer;
 use App\Domain\Model\Track\Service\TrackService;
+use App\Domain\Model\CheckPoint\Service\CheckpointsService;
+use App\Domain\Model\CheckPoint\Rest\CheckpointRepresentationTranformer;
+use App\Domain\Model\CheckPoint\Rest\CheckpointRepresentation;
 use Exception;
 use GuzzleHttp\Client;
 use InvalidArgumentException;
@@ -26,11 +29,15 @@ class TrackAction
 {
 
     private TrackService $trackService;
+    private CheckpointsService $checkpointService;
     private $settings;
 
-    public function __construct(ContainerInterface $c, TrackService $trackService)
+    public function __construct(ContainerInterface $c, 
+                              TrackService $trackService,
+                              CheckpointsService $checkpointService)
     {
         $this->trackService = $trackService;
+        $this->checkpointService = $checkpointService;
         $this->settings = $c->get('settings');
     }
 
@@ -92,6 +99,15 @@ class TrackAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
+    public function createTrackWithOutCheckpoints(ServerRequestInterface $request, ResponseInterface $response){
+        $jsonDecoder = new JsonDecoder();
+        $jsonDecoder->register(new TrackRepresentationTransformer());
+        $trackrepresentation = (object) $jsonDecoder->decode($request->getBody(), TrackRepresentation::class);
+        $created = $this->trackService->createTrackWithOutCheckpoints($trackrepresentation,  $request->getAttribute('currentuserUid'));
+        $response->getBody()->write((string)json_encode($created),JSON_UNESCAPED_SLASHES);
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+    }
+
 
 
     public function createTrackFromPlanner(ServerRequestInterface $request, ResponseInterface $response){
@@ -111,8 +127,22 @@ class TrackAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
-
-
+    public function addCheckpointsToTrack(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface 
+    {
+        $currentuserUid = $request->getAttribute('currentuserUid');
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('trackUid');
+        
+        $jsonDecoder = new JsonDecoder();
+        $jsonDecoder->register(new CheckpointRepresentationTranformer());
+        $checkpoints = (array) json_decode($request->getBody());
+        
+        $updatedTrack = $this->checkpointService->addCheckpointsToTrack($track_uid, $checkpoints);
+        
+        $response->getBody()->write((string)json_encode($updatedTrack), JSON_UNESCAPED_SLASHES);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
 
     public function trackplanner(ServerRequestInterface $request, ResponseInterface $response){
         try {
