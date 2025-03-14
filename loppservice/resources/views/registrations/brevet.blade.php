@@ -1,13 +1,23 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('base')
-<header class="bg-gray-200 py-0">
+<header class="bg-[#aaaaaa] py-0">
     <div class="container mx-auto px-2 sm:px-4 max-w-7xl">
-        <img alt="msr logotyp" class="mx-auto w-[200px] w-full" src="{{ asset('ebrevet-hamta3.svg') }}"/>
+        <img alt="msr logotyp" class="mx-auto w-[200px] w-full" src="{{ asset('ebrevet-rando-anmalan.svg') }}"/>
     </div>
 </header>
-<body class="antialiased bg-gray-200">
-<div class="container mx-auto px-4 sm:px-6 lg:px-8 font-sans max-w-7xl">
+<body class="antialiased bg-[#aaaaaa]">
+<div class="container mx-auto px-2 sm:px-2 lg:px-4 font-sans max-w-7xl">
+
+    <!-- Information message with light gray background -->
+    <div class="bg-[#dddddd] mb-6 p-6">
+        <!-- Event title and date -->
+        <div class="mb-4">
+            <p class="text-lg font-bold text-gray-800 mb-4"> {{ $availabledetails['event_name'] ?? '' }} {{ $availabledetails['startdate'] ?? '' }}</p>
+        </div>
+        <p class="text-gray-800 mb-2">Efter anmälan får du ett mail med inloggningsuppgifter till ditt digitala brevet-kort.</p>
+        <p class="text-gray-800">OBS! Undersök mejlprogrammets inbox för skräppost om du inte fått ett mejl inom ett par minuter efter anmälan.</p>
+    </div>
 
 	@if ($errors->any())
 	<div class="alert alert-danger">
@@ -32,20 +42,18 @@
 	<form method="post" action="{{url('registration.create')}}" class="space-y-6">
 		@csrf
 		@method('POST')
-		<input type="text" value="{{$event}}" hidden="hidden" id="uid"
+		<input type="text" value="{{$availabledetails['event_uid']}}" hidden="hidden" id="uid"
 			   name="uid">
-		<!--		<hr class="h-1 my-4 bg-gray-900 border-t border-4 border-black dark:bg-gray-700">-->
-		<div class="mt-2 flex-grow border-t border-4 border-black"></div>
 		<div class="space-y-6">
 			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 				<div>
-					<label for="first-name" class="block text-gray-900 font-semibold text-sm sm:text-base">Förnamn</label>
+					<label for="first-name" class="block text-gray-900 font-semibold text-sm sm:text-base">Förnamn <span class="text-red-500">*</span></label>
 					<input type="text" id="first-name" name="first_name"
 						   class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600"
 						   autocomplete="given-name" required>
 				</div>
 				<div>
-					<label for="last-name" class="block text-gray-900 font-semibold text-sm sm:text-base">Efternamn</label>
+					<label for="last-name" class="block text-gray-900 font-semibold text-sm sm:text-base">Efternamn <span class="text-red-500">*</span></label>
 					<input type="text" id="last-name" name="last_name"
 						   class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600"
 						   autocomplete="family-name" required>
@@ -191,15 +199,17 @@
 					@endforeach
 				</select>
 				<p class="text-sm text-gray-500 mt-1">För BRM-evenemang måste du välja en officiell klubb som erkänns av Audax Club Parisien</p>
+				<p class="text-sm text-gray-500 mt-1">Välj "Independent Sweden" om din klubb inte finns i listan</p>
 			</div>
 
 			<div>
 				<label for="extra-info" class="block text-gray-900 font-semibold text-sm sm:text-base">Övrig information</label>
-				<p class="mt-1 text-sm text-gray-600">Övrig information</p>
-				<textarea id="extra-info" name="extra-info" rows="3"
+				<p class="mt-1 text-sm text-gray-600">Om mat ingår i evenemanget ange information om specialkost, allergier mm.</p>
+				<textarea id="extra-info" name="extra-info" rows="3" maxlength="100"
 						  class="mt-1 block w-full sm:w-1/2 px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600"></textarea>
 			</div>
 
+			<!--
 			<fieldset>
 				<p class="block text-gray-900 font-semibold text-sm sm:text-base">Medalj</p>
 				<div class="mt-4 space-y-4">
@@ -215,6 +225,8 @@
 					</div>
 				</div>
 			</fieldset>
+			-->
+			
 
 			<div class="flex items-start">
 				<div class="flex items-center h-5">
@@ -223,20 +235,23 @@
 				<div class="ml-3">
 					<label for="gdpr" class="text-sm sm:text-base text-gray-900">
 
-						<a href="https://www.ebrevet.org/datapolicy" target="_blank" class="text-black-500 underline">Jag ger Randonneurs Laponia tillstånd att lagra uppgifterna jag lämnat i ovanstående formulär i enlighet med dataskyddsförordningen (GDPR), Regulation (EU) 2016/679)</a>
+					Jag ger Randonneurs Sverige tillstånd att lagra uppgifterna som jag lämnat i enlighet med dataskyddsförordningen <a href="https://www.ebrevet.org/datapolicy" target="_blank" class="text-black-500 underline">(GDPR), Regulation (EU) 2016/679)</a>
 					</label>
 				</div>
 			</div>
 
+			<!-- Horizontal line above the registration button -->
+			<div class="border-t-4 border-[#dddddd] my-6"></div>
+
 			<div>
 				@if ($availabledetails['isRegistrationOpen'] == true)
 				<button id="checkout-button" type="submit" value="{{$registrationproduct}}" name="save"
-						class="w-full sm:w-auto px-6 py-3 bg-orange-500 text-white font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600 disabled:opacity-50" disabled>
+						class="w-full sm:w-auto px-6 py-3 bg-[#f5e4a3] text-[#3780b5] font-bold rounded-md hover:bg-[#f0dfa0] focus:outline-none focus:bg-[#e8d795] disabled:opacity-50" disabled>
 					REGISTRERA
 				</button>
 				@else
 				<button disabled type="submit" value="{{$registrationproduct}}" name="save"
-						class="w-full sm:w-auto px-6 py-3 bg-orange-500 text-white font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600 disabled:opacity-50">
+						class="w-full sm:w-auto px-6 py-3 bg-[#f5e4a3] text-[#3780b5] font-bold rounded-md hover:bg-[#f0dfa0] focus:outline-none focus:bg-[#e8d795] disabled:opacity-50">
 					REGISTRERING - ÖPPNAR {{ $availabledetails['opens']}}
 				</button>
 				@endif

@@ -71,6 +71,9 @@ class RegistrationController extends Controller
                 'opens' => strtoupper(Carbon::parse($event->eventconfiguration->registration_opens)->format('d') . ' ' . $this->monthsforSelect()[Carbon::parse($event->eventconfiguration->registration_opens)->month]),
                 'closes' => strtoupper(Carbon::parse($event->eventconfiguration->registration_closes)->format('d') . ' ' . $this->monthsforSelect()[Carbon::parse($event->eventconfiguration->registration_closes)->month]),
                 'isRegistrationOpen' => $isRegistrationOpen,
+                'event_uid' => $event->event_uid,
+                'event_name' => $event->title,
+                'startdate' => Carbon::parse($event->startdate)->format('Y-m-d'),
             ];
 
             // Add clubs query for BRM events
@@ -98,6 +101,9 @@ class RegistrationController extends Controller
             'opens' => \strtoupper(Carbon::parse($event->eventconfiguration->registration_opens)->format('d F')),
             'closes' => \strtoupper(Carbon::parse($event->eventconfiguration->registration_closes)->format('d F')),
             'isRegistrationOpen' => $isRegistrationOpen,
+            'event_uid' => $event->event_uid,
+            'event_name' => $event->title,
+            'startdate' => Carbon::parse($event->startdate)->format('Y-m-d'),
         ];
         return view('registrations.show')->with(['showreservationbutton' => $reservationactive,
             'countries' => Country::all()->sortBy("country_name_en"),

@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('base')
-<header class="bg-gray-200 py-0">
+<header class="bg-[#aaaaaa] py-0">
     <div class="container mx-auto px-2 sm:px-4 max-w-7xl">
-        <img alt="msr logotyp" class="mx-auto w-[200px] w-full" src="{{ asset('ebrevet-hamta3.svg') }}"/>
+        <img alt="msr logotyp" class="mx-auto w-[200px] w-full" src="{{ asset('ebrevet-rando-kalender.svg') }}"/>
 	</div>
 </header>
-<body class="antialiased bg-gray-200">
+<body class="antialiased  bg-[#aaaaaa]">
 
-<div class="container mx-auto px-2 sm:px-4 font-sans max-w-7xl">
-	<div class="p-4 sm:p-6">
-		<p class="mb-3">Anmäl dig till ditt valda lopp genom att klicka på länken Anmälan och betalning. Hämta därefter inloggningsuppgifter till valda loppet genom att klicka på knappen hämta login. Efter att du registrerat dig får du ett mail där du kan hitta dina inloggningsuppgifter</p>
-		<p>Obs. om du anmäler dig till RandonneursLaponia och Cykelintressets lopp får du dina inloggningsuppgifter när du anmäler dig och betalat startavgiften uppgifter</p>
+<div class="container mx-auto px-2 sm:px-2 lg:px-4 font-sans max-w-7xl">
+	<div class="bg-[#dddddd] mb-6 p-6 shadow-sm">
+		<p class="text-gray-800 mb-3">Anmäl dig till ditt valda lopp genom att klicka på länken Anmälan och betalning. Hämta därefter inloggningsuppgifter till valda loppet genom att klicka på knappen hämta login. Efter att du registrerat dig får du ett mail där du kan hitta dina inloggningsuppgifter</p>
+		<p class="text-gray-800"><span class="font-bold">Obs.</span> om du anmäler dig till RandonneursLaponia och Cykelintressets lopp får du dina inloggningsuppgifter när du anmäler dig och betalat startavgiften uppgifter</p>
 	</div>
 
 	<div class="space-y-12">
@@ -84,6 +84,16 @@
 												Arrangör ej angiven
 											@endif
 										</span>
+									</div>
+									<div class="flex items-baseline text-sm">
+										@if(isset($event->eventConfiguration?->use_stripe_payment) && $event->eventConfiguration->use_stripe_payment)
+											<!-- Stripe betalning hanteras via anmälningsknappen, så ingen separat betalningslänk behövs -->
+										@elseif(isset($event->routeDetail) && $event->routeDetail->pay_link)
+											<span class="font-semibold mr-1">Betala&nbsp;via:</span>
+											<span>
+												<a href="{{ $event->routeDetail->pay_link }}" target="_blank" class="text-blue-500 hover:underline">{{ $event->routeDetail->pay_link }}</a>
+											</span>
+										@endif
 									</div>
 									<div class="flex items-baseline text-sm">
 										<span class="font-semibold mr-1">Övrigt:</span>
