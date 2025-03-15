@@ -56,7 +56,7 @@ export class TrackAdminComponentService {
   }
 
   sortEvents(eventinfo: Array<any>): Array<any>{
-    return eventinfo.sort((a, b) => (a.event.startdate > b.event.startdate) ? 1 : -1)
+    return eventinfo.sort((a, b) => (b.event.startdate > a.event.startdate) ? 1 : -1)
   }
 
   deepCopyProperties(obj: any): any {

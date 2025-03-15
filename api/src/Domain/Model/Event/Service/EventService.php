@@ -306,6 +306,15 @@ class EventService extends ServiceAbstract
 
         }
 
+        // Sort eventInfos by startdate (desc) and then by title
+        usort($eventInfos, function($a, $b) {
+            $dateCompare = strtotime($b->getEvent()->getStartdate()) - strtotime($a->getEvent()->getStartdate());
+            if ($dateCompare === 0) {
+                return strcmp($b->getEvent()->getTitle(), $a->getEvent()->getTitle());
+            }
+            return $dateCompare;
+        });
+
         return $eventInfos;
     }
 

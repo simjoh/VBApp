@@ -28,6 +28,7 @@ use League\Csv\Reader;
 use League\Csv\Statement;
 use Nette\Utils\DateTime;
 use Psr\Container\ContainerInterface;
+use App\common\GlobalConfig;
 
 class ParticipantService extends ServiceAbstract
 {
@@ -606,9 +607,8 @@ class ParticipantService extends ServiceAbstract
     public function addParticipantOnTrackFromLoppservice(LoppservicePersonRepresentation $loppservicePersonRepresentation, string $track_uid, $loppserviceRegistrationRepresentation, $club): bool
     {
 
-
-        if ($track_uid == 'd32650ff-15f8-4df1-9845-d3dc252a7a84') {
-            $track_uid = '0beda5d8-bbce-42d1-b7b6-4405a2e03db9';
+        if (in_array($track_uid, GlobalConfig::getAll(), true)) {
+            $track_uid = GlobalConfig::get($track_uid);
         }
 
         try {
