@@ -666,3 +666,19 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+CREATE TABLE `organizers` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `organization_name` text NOT NULL,
+  `description` text DEFAULT NULL,
+  `website` varchar(255) DEFAULT NULL,
+  `logo_svg` text DEFAULT NULL,
+  `contact_person_name` varchar(100) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `organizers_organization_name_index` (`organization_name`(768))
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
