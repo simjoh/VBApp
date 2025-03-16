@@ -415,22 +415,25 @@ class TrackService extends ServiceAbstract
             throw new BrevetException("Kan inte tabort banan. Det finns deltagare kopplade till banan", 5);
         }
 
-        // Tabort checkpoints
+        // Store checkpoints for later deletion
+        $checkpointsToDelete = [];
         foreach ($track->getCheckpoints() as $checkpoint) {
-
             $checkpointa = $this->checkpointRepository->checkpointFor($checkpoint);
             if ($checkpointa != null) {
-                $this->checkpointService->deleteCheckpoint($checkpoint);
+                $checkpointsToDelete[] = $checkpoint;
             }
-
         }
 
-        // Tabort kopplingen till banan
+        // First remove the track-checkpoint associations
         $this->trackRepository->deleteTrackCheckpoint(array($track_uid));
 
-        //Tabort själva banan
-        $this->trackRepository->deleteTrack($track_uid);
+        // Then delete the checkpoints
+        foreach ($checkpointsToDelete as $checkpoint) {
+            $this->checkpointService->deleteCheckpoint($checkpoint);
+        }
 
+        // Finally delete the track itself
+        $this->trackRepository->deleteTrack($track_uid);
     }
 
     public function publishResults(?string $track_uid, $publish, string $currentuserUid)
