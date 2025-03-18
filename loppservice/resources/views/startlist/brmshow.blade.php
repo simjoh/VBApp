@@ -1,25 +1,18 @@
 @include('base')
-<body class="antialiased bg-gray-200">
-<header class="bg-gray-200 py-2 sm:py-4">
+<header class="bg-[#aaaaaa]">
     <div class="container mx-auto px-2 sm:px-4 max-w-7xl">
-        <img alt="eBrevet logotyp" class="mx-auto w-full max-w-3xl sm:max-w-7xl" src="{{ asset('ebrevet-hamta3.svg') }}"/>
+        <img alt="eBrevet logotyp" class="mx-auto w-full max-w-3xl sm:max-w-7xl" src="{{ asset('ebrevet-rando-startlista.svg') }}"/>
     </div>
 </header>
+<body class="antialiased bg-[#aaaaaa]">
+<div class="container mx-auto px-2 sm:px-4  max-w-7xl font-sans">
 
-<div class="container mx-auto px-2 sm:px-4 py-3 sm:py-6 max-w-7xl font-sans">
-    <div class="text-xl sm:text-2xl font-bold mb-2">{{$event->title}}</div>
+<div class="bg-[#dddddd] mb-6 p-6 shadow-sm">
+<div class="text-xl sm:text-2xl font-bold mb-2">{{$event->title}}</div>
+<p>Startdatum: {{isset($event->startdate) ? date('Y-m-d', strtotime($event->startdate)) : '-'}}</p>
+<p>Starttid: {{isset($event->routeDetail->start_time) ? date('H:i', strtotime($event->routeDetail->start_time)) : '-'}}</p>
+</div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4 text-sm sm:text-base">
-        <div class="bg-white p-2 sm:p-3 rounded shadow-sm">
-            <span class="font-semibold">Distans:</span> {{$event->routeDetail->distance ?? '-'}} km
-        </div>
-        <div class="bg-white p-2 sm:p-3 rounded shadow-sm">
-            <span class="font-semibold">Startdatum:</span> {{isset($event->startdate) ? date('Y-m-d', strtotime($event->startdate)) : '-'}}
-        </div>
-        <div class="bg-white p-2 sm:p-3 rounded shadow-sm">
-            <span class="font-semibold">Starttid:</span> {{isset($event->routeDetail->start_time) ? date('H:i', strtotime($event->routeDetail->start_time)) : '-'}}
-        </div>
-    </div>
 
     <div class="overflow-x-auto">
         <div class="overflow-hidden shadow-md rounded-lg">

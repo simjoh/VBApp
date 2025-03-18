@@ -14,7 +14,7 @@ class GlobalConfig
         '3fb4e1f1-b907-4225-9d90-74263d75f499' => '79604d41-de6a-4a9b-9db6-c56239814cab', // BRM 200 Öströö fårfarm 2025-05-10
         '01679016-013b-4a52-b3e7-b0d5ee29b1c6' => '584b3007-f672-4088-ab44-91d81c396140', // BRM 200 Bönhamn 2025-05-17
         '747be5e5-c8b3-47dc-87ba-a6db4476702a' => 'b1c3db9e-0790-4d51-bbb4-fba53e1f40ef', // BRM 600 MOSJØEN 	2025-07-05
-        'ecc0fccc-ced8-493d-b671-e3379e2f5743' => '', // BP 100 GRANÖ GRAVEL 2025-05-31
+        'ecc0fccc-ced8-493d-b671-e3379e2f5743' => '15689abe-ebdd-459a-8209-5b04815af486', // BP 100 GRANÖ GRAVEL 2025-05-31
         '539e737d-8606-41b6-93e4-a81b7a0e901f' => '93e95dd1-1339-4402-8f14-edb6ad42f6b5', // BP 100 BÖNHAMN 2025-05-17
         '47654042-4dc1-42b2-945e-53d7ac035e96' => 'f29e8bcb-f9ad-4a1d-b398-6048554cdfbf', // BRM 600 Två Älvar 2025-07-05 använd samma id på den under för gardering
         'd3107051-7788-4f2e-b63e-9d0e244d452a' => 'f29e8bcb-f9ad-4a1d-b398-6048554cdfbf', // BRM 600 Två Älvar 2025-07-05 använd samma som ovan
@@ -25,7 +25,8 @@ class GlobalConfig
         'ca84c085-15bd-4024-ac9d-cb32ec7cf237' => '', // BP 200 VÄSTERBOTTEN BREVET 	2025-06-28
         '442553ec-d323-4bb3-8126-c7d266c9b852' => '', // BP 140 VÄSTERBOTTEN BREVET 	2025-06-28
         '3d03e556-4b5d-43f9-b25a-8d4aea5d53a6' => '', // BP 80 VÄSTERBOTTEN BREVET 	2025-06-28
-        '6e04b6c7-3179-4fde-b62c-3972c2260b2a' => '', // BP 45 VÄSTERBOTTEN BREVET 	2025-06-28
+        '6e04b6c7-3179-4fde-b62c-3972c2260b2a' => '',
+        '8cbf3550-6ce2-42c8-a59c-7408cca72502' => '6b2291b7-b8c6-491b-8e3e-be07d29378db' // Bromma 200 2025-04-27
     ];
 
     public static function get($key)

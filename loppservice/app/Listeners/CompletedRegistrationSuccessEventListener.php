@@ -6,6 +6,7 @@ use App\Events\CompletedRegistrationSuccessEvent;
 use App\Events\CreateParticipantInCyclingAppEvent;
 use App\Mail\BRMCompletedRegistrationEmail;
 use App\Mail\CompletedRegistrationEmail;
+use App\Mail\NoneEbrevetPayCompletedRegistrationEmail;
 use App\Models\Country;
 use App\Models\Event;
 use App\Models\Optional;
@@ -70,9 +71,16 @@ class CompletedRegistrationSuccessEventListener
 
         if (App::isProduction()) {
             if ($event_event->event_type === 'BRM') {
-                Log::debug("Sending: BRM CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);
-                Mail::to($email_adress)
-                    ->send(new BRMCompletedRegistrationEmail($registration, $products, $event_event, $club->name, $country->country_name_en, $startlistlink, $updatedetaillink, $person, $organizer));
+                // Check if use_stripe_payment is false
+                if (!$event_event->use_stripe_payment) {
+                    Log::debug("Sending: None Ebrevet Pay CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);
+                    Mail::to($email_adress)
+                        ->send(new NoneEbrevetPayCompletedRegistrationEmail($registration, $products, $event_event, $club->name, $country->country_name_en, $startlistlink, $updatedetaillink, $person, $organizer));
+                } else {
+                    Log::debug("Sending: BRM CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);
+                    Mail::to($email_adress)
+                        ->send(new BRMCompletedRegistrationEmail($registration, $products, $event_event, $club->name, $country->country_name_en, $startlistlink, $updatedetaillink, $person, $organizer));
+                }
             } else {
                 Log::debug("Sending: MSR CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);
                 Mail::to($email_adress)
@@ -80,9 +88,16 @@ class CompletedRegistrationSuccessEventListener
             }
         } else {
             if ($event_event->event_type === 'BRM') {
-                Log::debug("Sending: BRM CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);
-                Mail::to('receiverinbox@mailhog.local')
-                    ->send(new BRMCompletedRegistrationEmail($registration, $products, $event_event, $club->name, $country->country_name_en, $startlistlink, $updatedetaillink, $person, $organizer));
+                // Check if use_stripe_payment is false
+                if (!$event_event->use_stripe_payment) {
+                    Log::debug("Sending: None Ebrevet Pay CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);
+                    Mail::to('receiverinbox@mailhog.local')
+                        ->send(new NoneEbrevetPayCompletedRegistrationEmail($registration, $products, $event_event, $club->name, $country->country_name_en, $startlistlink, $updatedetaillink, $person, $organizer));
+                } else {
+                    Log::debug("Sending: BRM CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);
+                    Mail::to('receiverinbox@mailhog.local')
+                        ->send(new BRMCompletedRegistrationEmail($registration, $products, $event_event, $club->name, $country->country_name_en, $startlistlink, $updatedetaillink, $person, $organizer));
+                }
             } else {
                 Log::debug("Sending: CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);
                 Mail::to('receiverinbox@mailhog.local')

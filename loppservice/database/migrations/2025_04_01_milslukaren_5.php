@@ -40,7 +40,7 @@ return new class extends Migration
             $event->county_id = 10; // Hardcoded county ID - change this later
 
             // Step 3: Hardcode organizer ID (Milslukaren)
-            $event->organizer_id = 1; // Hardcoded organizer ID - change this later
+            $event->organizer_id = 3; // Hardcoded organizer ID - change this later
 
             $event->save();
 
