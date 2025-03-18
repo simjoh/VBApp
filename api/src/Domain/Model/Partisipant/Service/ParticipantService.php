@@ -607,9 +607,23 @@ class ParticipantService extends ServiceAbstract
     public function addParticipantOnTrackFromLoppservice(LoppservicePersonRepresentation $loppservicePersonRepresentation, string $track_uid, $loppserviceRegistrationRepresentation, $club): bool
     {
 
-        if (in_array($track_uid, GlobalConfig::getAll(), true)) {
-            $track_uid = GlobalConfig::get($track_uid);
+
+    
+
+
+              
+        $finnsitabell = GlobalConfig::get($track_uid);
+   
+        if($finnsitabell){
+            $track_uid = $finnsitabell;
         }
+   
+        if($track_uid == 'ecc0fccc-ced8-493d-b671-e3379e2f5743'){
+            $track_uid = '15689abe-ebdd-459a-8209-5b04815af486';
+        }
+
+ 
+     
 
         try {
             $this->validateInput($loppserviceRegistrationRepresentation, $track_uid);
@@ -638,7 +652,7 @@ class ParticipantService extends ServiceAbstract
             if (!isset($competitor)) {
                 $competitorc = $this->competitorService->createCompetitorFromLoppservice($participant_to_create['firstname'], $participant_to_create['surname'], "", $participant_to_create['birthdate'], $participant_to_create['person_uid'],$participant_to_create['gender']);
                 //  if ($competitorc) {
-                $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParamsFromLoppservice($contactinformation['email'], $contactinformation['tel'], $adress['adress'], $adress['postal_code'], $adress['city'], $this->countryrepository->countryFor($adress['country_id'])->country_name_sv, $participant_to_create['person_uid'], $adress['country_id']);
+             //   $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParamsFromLoppservice($contactinformation['email'], $contactinformation['tel'], $adress['adress'], $adress['postal_code'], $adress['city'], $this->countryrepository->countryFor($adress['country_id'])->country_name_sv, $participant_to_create['person_uid'], $adress['country_id']);
                 // }
                 $competitor = $competitorc;
 

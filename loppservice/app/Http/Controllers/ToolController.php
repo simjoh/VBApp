@@ -25,7 +25,7 @@ class ToolController extends Controller
     {
         Artisan::call('migrate', ["--force" => true]);
         Artisan::call('app:country-update');
-        return view('tool.show')->with(['migratelink' => '', 'callping' => env("APP_URL") . '/api/ping', 'events' => Event::all(), 'transferurl' => env("APP_URL") . '/loppservice/api/transfer']);
+        return view('tool.show')->with(['migratelink' => '', 'callping' => env("APP_URL") . '/api/ping', 'events' => Event::all(), 'transferurl' => env("APP_URL") . '/api/transfer']);
     }
 
     public function testappintegration(Request $request)
@@ -40,9 +40,21 @@ class ToolController extends Controller
     public function publishToCyclingappIfNotAlreadyRegister(Request $request)
     {
 
-        $course_uid = $request['event'];
 
-        $results = DB::table('registrations as r')
+
+        $course_uid = $request['event'];
+        $reguid = $request['reguid'];
+
+        if($reguid){
+            $results = DB::table('registrations as r')
+            ->select('r.registration_uid', 'p.person_uid', 'r.course_uid')
+            ->distinct()
+            ->join('person as p', 'p.person_uid', '=', 'r.person_uid')
+            ->join('contactinformation as ci', 'ci.person_person_uid', '=', 'p.person_uid')->where('r.registration_uid', '=', $reguid)->get();
+
+        } else {
+
+            $results = DB::table('registrations as r')
             ->select('r.registration_uid', 'p.person_uid', 'r.course_uid')
             ->distinct()
             ->join('person as p', 'p.person_uid', '=', 'r.person_uid')
@@ -56,6 +68,12 @@ class ToolController extends Controller
                     ->from('published_events');
             })
             ->get();
+
+        }
+
+
+
+
 
         $count = 0;
         if(!$results->isEmpty()){
