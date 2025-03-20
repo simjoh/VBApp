@@ -11,6 +11,7 @@ class GlobalConfig
         '1f897e79-79e9-48d0-bdcd-04899d3120e2' => '63036d97-e106-4ee8-834c-996fb05a70a2', // M 400 Halmstad 2025-05-24
         'f72918b7-caf1-40ca-bc68-86cdbd4cd118' => '8f3b106b-766a-4fb9-88ba-4d0977da95a9', // BRM 300 Torpa stenhus 	2025-05-24
         '707fee62-c3df-4e62-a6ea-8e589cb6a89c' => '9fc453c2-d742-4640-9b6b-e5d8bfc08ffe', // BRM 300 Torpa stenhus 	2025-05-10
+        '43d0fd99-73c9-49b3-af9d-ffab4eb4682f' => '43d0fd99-73c9-49b3-af9d-ffab4eb4682f', // BRM 200 Öströö fårfarm 2025-04-26
         '3fb4e1f1-b907-4225-9d90-74263d75f499' => '79604d41-de6a-4a9b-9db6-c56239814cab', // BRM 200 Öströö fårfarm 2025-05-10
         '01679016-013b-4a52-b3e7-b0d5ee29b1c6' => '584b3007-f672-4088-ab44-91d81c396140', // BRM 200 Bönhamn 2025-05-17
         '747be5e5-c8b3-47dc-87ba-a6db4476702a' => 'b1c3db9e-0790-4d51-bbb4-fba53e1f40ef', // BRM 600 MOSJØEN 	2025-07-05
@@ -20,7 +21,7 @@ class GlobalConfig
         'd3107051-7788-4f2e-b63e-9d0e244d452a' => 'f29e8bcb-f9ad-4a1d-b398-6048554cdfbf', // BRM 600 Två Älvar 2025-07-05 använd samma som ovan
         '3d9e0a18-86bd-4e5b-95ad-9f86b81729c7' => 'e54ffabb-466d-43ab-a662-1519ff9ec9e4', // BRM 300 LYCKSELE 2025-05-24
         'd22534a2-bd9c-4463-ab98-d3dc7c765f32' => '5f7f684f-46b0-49f5-8db5-f3e65bdf13d2', // BRM 400 Åmliden 2025-06-07
-        '2a8cb207-c9a9-4edf-874d-0fdeff0c302d' => '', // BRM 200 BOTSMARK 2025-05-10
+        '2a8cb207-c9a9-4edf-874d-0fdeff0c302d' => 'dff10e9e-0e37-4092-877a-f8b9306ad054', // BRM 200 BOTSMARK 2025-05-10
         '4cf47163-a5fb-408f-b6a3-a0a788c63406' => '', // BP 300 VÄSTERBOTTEN BREVET 	2025-06-28
         'ca84c085-15bd-4024-ac9d-cb32ec7cf237' => '', // BP 200 VÄSTERBOTTEN BREVET 	2025-06-28
         '442553ec-d323-4bb3-8126-c7d266c9b852' => '', // BP 140 VÄSTERBOTTEN BREVET 	2025-06-28
