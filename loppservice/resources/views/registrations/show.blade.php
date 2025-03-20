@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-@include('base')
+<head>
+    @include('base')
+</head>
 <body class="antialiased bg-stone-100 w-full h-full">
 <header class="bg-white py-4">
 	<div class="container sm:p-1 mx-auto">
@@ -372,12 +374,52 @@ function toggleButtons() {
     const gdprCheckbox = document.getElementById('gdpr');
     const reserveButton = document.getElementById('reserve-button');
     const checkoutButton = document.getElementById('checkout-button');
+    const allButtons = document.querySelectorAll('button[type="submit"]');
 
     // Enable or disable buttons based on the checkbox state
     const isChecked = gdprCheckbox.checked;
-    reserveButton.disabled = !isChecked;
-    checkoutButton.disabled = !isChecked;
+
+    // Handle specific buttons if they exist
+    if (reserveButton) {
+        reserveButton.disabled = !isChecked;
+        if (!isChecked) {
+            reserveButton.classList.add('opacity-50', 'cursor-not-allowed');
+            reserveButton.title = "Accept data policy to enable";
+        } else {
+            reserveButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            reserveButton.title = "";
+        }
+    }
+
+    if (checkoutButton) {
+        checkoutButton.disabled = !isChecked;
+        if (!isChecked) {
+            checkoutButton.classList.add('opacity-50', 'cursor-not-allowed');
+            checkoutButton.title = "Accept data policy to enable";
+        } else {
+            checkoutButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            checkoutButton.title = "";
+        }
+    }
+
+    // Also handle any other submit buttons that should be controlled by GDPR
+    allButtons.forEach(button => {
+        // Skip buttons that are permanently disabled (like the "OPENS" button)
+        if (!button.hasAttribute('data-permanent-disabled')) {
+            button.disabled = !isChecked;
+            if (!isChecked) {
+                button.classList.add('opacity-50', 'cursor-not-allowed');
+                button.title = "Accept data policy to enable";
+            } else {
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
+                button.title = "";
+            }
+        }
+    });
 }
+
+// Run once on page load to ensure initial state is correct
+document.addEventListener('DOMContentLoaded', toggleButtons);
 </script>
 </body>
 </html>
