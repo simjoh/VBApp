@@ -15,11 +15,10 @@ class ParticipantToPassCheckpoint
     private bool $passed;
     private bool $started;
     private bool $volonteer_checkin;
-
-
+    private $opens;
+    private $closes;
 
     private bool $dnf;
-
 
     private $passeded_date_time = null;
 
@@ -231,4 +230,73 @@ class ParticipantToPassCheckpoint
         $this->volonteer_checkin = $volonteer_checkin;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getOpens()
+    {
+        return $this->opens;
+    }
+
+    /**
+     * @param mixed $opens
+     */
+    public function setOpens($opens): void
+    {
+        $this->opens = $opens;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCloses()
+    {
+        return $this->closes;
+    }
+
+    /**
+     * @param mixed $closes
+     */
+    public function setCloses($closes): void
+    {
+        $this->closes = $closes;
+    }
+
+    /**
+     * Sets properties from an associative array of database values
+     * 
+     * @param array $data Associative array of property values
+     * @return void
+     */
+    public function setProperties(array $data)
+    {
+        // Initialize all required properties with default values first
+        $this->setStartnumber(0);
+        $this->setPassed(false);
+        $this->setStarted(false);
+        $this->setVolonteerCheckin(false);
+        $this->setDnf(false);
+        
+        // Now set properties from the data array
+        foreach ($data as $key => $value) {
+            // Convert snake_case to camelCase for method names
+            $methodName = 'set' . str_replace('_', '', ucwords($key, '_'));
+            
+            // Special case for startnumber/start_number
+            if ($key === 'start_number' || $key === 'startnumber' || $key === 'start_nr') {
+                $this->setStartnumber((int)$value);
+                continue;
+            }
+            
+            // Special case for boolean fields
+            if (in_array($key, ['passed', 'started', 'volonteer_checkin', 'dnf'])) {
+                $value = (bool)$value;
+            }
+            
+            // Call the setter method if it exists
+            if (method_exists($this, $methodName)) {
+                $this->$methodName($value);
+            }
+        }
+    }
 }

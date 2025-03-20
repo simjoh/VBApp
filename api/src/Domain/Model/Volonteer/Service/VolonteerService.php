@@ -19,6 +19,16 @@ use Psr\Container\ContainerInterface;
 class VolonteerService extends ServiceAbstract
 {
 
+    private $volonteerRepository;
+    private $participantToPassCheckpointAssembly;
+    private $permissionrepository;
+    private $userepository;
+    private $participantrepository;
+    private $checkpointService;
+    private $trackrepository;
+    private $siterepository;
+    private $settings;
+
     public function __construct(VolonteerRepository                 $volonteerRepository,
                                 ParticipantToPassCheckpointAssembly $participantToPassCheckpointAssembly,
                                 PermissionRepository                $permissionRepository,

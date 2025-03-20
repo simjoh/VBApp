@@ -15,6 +15,13 @@ use Psr\Container\ContainerInterface;
 class ParticipantToPassCheckpointAssembly
 {
 
+    private $permissionrepository;
+    private $settings;
+    private $checkpointService;
+    private $userrepository;
+    private $participantrepository;
+
+
     public function __construct(ContainerInterface $c ,PermissionRepository $permissionRepository,CheckpointsService $checkpointService, UserRepository $userRepository,ParticipantRepository $participantRepository)
     {
         $this->permissionrepository = $permissionRepository;

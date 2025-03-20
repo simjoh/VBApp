@@ -17,13 +17,18 @@ class VolonteerRepository extends BaseRepository
             $statement = $this->connection->prepare($this->sqls('getCheckpointsForTrack'));
             $statement->bindParam(':track_uid', $track_uid);
             $statement->execute();
-            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Volonteer\ParticipantToPassCheckpoint::class, null);
-           // $events = $statement->fetchAll();
-            if (empty($events)) {
+            // Changed to fetch as associative array since we only need checkpoint_uid
+            $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+            if (empty($results)) {
                 return array();
             }
-
-            return $events;
+            
+            // Extract just the checkpoint_uid values
+            $checkpoints = array_map(function($row) {
+                return $row['checkpoint_uid'];
+            }, $results);
+            
+            return array_unique($checkpoints);
         }
         catch(PDOException $e)
         {
@@ -40,16 +45,34 @@ class VolonteerRepository extends BaseRepository
             $statement->bindParam(':track_uid', $track_uid);
             $statement->bindParam(':checkpoint_uid', $checkpoint_uid);
             $statement->execute();
-            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Volonteer\ParticipantToPassCheckpoint::class, null);
-            // $events = $statement->fetchAll();
-            if (empty($events)) {
+            
+            // Fetch as associative array first
+            $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Debug: Log the column names from the first row
+            if (!empty($results)) {
+                error_log('Database columns: ' . implode(', ', array_keys($results[0])));
+                error_log('First row data: ' . print_r($results[0], true));
+            }
+            
+            if (empty($results)) {
                 return array();
             }
-
-            return $events;
+            
+            // Create objects manually to avoid dynamic property creation
+            $participants = [];
+            foreach ($results as $row) {
+                $participant = new \App\Domain\Model\Volonteer\ParticipantToPassCheckpoint();
+                // Set properties explicitly based on the columns in your view
+                $participant->setProperties($row);
+                $participants[] = $participant;
+            }
+            
+            return $participants;
         }
         catch(PDOException $e)
         {
+            error_log('PDO Error in getRandoneurToPassCheckpoint: ' . $e->getMessage());
             echo "Error: " . $e->getMessage();
         }
         return array();
@@ -59,7 +82,7 @@ class VolonteerRepository extends BaseRepository
     public function sqls($type)
     {
         $volonteer['participantToPassCheckpoint'] = 'select * from v_partisipant_to_pass_checkpoint e where track_uid=:track_uid and checkpoint_uid=:checkpoint_uid;';
-        $volonteer['getCheckpointsForTrack'] = 'select checkpoint_uid from v_partisipant_to_pass_checkpoint e where e.track_uid=:track_uid;';
+        $volonteer['getCheckpointsForTrack'] = 'select distinct checkpoint_uid from v_partisipant_to_pass_checkpoint e where e.track_uid=:track_uid;';
         return $volonteer[$type];
         // TODO: Implement sqls() method.
     }
