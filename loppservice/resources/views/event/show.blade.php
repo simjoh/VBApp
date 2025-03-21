@@ -9,16 +9,17 @@
 <body class="antialiased  bg-[#aaaaaa]">
 
 <div class="container mx-auto px-2 sm:px-2 lg:px-4 font-sans max-w-7xl">
-	<div class="bg-[#dddddd] mb-6 p-6 shadow-sm">
-		<p class="text-gray-800 mb-3">Anmäl dig till ditt valda lopp genom att klicka på länken Anmälan och betalning. Hämta därefter inloggningsuppgifter till valda loppet genom att klicka på knappen hämta login. Efter att du registrerat dig får du ett mail där du kan hitta dina inloggningsuppgifter</p>
-		<p class="text-gray-800"><span class="font-bold">Obs.</span> om du anmäler dig till RandonneursLaponia och Cykelintressets lopp får du dina inloggningsuppgifter när du anmäler dig och betalat startavgiften uppgifter</p>
+	<div class="bg-[#dddddd] mb-6 p-6 shadow-sm mt-0.5">
+		<p class="text-gray-800 mb-3">Hämta inloggningsuppgifter till ditt digitala brevet-kort genom att klicka på knappen "Hämta login". Efter att du registrerat dig får du dina inloggningsuppgifter i ett mail.
+		OBS! Om du anmäler dig till Randonneurs Laponias och Cykelintressets lopp får du dina inloggningsuppgifter när du anmäler dig och betalat startavgiften.
+		</p>
 	</div>
 
 	<div class="space-y-12">
 		@foreach($allevents as $month => $events)
 			<div class="month-section flex flex-col items-center">
-				<div class="flex items-center justify-center mb-8 relative w-full max-w-[95%] sm:max-w-full">
-					<div class="absolute w-full bg-[#f3ea4d] flex items-center justify-center">
+				<div class="flex items-center justify-center mb-8 relative w-full max-w-[95%] sm:max-w-full mt-4">
+					<div class="absolute w-full bg-[#f5e4a3] flex items-center justify-center">
 						<span class="text-lg md:text-xl font-bold text-black px-10 py-0.5">{{ $month }}</span>
 					</div>
 				</div>
@@ -91,7 +92,7 @@
 										@elseif(isset($event->routeDetail) && $event->routeDetail->pay_link)
 											<span class="font-semibold mr-1">Betala&nbsp;via:</span>
 											<span>
-												<a href="{{ $event->routeDetail->pay_link }}" target="_blank" class="text-blue-500 hover:underline">{{ $event->routeDetail->pay_link }}</a>
+												{{ $event->routeDetail->pay_link }}
 											</span>
 										@endif
 									</div>
@@ -104,7 +105,7 @@
 
 							<div class="w-full space-y-1 mt-auto">
 								@if(isset($event->routeDetail) && $event->routeDetail->track_link)
-									<a href="{{ $event->routeDetail->track_link }}" target="_blank" class="block w-full text-[#0081b9] hover:text-[#B32D1B] hover:underline text-sm flex items-center">
+									<a href="{{ $event->routeDetail->track_link }}" target="_blank" class="block w-full text-blue-500 hover:text-[#B32D1B] hover:underline text-sm flex items-center">
 										Länk till bana
 									</a>
 								@else
@@ -112,7 +113,7 @@
 										Länk till bana (ej tillgänglig)
 									</span>
 								@endif
-								<a href="{{ $event->startlisturl ?? '#' }}" class="block w-full text-[#0081b9] hover:text-[#B32D1B] hover:underline text-sm flex items-center">
+								<a href="{{ $event->startlisturl ?? '#' }}" class="block w-full text-blue-500 hover:text-[#B32D1B] hover:underline text-sm flex items-center">
 									Startlista
 								</a>
 								@if(isset($event->eventConfiguration?->use_stripe_payment) && $event->eventConfiguration->use_stripe_payment)

@@ -85,7 +85,7 @@ class RegistrationController extends Controller
 
             return view('registrations.brevet')->with([
                 'showreservationbutton' => $reservationactive,
-                'countries' => Country::all()->sortBy("country_name_en"),
+                'countries' => Country::all()->sortBy("country_name_sv"),
                 'event' => $event->event_uid,
                 'years' => range(date('Y', strtotime('-18 year')), 1950),
                 'registrationproduct' => $registration_product->productID,

@@ -5,7 +5,7 @@
     </div>
 </header>
 <body class="antialiased bg-[#aaaaaa]">
-<div class="container mx-auto px-2 sm:px-4  max-w-7xl font-sans">
+<div class="container mx-auto px-2 sm:px-4  max-w-7xl font-sans mt-0.5">
 
 <div class="bg-[#dddddd] mb-6 p-6 shadow-sm">
 <div class="text-xl sm:text-2xl font-bold mb-2">{{$event->title}}</div>
@@ -18,7 +18,7 @@
         <div class="overflow-hidden shadow-md rounded-lg">
             <table class="min-w-full text-left text-sm sm:text-md">
                 <thead>
-                    <tr class="bg-gray-700 text-white">
+                    <tr class="bg-[#f5e4a3]  text-black">
                         <th scope="col" class="py-2 sm:py-3 px-2 sm:px-4">#</th>
                         <th scope="col" class="py-2 sm:py-3 px-2 sm:px-4">Efternamn</th>
                         <th scope="col" class="py-2 sm:py-3 px-2 sm:px-4">Förnamn</th>

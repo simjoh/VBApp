@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('base')
-<body class="antialiased">
-<header class="bg-white py-4">
-	<div class="container sm:p-1 mx-auto">
-		<img alt="brm logotyp" width="700" height="800" src="{{ asset('cykelintresset.svg') }}"/>
-	</div>
+<header class="bg-[#aaaaaa] py-0">
+    <div class="container mx-auto px-2 sm:px-4 max-w-7xl">
+        <img alt="msr logotyp" class="mx-auto w-[200px] w-full" src="{{ asset('ebrevet-rando-anmalan.svg') }}"/>
+    </div>
 </header>
-<div class="container mx-auto">
-	<div class="flex-grow border-t border-4  border-black"></div>
-	<div class="mt-3 bg-gray-100 p-6 rounded-md shadow-md">
-		<span class="font-medium"></span>
+<body class="antialiased bg-[#aaaaaa]">
+<div class="container mx-auto px-2 sm:px-2 lg:px-4 font-sans max-w-7xl">
+<div class="bg-[#dddddd] mb-6 p-6 mt-0.5">
+        <!-- Event title and date -->
 		<p><strong>{{$message}}</strong></p>
 		<p>{{$checkemailmessage}}</p>
 	</div>

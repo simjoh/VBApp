@@ -95,7 +95,7 @@ class CheckoutController extends Controller
         if($request['event_type'] === 'MSR') {
             return view('checkout.success', ['message' => 'Thank you for your registration/reservation. We have sent a confirmation by email to the address you provided in the registration form.', 'checkemailmessage' => 'Please check that you have received an email. If not then check your spam folder and if found there, please change your spam filter settings for the address "info@midnightsunrandonnee.se" so you will not miss future emails.']); // , compact('customer'));
         } else {
-            return view('checkout.brmsuccess', ['message' => 'Tack för din anmälan. Ett bekräftelsemail har skickats till den epostadress du angav i anmälningsformuläret', 'checkemailmessage' => 'Kontrollera att du fått ett mail med uppgifter om din anmälan. Om inte kontrollera om mailet hamnat i skräpposten']);
+            return view('checkout.brmsuccess', ['message' => 'Tack för din anmälan. Ett bekräftelsemail har skickats till den epostadress du angav i anmälningsformuläret.', 'checkemailmessage' => 'Kontrollera att du fått ett mail med uppgifter om din anmälan. Om inte kontrollera om mailet hamnat i skräpposten.']);
         }
     }
 

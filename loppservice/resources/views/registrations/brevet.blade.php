@@ -10,13 +10,10 @@
 <div class="container mx-auto px-2 sm:px-2 lg:px-4 font-sans max-w-7xl">
 
     <!-- Information message with light gray background -->
-    <div class="bg-[#dddddd] mb-6 p-6">
+    <div class="bg-[#dddddd] mb-6 p-6 mt-0.5">
         <!-- Event title and date -->
-        <div class="mb-4">
-            <p class="text-lg font-bold text-gray-800 mb-4"> {{ $availabledetails['event_name'] ?? '' }} {{ $availabledetails['startdate'] ?? '' }}</p>
-        </div>
-        <p class="text-gray-800 mb-2">Efter anmälan får du ett mail med inloggningsuppgifter till ditt digitala brevet-kort.</p>
-        <p class="text-gray-800">OBS! Undersök mejlprogrammets inbox för skräppost om du inte fått ett mejl inom ett par minuter efter anmälan.</p>
+
+        <p class="text-gray-800 mb-2">Efter anmälan får du ett mail med inloggningsuppgifter till ditt digitala brevet-kort. OBS! Undersök mejlprogrammets inbox för skräppost om du inte fått ett mejl inom ett par minuter efter anmälan.</p>
     </div>
 
 	@if ($errors->any())
@@ -38,6 +35,9 @@
 	</div>
 	@endif
 
+	<p class="text-3xl font-bold text-[#f5e4a3] mb-4 mt-4"> {{ $availabledetails['event_name'] ?? '' }} {{ $availabledetails['startdate'] ?? '' }}</p>
+
+	<div class="border-t-4 border-[#dddddd] my-6"></div>
 
 	<form method="post" action="{{url('registration.create')}}" class="space-y-6">
 		@csrf
