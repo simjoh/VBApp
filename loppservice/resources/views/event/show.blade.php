@@ -87,9 +87,7 @@
 										</span>
 									</div>
 									<div class="flex items-baseline text-sm">
-										@if(isset($event->eventConfiguration?->use_stripe_payment) && $event->eventConfiguration->use_stripe_payment)
-											<!-- Stripe betalning hanteras via anmälningsknappen, så ingen separat betalningslänk behövs -->
-										@elseif(isset($event->routeDetail) && $event->routeDetail->pay_link)
+										@if(isset($event->routeDetail) && $event->routeDetail->pay_link)
 											<span class="font-semibold mr-1">Betala&nbsp;via:</span>
 											<span>
 												{{ $event->routeDetail->pay_link }}
@@ -117,14 +115,54 @@
 									Startlista
 								</a>
 								@if(isset($event->eventConfiguration?->use_stripe_payment) && $event->eventConfiguration->use_stripe_payment)
-									<a href="{{ route('register', ['uid' => $event->event_uid, 'event_type' => $event->event_type]) }}"
-									   class="block w-full text-center bg-[#666666] hover:bg-[#4D4D4D] text-white py-2 rounded text-lg font-bold uppercase flex items-center justify-center mb-1">
-										ANMÄLAN & BETALNING
+									<a {{
+										(isset($event->eventConfiguration->registration_closes) &&
+										 isset($event->eventConfiguration->registration_opens) &&
+										 now() <= $event->eventConfiguration->registration_closes &&
+										 now() >= $event->eventConfiguration->registration_opens &&
+										 $event->eventConfiguration->registration_opens != $event->eventConfiguration->registration_closes)
+										? 'href=' . route('register', ['uid' => $event->event_uid, 'event_type' => $event->event_type])
+										: ''
+									}}
+									   class="block w-full text-center {{
+										   (isset($event->eventConfiguration->registration_closes) &&
+											isset($event->eventConfiguration->registration_opens) &&
+											now() <= $event->eventConfiguration->registration_closes &&
+											now() >= $event->eventConfiguration->registration_opens &&
+											$event->eventConfiguration->registration_opens != $event->eventConfiguration->registration_closes)
+										   ? 'bg-[#666666] hover:bg-[#4D4D4D]'
+										   : 'bg-[#bbbbbb] cursor-not-allowed'
+									   }} text-white py-2 rounded text-lg font-bold uppercase flex items-center justify-center mb-1">
+										{{
+											now() > $event->eventConfiguration->registration_closes
+											? 'ANMÄLAN STÄNGD'
+											: 'ANMÄLAN & BETALNING'
+										}}
 									</a>
 								@else
-									<a href="{{ route('register', ['uid' => $event->event_uid, 'event_type' => $event->event_type]) }}"
-									   class="block w-full text-center bg-[#666666] hover:bg-[#4D4D4D] text-white py-2 rounded text-lg font-bold uppercase flex items-center justify-center">
-										HÄMTA LOGIN
+									<a {{
+										(isset($event->eventConfiguration->registration_closes) &&
+										 isset($event->eventConfiguration->registration_opens) &&
+										 now() <= $event->eventConfiguration->registration_closes &&
+										 now() >= $event->eventConfiguration->registration_opens &&
+										 $event->eventConfiguration->registration_opens != $event->eventConfiguration->registration_closes)
+										? 'href=' . route('register', ['uid' => $event->event_uid, 'event_type' => $event->event_type])
+										: ''
+									}}
+									   class="block w-full text-center {{
+										   (isset($event->eventConfiguration->registration_closes) &&
+											isset($event->eventConfiguration->registration_opens) &&
+											now() <= $event->eventConfiguration->registration_closes &&
+											now() >= $event->eventConfiguration->registration_opens &&
+											$event->eventConfiguration->registration_opens != $event->eventConfiguration->registration_closes)
+										   ? 'bg-[#666666] hover:bg-[#4D4D4D]'
+										   : 'bg-[#bbbbbb] cursor-not-allowed'
+									   }} text-white py-2 rounded text-lg font-bold uppercase flex items-center justify-center">
+										{{
+											now() > $event->eventConfiguration->registration_closes
+											? 'ANMÄLAN STÄNGD'
+											: 'HÄMTA LOGIN'
+										}}
 									</a>
 								@endif
 							</div>

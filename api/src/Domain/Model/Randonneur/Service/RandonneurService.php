@@ -164,24 +164,21 @@ class RandonneurService
         $today = date('Y-m-d');
         $startdate = date('Y-m-d', strtotime($track->getStartDateTime()));
         // Man ska bara kunna göra incheckning om det är samma da eller senare
-//        if ($this->settings['demo'] == 'false') {
-//            if ($today < $startdate) {
-//                throw new BrevetException("You cannot check in before startdate :  " . $startdate, 6, null);
-//            }
-//        }
+         if ($this->settings['demo'] == 'false') {
+            if ($today < $startdate) {
+                throw new BrevetException("Check in opens on start date:  " . $startdate, 7, null);
+            }
+
+        } 
+        
 
         $checkpoint = $this->checkpointService->checkpointFor($checkpoint_uid);
         //kolla om mindre än 100 meter från kontroll
         $distance = $this->calculateDistancebetweenCordinates($lat, $long, $checkpoint->getSite()->getLat(), $checkpoint->getSite()->getLng(), 'K');
-        if ($distance > 0.900) {
+         if ($distance > 0.900) {
             throw new BrevetException("You are not within range of the checkpoint", 7, null);
-        }
+        } 
 
-        if ($this->settings['demo'] == 'false') {
-            if ($today < $startdate) {
-                throw new BrevetException("You cannot check in before startdate :  " . $startdate, 6, null);
-            }
-        }
 
         if (!isset($checkpoint)) {
             throw new BrevetException("Checkpoint not exists", 5, null);
@@ -216,11 +213,7 @@ class RandonneurService
         // kolla om start eller mål
 
         if ($isStart == true) {
-            if ($this->settings['demo'] == 'false') {
-                if ($today < $startdate) {
-                    throw new BrevetException("You cannot check in before startdate :  " . $startdate, 7, null);
-                }
-            }
+ 
 
             if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, $lat, $long);
@@ -312,7 +305,7 @@ class RandonneurService
 
         if ($this->settings['demo'] == 'false') {
             if ($today < $startdate) {
-                throw new BrevetException("Check in opens on startdate:  " . $startdate, 7, null);
+                throw new BrevetException("Check in opens on start date:  " . $startdate, 7, null);
             }
         }
 
