@@ -7,11 +7,7 @@ use App\Mail\EventInfoEmail;
 use App\Models\Event;
 use App\Models\Person;
 use App\Models\Registration;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class SendEventInfoEmailEventListener
@@ -33,7 +29,7 @@ class SendEventInfoEmailEventListener
         $event_event = Event::where('event_uid', $event->track_uid)->get()->first();
         $person = Person::find($registration->person_uid);
         if (App::isProduction()) {
-            if ($event_event->event_type === 'BRM') {
+            if ($event_event->event_type === 'BRM' || $event_event->event_type === 'BP') {
                Mail::to($person->contactinformation->email)
                     ->send(new EventInfoEmail($registration, $event_event));
             }

@@ -32,7 +32,7 @@ class EventController extends Controller
 
         // Load events with their organizer relationship
         $events = Event::with(['organizer', 'routeDetail'])
-            ->where('event_type', 'BRM')
+            ->whereIn('event_type', ['BRM', 'BP'])
             ->where('enddate', '>=', $threeMonthsAgo)
             ->get()
             ->sortBy("startdate");
