@@ -70,7 +70,7 @@ class CompletedRegistrationSuccessEventListener
 
 
         if (App::isProduction()) {
-            if ($event_event->event_type === 'BRM') {
+            if ($event_event->event_type === 'BRM' || $event_event->event_type === 'BP') {
                 // Check if use_stripe_payment is false
                 if (!$event_event->eventconfiguration->use_stripe_payment) {
                     Log::debug("Sending: None Ebrevet Pay CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);
@@ -87,7 +87,7 @@ class CompletedRegistrationSuccessEventListener
                     ->send(new CompletedRegistrationEmail($registration, $products, $event_event, $club->name, $country->country_name_en, $startlistlink, $updatedetaillink, $person, $organizer));
             }
         } else {
-            if ($event_event->event_type === 'BRM') {
+            if ($event_event->event_type === 'BRM' || $event_event->event_type === 'BP') {
                 // Check if use_stripe_payment is false
                 if (!$event_event->eventconfiguration->use_stripe_payment) {
                     Log::debug("Sending: None Ebrevet Pay CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);

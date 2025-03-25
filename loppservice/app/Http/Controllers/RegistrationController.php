@@ -65,7 +65,7 @@ class RegistrationController extends Controller
         $isRegistrationOpen = Carbon::now()->gt($registrationopen);
 
 
-        if ($eventType === 'BRM') {
+        if ($eventType === 'BRM' || $eventType === 'BP') {
 
             $registrationConfig = [
                 'opens' => strtoupper(Carbon::parse($event->eventconfiguration->registration_opens)->format('d') . ' ' . $this->monthsforSelect()[Carbon::parse($event->eventconfiguration->registration_opens)->month]),
@@ -73,6 +73,7 @@ class RegistrationController extends Controller
                 'isRegistrationOpen' => $isRegistrationOpen,
                 'event_uid' => $event->event_uid,
                 'event_name' => $event->title,
+                'event_type' => $event->event_type,
                 'startdate' => Carbon::parse($event->startdate)->format('Y-m-d'),
             ];
 
@@ -87,6 +88,7 @@ class RegistrationController extends Controller
                 'showreservationbutton' => $reservationactive,
                 'countries' => Country::all()->sortBy("country_name_sv"),
                 'event' => $event->event_uid,
+                'event_type' => $event->event_type,
                 'years' => range(date('Y', strtotime('-18 year')), 1950),
                 'registrationproduct' => $registration_product->productID,
                 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID,
@@ -184,7 +186,7 @@ class RegistrationController extends Controller
         // Get the event associated with this registration
         $event = Event::where('event_uid', $registration->course_uid)->first();
 
-        if ($event && $event->event_type === 'BRM') {
+        if ($event && ($event->event_type === 'BRM' || $event->event_type === 'BP')) {
             // This is a BRM event
             $registration->club_uid = $request['club_uid'];
         }
@@ -303,7 +305,7 @@ class RegistrationController extends Controller
         ];
 
         // Check if the event exists and its type is BRM
-        if ($event && $event->event_type === 'BRM') {
+        if ($event && ($event->event_type === 'BRM' || $event->event_type === 'BP') ) {
             // For BRM events, only show official clubs or clubs with ACP codes
             $brmClubs = Club::where('official_club', true)
                 ->orWhere('acp_code', 'LIKE', 'SE%')
@@ -434,7 +436,7 @@ class RegistrationController extends Controller
         }
 
         // Check if the event type is BRM
-        if ($event->event_type === 'BRM') {
+        if ($event->event_type === 'BRM' || $event->event_type === 'BP' ) {
             // Check if the club exists with the provided ID
             $club = Club::where('club_uid', $request['club_uid'])->first();
 
@@ -444,7 +446,7 @@ class RegistrationController extends Controller
 
             // For BRM events, validate that the club is an official club or has an ACP code
             if (!$club->official_club && !str_starts_with($club->acp_code ?? '', 'SE')) {
-                return back()->withErrors(['club' => 'For BRM events, you must select an official club recognized by Audax Club Parisien.'])->withInput();
+                return back()->withErrors(['club' => 'For BRM OR BP events, you must select an official club recognized by Audax Club Parisien.'])->withInput();
             }
 
             // Set the club_uid to the registration if the club exists and is valid

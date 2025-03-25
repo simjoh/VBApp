@@ -209,14 +209,14 @@
 						  class="mt-1 block w-full sm:w-1/2 px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600"></textarea>
 			</div>
 
-			<!--
+			@if ($availabledetails['event_type'] === 'BRM')	
 			<fieldset>
 				<p class="block text-gray-900 font-semibold text-sm sm:text-base">Medalj</p>
 				<div class="mt-4 space-y-4">
 					<div class="flex items-center gap-x-3">
 						<input id="medal" name="medal" value="1014" type="radio"
 							   class="h-4 w-4 border-black text-black focus:ring-indigo-600">
-						<label for="medal" class="text-sm sm:text-base text-gray-600">Förbetala distansmedalj, 150:-</label>
+						<label for="medal" class="text-sm sm:text-base text-gray-600">Förbetala distansmedalj</label>
 					</div>
 					<div class="flex items-center gap-x-3">
 						<input id="no-medal" name="medal" value="nomedal" type="radio" checked
@@ -225,7 +225,7 @@
 					</div>
 				</div>
 			</fieldset>
-			-->
+			@endif
 			
 
 			<div class="flex items-start">

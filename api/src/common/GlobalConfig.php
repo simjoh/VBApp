@@ -28,7 +28,8 @@ class GlobalConfig
         '3d03e556-4b5d-43f9-b25a-8d4aea5d53a6' => '', // BP 80 VÄSTERBOTTEN BREVET 	2025-06-28
         '6e04b6c7-3179-4fde-b62c-3972c2260b2a' => '',
         '8cbf3550-6ce2-42c8-a59c-7408cca72502' => '6b2291b7-b8c6-491b-8e3e-be07d29378db',
-        '3035676c-4c3f-4222-9977-344b22f08c21' => '3b48ab13-599a-43b8-8fb4-566be94820e3'// Södertörns Pärla 200 2025-03-29
+        '3035676c-4c3f-4222-9977-344b22f08c21' => '3b48ab13-599a-43b8-8fb4-566be94820e3',// Södertörns Pärla 200 2025-03-29
+	    '8cbf3550-6ce2-42c8-a59c-7408cca72502' => '1f96e70c-7cd8-40a4-9816-57231db08907'// Bromma 200 2025-04-27
     ];
 
     public static function get($key)
