@@ -24,7 +24,7 @@ return new class extends Migration
 
         // Find events matching the criteria (double-check with title and date)
         $events = Event::whereIn('event_uid', $eventUids)
-            ->where('title', 'Bromma 300')
+            ->where('title', 'Bromma 600')
             ->get();
 
         foreach ($events as $event) {

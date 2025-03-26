@@ -15,7 +15,6 @@ return new class extends Migration
             'organization_name' => 'Randonneur Väst',
             'description' => '',
             'website' => 'https://www.randonneurgoth.com',
-            'website_pay' => 'https://www.randonneurgoth.com/nästa-lopp',
             'contact_person_name' => 'BeGe Olsson',
             'email' => 'begebike@gmail.com',
             'active' => true,

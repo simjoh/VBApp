@@ -20,7 +20,6 @@ return new class extends Migration
                 'organization_name' => 'Milslukaren',
                 'description' => '',
                 'website' => 'https://milslukaren.se',
-                'website_pay' => 'https://milslukaren.se/?page_id=42',
                 'contact_person_name' => 'Nils Calmsund',
                 'email' => 'nils.calmsund@gmail.com',
                 'active' => true,

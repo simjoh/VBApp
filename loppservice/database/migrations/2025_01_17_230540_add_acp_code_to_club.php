@@ -11,7 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-    
+        Schema::table('clubs', function (Blueprint $table) {
+            $table->integer("acp_code")->nullable();
+        });
     }
 
     /**
@@ -19,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('route_details');
+        Schema::table('clubs', function (Blueprint $table) {
+            //
+        });
     }
 };
