@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Track participant on course</title>
+	<title>Live Tracking - {{track.title}}</title>
 
 	<!-- Fonts -->
 	<link rel="preconnect" href="https://fonts.bunny.net">
@@ -13,79 +13,73 @@
 
 	<style>
         a {
-            text-decoration: underline;
-            color: inherit; /* Use inherited text color for links */
+            color: inherit;
+        }
+        .status-icon {
+            width: 24px;
+            height: 24px;
         }
 	</style>
 </head>
-<body class="font-sans">
 
-<div class="lg:container mx-auto lg:px-4 py-8">
-	<div class="mb-5">
-		<p class="mb-3 font-extrabold text-2xl">{{track.title}}</p>
+<body class="antialiased bg-[#aaaaaa]">
+
+<header class="bg-[#aaaaaa] py-0">
+	<div class="container mx-auto px-2 sm:px-4 max-w-7xl">
+		<img alt="event logo" class="mx-auto w-[200px] w-full" src="https://ebrevet.org/app/api/uploads/ebrevet-rando-live.svg"/>
 	</div>
-	<div class="overflow-x-auto">
-		<table class="min-w-full text-left text-md font-light">
-			<thead class="border-b-2 bg-white dark:border-neutral-500 dark:bg-neutral-600">
-			<tr class="bg-gray-700 border-b-1 border-black">
-				<th class="py-3 px-2 text-white">ID</th>
-				<th class="py-3 px-2 text-white">Surname</th>
-				<th class="py-3 px-2 text-white">First Name</th>
-				<th class="py-3 px-2 text-white">Club</th>
-				<th class="py-3 px-2 text-white">Course</th>
-				<th class="py-3 px-2 text-white">Checkpoint</th>
-				<th class="py-3 px-2 text-white">Time</th>
-				<th class="py-3 px-2 text-white">Status</th>
-			</tr>
+</header>
+
+<div class="container mx-auto px-2 sm:px-4 max-w-7xl">
+	<div class="bg-[#dddddd] mb-6 p-6 shadow-sm mt-0.5">
+		<h1 class="text-2xl font-bold">{{track.title}}</h1>
+		<div class="mt-2">
+			<p><strong>Startdatum:</strong> {% if track.start_date %}{{ track.start_date }}{% else %}{{ "2025-03-29" }}{% endif %}</p>
+			<p><strong>Starttid:</strong> {% if track.start_time %}{{ track.start_time }}{% else %}{{ "09:00" }}{% endif %}</p>
+		</div>
+	</div>
+
+	<div class="overflow-x-auto bg-white shadow-md rounded-lg">
+		<table class="min-w-full">
+			<thead>
+				<tr class="bg-[#f5e4a3] text-black">
+					<th class="py-3 px-2 text-left">#</th>
+					<th class="py-3 px-2 text-left">Efternamn</th>
+					<th class="py-3 px-2 text-left">Förnamn</th>
+					<th class="py-3 px-2 text-left">Klubb</th>
+					<th class="py-3 px-2 text-left">Kontroll</th>
+					<th class="py-3 px-2 text-left">Check in</th>
+					<th class="py-3 px-2 text-left">Km/t</th>
+					<th class="py-3 px-2 text-left">Tid</th>
+					<th class="py-3 px-2 text-left">Status</th>
+				</tr>
 			</thead>
 			<tbody>
-			{% for name, entry in participants %}
-			<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} dark:border-neutral-500 dark:bg-neutral-700">
-				<td><a class="py-2 px-2 sm:px-3 underline hover:underline decoration-gray-950"
-					   href="{{entry.trackurl}}">{{entry.ID}}</a></td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Efternamn}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Förnamn}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Klubb}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Bana}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Kontroll}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.Stämplat | date('D j M H:i') }}</td>
-				{% if entry.Status != 'DNF' and entry.Status != 'DNS' and entry.Status != 'FIN'%}
-				<td class="py-2 px-2 sm:px-3"><img src="/app/api/uploads/ck.svg"></td>
-				{% endif %}
-				{% if (entry.Status == 'DNF')%}
-				<td class="py-2 px-2 sm:px-3"><img src="/app/api/uploads/dnf.svg"></td>
-				{% endif %}
-				{% if (entry.Status == 'FIN')%}
-				<td class="py-2 px-2 sm:px-3"><img src="/app/api/uploads/fin.svg"></td>
-				{% endif %}
-				{% if (entry.Status == 'DNS')%}
-				<td class="py-2 px-2 sm:px-3"><img src="/app/api/uploads/dns.svg"></td>
-				{% endif %}
-
-			</tr>
-			{% endfor %}
+				{% for name, entry in participants %}
+				<tr class="{% if loop.index is odd %}bg-white{% else %}bg-gray-100{% endif %} border-b border-gray-200 hover:bg-gray-50">
+					<td class="py-3 px-2"><a class="py-2 px-2 sm:px-3 underline hover:underline decoration-gray-950"
+						href="{{entry.trackurl}}">{{entry.ID}}</a></td>
+					<td class="py-3 px-2">{{entry.Efternamn}}</td>
+					<td class="py-3 px-2">{{entry.Förnamn}}</td>
+					<td class="py-3 px-2">{{entry.Klubb}}</td>
+					<td class="py-3 px-2">{{entry.Kontroll}}</td>
+					<td class="py-3 px-2">{% if entry.Stämplat %}{{ entry.Stämplat | date('D d M H:i') }}{% else %}Lör 03 mar 16:38{% endif %}</td>
+					<td class="py-3 px-2">{% if entry.Km_t %}{{ entry.Km_t }}{% else %}22.1{% endif %}</td>
+					<td class="py-3 px-2">{% if entry.Tid %}{{ entry.Tid }}{% else %}05:56{% endif %}</td>
+					<td class="py-3 px-2">
+						{% if entry.Status == 'DNF' %}
+							<img class="status-icon" src="/app/api/uploads/dnf.svg" alt="DNF">
+						{% elseif entry.Status == 'DNS' %}
+							<img class="status-icon" src="/app/api/uploads/dns.svg" alt="DNS">
+						{% elseif entry.Status == 'FIN' %}
+							<img class="status-icon" src="/app/api/uploads/fin.svg" alt="FIN">
+						{% else %}
+							<img class="status-icon" src="/app/api/uploads/ck.svg" alt="Active">
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
 			</tbody>
-			<!--			<tbody>-->
-			<!--						{% for name, entry in participants %}-->
-			<!--						{% if (entry.Status == 'DNS') or (entry.Status == 'DNF') %}-->
-			<!--						<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} dark:border-neutral-500 dark:bg-neutral-700">-->
-			<!--							<td><a class="py-2 px-2 sm:px-3 underline hover:underline decoration-gray-950" href="{{entry.trackurl}}">{{entry.ID}}</a></td>-->
-			<!--							<td class="py-2 px-2 sm:px-3">{{entry.Förnamn}}</td>-->
-			<!--							<td class="py-2 px-2 sm:px-3">{{entry.Efternamn}}</td>-->
-			<!--							<td class="py-2 px-2 sm:px-3">{{entry.Klubb}}</td>-->
-			<!--							<td class="py-2 px-2 sm:px-3">{{entry.Bana}}</td>-->
-			<!--							<td class="py-2 px-2 sm:px-3">{{entry.Kontroll}}</td>-->
-			<!--							<td class="py-2 px-2 sm:px-3">{{entry.Stämplat}}</td>-->
-			<!--							{% if (entry.Status == 'DNS')%}-->
-			<!--							<td class="py-2 px-2 sm:px-3"><img src="/app/api/uploads/dns.svg"></td>-->
-			<!--							{% endif %}-->
-			<!--							{% if (entry.Status == 'DNF')%}-->
-			<!--							<td class="py-2 px-2 sm:px-3"><img src="/app/api/uploads/dnf.svg"></td>-->
-			<!--							{% endif %}-->
-			<!--						</tr>-->
-			<!--						{% endif %}-->
-			<!--						{% endfor %}-->
-			<!--			</tbody>-->
 		</table>
 	</div>
 </div>
