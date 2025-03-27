@@ -10,62 +10,81 @@
 	<!-- Tailwind CSS -->
 	<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="font-sans">
-<div class="container mx-auto px-4 py-8">
-	<div class="mb-5">
-		<p class="mb-3 text-3xl">Resultat: {{event.title}}</p>
-	</div>
-	<div class="overflow-x-auto">
-		<table class="min-w-full text-left text-md font-light">
-			<thead class="border-b-2 bg-white dark:border-neutral-500 dark:bg-neutral-600">
-			<tr class="bg-gray-700 border-b-1 border-black text-white">
-				<th class="py-3 px-2">#</th>
-				<th class="py-3 px-2">Efternamn</th>
-				<th class="py-3 px-2">Förnamn</th>
-				<th class="py-3 px-2">Klubb</th>
-				<th class="py-3 px-2">Bana</th>
-				<th class="py-3 px-2 w-10">Land</th>
-				<th class="py-3 px-2 w-10">Brevetnr</th>
-				<th class="py-3 px-2 text-right pr-4 w-5">Tid</th>
-				<th class="py-3 px-2 w-5">Status</th>
-			</tr>
-			</thead>
-			<tbody>
-			{% for entry in results %}
-			<tr class="{{ loop.index % 2 == 0 ? 'bg-white' : 'bg-gray-200' }} dark:border-neutral-500 dark:bg-neutral-700">
-				<td class="py-2 px-2 sm:px-3"><a class="underline hover:underline decoration-gray-950" href="{{entry.brevetcard}}">{{entry.startnumber}}</a>
-				</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.efternamn}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.fornamn}}</td>
-				<td class="py-2 px-2 sm:px-3">{{entry.klubb}}</td>
-				<td class="py-2 px-2 sm:px-3"><a class="underline hover:underline decoration-gray-950" href="{{entry.trackurl}}">{{entry.title}}</a>
-				</td>
-				{% if entry.flagga%}
-				<td class="py-2 px-2 sm:px-3"><img height="30" width="30" src="{{entry.flagga}}" alt="{{entry.flagga}}"/>
-					</td>
-				{% else %}
-				<td class="py-2 px-2 sm:px-3">
-				</td>
-				{% endif %}
-				<td class="py-2 px-2 sm:px-3 text-right">{{entry.brevenr}}</td>
-				<td class="py-2 px-2 sm:px-3 text-right">{{entry.tid}}</td>
-				{% if entry.dnf == true %}
-				<td class="py-2 px-2 sm:px-3 text-right"><img src="/app/api/uploads/dnf.svg"></td>
-				{% elseif entry.dns == true%}
-				<td class="py-2 px-2 sm:px-3 text-right"><img src="/app/api/uploads/dns.svg"></td>
-				{% else %}
-				{% if entry.tid %}
-					<td class="py-2 px-2 sm:px-3 text-right"><img src="/app/api/uploads/fin.svg"></td>
-				{% else %}
-				<td class="py-2 px-2 sm:px-3">
-				</td>
-				{% endif %}
+<body class="antialiased bg-[#aaaaaa]">
+<header class="bg-[#aaaaaa]">
+    <div class="container mx-auto px-2 sm:px-4 max-w-7xl">
+        <img alt="eBrevet logotyp" class="mx-auto w-full max-w-3xl sm:max-w-7xl" src="https://ebrevet.org/app/api/uploads/ebrevet-rando-resultat.svg"/>
+    </div>
+</header>
+<div class="container mx-auto px-2 sm:px-4 max-w-7xl font-sans mt-0.5">
 
+
+<div class="bg-[#dddddd] mb-6 p-6 shadow-sm">
+	<div class="text-xl sm:text-2xl font-bold mb-2">{{event.title}}</div>
+	<p>{{event.startdate}} - {{event.enddate}}</p>
+</div>
+
+	<div class="overflow-x-auto">
+		<div class="overflow-hidden shadow-md rounded-lg">
+			<table class="min-w-full text-left text-sm sm:text-md">
+				<thead>
+				<tr class="bg-[#f5e4a3] text-black">
+					<th scope="col" class="py-2 sm:py-3 px-2 sm:px-4">#</th>
+					<th scope="col" class="py-2 sm:py-3 px-2 sm:px-4">Efternamn</th>
+					<th scope="col" class="py-2 sm:py-3 px-2 sm:px-4">Förnamn</th>
+					<th scope="col" class="py-2 sm:py-3 px-2 sm:px-4">Klubb</th>
+					<th scope="col" class="py-2 sm:py-3 px-2 sm:px-4">Bana</th>
+					<th scope="col" class="py-2 sm:py-3 px-2 sm:px-4">Land</th>
+					<th scope="col" class="py-2 sm:py-3 px-2 sm:px-4">Brevetnr</th>
+					<th scope="col" class="py-2 sm:py-3 px-2 sm:px-4 text-right">Tid</th>
+					<th scope="col" class="py-2 sm:py-3 px-2 sm:px-4">Status</th>
+				</tr>
+				</thead>
+				<tbody>
+				{% for entry in results %}
+				<tr class="border-b bg-neutral-100 even:bg-white">
+					<td class="py-2 sm:py-3 px-2 sm:px-4"><a class="underline hover:underline decoration-gray-950" href="{{entry.brevetcard}}">{{entry.startnumber}}</a>
+					</td>
+					<td class="py-2 sm:py-3 px-2 sm:px-4">{{entry.efternamn}}</td>
+					<td class="py-2 sm:py-3 px-2 sm:px-4">{{entry.fornamn}}</td>
+					<td class="py-2 sm:py-3 px-2 sm:px-4">{{entry.klubb}}</td>
+					<td class="py-2 sm:py-3 px-2 sm:px-4"><a class="underline hover:underline decoration-gray-950" href="{{entry.trackurl}}">{{entry.title}}</a>
+					</td>
+					<td class="py-2 sm:py-3 px-2 sm:px-4">
+						{% if entry.flagga %}
+						<div class="flex items-center">
+							<img class="h-4 sm:h-5 mr-1 sm:mr-2" src="{{entry.flagga}}" alt="{{entry.flagga}}">
+							<span class="truncate">{{entry.land}}</span>
+						</div>
+						{% endif %}
+					</td>
+					<td class="py-2 sm:py-3 px-2 sm:px-4">
+						{% if entry.brevenr and entry.brevenr != 0 %}
+						{{entry.brevenr}}
+						{% else %}
+						-
+						{% endif %}
+					</td>
+					<td class="py-2 sm:py-3 px-2 sm:px-4 text-right">{{entry.tid}}</td>
+					<td class="py-2 sm:py-3 px-2 sm:px-4">
+						{% if entry.dnf == true %}
+						<img src="/app/api/uploads/dnf.svg" alt="DNF">
+						{% elseif entry.dns == true %}
+						<img src="/app/api/uploads/dns.svg" alt="DNS">
+						{% elseif entry.tid %}
+						<img src="/app/api/uploads/fin.svg" alt="Finished">
+						{% endif %}
+					</td>
+				</tr>
+				{% endfor %}
+				{% if results|length == 0 %}
+				<tr class="border-b bg-neutral-100">
+					<td colspan="9" class="py-2 sm:py-3 px-2 sm:px-4 text-center">Inga resultat ännu</td>
+				</tr>
 				{% endif %}
-			</tr>
-			{% endfor %}
-			</tbody>
-		</table>
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>
 </body>
