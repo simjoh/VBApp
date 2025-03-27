@@ -34,8 +34,16 @@
 	<div class="bg-[#dddddd] mb-6 p-6 shadow-sm mt-0.5">
 		<h1 class="text-2xl font-bold">{{track.title}}</h1>
 		<div class="mt-2">
-			<p><strong>Startdatum:</strong> {% if track.start_date %}{{ track.start_date }}{% else %}{{ "2025-03-29" }}{% endif %}</p>
-			<p><strong>Starttid:</strong> {% if track.start_time %}{{ track.start_time }}{% else %}{{ "09:00" }}{% endif %}</p>
+			{% if track.start_date_time is defined %}
+				<p class="mb-1"><strong>Startdatum:</strong> {{ track.start_date_time|date('Y-m-d') }}</p>
+				<p><strong>Starttid:</strong> {{ track.start_date_time|date('H:i') }}</p>
+			{% elseif track.getStartDateTime is defined %}
+				<p class="mb-1"><strong>Startdatum:</strong> {{ track.getStartDateTime()|date('Y-m-d') }}</p>
+				<p><strong>Starttid:</strong> {{ track.getStartDateTime()|date('H:i') }}</p>
+			{% else %}
+				<p class="mb-1"><strong>Startdatum:</strong> N/A</p>
+				<p><strong>Starttid:</strong> N/A</p>
+			{% endif %}
 		</div>
 	</div>
 

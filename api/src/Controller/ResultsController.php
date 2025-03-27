@@ -194,7 +194,8 @@ class ResultsController
             array_push($returnarray, $results);
         }
         return $view->render($response, 'trackonevent.html', [
-            'tracks' => $returnarray
+            'tracks' => $returnarray,
+            'event' => $this->eventservice->eventFor($eventUid, ""),
         ]);
     }
 
