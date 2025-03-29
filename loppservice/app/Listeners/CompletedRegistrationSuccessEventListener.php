@@ -60,8 +60,8 @@ class CompletedRegistrationSuccessEventListener
 
         $organizer = Organizer::where('id', $event_event->organizer_id)->first();
 
-        $startlistlink = env("APP_URL") . '/startlist/event/' . $registration->course_uid . '/showall';
-        $updatedetaillink = env("APP_URL") . '/events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/getregitration';
+        $startlistlink = env("APP_URL") . '/public/startlist/event/' . $registration->course_uid . '/showall';
+        $updatedetaillink = env("APP_URL") . '/public/events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/getregitration';
 
         if (!$registration->startnumber) {
             $registration->startnumber = $this->getStartnumber($event_event->event_uid, $event_event->eventconfiguration->startnumberconfig);
@@ -72,7 +72,7 @@ class CompletedRegistrationSuccessEventListener
         if (App::isProduction()) {
             if ($event_event->event_type === 'BRM') {
                 // Check if use_stripe_payment is false
-                if (!$event_event->use_stripe_payment) {
+                if (!$event_event->eventconfiguration->use_stripe_payment) {
                     Log::debug("Sending: None Ebrevet Pay CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);
                     Mail::to($email_adress)
                         ->send(new NoneEbrevetPayCompletedRegistrationEmail($registration, $products, $event_event, $club->name, $country->country_name_en, $startlistlink, $updatedetaillink, $person, $organizer));
@@ -89,7 +89,7 @@ class CompletedRegistrationSuccessEventListener
         } else {
             if ($event_event->event_type === 'BRM') {
                 // Check if use_stripe_payment is false
-                if (!$event_event->use_stripe_payment) {
+                if (!$event_event->eventconfiguration->use_stripe_payment) {
                     Log::debug("Sending: None Ebrevet Pay CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);
                     Mail::to('receiverinbox@mailhog.local')
                         ->send(new NoneEbrevetPayCompletedRegistrationEmail($registration, $products, $event_event, $club->name, $country->country_name_en, $startlistlink, $updatedetaillink, $person, $organizer));

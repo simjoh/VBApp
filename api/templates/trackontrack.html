@@ -57,8 +57,6 @@
 					<th class="py-3 px-2 text-left">Klubb</th>
 					<th class="py-3 px-2 text-left">Kontroll</th>
 					<th class="py-3 px-2 text-left">Check in</th>
-					<th class="py-3 px-2 text-left">Km/t</th>
-					<th class="py-3 px-2 text-left">Tid</th>
 					<th class="py-3 px-2 text-left">Status</th>
 				</tr>
 			</thead>
@@ -71,9 +69,7 @@
 					<td class="py-3 px-2">{{entry.Förnamn}}</td>
 					<td class="py-3 px-2">{{entry.Klubb}}</td>
 					<td class="py-3 px-2">{{entry.Kontroll}}</td>
-					<td class="py-3 px-2">{% if entry.Stämplat %}{{ entry.Stämplat | date('D d M H:i') }}{% else %}Lör 03 mar 16:38{% endif %}</td>
-					<td class="py-3 px-2">{% if entry.Km_t %}{{ entry.Km_t }}{% else %}22.1{% endif %}</td>
-					<td class="py-3 px-2">{% if entry.Tid %}{{ entry.Tid }}{% else %}05:56{% endif %}</td>
+					<td class="py-3 px-2">{{entry.Stämplat | date('D j M H:i') }}</td>
 					<td class="py-3 px-2">
 						{% if entry.Status == 'DNF' %}
 							<img class="status-icon" src="/app/api/uploads/dnf.svg" alt="DNF">
