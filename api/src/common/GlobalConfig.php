@@ -29,8 +29,11 @@ class GlobalConfig
         '6e04b6c7-3179-4fde-b62c-3972c2260b2a' => '',
         '8cbf3550-6ce2-42c8-a59c-7408cca72502' => '6b2291b7-b8c6-491b-8e3e-be07d29378db',
         '3035676c-4c3f-4222-9977-344b22f08c21' => '3b48ab13-599a-43b8-8fb4-566be94820e3',// Södertörns Pärla 200 2025-03-29
-	    '8cbf3550-6ce2-42c8-a59c-7408cca72502' => '1f96e70c-7cd8-40a4-9816-57231db08907'// Bromma 200 2025-04-27
-
+	'8cbf3550-6ce2-42c8-a59c-7408cca72502' => '1f96e70c-7cd8-40a4-9816-57231db08907',// Bromma 200 2025-04-27
+	'beeadf7b-974c-4ef0-9c4a-833b5aa9a32a' => '912db6a2-74b7-41a0-9b56-0ae06bfc1333',// Barkarby 200 Järlåsa 2025-04-05
+	'86d5e597-9809-4632-a5bd-45d40f826f55' => '1c39a6bc-7175-4f05-832f-9dfa7f57025d',// Vamos ala Öregrund 300 2025-04-18
+	'aa776445-afe8-46c0-9733-c5a16cef5fa0' => '46fbccf2-951c-438b-880a-821d5706b7ba',// Täby 200 Fredagsmys 2025-05-02
+	'6d4ad865-ff0f-4a04-a666-209bb90f5d74' => '58951ed9-401a-4839-8cc7-84cd898c8eb4'// BRM 200 Artjärvi 2025-03-29
     ];
 
     public static function get($key)
