@@ -77,8 +77,8 @@ class CheckoutController extends Controller
                 'event_type' => $request["event_type"]
             ],
             'allow_promotion_codes' => true,
-            'success_url' => $YOUR_DOMAIN . '/checkout/success?event_type=' . $request["event_type"],
-            'cancel_url' => $YOUR_DOMAIN . '/checkout/cancel?registration=' . $registration->registration_uid . '&is_final_registration_on_event=' . $is_final . '&event_type=' . $request['event_type'],
+            'success_url' => $YOUR_DOMAIN . '/public/checkout/success?event_type=' . $request["event_type"],
+            'cancel_url' => $YOUR_DOMAIN . '/public/checkout/cancel?registration=' . $registration->registration_uid . '&is_final_registration_on_event=' . $is_final . '&event_type=' . $request['event_type'],
         ]);
 
         return redirect($checkout_session->url);
