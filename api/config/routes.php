@@ -145,6 +145,7 @@ return function (App $app) {
         $app->put('/participant/{uid}/track/{trackUid}/update', \App\Action\Participant\ParticipantAction::class . ':updateParticipant');
         $app->put('/participant/{uid}/track/{trackUid}/updateTime', \App\Action\Participant\ParticipantAction::class . ':updateTime');
         $app->put('/participant/{uid}/track/{trackUid}/addbrevetnumber', \App\Action\Participant\ParticipantAction::class . ':addbrevetnumber');
+        $app->put('/participant/{uid}/track/{trackUid}/updatecheckintime', \App\Action\Participant\ParticipantAction::class . ':updatecheckintime');
 
      //   $app->post('/participants/{trackUid}/upload', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
         $app->post('/participants/upload/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');

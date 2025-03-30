@@ -291,6 +291,19 @@ class ParticipantAction
     }
 
 
+    public function updatecheckintime(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $currentuserUid = $request->getAttribute('currentuserUid');
+  /*       $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $params = $request->getQueryParams();
+        $participant_uid = $route->getArgument('uid');
+        $track_uid = $route->getArgument('trackUid');
+        $checkintime = $params["checkintime"];
+        $this->participantService->updatecheckintime($participant_uid, $track_uid, $checkintime); */
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
 
 
     function moveUploadedFile($directory, UploadedFile $uploadedFile)
