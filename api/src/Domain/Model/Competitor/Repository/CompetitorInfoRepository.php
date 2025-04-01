@@ -36,7 +36,8 @@ class CompetitorInfoRepository extends BaseRepository
 
             if($statement->rowCount() > 1){
                 // Fixa bätter felhantering
-                throw new Exception();
+                return $event[0];
+             //   throw new Exception();
             }
             if(!empty($event)){
                 return $event[0];
