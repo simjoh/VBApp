@@ -4,6 +4,7 @@ import {RandonneurCheckPointRepresentation} from "../../shared/api/api";
 import {BehaviorSubject, firstValueFrom} from "rxjs";
 import {map} from "rxjs/operators";
 import {GeolocationService} from "../../shared/geolocation.service";
+import {PendingRequestsService} from "../../core/pending-requests.service";
 
 @Component({
 	selector: 'brevet-list',
@@ -34,12 +35,18 @@ export class ListComponent implements OnInit, AfterViewInit {
 
 	dnfknapptext: string
 
-	constructor(private comp: CompetitorListComponentService, private geolocationService: GeolocationService) {
+	constructor(private comp: CompetitorListComponentService, private geolocationService: GeolocationService, private pendingRequestsService: PendingRequestsService) {
 		this.dnfknapptext = "test";
 	}
 
 	async getGeoLocation() {
-		await firstValueFrom(this.geolocationService.getCurrentPosition()).then(position => {
+		this.pendingRequestsService.increase();
+		try {
+			console.log('Starting geolocation request at:', new Date().toISOString());
+			await this.sleep(3000); // 3 second delay
+			console.log('After sleep, before getting position at:', new Date().toISOString());
+			const position = await firstValueFrom(this.geolocationService.getCurrentPosition());
+			console.log('Position received at:', new Date().toISOString());
 			const currentTimestamp = Date.now();
 			const timeDifference = Math.abs(currentTimestamp - position.timestamp);
 			const timeDifferenceInMinutes = timeDifference / (1000 * 60);
@@ -52,41 +59,40 @@ export class ListComponent implements OnInit, AfterViewInit {
 			}
 			console.log('Latitude:', position.coords.latitude);
 			console.log('Longitude:', position.coords.longitude);
-			this.lat = position.coords.latitude
+			this.lat = position.coords.latitude;
 			this.long = position.coords.longitude;
-		});
+		} finally {
+			this.pendingRequestsService.decrease();
+		}
 	}
 
 	sleep(ms) {
+		console.log(`Starting sleep for ${ms}ms at:`, new Date().toISOString());
 		return new Promise(resolve => setTimeout(resolve, ms));
 	}
 
 
 	async checkin($event: any, s: RandonneurCheckPointRepresentation, kontroller, index) {
-		await this.getGeoLocation();
-		if (!this.within) {
-			while (!this.within) {
-				await this.sleep(1000).then(() => {
-					this.getGeoLocation();
-				});
+		try {
+			this.pendingRequestsService.increase();
+			await this.getGeoLocation();
+			if (!this.within) {
+				while (!this.within) {
+					console.log("Waiting for location update...");
+					await this.sleep(3000);
+					await this.getGeoLocation();
+				}
 			}
-		}
-		if ($event === true) {
-			await this.comp.stamp($event, s, this.lat, this.long);
-		//	localStorage.setItem('nextcheckpoint', JSON.stringify(kontroller.at(index + 1).checkpoint.checkpoint_uid));
-			let nextindex = this.nextIndexForward(index, kontroller)
-			// setTimeout(() => {
-			// 	console.log(kontroller.at(nextindex.checkpoint.checkpoint_uid));
-			// 	this.scroll(nextindex.checkpoint.checkpoint_uid);
-			// }, 2000);
-		} else {
-			await this.comp.rollbackStamp($event, s);
-			// let nextindex = this.nextIndexBackward(index, kontroller)
-			// setTimeout(() => {
-			// 	this.scroll(nextindex.checkpoint.checkpoint_uid);
-			// }, 2000);
-			//
-			// localStorage.setItem('nextcheckpoint', JSON.stringify(kontroller.at(nextindex).checkpoint.checkpoint_uid));
+			
+			if ($event === true) {
+				await this.comp.stamp($event, s, this.lat, this.long);
+				let nextindex = this.nextIndexForward(index, kontroller)
+				
+			} else {
+				await this.comp.rollbackStamp($event, s);
+			}
+		} finally {
+			this.pendingRequestsService.decrease();
 		}
 	}
 
@@ -185,10 +191,10 @@ export class ListComponent implements OnInit, AfterViewInit {
 
 	}
 
-	ngOnInit(): void {
-
+	async ngOnInit(): Promise<void> {
+		await this.getGeoLocation();
 		this.comp.reload();
-		this.getGeoLocation();
+	
 	}
 
 	ngAfterViewInit(): void {
