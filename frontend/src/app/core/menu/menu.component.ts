@@ -108,7 +108,11 @@ export class MenuComponent implements OnInit{
 
   $logedinas = this.menucomponentService.$activeuser.pipe(
     map((val) => {
-     return val.name;
+
+      if (val.roles.includes('COMPETITOR')) {
+        return val.startnumber;
+      }
+      return null;
     })
   )
 

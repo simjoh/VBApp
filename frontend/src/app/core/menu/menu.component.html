@@ -2,11 +2,11 @@
     <p-menubar class="hide"  [styleClass]="" [autoDisplay]="false" [model]="$menuitems | async">
       <ng-template  pTemplate="start">
         <img  src="./assets/ebrevet-sidhuvud.svg" height="50"  width="100"  class="mr-2" alt="Ebrevet logotyp">
+        <span *ngIf="$logedinas | async as num" class="text-xl font-bold ml-6">
+          {{num}}
+        </span>
       </ng-template>
       <ng-template pTemplate="end">
-        <div class="">
-<!--          <strong>Welcome:</strong>  {{$logedinas | async}}-->
-        </div>
         <div>
             <a class="ml-2 float-right text-base text-bold linkunde" href="" (click)="logout()">LOG OUT</a>
         </div>

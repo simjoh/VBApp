@@ -43,7 +43,7 @@ export class ListComponent implements OnInit, AfterViewInit {
 		this.pendingRequestsService.increase();
 		try {
 			console.log('Starting geolocation request at:', new Date().toISOString());
-			await this.sleep(3000); // 3 second delay
+			await this.sleep(500); // 3 second delay
 			console.log('After sleep, before getting position at:', new Date().toISOString());
 			const position = await firstValueFrom(this.geolocationService.getCurrentPosition());
 			console.log('Position received at:', new Date().toISOString());
