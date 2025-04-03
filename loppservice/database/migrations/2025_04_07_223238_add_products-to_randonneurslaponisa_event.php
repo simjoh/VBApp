@@ -15,6 +15,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (App::isProduction()) {
         Schema::table('table', function (Blueprint $table) {
 
 
@@ -46,7 +47,14 @@ return new class extends Migration
             $collection = collect($event->eventconfiguration->products);
             $filteredItems = $collection->where('categoryID', 7)->first();
         });
+
     }
+    
+
+    }
+
+
+    
 
     /**
      * Reverse the migrations.

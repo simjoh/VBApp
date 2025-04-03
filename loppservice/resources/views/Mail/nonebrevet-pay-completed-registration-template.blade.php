@@ -83,6 +83,12 @@
                 <a href="{{ $updatelink }}">Uppdatera din anmälan</a>
             </p>
             @endif
+
+            @if(isset($dnslink) && !empty($dnslink))
+            <p>
+                Tänker du inte delta: <a href="{{ $dnslink }}">Klicka här</a>
+            </p>
+            @endif
         </div>
         
         <div class="footer">

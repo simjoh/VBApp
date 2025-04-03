@@ -28,12 +28,12 @@ class BRMCompletedRegistrationEmail extends Mailable
     private string $updatelink;
     private Person $person;
     private Organizer $organizer;
-
+    private string $dnslink;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Registration $registration, Collection $products, Event $event, string $club, string $country, string $startlistlink, string $updatelink, Person $person, Organizer $organizer)
+    public function __construct(Registration $registration, Collection $products, Event $event, string $club, string $country, string $startlistlink, string $updatelink, Person $person, Organizer $organizer, $dnslink)
     {
         $this->person = $person;
         $this->updatelink = $updatelink;
@@ -63,7 +63,7 @@ class BRMCompletedRegistrationEmail extends Mailable
     {
         return new Content(
             view: 'Mail.brmcompletedregistration-sucess-mail-template',
-            with: ['organizer' => $this->organizer->organization_name  ,'country' => $this->country, 'club' => $this->club, 'startlistlink' => $this->startlistlink, 'registration' => $this->registration, 'adress' => $this->person->adress, 'contact' => $this->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event, 'updatelink' => $this->updatelink, 'person' => $this->person],
+            with: ['organizer' => $this->organizer->organization_name  ,'country' => $this->country, 'club' => $this->club, 'startlistlink' => $this->startlistlink, 'registration' => $this->registration, 'adress' => $this->person->adress, 'contact' => $this->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event, 'updatelink' => $this->updatelink, 'person' => $this->person, 'dnslink' => $this->dnslink],
         );
     }
 
