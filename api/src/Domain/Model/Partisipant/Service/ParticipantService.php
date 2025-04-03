@@ -764,4 +764,28 @@ class ParticipantService extends ServiceAbstract
     {
         return $this->permissionrepoitory->getPermissionsTodata("PARTICIPANT", $user_uid);
     }
+
+    /**
+     * Handle DNS click from email
+     *
+     * @param string|null $participant_uid
+     * @param string $currentuserUid
+     * @return array
+     * @throws BrevetException
+     */
+    public function participantclickeddnsinmail(?string $participant_uid, string $currentuserUid): bool
+    {
+        // Empty method to be implemented
+
+      $participant =  $this->participantRepository->participantFor($participant_uid);
+
+      if(!isset($participant)){
+        throw new BrevetException("Participant not found", 5, null);
+      }
+      $this->participantRepository->setDns($participant->getParticipantUid());
+
+      
+      
+        return true ;
+    }
 }

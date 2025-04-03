@@ -44,6 +44,11 @@ return function (App $app) {
     $app->get('/track/{trackUid}/participant/{participantUid}/view', \App\Controller\ResultsController::class . ':gettrackranonneurview')->setName('trackranonneur');
     $app->get('/track/{trackUid}/participant/{participantUid}/checkpoints', \App\Controller\ResultsController::class . ':gettrackranonneurcheckpoints');
     $app->post('/participant/addparticipant/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':addParticipantOntrack2');
+
+
+    $app->get('/dns/participant/{uid}/setdns', \App\Action\Participant\ParticipantAction::class . ':participantclickeddnsinmail');
+
+
     // User route group
     $app->group('/api', function(RouteCollectorProxy $apps) use ($app) {
 

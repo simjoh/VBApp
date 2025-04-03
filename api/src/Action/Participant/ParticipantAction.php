@@ -16,16 +16,21 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Psr7\UploadedFile;
 use Slim\Routing\RouteContext;
+use Slim\Views\Twig;
+use App\Domain\Model\Event\Service\EventService;
+use App\Domain\Model\Track\Service\TrackService;
 
 class ParticipantAction
 {
 
     private $participantService;
     private $settings;
-    public function __construct(ContainerInterface $c, ParticipantService $participantService)
+    private $trackService;
+    public function __construct(ContainerInterface $c, ParticipantService $participantService, TrackService $trackService)
     {
         $this->participantService = $participantService;
         $this->settings = $c->get('settings');
+        $this->trackService = $trackService;
     }
 
     public function participants(ServerRequestInterface $request, ResponseInterface $response)
@@ -290,8 +295,19 @@ class ParticipantAction
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
-
-
+    public function participantclickeddnsinmail(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        $currentuserUid = $request->getAttribute('currentuserUid');
+        $view = Twig::fromRequest($request);
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_uid = $route->getArgument('uid');
+        $participant = $this->participantService->participantFor($participant_uid,"");
+        $track = $this->trackService->getTrackByTrackUid($participant->getTrackUid(), "");
+        $result = $this->participantService->participantclickeddnsinmail($participant_uid, "");
+   
+        return $view->render($response, 'participantdns.html', ['track' => $track ,'results' => $result, 'participant' => $participant]);
+    }
 
     function moveUploadedFile($directory, UploadedFile $uploadedFile)
     {
