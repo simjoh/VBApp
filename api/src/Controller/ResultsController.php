@@ -13,6 +13,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Slim\Routing\RouteContext;
 use Slim\Views\PhpRenderer;
 use Slim\Views\Twig;
+use DateTime;
 
 class ResultsController
 {
@@ -74,7 +75,7 @@ class ResultsController
         $track = $this->trackService->getTrackByTrackUid($trackUid,'');
         $event = $this->eventservice->eventFor($track->getEventUid(),'');
         $result = $this->resultService->resultsOnTrack($trackUid);
-        return $view->render($response, 'resultontrack.html', ['track' => $track, 'event' => $event ,'results' => $result]);
+        return $view->render($response, 'resultontrack.html', ['track' => json_encode($track), 'startdate' => (new DateTime($track->getStartDateTime()))->format('Y-m-d'), 'starttime' => (new DateTime($track->getStartDateTime()))->format('H:i'), 'event' => $event ,'results' => $result]);
     }
 
 
