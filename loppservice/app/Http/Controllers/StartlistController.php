@@ -14,8 +14,10 @@ class StartlistController extends Controller
     {
         $course_uid = $request['eventuid'];
         $use_stripe = env("USE_STRIPE_PAYMENT_INTEGRATION");
+        $event = Event::where('event_uid', $request['eventuid'])->get()->first();
 
-        if($use_stripe) {
+        ;
+        if($event->eventconfiguration->use_stripe_payment) {
             $startlist = DB::table('registrations')
                 ->join('orders', 'orders.registration_uid', '=', 'registrations.registration_uid')
                 ->join('person', 'person.person_uid', '=', 'registrations.person_uid')
@@ -38,8 +40,9 @@ class StartlistController extends Controller
                 ->get();
 
         }
-        $event = Event::with('routeDetail')->where('event_uid', $request['eventuid'])->get()->first();
+
         if ($event->event_type === 'BRM' || $event->event_type === 'BP') {
+
             return view('startlist.brmshow', ['startlista' => $startlist, 'countries' => Country::all(), 'clubs' => Club::all(), 'event' => $event]);
         } else {
             return view('startlist.show', ['startlista' => $startlist, 'countries' => Country::all(), 'clubs' => Club::all()]);
