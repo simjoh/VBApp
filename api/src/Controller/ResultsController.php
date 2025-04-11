@@ -119,7 +119,7 @@ class ResultsController
         ]);
     }
 
-    public function gettrackranonneurview(ServerRequestInterface $request, ResponseInterface $response, $args)
+   public function gettrackranonneurview(ServerRequestInterface $request, ResponseInterface $response, $args)
     {
 
         $view = Twig::fromRequest($request);
@@ -140,7 +140,7 @@ class ResultsController
 
         $competitor = $this->competitorservice->getCompetitorByUid($participant->getCompetitorUid(), '');
         return $view->render($response, 'trackparticipantontrack.html', ['trackinginfo' => $result, 'track' => $tracks, 'competitor' => $competitor,
-            'link' => $this->settings['path'] . "tracker/" . "track/" . $args['trackUid'] . '/participant/' . $participant->getParticipantUid() . '/checkpoints'
+            'link' => $this->settings['path'] . "tracker/" . "track/" . $args['trackUid'] . '/participant/' . $participant->getParticipantUid() . '/checkpoints', 'participant' => $participant, 'starttime' => $tracks->getStartDateTime()
         ]);
     }
 
