@@ -26,15 +26,19 @@ class GlobalConfig
         'ca84c085-15bd-4024-ac9d-cb32ec7cf237' => '', // BP 200 VÄSTERBOTTEN BREVET 	2025-06-28
         '442553ec-d323-4bb3-8126-c7d266c9b852' => '', // BP 140 VÄSTERBOTTEN BREVET 	2025-06-28
         '3d03e556-4b5d-43f9-b25a-8d4aea5d53a6' => '', // BP 80 VÄSTERBOTTEN BREVET 	2025-06-28
-        '6e04b6c7-3179-4fde-b62c-3972c2260b2a' => '',
+        '6e04b6c7-3179-4fde-b62c-3972c2260b2a' => '', // BP 45 VÄSTERBOTTEN BREVET 	2025-06-28
         '8cbf3550-6ce2-42c8-a59c-7408cca72502' => '6b2291b7-b8c6-491b-8e3e-be07d29378db',
         '3035676c-4c3f-4222-9977-344b22f08c21' => '3b48ab13-599a-43b8-8fb4-566be94820e3',// Södertörns Pärla 200 2025-03-29
 	'8cbf3550-6ce2-42c8-a59c-7408cca72502' => '1f96e70c-7cd8-40a4-9816-57231db08907',// Bromma 200 2025-04-27
 	'beeadf7b-974c-4ef0-9c4a-833b5aa9a32a' => '912db6a2-74b7-41a0-9b56-0ae06bfc1333',// Barkarby 200 Järlåsa 2025-04-05
 	'86d5e597-9809-4632-a5bd-45d40f826f55' => '1c39a6bc-7175-4f05-832f-9dfa7f57025d',// Vamos ala Öregrund 300 2025-04-18
 	'aa776445-afe8-46c0-9733-c5a16cef5fa0' => '46fbccf2-951c-438b-880a-821d5706b7ba',// Täby 200 Fredagsmys 2025-05-02
-	'6d4ad865-ff0f-4a04-a666-209bb90f5d74' => '58951ed9-401a-4839-8cc7-84cd898c8eb4'// BRM 200 Artjärvi 2025-03-29
-
+	'6d4ad865-ff0f-4a04-a666-209bb90f5d74' => '58951ed9-401a-4839-8cc7-84cd898c8eb4', // artjärvi
+    '6f59d56f-534f-421c-89e0-b07b6a12374a' => '10aaed2b-042e-4ec0-8619-44d15f7b55e6', // södertälje 300 2025-04-12
+    'a40fa40f-5806-454f-b030-a306e3af457c' => 'ed1906a5-d5a3-4c6a-aa8b-4e0664616586', // uppsala brukscykling 2025-04-12
+    'b70947e9-ac35-4e01-80f4-d0d06ab2fbc7' => 'ba694620-7a73-4087-8ea0-0d8a2f68eecd',  // uppsala roslagen
+    'e254b6cb-050b-4026-a03d-0802d27bf7b2' => 'e206f0bd-4621-4a34-ad2c-940ac1530a85',  // uppsala brukscykling 2025-05-10
+    '84108ea9-5831-4551-9dc1-4518c7a08da2' => '84108ea9-5831-4551-9dc1-4518c7a08da2' // Täby Mälaren 400 2025-06-14
     ];
 
     public static function get($key)

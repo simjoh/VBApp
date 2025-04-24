@@ -80,7 +80,7 @@
 						   class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
 				</div>
 				<div>
-					<label for="street-adress" class="block text-gray-900 font-semibold text-sm sm:text-base">Adress</label>
+					<label for="street-adress" class="block text-gray-900 font-semibold text-sm sm:text-base">Adress<span class="text-red-500">*</span></label>
 					<input type="text" name="street-address" id="street-address" autocomplete="street-address"
 						   class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
 				</div>
@@ -88,19 +88,19 @@
 
 			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 				<div>
-					<label for="postal-code" class="block text-gray-900 font-semibold text-sm sm:text-base">Postnummer</label>
+					<label for="postal-code" class="block text-gray-900 font-semibold text-sm sm:text-base">Postnummer<span class="text-red-500">*</span></label>
 					<input type="text" name="postal-code" id="postal-code" autocomplete="postal-code"
 						   class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
 				</div>
 				<div>
-					<label for="city" class="block text-gray-900 font-semibold text-sm sm:text-base">Ort</label>
+					<label for="city" class="block text-gray-900 font-semibold text-sm sm:text-base">Ort<span class="text-red-500">*</span></label>
 					<input type="text" name="city" id="city" autocomplete="address-level2"
 						   class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
 				</div>
 			</div>
 
 			<div>
-				<label for="gender" class="block text-gray-900 font-semibold text-sm sm:text-base">Kön</label>
+				<label for="gender" class="block text-gray-900 font-semibold text-sm sm:text-base">Kön<span class="text-red-500">*</span></label>
 				<select id="gender" name="gender" autocomplete="gender-name"
 						class="mt-1 block w-full sm:w-1/2 px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600"
 						required>
@@ -112,8 +112,8 @@
 			</div>
 
 			<div>
-				<label for="country" class="block text-gray-900 font-semibold text-sm sm:text-base">Land</label>
-				<select id="country" name="country" autocomplete="country-name"
+				<label for="country" class="block text-gray-900 font-semibold text-sm sm:text-base">Land<span class="text-red-500">*</span></label>
+				<select id="country" required name="country" autocomplete="country-name"
 						class="mt-1 block w-full sm:w-1/2 px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600"
 						required>
 					<option>Välj land</option>
@@ -124,7 +124,7 @@
 			</div>
 
 			<div>
-				<p class="block text-gray-900 font-semibold text-sm sm:text-base">Födelsedag</p>
+				<p class="block text-gray-900 font-semibold text-sm sm:text-base">Födelsedag<span class="text-red-500">*</span></p>
 				<div class="grid grid-cols-3 gap-4 sm:w-1/2">
 					<select name="year" id="year"
 							class="mt-1 block w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
@@ -188,7 +188,7 @@
 			</div>
 
 			<div>
-				<label for="club" class="block text-gray-900 font-semibold text-sm sm:text-base">Klubb</label>
+				<label for="club" class="block text-gray-900 font-semibold text-sm sm:text-base">Klubb<span class="text-red-500">*</span></label>
 				<select name="club_uid" id="club"
 						class="mt-1 block w-full sm:w-1/2 px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
 					<option value="">Välj klubb</option>
@@ -209,7 +209,7 @@
 						  class="mt-1 block w-full sm:w-1/2 px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600"></textarea>
 			</div>
 
-			@if ($availabledetails['event_type'] === 'BRM')	
+			@if ($availabledetails['event_type'] === 'BRM')
 			<fieldset>
 				<p class="block text-gray-900 font-semibold text-sm sm:text-base">Medalj</p>
 				<div class="mt-4 space-y-4">
@@ -226,7 +226,7 @@
 				</div>
 			</fieldset>
 			@endif
-			
+
 
 			<div class="flex items-start">
 				<div class="flex items-center h-5">

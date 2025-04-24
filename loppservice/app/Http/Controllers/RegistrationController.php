@@ -107,9 +107,16 @@ class RegistrationController extends Controller
             'event_name' => $event->title,
             'startdate' => Carbon::parse($event->startdate)->format('Y-m-d'),
         ];
-        return view('registrations.show')->with(['showreservationbutton' => $reservationactive,
+        return view('registrations.show')->with([
+            'showreservationbutton' => $reservationactive,
             'countries' => Country::all()->sortBy("country_name_en"),
-            'years' => range(date('Y', strtotime('-18 year')), 1950), 'registrationproduct' => $registration_product->productID, 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID, 'genders' => $this->gendersEn(), 'isRegistrationOpen' => $isRegistrationOpen, 'availabledetails' => $registrationConfig]);
+            'years' => range(date('Y', strtotime('-18 year')), 1950),
+            'registrationproduct' => $registration_product->productID,
+            'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID,
+            'genders' => $this->gendersEn(),
+            'isRegistrationOpen' => $isRegistrationOpen,
+            'availabledetails' => $registrationConfig
+        ]);
     }
 
 
@@ -180,7 +187,6 @@ class RegistrationController extends Controller
 
         // Update club_uid directly from the dropdown selection
         if ($request->has('club_uid')) {
-
         }
 
         // Get the event associated with this registration
@@ -218,37 +224,37 @@ class RegistrationController extends Controller
             }
         }
 
-//        $result = DB::connection('vbapp')->select('SELECT * FROM competitors  WHERE competitor_uid = ?', ['2922a6e9-9e32-4832-9575-b3d2eb3011b9']);
-//        if (count($result) > 0) {
-//            $data = [
-//                'given_name' => $person->firstname,
-//                'family_name' => $person->surname,
-//                'birthdate' => $person->birthdate,
-//            ];
-//            $affectedRows = DB::connection('vbapp')->table('competitors')->where('competitor_uid', '2922a6e9-9e32-4832-9575-b3d2eb3011b9')->update($data);
-//            if ($affectedRows > 0) {
-//
-//                $competitor_info_data = [
-//                    'email' => $adress->email,
-//                    'adress' => $adress->adress,
-//                    'postal_code' => $adress->postal_code,
-//                    'place' => $adress->city,
-//                    'cuntry_id' => $adress->country_id,
-//                ];
-//
-//                $info = DB::connection('vbapp')->select('SELECT * FROM competitor_info  WHERE competitor_uid = ?', ['2922a6e9-9e32-4832-9575-b3d2eb3011b9']);
-//                if (count($info) > 0) {
-//                    $affectedRows = DB::connection('vbapp')->table('competitor_info')->where('competitor_uid', '2922a6e9-9e32-4832-9575-b3d2eb3011b9')->update($competitor_info_data);
-//                } else {
-//                    $competitor_info_data['competitor_uid'] = '2922a6e9-9e32-4832-9575-b3d2eb3011b9';
-//                    $affectedRows = DB::connection('vbapp')->table('competitor_info')->insert($competitor_info_data);
-//                }
-//
-//                echo "Record updated successfully.";
-//            } else {
-//                echo "No record found to update.";
-//            }
-//        }
+        //        $result = DB::connection('vbapp')->select('SELECT * FROM competitors  WHERE competitor_uid = ?', ['2922a6e9-9e32-4832-9575-b3d2eb3011b9']);
+        //        if (count($result) > 0) {
+        //            $data = [
+        //                'given_name' => $person->firstname,
+        //                'family_name' => $person->surname,
+        //                'birthdate' => $person->birthdate,
+        //            ];
+        //            $affectedRows = DB::connection('vbapp')->table('competitors')->where('competitor_uid', '2922a6e9-9e32-4832-9575-b3d2eb3011b9')->update($data);
+        //            if ($affectedRows > 0) {
+        //
+        //                $competitor_info_data = [
+        //                    'email' => $adress->email,
+        //                    'adress' => $adress->adress,
+        //                    'postal_code' => $adress->postal_code,
+        //                    'place' => $adress->city,
+        //                    'cuntry_id' => $adress->country_id,
+        //                ];
+        //
+        //                $info = DB::connection('vbapp')->select('SELECT * FROM competitor_info  WHERE competitor_uid = ?', ['2922a6e9-9e32-4832-9575-b3d2eb3011b9']);
+        //                if (count($info) > 0) {
+        //                    $affectedRows = DB::connection('vbapp')->table('competitor_info')->where('competitor_uid', '2922a6e9-9e32-4832-9575-b3d2eb3011b9')->update($competitor_info_data);
+        //                } else {
+        //                    $competitor_info_data['competitor_uid'] = '2922a6e9-9e32-4832-9575-b3d2eb3011b9';
+        //                    $affectedRows = DB::connection('vbapp')->table('competitor_info')->insert($competitor_info_data);
+        //                }
+        //
+        //                echo "Record updated successfully.";
+        //            } else {
+        //                echo "No record found to update.";
+        //            }
+        //        }
 
 
         return view('registrations.updatesuccess')->with(['text' => 'Your registration details is updated']);
@@ -305,7 +311,7 @@ class RegistrationController extends Controller
         ];
 
         // Check if the event exists and its type is BRM
-        if ($event && ($event->event_type === 'BRM' || $event->event_type === 'BP') ) {
+        if ($event && ($event->event_type === 'BRM' || $event->event_type === 'BP')) {
             // For BRM events, only show official clubs or clubs with ACP codes
             $brmClubs = Club::where('official_club', true)
                 ->orWhere('acp_code', 'LIKE', 'SE%')
@@ -335,12 +341,22 @@ class RegistrationController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
+            'country' => 'required',
+            'tel' => 'required|string|max:100',
+            'street-address' => 'required|string|max:100',
+            'postal-code' => 'required|string|max:100',
+            'city' => 'required|string|max:100',
             'email' => 'required|regex:/(.+)@(.+)\.(.+)/i',
             'email-confirm' => 'required|regex:/(.+)@(.+)\.(.+)/i',
             'year' => 'required',
             'month' => 'required',
             'day' => 'required'
         ]);
+
+        $registration_closes = Carbon::parse($event->eventconfiguration->registration_closes);
+        if ($registration_closes->lt(Carbon::now())) {
+            return back()->withErrors(['registration_closes' => 'Registrering är stängd'])->withInput();
+        }
 
         $string_to_hash = strtolower($request['first_name']) . strtolower($request['last_name']) . strtolower($request['year'] . "-" . $request['month'] . "-" . $request['day']);
         // Rimligen är en och samma person bara registrerad en gång per event
@@ -350,7 +366,7 @@ class RegistrationController extends Controller
             if ($request['gdpr'] == 'on') {
                 $person->gdpr_approved = true;
             } else {
-//                return back()->withErrors(['gdpr' => 'You need to approve GDPR'])->withInput();
+                //                return back()->withErrors(['gdpr' => 'You need to approve GDPR'])->withInput();
                 $person->gdpr_approved = false;
             }
 
@@ -377,7 +393,6 @@ class RegistrationController extends Controller
             $contact->tel = $request['tel'];
             $contact->email = $request['email'];
             $person->contactinformation->save();
-
         } else {
             $person = new Person();
             $person->gender = $request['gender'];
@@ -436,7 +451,7 @@ class RegistrationController extends Controller
         }
 
         // Check if the event type is BRM
-        if ($event->event_type === 'BRM' || $event->event_type === 'BP' ) {
+        if ($event->event_type === 'BRM' || $event->event_type === 'BP') {
             // Check if the club exists with the provided ID
             $club = Club::where('club_uid', $request['club_uid'])->first();
 
