@@ -44,6 +44,7 @@ class BRMCompletedRegistrationEmail extends Mailable
         $this->registration = $registration;
         $this->products = $products;
         $this->organizer = $organizer;
+        $this->dnslink = $dnslink;
     }
 
     /**
