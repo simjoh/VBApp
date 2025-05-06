@@ -497,6 +497,13 @@ class RegistrationController extends Controller
                 $optional->save();
             }
 
+            if (strval($request['medal']) == strval($product['productID'])) {
+                $optional = new Optional();
+                $optional->registration_uid = $reg->registration_uid;
+                $optional->productID = $product['productID'];
+                $optional->save();
+            }
+
             if (strval($request['jersey']) == strval($product['productID'])) {
                 $optional = new Optional();
                 $optional->registration_uid = $reg->registration_uid;
