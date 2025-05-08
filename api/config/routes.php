@@ -136,6 +136,9 @@ return function (App $app) {
         $app->get('/participant/{participantUid}/checkpointsforparticipant', \App\Action\Participant\ParticipantAction::class. ':getCheckpointsForparticipant');
         $app->put('/participant/{uid}/checkpoint/{checkpointUid}/rollbackstamp', \App\Action\Participant\ParticipantAction::class . ':rollbackstampAdmin');
         $app->put('/participant/{uid}/checkpoint/{checkpointUid}/stamp', \App\Action\Participant\ParticipantAction::class . ':stampAdmin');
+        $app->put('/participant/{uid}/checkpoint/{checkpointUid}/checkout', \App\Action\Participant\ParticipantAction::class . ':checkoutAdmin');
+        $app->put('/participant/{uid}/checkpoint/{checkpointUid}/rollbackcheckout', \App\Action\Participant\ParticipantAction::class . ':rollbackCheckoutAdmin');
+        $app->put('/participant/{uid}/checkpoint/{checkpointUid}/updatetime', \App\Action\Participant\ParticipantAction::class . ':updateCheckpointTime');
         $app->put('/participant/{uid}/setdnf', \App\Action\Participant\ParticipantAction::class . ':markasDNF');
         $app->put('/participant/{uid}/setdns', \App\Action\Participant\ParticipantAction::class . ':markasDNS');
         $app->put('/participant/{uid}/rollbackdnf', \App\Action\Participant\ParticipantAction::class  . ':rollbackDNF');

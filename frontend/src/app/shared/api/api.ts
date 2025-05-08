@@ -85,7 +85,8 @@ export interface RandonneurCheckPointRepresentation {
   checkpoint: CheckpointRepresentation;
   active: boolean;
   stamptime: string;
-  links: [];
+  checkouttime: string;
+  links: Link[];
 }
 
 export interface  SiteRepresentation {

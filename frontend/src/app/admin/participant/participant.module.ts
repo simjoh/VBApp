@@ -18,6 +18,8 @@ import { ParticipantTableComponent } from './participant-table/participant-table
 import { ParticipantCheckpointTableComponent } from './participant-checkpoint-table/participant-checkpoint-table.component';
 import { EditTimeDialogComponent } from './edit-time-dialog/edit-time-dialog.component';
 import { EditBrevenrDialogComponent } from './edit-brevenr-dialog/edit-brevenr-dialog.component';
+import { EditCheckpointTimeDialogComponent } from './edit-checkpoint-time-dialog/edit-checkpoint-time-dialog.component';
+import { CalendarModule } from 'primeng/calendar';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,8 @@ import { EditBrevenrDialogComponent } from './edit-brevenr-dialog/edit-brevenr-d
     ParticipantTableComponent,
     ParticipantCheckpointTableComponent,
     EditTimeDialogComponent,
-    EditBrevenrDialogComponent
+    EditBrevenrDialogComponent,
+    EditCheckpointTimeDialogComponent
   ],
   imports: [
     ParticipantRoutingModule,
@@ -39,6 +42,7 @@ import { EditBrevenrDialogComponent } from './edit-brevenr-dialog/edit-brevenr-d
     FormsModule,
     DropdownModule,
     SharedModule,
+    CalendarModule
   ],
   exports: []
 })

@@ -13,6 +13,22 @@ class ParticipantCheckpoint
     private ?string $lng;
     private bool $volonteer_checkin;
     private $checkout_date_time;
+    
+    /**
+     * @return mixed
+     */
+    public function getCheckoutDateTime()
+    {
+        return $this->checkout_date_time;
+    }
+    
+    /**
+     * @param mixed $checkout_date_time
+     */
+    public function setCheckoutDateTime($checkout_date_time): void
+    {
+        $this->checkout_date_time = $checkout_date_time;
+    }
 
     /**
      * @return string

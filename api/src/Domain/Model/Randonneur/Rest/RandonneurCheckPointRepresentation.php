@@ -13,6 +13,7 @@ class RandonneurCheckPointRepresentation implements JsonSerializable
     private CheckpointRepresentation $checkpoint;
     private ?bool $active;
     private ?string $stamptime;
+    private ?string $checkouttime;
 
     private array $links = [];
 
@@ -64,6 +65,21 @@ class RandonneurCheckPointRepresentation implements JsonSerializable
         $this->stamptime = $stamptime;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getCheckouttime(): ?string
+    {
+        return $this->checkouttime;
+    }
+
+    /**
+     * @param string|null $checkouttime
+     */
+    public function setCheckouttime(?string $checkouttime): void
+    {
+        $this->checkouttime = $checkouttime;
+    }
 
     /**
      * @return array

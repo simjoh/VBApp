@@ -4,21 +4,22 @@
     <ng-template pTemplate="header">
       <tr>
         <th class="lg:w-1">Logga</th>
-        <th class="lg:w-auto">Adress</th>
-        <th  class="lg:w-2">Ort</th>
+        <th class="lg:w-auto address-column">Adress</th>
+        <th class="lg:w-2">Ort</th>
         <th class="lg:w-1">Distans</th>
-        <th class="lg:w-2">Incheckningar</th>
-        <th class="lg:w-2">Åtgärd</th>
+        <th class="lg:w-1 timestamp-column">Incheckningar</th>
+        <th class="lg:w-1 timestamp-column">Utcheckningar</th>
+        <th class="lg:w-4 actions-column">Åtgärd</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-check>
       <tr>
         <td>
-          <p-image 
-            width="40" 
-            height="40" 
-            [src]="check.checkpoint.site.image" 
-            alt="Checkpoint Image" 
+          <p-image
+            width="40"
+            height="40"
+            [src]="check.checkpoint.site.image"
+            alt="Checkpoint Image"
             [preview]="false"
             imageClass="border-round">
             <ng-template pTemplate="placeholder">
@@ -31,13 +32,68 @@
         <td>{{check.checkpoint.site.adress}}</td>
         <td>{{check.checkpoint.site.place}}</td>
         <td>{{check.checkpoint.distance}}</td>
-        <td>{{check.stamptime | dateTimePrettyPrint}}</td>
-        <td><button pButton [disabled]="$dim | async" (click)="checkin(check)" label="{{check.stamptime  != '' ? 'Ångra': 'Checka in'}}"  type="button"  class="p-button-secondary  container-fluid"></button></td>
+        <td>
+          <div style="display: grid; grid-template-columns: auto 32px; align-items: center;">
+            <div *ngIf="check.stamptime"
+                 [title]="getPrettyTooltip(check.stamptime)"
+                 class="timestamp-cell">{{check.stamptime | dateTimePrettyPrint}}</div>
+            <div *ngIf="!check.stamptime">-</div>
+            <div *ngIf="check.stamptime" class="text-center">
+              <button
+                    pButton
+                    pRipple
+                    icon="pi pi-pencil"
+                    class="p-button-rounded p-button-text p-button-sm edit-icon-button"
+                    (click)="editCheckpointTime(check)"
+                    pTooltip="Ändra tid"
+                    tooltipPosition="top">
+              </button>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div style="display: grid; grid-template-columns: auto 32px; align-items: center;">
+            <div *ngIf="check.checkouttime"
+                 [title]="getPrettyTooltip(check.checkouttime)"
+                 class="timestamp-cell">{{check.checkouttime | dateTimePrettyPrint}}</div>
+            <div *ngIf="!check.checkouttime">-</div>
+            <div *ngIf="check.checkouttime" class="text-center">
+              <button
+                    pButton
+                    pRipple
+                    icon="pi pi-pencil"
+                    class="p-button-rounded p-button-text p-button-sm edit-icon-button"
+                    (click)="editCheckoutTime(check)"
+                    pTooltip="Ändra tid"
+                    tooltipPosition="top">
+              </button>
+            </div>
+          </div>
+        </td>
+        <td class="actions-cell">
+          <div class="action-buttons-container">
+            <button pButton
+                  [disabled]="$dim | async"
+                  (click)="checkin(check)"
+                  label="{{check.stamptime ? 'Ångra': 'Checka in'}}"
+                  type="button"
+                  class="p-button-secondary">
+            </button>
+
+            <button pButton
+                  [disabled]="($dim | async) || (!participantcheckpoint.hasCheckoutLink(check) && !participantcheckpoint.hasRollbackCheckoutLink(check))"
+                  (click)="checkout(check)"
+                  label="{{check.checkouttime ? 'Ångra checkout': 'Checka ut'}}"
+                  type="button"
+                  class="p-button-secondary">
+            </button>
+          </div>
+        </td>
       </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="6" class="text-center p-2">
+        <td colspan="7" class="text-center p-2">
           <i class="pi pi-map-marker text-primary-600 align-middle" style="font-size: 0.875rem; line-height: 1"></i>
           <span class="text-600 align-middle ml-1">Välj en bana för att se deltagare</span>
         </td>

@@ -4,8 +4,15 @@
 //    width: 81.3333%;
 //}
 :host {
-    ::ng-deep {
+    display: block;
+    width: 100%;
 
+    ::ng-deep {
+        /* Set table width to 80% and align it to the left */
+        .p-datatable {
+            width: 80% !important;
+            margin: 0 !important;  /* Left-aligned instead of centered */
+        }
 
 .p-button.p-button-icon-only.p-button-rounded {
     border-radius: 50%;
@@ -43,6 +50,151 @@
 .p-datatable.p-datatable-sm .p-datatable-tbody > tr > td {
     padding: 0.3rem 0.3rem;
      padding-left: 0.5rem;
+}
+
+.address-column {
+  width: auto;
+  min-width: 240px !important;
+  flex-grow: 2; /* Allow this column to grow more than others */
+}
+
+.timestamp-column {
+  width: auto;
+  min-width: 180px !important;
+  max-width: 200px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timestamp-cell {
+  cursor: help;
+  border-bottom: 1px dotted var(--text-color-secondary);
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 1px 0;
+
+  &:hover {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+  }
+}
+
+.actions-column {
+  width: 100%;
+  min-width: 280px !important;
+  padding-right: 0.3rem !important;
+}
+
+.actions-cell {
+  padding: 0.3rem !important;
+  width: 100%;
+
+  :host ::ng-deep & {
+    .p-datatable-tbody & {
+      padding-right: 0.3rem !important;
+      padding-left: 0.3rem !important;
+    }
+  }
+}
+
+.action-buttons-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 0.25rem;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+
+  :host ::ng-deep & {
+    .p-button {
+      flex: 1 1 0;
+      justify-content: center;
+      min-height: 2.357rem;
+      padding: 0.5rem 0.25rem;
+      font-size: 0.875rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+      max-width: none;
+
+      &.p-button-secondary {
+        transition: background-color 0.2s;
+
+        &:not(:disabled):hover {
+          background-color: var(--primary-600);
+          border-color: var(--primary-600);
+        }
+      }
+    }
+  }
+}
+
+/* Timestamp columns cell styles */
+:host ::ng-deep .p-datatable {
+  .p-datatable-tbody > tr > td:nth-child(5),
+  .p-datatable-tbody > tr > td:nth-child(6) {
+    padding: 0.3rem 0.3rem 0.3rem 0.5rem !important;
+    min-width: 180px !important;
+    max-width: 200px !important;
+
+    > div {
+      min-height: 2.357rem;
+    }
+  }
+}
+
+/* Address column cell styles */
+:host ::ng-deep .p-datatable {
+  .p-datatable-tbody > tr > td:nth-child(2) {
+    padding: 0.3rem 0.5rem !important;
+    min-width: 240px !important;
+    max-width: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal; /* Allow wrapping for longer addresses */
+  }
+}
+
+/* Edit pencil icon button styles */
+:host ::ng-deep .edit-icon-button.p-button.p-button-rounded.p-button-text.p-button-sm {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+  padding: 0;
+
+  .pi-pencil {
+    font-size: 0.7rem !important;
+  }
+
+  &:hover {
+    background-color: var(--surface-200) !important;
+  }
+}
+
+/* Enhance table header contrast */
+:host ::ng-deep .p-datatable {
+  .p-datatable-thead > tr > th {
+    background-color: var(--surface-200) !important;
+    color: var(--text-color-secondary) !important;
+    font-weight: 600 !important;
+    border-bottom: 1px solid var(--surface-400) !important;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.03em;
+
+    &.actions-column {
+      background-color: var(--surface-300) !important;
+    }
+
+    &.timestamp-column {
+      background-color: var(--surface-300) !important;
+    }
+  }
 }
 
     }

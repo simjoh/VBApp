@@ -1,4 +1,3 @@
-
 import { ParticipantService } from 'src/app/shared/participant.service';
 import {map, mergeMap, startWith, switchMap, withLatestFrom} from "rxjs/operators";
 import {CheckpointRepresentation, ParticipantRepresentation, RandonneurCheckPointRepresentation} from "../../../shared/api/api";
@@ -62,6 +61,16 @@ export class ParticipantCheckpointTableComponentService {
     });
   }
 
+  async checkout(checkpoint: RandonneurCheckPointRepresentation){
+    if (this.hasCheckoutLink(checkpoint)) {
+      this.participantService.checkoutAdmin(checkpoint).then((res) => {
+        this.para.reload();
+        this.$checkinSubject.next(true);
+      });
+    } else if (this.hasRollbackCheckoutLink(checkpoint)) {
+      this.rollbackCheckout(checkpoint);
+    }
+  }
 
 
   async rollbackStamp(checkpoint: RandonneurCheckPointRepresentation) {
@@ -69,5 +78,42 @@ export class ParticipantCheckpointTableComponentService {
       this.para.reload();
       this.$checkinSubject.next(false);
     });
+  }
+
+  async rollbackCheckout(checkpoint: RandonneurCheckPointRepresentation) {
+    await this.participantService.rollbackCheckoutAdmin(checkpoint).then((res) => {
+      this.para.reload();
+      this.$checkinSubject.next(false);
+    });
+  }
+
+  async updateCheckpointTime(checkpoint: RandonneurCheckPointRepresentation, newTime: Date) {
+    await this.participantService.updateCheckpointTime(checkpoint, newTime).then(() => {
+      this.para.reload();
+      this.$checkinSubject.next(true);
+    });
+  }
+
+  async updateCheckoutTime(checkpoint: RandonneurCheckPointRepresentation, newTime: Date) {
+    await this.participantService.updateCheckoutTime(checkpoint, newTime).then(() => {
+      this.para.reload();
+      this.$checkinSubject.next(true);
+    });
+  }
+
+  hasCheckoutLink(checkpoint: RandonneurCheckPointRepresentation): boolean {
+    if (!checkpoint || !checkpoint.links) {
+      return false;
+    }
+
+    return checkpoint.links.some(link => link.rel === 'relation.randonneur.admin.checkout');
+  }
+
+  hasRollbackCheckoutLink(checkpoint: RandonneurCheckPointRepresentation): boolean {
+    if (!checkpoint || !checkpoint.links) {
+      return false;
+    }
+
+    return checkpoint.links.some(link => link.rel === 'relation.randonneur.admin.checkout.rollback');
   }
 }

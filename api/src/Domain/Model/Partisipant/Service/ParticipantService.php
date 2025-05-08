@@ -467,9 +467,118 @@ class ParticipantService extends ServiceAbstract
         $status = $this->participantRepository->rollbackDns($participant->getParticipantUid());
     }
 
+    public function updateCheckpointTime(?string $participant_uid, ?string $checkpoint_uid, string $stamptime, string $currentUserId): bool
+    {
+        $participant = $this->participantRepository->participantFor($participant_uid);
+        
+        if (!isset($participant)) {
+            throw new BrevetException("Cannot find participant", 5, null);
+        }
+        
+        $checkpoint = $this->checkpointsService->checkpointFor($checkpoint_uid);
+        
+        if (!isset($checkpoint)) {
+            throw new BrevetException("Checkpoint not exists", 5, null);
+        }
+        
+        $track = $this->trackRepository->getTrackByUid($participant->getTrackUid());
+        
+        if (!isset($track)) {
+            throw new BrevetException("Track not exists", 5, null);
+        }
+        
+        try {
+            // Parse the incoming date, accommodating ISO-8601 format with 'Z' (UTC)
+            $datetime = new \DateTime($stamptime);
+            
+            // Account for GMT+2 timezone if the input is in UTC (has 'Z' suffix)
+            if (strpos($stamptime, 'Z') !== false) {
+                // Set the timezone to GMT+2
+                $datetime->setTimezone(new \DateTimeZone('Europe/Stockholm'));
+            }
+            
+            // Format to MySQL datetime format (YYYY-MM-DD HH:MM:SS)
+            $formattedDateTime = $datetime->format('Y-m-d H:i:s');
+        } catch (\Exception $e) {
+            throw new BrevetException("Invalid date format: " . $e->getMessage(), 5, $e);
+        }
+        
+        // Check if this is a start or end checkpoint
+        $isStart = $this->checkpointsService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
+        $isEnd = $this->checkpointsService->isEndCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
+        
+        // Update the timestamp
+        $this->participantRepository->stampOnCheckpointWithTime(
+            $participant->getParticipantUid(),
+            $checkpoint_uid,
+            $formattedDateTime,
+            $isStart ? 1 : 0,  // Set started flag if this is start checkpoint
+            true,             // Mark as admin checkin
+            null,             // No lat/lng for admin edits
+            null
+        );
+        
+        // Update participant state if needed
+        if ($isStart) {
+            $participant->setStarted(true);
+            $this->participantRepository->updateParticipant($participant);
+        } else if ($isEnd) {
+            $participant->setFinished(true);
+            $this->participantRepository->updateParticipant($participant);
+        }
+        
+        return true;
+    }
+
+    public function updateCheckoutTime(?string $participant_uid, ?string $checkpoint_uid, string $checkouttime, string $currentUserId): bool
+    {
+        $participant = $this->participantRepository->participantFor($participant_uid);
+        
+        if (!isset($participant)) {
+            throw new BrevetException("Cannot find participant", 5, null);
+        }
+        
+        $checkpoint = $this->checkpointsService->checkpointFor($checkpoint_uid);
+        
+        if (!isset($checkpoint)) {
+            throw new BrevetException("Checkpoint not exists", 5, null);
+        }
+        
+        $track = $this->trackRepository->getTrackByUid($participant->getTrackUid());
+        
+        if (!isset($track)) {
+            throw new BrevetException("Track not exists", 5, null);
+        }
+        
+        try {
+            // Parse the incoming date, accommodating ISO-8601 format with 'Z' (UTC)
+            $datetime = new \DateTime($checkouttime);
+            
+            // Account for GMT+2 timezone if the input is in UTC (has 'Z' suffix)
+            if (strpos($checkouttime, 'Z') !== false) {
+                // Set the timezone to GMT+2
+                $datetime->setTimezone(new \DateTimeZone('Europe/Stockholm'));
+            }
+            
+            // Format to MySQL datetime format (YYYY-MM-DD HH:MM:SS)
+            $formattedDateTime = $datetime->format('Y-m-d H:i:s');
+        } catch (\Exception $e) {
+            throw new BrevetException("Invalid date format: " . $e->getMessage(), 5, $e);
+        }
+        
+        // Update the checkout timestamp in the database
+        // This assumes there's a method to update checkout time - you might need to create one
+        $this->participantRepository->updateCheckoutTime(
+            $participant->getParticipantUid(),
+            $checkpoint_uid,
+            $formattedDateTime
+        );
+        
+        return true;
+    }
+
     public function stampAdmin(?string $participant_uid, ?string $checkpoint_uid, string $getAttribute): array
     {
-
         $participant = $this->participantRepository->participantFor($participant_uid);
         $checkpoint = $this->checkpointsService->checkpointFor($checkpoint_uid);
         $track = $this->trackRepository->getTrackByUid($participant->getTrackUid());
@@ -488,16 +597,19 @@ class ParticipantService extends ServiceAbstract
             }
             if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, null, null);
+                
+                // For start checkpoint, set checkout time equal to checkin time
+                $this->participantRepository->checkoutFromCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, 1, 0, $track->getStartDateTime());
             } else if (date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, null, null);
+                
+                // For start checkpoint, set checkout time equal to checkin time
+                $this->participantRepository->checkoutFromCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, 1, 0, $track->getStartDateTime());
             } else if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
-//                if($this->settings['demo'] == 'false'){
-//                    if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
-//                        throw new BrevetException("Checkpoint is closed. Closing date time: " . date("Y-m-d H:i:s", strtotime($checkpoint->getClosing())), 6, null);
-//                    }
-//                } else {
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, null, null);
-//                }
+                
+                // For start checkpoint, set checkout time equal to checkin time
+                $this->participantRepository->checkoutFromCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, 1, 0, $track->getStartDateTime());
             } else {
                 throw new BrevetException("Error on checkin", 1, null);
             }
@@ -505,10 +617,7 @@ class ParticipantService extends ServiceAbstract
             $this->participantRepository->updateParticipant($participant);
 
             return $this->randonneurservice->getChecpointsForRandonneurForAdmin($participant, $track);
-
-
         }
-
 
         if ($isEnd == true) {
             if ($participant->isDnf() == true) {
@@ -518,32 +627,26 @@ class ParticipantService extends ServiceAbstract
             $countCheckpoints = $this->checkpointsService->countCheckpointsForTrack($participant->getTrackUid());
             $oktofinish = $this->participantRepository->participantHasStampOnAllExceptFinish($participant->getTrackUid(), $checkpoint->getCheckpointUid(), $participant->getParticipantUid(), $countCheckpoints);
 
-//            if($oktofinish == false){
-//                throw new BrevetException("Cannot checkin on finish checkpoint due to missed checkins on one or more checkpoints. Contact race administrator", 6, null);
-//            }
-
-//            if($this->settings['demo'] == 'false') {
             if ($track->getStartDateTime() != '-') {
                 if ($this->settings['demo'] == 'false') {
-                    // om mål sätt måltid till tiden för instämpling och beräkna tiden mella första och sista instämpling. Sätt totaltiden i participant och markera finished
                     if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
                         throw new BrevetException("Can not finish before the start of the race " . date("Y-m-d H:i:s", strtotime($track->getStartDateTime())), 1, null);
                     }
                 }
             }
-//            }
 
             $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0, null, null);
+            
+            // For end checkpoint, set checkout time equal to checkin time
+            $this->participantRepository->checkoutFromCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0);
+            
             $participant->setDnf(false);
             $participant->setDns(false);
 
             $participant->setFinished(true);
-            // beräkna tiden från första incheckning till nu och sätt tiden
-            //  $participant->setTime(Util::secToHR(Util::calculateSecondsBetween($track->getStartDateTime())));
             $participant->setTime(Util::calculateSecondsBetween($track->getStartDateTime()));
             $this->participantRepository->updateParticipant($participant);
             return $this->randonneurservice->getChecpointsForRandonneurForAdmin($participant, $track);
-
         }
 
         if ($participant->isStarted() == false) {
@@ -554,9 +657,8 @@ class ParticipantService extends ServiceAbstract
         return $this->randonneurservice->getChecpointsForRandonneurForAdmin($participant, $track);
     }
 
-    public function rollbackstampAdmin(?string $participant_uid, ?string $checkpoint_uid, string $getAttribute)
+    public function rollbackstampAdmin(?string $participant_uid, ?string $checkpoint_uid, string $getAttribute): bool
     {
-
         $participant = $this->participantRepository->participantFor($participant_uid);
 
         $track = $this->trackRepository->getTrackByUid($participant->getTrackUid());
@@ -578,8 +680,6 @@ class ParticipantService extends ServiceAbstract
 
         if ($isEnd == true) {
             $this->participantRepository->rollbackStamp($participant->getParticipantUid(), $checkpoint_uid);
-//            $participant->setDnf(false);
-//            $participant->setDns(false);
             $participant->setFinished(false);
             $participant->setTime(null);
             $this->participantRepository->updateParticipant($participant);
@@ -787,5 +887,76 @@ class ParticipantService extends ServiceAbstract
       
       
         return true ;
+    }
+
+    public function checkoutAdmin(?string $participant_uid, ?string $checkpoint_uid, string $getAttribute): array
+    {
+        $participant = $this->participantRepository->participantFor($participant_uid);
+        
+        if (!isset($participant)) {
+            throw new BrevetException("Cannot find participant", 5, null);
+        }
+        
+        $checkpoint = $this->checkpointsService->checkpointFor($checkpoint_uid);
+        
+        if (!isset($checkpoint)) {
+            throw new BrevetException("Checkpoint not exists", 5, null);
+        }
+        
+        $track = $this->trackRepository->getTrackByUid($participant->getTrackUid());
+        
+        if (!isset($track)) {
+            throw new BrevetException("Track not exists", 5, null);
+        }
+        
+        // Check if the participant has checked in at this checkpoint
+        $stampExists = $this->participantRepository->hasStampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid);
+        
+        if (!$stampExists) {
+            throw new BrevetException("Cannot checkout before checking in", 6, null);
+        }
+        
+        // Check if this is a start or end checkpoint - for these, checkout time equals check-in time
+        $isStart = $this->checkpointsService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
+        $isEnd = $this->checkpointsService->isEndCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
+        
+        if ($isStart || $isEnd) {
+            // For start/end checkpoints, checkout time should equal check-in time
+            // Get current check-in time
+            $checkpointStatus = $this->participantRepository->stampTimeOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid);
+            if ($checkpointStatus && $checkpointStatus->getPassededDateTime()) {
+                // Set checkout time equal to check-in time
+                $this->participantRepository->checkoutFromCheckpointWithTime(
+                    $participant->getParticipantUid(), 
+                    $checkpoint_uid, 
+                    1, 
+                    0, 
+                    $checkpointStatus->getPassededDateTime()
+                );
+            }
+        } else {
+            // For intermediate checkpoints, set current time as checkout time
+            $this->participantRepository->checkoutFromCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0);
+        }
+        
+        return $this->randonneurservice->getChecpointsForRandonneurForAdmin($participant, $track);
+    }
+
+    public function rollbackCheckoutAdmin(?string $participant_uid, ?string $checkpoint_uid, string $getAttribute): bool
+    {
+        $participant = $this->participantRepository->participantFor($participant_uid);
+        
+        if (!isset($participant)) {
+            throw new BrevetException("Cannot find participant", 5, null);
+        }
+        
+        $checkpoint = $this->checkpointsService->checkpointFor($checkpoint_uid);
+        
+        if (!isset($checkpoint)) {
+            throw new BrevetException("Checkpoint not exists", 5, null);
+        }
+        
+        // Use clearCheckoutTimeOnly for all checkpoint types to ensure check-in times are never removed
+        return $this->participantRepository->clearCheckoutTimeOnly($participant->getParticipantUid(), $checkpoint_uid);
     }
 }

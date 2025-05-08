@@ -70,7 +70,7 @@ class RandonneurCheckpointAssembly
         return $randonneurcheckpoint;
     }
 
-    public function toRepresentationForAdmin(string $participant_uid, CheckpointRepresentation $checkpoint, bool $stamped, string $track_uid, bool $hasDnf, bool $racepassed, string $stamptime)
+    public function toRepresentationForAdmin(string $participant_uid, CheckpointRepresentation $checkpoint, bool $stamped, string $track_uid, bool $hasDnf, bool $racepassed, string $stamptime, string $checkouttime)
     {
         $randonneurcheckpoint = new RandonneurCheckPointRepresentation();
         $randonneurcheckpoint->setCheckpoint($checkpoint);
@@ -82,6 +82,7 @@ class RandonneurCheckpointAssembly
         }
 
         $randonneurcheckpoint->setStamptime($stamptime);
+        $randonneurcheckpoint->setCheckouttime($checkouttime);
 
 
         $linkArray = array();
@@ -89,6 +90,14 @@ class RandonneurCheckpointAssembly
             array_push($linkArray, new Link("relation.randonneur.admin.stamp", 'PUT', $this->settings['path'] . 'participant/' . $participant_uid . "/checkpoint/" . $checkpoint->getCheckpointUid() . "/stamp"));
         } else {
             array_push($linkArray, new Link("relation.randonneur.admin.stamp.rollback", 'PUT', $this->settings['path'] . 'participant/' . $participant_uid . "/checkpoint/" . $checkpoint->getCheckpointUid() . "/rollbackstamp"));
+            array_push($linkArray, new Link("relation.randonneur.updatetime", 'PUT', $this->settings['path'] . 'participant/' . $participant_uid . "/checkpoint/" . $checkpoint->getCheckpointUid() . "/updatetime"));
+            
+            // Add checkout link if not already checked out
+            if ($checkouttime == null || $checkouttime == "") {
+                array_push($linkArray, new Link("relation.randonneur.admin.checkout", 'PUT', $this->settings['path'] . 'participant/' . $participant_uid . "/checkpoint/" . $checkpoint->getCheckpointUid() . "/checkout"));
+            } else {
+                array_push($linkArray, new Link("relation.randonneur.admin.checkout.rollback", 'PUT', $this->settings['path'] . 'participant/' . $participant_uid . "/checkpoint/" . $checkpoint->getCheckpointUid() . "/rollbackcheckout"));
+            }
         }
 
 

@@ -451,7 +451,7 @@ class ParticipantRepository extends BaseRepository
         } catch (PDOException $e) {
             echo 'Kunde inte uppdatera site: ' . $e->getMessage();
         }
-        return $event;
+        return null;
     }
 
 
@@ -473,7 +473,7 @@ class ParticipantRepository extends BaseRepository
         } catch (PDOException $e) {
             echo 'Kunde inte uppdatera site: ' . $e->getMessage();
         }
-        return $event;
+        return false;
     }
 
     //görs i efterhand
@@ -493,7 +493,7 @@ class ParticipantRepository extends BaseRepository
         } catch (PDOException $e) {
             echo 'Kunde inte uppdatera site: ' . $e->getMessage();
         }
-        return $event;
+        return false;
     }
 
 
@@ -514,7 +514,7 @@ class ParticipantRepository extends BaseRepository
         } catch (PDOException $e) {
             echo 'Kunde inte uppdatera site: ' . $e->getMessage();
         }
-        return $event;
+        return false;
     }
 
 
@@ -535,7 +535,7 @@ class ParticipantRepository extends BaseRepository
         } catch (PDOException $e) {
             echo 'Kunde inte uppdatera site: ' . $e->getMessage();
         }
-        return $event;
+        return false;
     }
 
 
@@ -555,7 +555,7 @@ class ParticipantRepository extends BaseRepository
         } catch (PDOException $e) {
             echo 'Kunde inte uppdatera site: ' . $e->getMessage();
         }
-        return $event;
+        return false;
     }
 
     //görs i efterhand
@@ -574,7 +574,7 @@ class ParticipantRepository extends BaseRepository
         } catch (PDOException $e) {
             echo 'Kunde inte uppdatera site: ' . $e->getMessage();
         }
-        return $event;
+        return false;
     }
 
 
@@ -697,8 +697,20 @@ class ParticipantRepository extends BaseRepository
     public function stampOnCheckpointWithTime(string $participant_uid, string $checkpoint_uid, string $datetime, bool $started, bool $volonteercheckin, $lat, $lng): bool
     {
         try {
-
-            $passed_date_timestamp = $datetime;
+            // Make sure we have a properly formatted MySQL datetime
+            if (strpos($datetime, 'T') !== false || strpos($datetime, 'Z') !== false) {
+                // This is an ISO-8601 format, convert it
+                $dt = new \DateTime($datetime);
+                
+                // If the date has a 'Z' suffix (UTC time), convert to local time (GMT+2)
+                if (strpos($datetime, 'Z') !== false) {
+                    $dt->setTimezone(new \DateTimeZone('Europe/Stockholm'));
+                }
+                
+                $passed_date_timestamp = $dt->format('Y-m-d H:i:s');
+            } else {
+                $passed_date_timestamp = $datetime;
+            }
 
             if ($lat) {
                 $lat = new DecimalNumber($lat);
@@ -714,7 +726,6 @@ class ParticipantRepository extends BaseRepository
                 $lng = null;
             }
 
-
             $passed = true;
             $stmt = $this->connection->prepare($this->sqls('updateCheckpoint'));
             $stmt->bindParam(':participant_uid', $participant_uid);
@@ -724,13 +735,19 @@ class ParticipantRepository extends BaseRepository
             $stmt->bindParam(':volonteer_checkin', $volonteercheckin, PDO::PARAM_BOOL);
             $stmt->bindParam(':lat', $lat);
             $stmt->bindParam(':lng', $lng);
-            $stmt->execute();
-
+            
+            // Execute the statement
+            $success = $stmt->execute();
+            
+            if (!$success) {
+                throw new BrevetException("Failed to execute SQL statement: " . json_encode($stmt->errorInfo()), 5, null);
+            }
+            
+            return true;
         } catch (PDOException $e) {
-
-            echo "Error: " . $e->getMessage();
+            // Instead of just echoing, throw an exception with the error message
+            throw new BrevetException("Failed to update checkpoint time: " . $e->getMessage(), 5, $e);
         }
-        return true;
     }
 
     public function rollbackStamp(string $participant_uid, string $checkpoint_uid): bool
@@ -788,8 +805,6 @@ class ParticipantRepository extends BaseRepository
 
     public function undoCheckout(string $participant_uid, string $checkpoint_uid): bool
     {
-
-
         try {
             $passed_date_timestamp = null;
             $volonteer_checkin = 1;
@@ -804,6 +819,22 @@ class ParticipantRepository extends BaseRepository
         }
 
         return true;
+    }
+
+    public function updateCheckoutTime(string $participant_uid, string $checkpoint_uid, string $checkout_date_time): bool
+    {
+        try {
+            $volonteer_checkin = 1; // Mark as admin checkout
+            $stmt = $this->connection->prepare($this->sqls('updateCheckpointWithCheckout'));
+            $stmt->bindParam(':participant_uid', $participant_uid);
+            $stmt->bindParam(':checkpoint_uid', $checkpoint_uid);
+            $stmt->bindParam(':checkout_date_time', $checkout_date_time);
+            $stmt->bindParam(':volonteer_checkin', $volonteer_checkin, PDO::PARAM_BOOL);
+            $stmt->execute();
+            return true;
+        } catch (PDOException $e) {
+            throw new BrevetException("Failed to update checkout time: " . $e->getMessage(), 5, $e);
+        }
     }
 
     public function stampTimeOnCheckpoint(string $participand_uid, $checkpoint_uid): ?ParticipantCheckpoint
@@ -947,10 +978,27 @@ class ParticipantRepository extends BaseRepository
 
     }
 
-
-
-
-
+    // This method ensures we only clear the checkout time but preserve the check-in time
+    public function clearCheckoutTimeOnly(string $participant_uid, string $checkpoint_uid): bool
+    {
+        try {
+            // Simply set checkout_date_time to null
+            $checkout_date_time = null;
+            $volonteer_checkin = 1;
+            
+            $stmt = $this->connection->prepare($this->sqls('updateCheckpointWithCheckout'));
+            $stmt->bindParam(':participant_uid', $participant_uid);
+            $stmt->bindParam(':checkpoint_uid', $checkpoint_uid);
+            $stmt->bindParam(':checkout_date_time', $checkout_date_time, PDO::PARAM_NULL);
+            $stmt->bindParam(':volonteer_checkin', $volonteer_checkin, PDO::PARAM_BOOL);
+            
+            $status = $stmt->execute();
+            return $status;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }
 
     public function sqls($type)
     {

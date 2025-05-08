@@ -345,6 +345,6 @@ class VolonteerService extends ServiceAbstract
             throw new BrevetException("Checkpoint not exists", 5, null);
         }
         $participant = $this->participantrepository->participantOntRackAndStartNumber($track->getTrackUid(), $startnumber);
-        return $this->participantrepository->undoCheckout($participant->getParticipantUid(), $checkpoint_uid);
+        return $this->participantrepository->clearCheckoutTimeOnly($participant->getParticipantUid(), $checkpoint_uid);
     }
 }

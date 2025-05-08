@@ -135,8 +135,26 @@ export class ParticipantService {
     ).toPromise()
   }
 
+  async checkoutAdmin(checkpoint: RandonneurCheckPointRepresentation) {
+    const link = this.linkService.findByRel(checkpoint.links, 'relation.randonneur.admin.checkout', HttpMethod.PUT)
+    return await this.httpClient.put(link.url, null).pipe(
+      catchError(err => {
+        return throwError(err);
+      })
+    ).toPromise()
+  }
+
   async rollbackcheckinAdmin(checkpoint: RandonneurCheckPointRepresentation) {
     const link = this.linkService.findByRel(checkpoint.links, 'relation.randonneur.admin.stamp.rollback', HttpMethod.PUT)
+    return this.httpClient.put(link.url, null).pipe(
+      catchError(err => {
+        return throwError(err);
+      })
+    ).toPromise()
+  }
+
+  async rollbackCheckoutAdmin(checkpoint: RandonneurCheckPointRepresentation) {
+    const link = this.linkService.findByRel(checkpoint.links, 'relation.randonneur.admin.checkout.rollback', HttpMethod.PUT)
     return this.httpClient.put(link.url, null).pipe(
       catchError(err => {
         return throwError(err);
@@ -202,5 +220,26 @@ export class ParticipantService {
     return await this.linkService.exists(checkpoint.links, 'relation.randonneur.admin.stamp', HttpMethod.PUT)
   }
 
+  async checkoutlinkExists(checkpoint: RandonneurCheckPointRepresentation) {
+    return await this.linkService.exists(checkpoint.links, 'relation.randonneur.admin.checkout', HttpMethod.PUT)
+  }
+
+  async updateCheckpointTime(checkpoint: RandonneurCheckPointRepresentation, newTime: Date): Promise<any> {
+    const link = this.linkService.findByRel(checkpoint.links, 'relation.randonneur.updatetime', HttpMethod.PUT);
+    return this.httpClient.put(link.url, { stamptime: newTime.toISOString() }).pipe(
+      catchError(err => {
+        return throwError(err);
+      })
+    ).toPromise();
+  }
+
+  async updateCheckoutTime(checkpoint: RandonneurCheckPointRepresentation, newTime: Date): Promise<any> {
+    const link = this.linkService.findByRel(checkpoint.links, 'relation.randonneur.updatetime', HttpMethod.PUT);
+    return this.httpClient.put(link.url, { checkouttime: newTime.toISOString() }).pipe(
+      catchError(err => {
+        return throwError(err);
+      })
+    ).toPromise();
+  }
 
 }

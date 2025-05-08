@@ -85,6 +85,15 @@ class ParticipantAction
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    public function checkoutAdmin(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_uid = $route->getArgument('uid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $response->getBody()->write(json_encode($this->participantService->checkoutAdmin($participant_uid, $checkpoint_uid, $request->getAttribute('currentuserUid'))));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
 
     public function rollbackstampAdmin(ServerRequestInterface $request, ResponseInterface $response)
     {
@@ -93,6 +102,57 @@ class ParticipantAction
         $participant_uid = $route->getArgument('uid');
         $checkpoint_uid = $route->getArgument('checkpointUid');
         $response->getBody()->write(json_encode($this->participantService->rollbackstampAdmin($participant_uid, $checkpoint_uid, $request->getAttribute('currentuserUid'))));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+    public function rollbackCheckoutAdmin(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_uid = $route->getArgument('uid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        $response->getBody()->write(json_encode($this->participantService->rollbackCheckoutAdmin($participant_uid, $checkpoint_uid, $request->getAttribute('currentuserUid'))));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+    public function updateCheckpointTime(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_uid = $route->getArgument('uid');
+        $checkpoint_uid = $route->getArgument('checkpointUid');
+        
+        // Get request body data
+        $data = $request->getParsedBody();
+        $stamptime = $data['stamptime'] ?? null;
+        $checkouttime = $data['checkouttime'] ?? null;
+        
+        if (!$stamptime && !$checkouttime) {
+            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+        }
+        
+        $result = false;
+        
+        if ($stamptime) {
+            $result = $this->participantService->updateCheckpointTime(
+                $participant_uid, 
+                $checkpoint_uid, 
+                $stamptime,
+                $request->getAttribute('currentuserUid')
+            );
+        }
+        
+        if ($checkouttime) {
+            // Handle checkout time update
+            $result = $this->participantService->updateCheckoutTime(
+                $participant_uid, 
+                $checkpoint_uid, 
+                $checkouttime,
+                $request->getAttribute('currentuserUid')
+            );
+        }
+        
+        $response->getBody()->write(json_encode(['success' => $result]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 

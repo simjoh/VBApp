@@ -141,6 +141,7 @@ class RandonneurService
 
     public function undoCheckoutFrom(?string $track_uid, ?string $checkpoint_uid, ?string $startnumber, $getAttribute): bool
     {
+    
         $track = $this->trackrepository->getTrackByUid($track_uid);
         if (!isset($track)) {
             throw new BrevetException("Track not exists", 5, null);
@@ -150,7 +151,7 @@ class RandonneurService
             throw new BrevetException("Checkpoint not exists", 5, null);
         }
         $participant = $this->participantRepository->participantOntRackAndStartNumber($track->getTrackUid(), $startnumber);
-        return $this->participantRepository->undoCheckout($participant->getParticipantUid(), $checkpoint_uid);
+        return $this->participantRepository->clearCheckoutTimeOnly($participant->getParticipantUid(), $checkpoint_uid);
     }
 
     public function stampOnCheckpoint(?string $track_uid, $checkpoint_uid, string $startnumber, string $current_useruid, $lat, $long): bool
@@ -412,7 +413,7 @@ class RandonneurService
             $participant->setFinished(false);
             $participant->setTime(null);
             $this->participantRepository->updateParticipant($participant);
-            $this->participantRepository->undoCheckout($participant->getParticipantUid(), $checkpoint_uid);
+            $this->participantRepository->clearCheckoutTimeOnly($participant->getParticipantUid(), $checkpoint_uid);
             return true;
         }
 
@@ -451,6 +452,7 @@ class RandonneurService
             $randonneurcheckpoints = [];
             foreach ($checkpoints as $checkpoint) {
                 $stamptime = "";
+                $checkouttime = "";
                 $stamped = $this->participantRepository->hasStampOnCheckpoint($participant->getParticipantUid(), $checkpoint->getCheckPointUId());
                 $hasDnf = $this->participantRepository->hasDnf($participant->getParticipantUid());
                 $participant_checkpoint = $this->participantRepository->stampTimeOnCheckpoint($participant->getParticipantUid(), $checkpoint->getCheckPointUId());
@@ -459,8 +461,14 @@ class RandonneurService
                     if ($participant_checkpoint->getPassededDateTime() != null) {
                         $stamptime = $participant_checkpoint->getPassededDateTime();
                     }
+
+                   
+
+                    if ($participant_checkpoint->getCheckoutDateTime() != null) {
+                        $checkouttime = $participant_checkpoint->getCheckoutDateTime();
+                    }
                 }
-                array_push($randonneurcheckpoints, $this->randonneurCheckpointAssembly->toRepresentationForAdmin($participant->getParticipantUid(), $checkpoint, $stamped, $track->getTrackUid(), $hasDnf, $racepassed, $stamptime));
+                array_push($randonneurcheckpoints, $this->randonneurCheckpointAssembly->toRepresentationForAdmin($participant->getParticipantUid(), $checkpoint, $stamped, $track->getTrackUid(), $hasDnf, $racepassed, $stamptime, $checkouttime));
             }
 
             return $randonneurcheckpoints;
