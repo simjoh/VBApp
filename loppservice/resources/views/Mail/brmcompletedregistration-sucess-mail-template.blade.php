@@ -186,7 +186,15 @@
 			<td style="width:227pt">
 				<p class="s1" style="padding-top: 0pt;padding-left: 0pt;text-indent: 0pt;text-align: left;">Pris: </p>
 				<p style="text-indent: 0pt;text-align: left;"></p>
-				<p class="s2" style="padding-left: 0pt;text-indent: 0pt;text-align: left;">100 kr</p>
+				<p class="s2" style="padding-left: 0pt;text-indent: 0pt;text-align: left;">
+					@if(trim($event->title) == trim('BP 40 VÄSTERBOTTEN BREVET') || trim($event->title) == trim('BP 80 VÄSTERBOTTEN BREVET'))
+						260 kr
+					@elseif(trim($event->title) == trim('BP 130 VÄSTERBOTTEN BREVET') || trim($event->title) == trim('BP 200 VÄSTERBOTTEN BREVET') || trim($event->title) == trim('BP 300 VÄSTERBOTTEN BREVET'))
+						360 kr
+					@else
+						100 kr
+					@endif
+				</p>
 			</td>
 			<td style="width:14pt">
 				<p style="text-indent: 0pt;text-align: left;"></p>
