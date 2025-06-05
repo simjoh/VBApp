@@ -41,6 +41,8 @@ class CompetitorAssembly
         $competitorrepresentation->setFamilyName($competitor->getFamilyname());
         $competitorrepresentation->setGender($competitor->getGender());
         $competitorrepresentation->setCompetitorUid($competitor->getId());
+        $competitorrepresentation->setBirthDate($competitor->getBirthdate() ?? '');
+        $competitorrepresentation->setGender($competitor->getGender() ?? '');
 
         $linkArray = array();
         $competitorrepresentation->setLinks($linkArray);

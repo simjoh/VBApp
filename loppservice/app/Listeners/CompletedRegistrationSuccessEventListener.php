@@ -41,7 +41,7 @@ class CompletedRegistrationSuccessEventListener
         $registration->reservation = false;
         $registration->reservation_valid_until = null;
         Log::debug("Handling: CompletedRegistrationSuccessEvent " . $registration);
-        Log::debug("Handling: CompletedRegistrationSuccessEvent " . $registration);
+
         if (!$registration->ref_nr) {
             $ref_nr = mt_rand(10000, 99999);
             if (Registration::where('course_uid', $registration->course_uid)->where('ref_nr', $ref_nr)->exists()) {

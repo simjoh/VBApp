@@ -19,12 +19,12 @@ return new class extends Migration
     {
         // Define the event UUIDs to be removed
         $eventUids = [
-            '192e0153-92b9-4166-ab7e-6d34ceced6c0'
+            'cbe4017e-6480-440c-9553-42578e079f6e'
         ];
 
         // Find events matching the criteria (double-check with title and date)
         $events = Event::whereIn('event_uid', $eventUids)
-            ->where('title', 'Bromma 600')
+            ->where('title', 'BRM 200 Örebro Östra')
             ->get();
 
         foreach ($events as $event) {

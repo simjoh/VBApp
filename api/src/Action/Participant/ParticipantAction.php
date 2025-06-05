@@ -535,7 +535,7 @@ class ParticipantAction
         $stream->rewind();
 
         return $response
-            ->withHeader('Content-Type', 'text/csv')
+            ->withHeader('Content-Type', 'text/csv; charset=utf-8')
             ->withHeader('Content-Disposition', 'attachment; filename="' . $result['filename'] . '"')
             ->withBody($stream);
     }

@@ -177,24 +177,23 @@ export class ParticipantTableComponent implements OnInit {
       return;
     }
 
-    const url = environment.backend_url + 'participants/track/' + trackUid + '/export';
+    const url = environment.backend_url + 'participants/track/' + trackUid + '/report/export';
     console.log('Export URL:', url);
 
     this.http.get(url, {
-      responseType: 'text'
+      responseType: 'blob',
+      headers: {
+        'Accept': 'text/csv; charset=utf-8'
+      }
     }).subscribe({
-      next: (response: string) => {
+      next: (response: Blob) => {
         console.log('Response received:', response);
-
-        // Create a blob from the CSV content
-        const blob = new Blob([response], { type: 'text/csv;charset=utf-8' });
-        console.log('Blob created:', blob);
 
         // Generate filename based on current date
         const date = new Date().toISOString().split('T')[0];
         const filename = `Homologation_${date}.csv`;
 
-        saveAs(blob, filename);
+        saveAs(response, filename);
       },
       error: (error) => {
         console.error('Export error:', error);

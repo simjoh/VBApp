@@ -982,37 +982,50 @@ class ParticipantService extends ServiceAbstract
         $organizing_clubID = $track->getOrganizerId();
 
         // Get organizer information
-        $organizer = $this->organizerRepository->getOrganizerById($organizing_clubID);
-        if (!$organizer) {
-            throw new BrevetException("Organizer not found for club", 5, null);
-        }
-
-        if ($organizer->getClubUid() != null) {
-           
-             $club = $this->clubrepository->getClubByUid($organizer->getClubUid());
+        $club = null;
+        if ($organizing_clubID !== null) {
+            $organizer = $this->organizerRepository->getOrganizerById($organizing_clubID);
+            if ($organizer && $organizer->getClubUid() != null) {
+                $club = $this->clubrepository->getClubByUid($organizer->getClubUid());
+            }
         }
 
         if (!$club) {
-            throw new BrevetException("Club not found", 5, null);
+            // Create a default club entry or throw an exception based on your business logic
+            throw new BrevetException("No valid club found for this track", 5, null);
         }
 
-        // Create a new CSV writer with proper path
+        // Create a new CSV writer with proper UTF-8 encoding
         $startDateTime = $track->getStartDateTime();
         if (is_string($startDateTime)) {
             $startDateTime = new \DateTime($startDateTime);
         }
         $filename = 'Homologation_' . $track->getTitle() . '_' . $startDateTime->format('Y-m-d') . '.csv';
+        
+        // Create CSV with UTF-8 BOM for proper encoding of Swedish characters
         $csv = Writer::createFromString('');
+        $csv->setOutputBOM(Writer::BOM_UTF8);
 
         // Add the header rows
         $csv->insertOne(['', 'ORGANIZING CLUB', '', '', 'ACP code number', 'DATE', 'DISTANCE', 'INFORMATION', '', '']);
         $csv->insertOne(['', $club->getTitle(), '', '', $club->getAcpKod(), $date, $distance . ' km', 'Medal', 'Gender', '']);
         $csv->insertOne(['Homologation number', 'LAST NAME', 'FIRST NAME', 'RIDER\'S CLUB', '', 'ACP CODE NUMBER', 'TIME', '(x)', '(F)', 'BIRTH DATE']);
         // Add participant data rows
-        foreach ($participants as $participant) {
 
-           $competitor = $this->competitorService->getCompetitorByUid($participant->getCompetitorUid(), "");
+    
+        foreach ($participants as $participant) {
         
+
+            // Get participant object to access competitor_uid
+            $participantObj = $this->participantRepository->participantFor($participant['participant_uid']);
+            
+            // Skip participants with DNS or DNF status
+            if ($participantObj->isDns() || $participantObj->isDnf()) {
+                continue;
+            }
+            
+            $competitor = $this->competitorService->getCompetitorByUid($participantObj->getCompetitorUid(), "");
+
             $csv->insertOne([
                 $participant['brevenr'] === 0 ? '' : $participant['brevenr'], // Homologation number
                 $participant['efternamn'], // Last name
@@ -1021,8 +1034,8 @@ class ParticipantService extends ServiceAbstract
                 '', // Empty column
                 $participant['brevenr'] == 0 ? '' : $participant['brevenr'], // ACP code number
                 $participant['tid'] ?? '', // Time
-                'x', // Medal (x)
-                $this->settings['genders'][$competitor->getGender()]['en'],
+                $participant['medal'] ? 'x' : '', // Medal (x)
+                $competitor->getGender() == 1 ? 'F' : '', // Gender (F for female)
                 $competitor->getBirthDate() // Birth date
             ]);
         }
