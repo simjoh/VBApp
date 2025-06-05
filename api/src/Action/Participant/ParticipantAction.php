@@ -19,6 +19,11 @@ use Slim\Routing\RouteContext;
 use Slim\Views\Twig;
 use App\Domain\Model\Event\Service\EventService;
 use App\Domain\Model\Track\Service\TrackService;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 
 class ParticipantAction
 {
@@ -267,7 +272,6 @@ class ParticipantAction
     public function addParticipantOntrack2(ServerRequestInterface $request, ResponseInterface $response)
     {
 
-
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('trackUid');
@@ -281,8 +285,14 @@ class ParticipantAction
         if (isset($data->club)) {
             $club = $data->club;
         }
+
+        if (isset($data->medal)) { 
+            $medal = $data->medal;
+        } else {
+            $medal = false;
+        }
         try {
-            $result = $this->participantService->addParticipantOnTrackFromLoppservice($data, $track_uid, $registration, $club);
+            $result = $this->participantService->addParticipantOnTrackFromLoppservice($data, $track_uid, $registration, $club, $medal);
             if ($result) {
                 $response->getBody()->write(json_encode(['valid' => true, 'test' => 'test', 'response_uid' => $data->response_uid, 'registration_uid' => $registration->registration['registration_uid']]));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
@@ -367,6 +377,167 @@ class ParticipantAction
         $result = $this->participantService->participantclickeddnsinmail($participant_uid, "");
    
         return $view->render($response, 'participantdns.html', ['track' => $track ,'results' => $result, 'participant' => $participant]);
+    }
+
+    public function exportParticipantsToExcel(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('trackUid');
+        
+        error_log("Starting Excel export for track: " . $track_uid);
+        
+        // Test data instead of service call
+        $participants = [
+            (object)[
+                'homologationNumber' => '123456',
+                'lastName' => 'Smith',
+                'firstName' => 'Alice',
+                'club' => 'Cycling Pro Club',
+                'acpCode' => 'AC123',
+                'time' => '08:32',
+                'gender' => 'F',
+                'birthDate' => '1985-06-14'
+            ],
+            (object)[
+                'homologationNumber' => '123457',
+                'lastName' => 'Johnson',
+                'firstName' => 'Bob',
+                'club' => 'Fast Wheels',
+                'acpCode' => 'AC124',
+                'time' => '08:50',
+                'gender' => 'M',
+                'birthDate' => '1990-02-10'
+            ],
+            (object)[
+                'homologationNumber' => '123458',
+                'lastName' => 'Anderson',
+                'firstName' => 'Carol',
+                'club' => 'Mountain Riders',
+                'acpCode' => 'AC125',
+                'time' => '09:15',
+                'gender' => 'F',
+                'birthDate' => '1988-11-23'
+            ],
+            (object)[
+                'homologationNumber' => '123459',
+                'lastName' => 'Wilson',
+                'firstName' => 'David',
+                'club' => 'Road Warriors',
+                'acpCode' => 'AC126',
+                'time' => '09:30',
+                'gender' => 'M',
+                'birthDate' => '1992-04-05'
+            ],
+            (object)[
+                'homologationNumber' => '123460',
+                'lastName' => 'Brown',
+                'firstName' => 'Emma',
+                'club' => 'Speed Demons',
+                'acpCode' => 'AC127',
+                'time' => '09:45',
+                'gender' => 'F',
+                'birthDate' => '1995-08-17'
+            ]
+        ];
+        
+        error_log("Test data created with " . count($participants) . " participants");
+        
+        // Create new Spreadsheet using fully qualified class name
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        error_log("Spreadsheet created");
+
+        // ====== HEADER ROWS ======
+        // Row 1: Merged title headers
+        $sheet->mergeCells('C1:E1')->setCellValue('C1', 'ORGANIZING CLUB');
+        $sheet->mergeCells('F1:F1')->setCellValue('F1', 'ACP code number');
+        $sheet->mergeCells('G1:G1')->setCellValue('G1', 'DATE');
+        $sheet->mergeCells('H1:H1')->setCellValue('H1', 'DISTANCE');
+        $sheet->mergeCells('J1:K1')->setCellValue('J1', 'INFORMATION');
+
+        error_log("Header row 1 created");
+
+        // Row 2: Column headers
+        $headers = [
+            'A2' => 'Homologation number',
+            'B2' => 'LAST NAME',
+            'C2' => 'FIRST NAME',
+            'D2' => "RIDER'S CLUB",
+            'E2' => 'ACP CODE NUMBER',
+            'F2' => 'TIME',
+            'G2' => '(x)',
+            'H2' => '(F)',
+            'I2' => 'BIRTH DATE',
+        ];
+        foreach ($headers as $cell => $value) {
+            $sheet->setCellValue($cell, $value);
+        }
+
+        error_log("Header row 2 created");
+
+        // ====== STYLING ======
+        $sheet->getStyle('A1:K2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:K2')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+        error_log("Styling applied");
+
+        // ====== DATA ROWS ======
+        $rowIndex = 3;
+        foreach ($participants as $participant) {
+            $rider = [
+                $participant->homologationNumber,
+                $participant->lastName,
+                $participant->firstName,
+                $participant->club,
+                $participant->acpCode,
+                $participant->time,
+                'x',
+                $participant->gender,
+                $participant->birthDate
+            ];
+            $sheet->fromArray($rider, null, "A$rowIndex");
+            $rowIndex++;
+        }
+
+        error_log("Data rows added, total rows: " . ($rowIndex - 1));
+
+        // Save to temporary file
+        $tempFile = tempnam(sys_get_temp_dir(), 'riders') . '.xlsx';
+        error_log("Temporary file created: " . $tempFile);
+        
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($tempFile);
+        error_log("File saved to: " . $tempFile);
+
+        // Create stream and return response
+        $stream = new \Slim\Psr7\Stream(fopen($tempFile, 'rb'));
+        error_log("Stream created from file");
+
+        return $response
+            ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            ->withHeader('Content-Disposition', 'attachment; filename="rider_sheet.xlsx"')
+            ->withBody($stream);
+    }
+
+    public function generateHomologationCsv(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('trackUid');
+
+        $result = $this->participantService->generateHomologationCsv($track_uid);
+        
+        // Create stream from CSV content
+        $stream = new \Slim\Psr7\Stream(fopen('php://temp', 'r+'));
+        $stream->write($result['content']);
+        $stream->rewind();
+
+        return $response
+            ->withHeader('Content-Type', 'text/csv; charset=utf-8')
+            ->withHeader('Content-Disposition', 'attachment; filename="' . $result['filename'] . '"')
+            ->withBody($stream);
     }
 
     function moveUploadedFile($directory, UploadedFile $uploadedFile)

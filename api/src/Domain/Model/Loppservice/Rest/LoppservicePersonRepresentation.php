@@ -19,6 +19,7 @@ class LoppservicePersonRepresentation implements JsonSerializable {
     public LoppserviceContactinformationRepresentation $contactinformation;
     public array $registration;
     public string $response_uid;
+    public bool $medal;
 
     public function __construct() {
 

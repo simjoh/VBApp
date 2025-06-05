@@ -402,6 +402,7 @@ class ParticipantRepository extends BaseRepository
             $stmt->bindParam(':dnf', $dnf, PDO::PARAM_BOOL);
             $stmt->bindParam(':brevenr', $brevenr);
             $stmt->bindParam(':register_date_time', $register_date_time);
+            $stmt->bindParam(':medal', $medal, PDO::PARAM_BOOL);
             $stmt->execute();
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
@@ -1016,7 +1017,7 @@ class ParticipantRepository extends BaseRepository
         $eventqls['updateParticipant'] = "UPDATE participant SET  track_uid=:track_uid , competitor_uid=:competitor_uid , startnumber=:startnumber, finished=:finished, acpkod=:acpcode, club_uid=:club_uid , dns=:dns, dnf=:dnf , started=:started, register_date_time=:register_date_time , time=:times , brevenr=:brevenr WHERE participant_uid=:participant_uid";
         $eventqls['updateBrevenr'] = "UPDATE participant SET  brevenr=:brevenr WHERE participant_uid=:participant_uid";
         $eventqls['updateTime'] = "UPDATE participant SET  time=:newtime WHERE participant_uid=:participant_uid and track_uid=:track_uid";
-        $eventqls['createParticipant'] = 'INSERT INTO participant(participant_uid, track_uid, competitor_uid, startnumber, finished,  acpkod, club_uid , time ,dns, dnf, brevenr,register_date_time) VALUES (:participant_uid, :track_uid,:competitor_uid,:startnumber,:finished , :acpcode, :club_uid, :time, :dns, :dnf, :brevenr, :register_date_time)';
+        $eventqls['createParticipant'] = 'INSERT INTO participant(participant_uid, track_uid, competitor_uid, startnumber, finished,  acpkod, club_uid , time ,dns, dnf, medal, brevenr,register_date_time) VALUES (:participant_uid, :track_uid,:competitor_uid,:startnumber,:finished , :acpcode, :club_uid, :time, :dns, :dnf, :medal, :brevenr, :register_date_time)';
         $eventqls['participantByTrackAndCompetitorUid'] = 'select *  from participant e where e.track_uid=:track_uid and competitor_uid=:competitor_uid;';
         $eventqls['stampOnCheckpoint'] = 'INSERT INTO participant_checkpoint(participant_uid ,checkpoint_uid, passed, passeded_date_time, lat, lng) VALUES (:participant_uid ,:checkpoint_uid, :passed,:passed_date_time,:lat,:lng)';
         $eventqls['createParticipantCheckpoint'] = 'INSERT INTO participant_checkpoint(participant_uid ,checkpoint_uid, passed, passeded_date_time, lat, lng) VALUES (:participant_uid ,:checkpoint_uid, :passed,:passed_date_time,:lat,:lng)';

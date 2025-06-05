@@ -31,9 +31,9 @@ class NoRegisterCheckoutController extends Controller
                 'no_participant_order' => true,
                 'event_type' => 'MSR'
             ],
-//            'allow_promotion_codes' => true,
-            'success_url' => $YOUR_DOMAIN . '/optionals/checkout/success?event_type=MSR',
-            'cancel_url' => $YOUR_DOMAIN . '/optionals/checkout/cancel?nonpaticipantoptional=' . $optional . '&no_participant_order=' . 'true',
+            'allow_promotion_codes' => true,
+            'success_url' => $YOUR_DOMAIN . '/public/optionals/checkout/success?event_type=MSR',
+            'cancel_url' => $YOUR_DOMAIN . '/public/optionals/checkout/cancel?nonpaticipantoptional=' . $optional . '&no_participant_order=' . 'true',
         ]);
         return redirect($checkout_session->url);
     }

@@ -29,6 +29,9 @@ use League\Csv\Statement;
 use Nette\Utils\DateTime;
 use Psr\Container\ContainerInterface;
 use App\common\GlobalConfig;
+use League\Csv\Writer;
+use App\Domain\Model\Result\Repository\ResultRepository;
+use App\Domain\Model\Organizer\Repository\OrganizerRepository;
 
 class ParticipantService extends ServiceAbstract
 {
@@ -48,19 +51,28 @@ class ParticipantService extends ServiceAbstract
     private $randonneurservice;
     private $countryrepository;
     private $settings;
+    private $resultRepository;
+    private $organizerRepository;
 
-    public function __construct(ContainerInterface             $c,
-                                TrackRepository                $trackRepository,
-                                ParticipantRepository          $participantRepository,
-                                ParticipantAssembly            $participantAssembly,
-                                EventRepository                $eventRepository,
-                                CompetitorService              $competitorService,
-                                CompetitorInfoRepository       $competitorInfoRepository,
-                                ClubRepository                 $clubRepository, PermissionRepository $permissionRepository,
-                                ParticipantInformationAssembly $ciass,
-                                ClubService                    $clubservice,
-                                CompetitorInfoService          $competitorInfoService, CheckpointsService $checkpointsService, RandonneurService $randonneurService, CountryRepository $countryRepository)
-    {
+    public function __construct(
+        ContainerInterface             $c,
+        TrackRepository                $trackRepository,
+        ParticipantRepository          $participantRepository,
+        ParticipantAssembly            $participantAssembly,
+        EventRepository                $eventRepository,
+        CompetitorService              $competitorService,
+        CompetitorInfoRepository       $competitorInfoRepository,
+        ClubRepository                 $clubRepository,
+        PermissionRepository $permissionRepository,
+        ParticipantInformationAssembly $ciass,
+        ClubService                    $clubservice,
+        CompetitorInfoService          $competitorInfoService,
+        CheckpointsService $checkpointsService,
+        RandonneurService $randonneurService,
+        CountryRepository $countryRepository,
+        ResultRepository $resultRepository,
+        OrganizerRepository $organizerRepository
+    ) {
         $this->trackRepository = $trackRepository;
         $this->participantRepository = $participantRepository;
         $this->participantassembly = $participantAssembly;
@@ -76,6 +88,8 @@ class ParticipantService extends ServiceAbstract
         $this->checkpointsService = $checkpointsService;
         $this->randonneurservice = $randonneurService;
         $this->countryrepository = $countryRepository;
+        $this->resultRepository = $resultRepository;
+        $this->organizerRepository = $organizerRepository;
     }
 
 
@@ -179,7 +193,7 @@ class ParticipantService extends ServiceAbstract
         if (!isset($participantforcompetitor)) {
             return array();
         }
-        return $this->participantassembly->toRepresentations($participant, $currentUserUid);
+        return array($this->participantassembly->toRepresentation($participant, $this->getPermissions($currentUserUid)));
     }
 
     public function createparticipant(string $track_uid, ParticipantInformationRepresentation $participantInformationRepresentation, string $currentUserUid): ?ParticipantRepresentation
@@ -214,8 +228,6 @@ class ParticipantService extends ServiceAbstract
                 if ($competitor->getId() != null) {
                     $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParams($competitorInfo->getEmail(), $competitorInfo->getPhone(), $competitorInfo->getAdress(), $competitorInfo->getAdress(), $competitorInfo->getPlace(), $competitorInfo->getCountry(), $competitor->getId());
                 }
-
-
             }
         } else {
             throw new  BrevetException('Kan inte skapa deltagare', 1, null);
@@ -257,7 +269,7 @@ class ParticipantService extends ServiceAbstract
         if (!isset($participantforcompetitor)) {
             return null;
         }
-        return $this->participantassembly->toRepresentation($participant, $currentUserUid);
+        return $this->participantassembly->toRepresentation($participant, $this->getPermissions($currentUserUid));
     }
 
     public function parseUplodesParticipant(string $filename, string $uploaddir, string $trackUid, string $currentUserUid): ?array
@@ -337,11 +349,9 @@ class ParticipantService extends ServiceAbstract
                 // skapa upp inloggning för cyklisten
                 $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $record[0], $record[13]);
             }
-
         }
 
         return $this->participantassembly->toRepresentations($createdParticipants, $currentUserUid);
-
     }
 
 
@@ -350,14 +360,13 @@ class ParticipantService extends ServiceAbstract
         $updated = $this->participantRepository->updateBrevenr($brevenr, $participant_uid);
 
         if ($updated == true) {
-            return $this->participantassembly->toRepresentation($this->participantRepository->participantFor($participant_uid), $currentUserUid);
+            return $this->participantassembly->toRepresentation($this->participantRepository->participantFor($participant_uid), $this->getPermissions($currentUserUid));
         }
         if (!isset($participantforcompetitor)) {
             return null;
         }
 
         return null;
-
     }
 
     public function participantFor(?string $participantUid, string $user_uid): ?ParticipantRepresentation
@@ -419,7 +428,6 @@ class ParticipantService extends ServiceAbstract
                 //Tabort själva deltagaren
                 $rowsaffected = $this->participantRepository->deleteparticipantsOnTrack($track_uid);
             }
-
         } else {
             throw new BrevetException("Går inte att tabort deltagare. Deltagare har registrerade aktiviteter på banan", 5, null);
         }
@@ -440,7 +448,6 @@ class ParticipantService extends ServiceAbstract
         if ($status == true) {
             $participant = $this->participantRepository->participantFor($participant_uid);
         }
-
     }
 
     public function rollbackDnf(?string $participant_uid, string $currentuserUid): bool
@@ -470,43 +477,43 @@ class ParticipantService extends ServiceAbstract
     public function updateCheckpointTime(?string $participant_uid, ?string $checkpoint_uid, string $stamptime, string $currentUserId): bool
     {
         $participant = $this->participantRepository->participantFor($participant_uid);
-        
+
         if (!isset($participant)) {
             throw new BrevetException("Cannot find participant", 5, null);
         }
-        
+
         $checkpoint = $this->checkpointsService->checkpointFor($checkpoint_uid);
-        
+
         if (!isset($checkpoint)) {
             throw new BrevetException("Checkpoint not exists", 5, null);
         }
-        
+
         $track = $this->trackRepository->getTrackByUid($participant->getTrackUid());
-        
+
         if (!isset($track)) {
             throw new BrevetException("Track not exists", 5, null);
         }
-        
+
         try {
             // Parse the incoming date, accommodating ISO-8601 format with 'Z' (UTC)
             $datetime = new \DateTime($stamptime);
-            
+
             // Account for GMT+2 timezone if the input is in UTC (has 'Z' suffix)
             if (strpos($stamptime, 'Z') !== false) {
                 // Set the timezone to GMT+2
                 $datetime->setTimezone(new \DateTimeZone('Europe/Stockholm'));
             }
-            
+
             // Format to MySQL datetime format (YYYY-MM-DD HH:MM:SS)
             $formattedDateTime = $datetime->format('Y-m-d H:i:s');
         } catch (\Exception $e) {
             throw new BrevetException("Invalid date format: " . $e->getMessage(), 5, $e);
         }
-        
+
         // Check if this is a start or end checkpoint
         $isStart = $this->checkpointsService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
         $isEnd = $this->checkpointsService->isEndCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
-        
+
         // Update the timestamp
         $this->participantRepository->stampOnCheckpointWithTime(
             $participant->getParticipantUid(),
@@ -517,7 +524,7 @@ class ParticipantService extends ServiceAbstract
             null,             // No lat/lng for admin edits
             null
         );
-        
+
         // Update participant state if needed
         if ($isStart) {
             $participant->setStarted(true);
@@ -526,46 +533,46 @@ class ParticipantService extends ServiceAbstract
             $participant->setFinished(true);
             $this->participantRepository->updateParticipant($participant);
         }
-        
+
         return true;
     }
 
     public function updateCheckoutTime(?string $participant_uid, ?string $checkpoint_uid, string $checkouttime, string $currentUserId): bool
     {
         $participant = $this->participantRepository->participantFor($participant_uid);
-        
+
         if (!isset($participant)) {
             throw new BrevetException("Cannot find participant", 5, null);
         }
-        
+
         $checkpoint = $this->checkpointsService->checkpointFor($checkpoint_uid);
-        
+
         if (!isset($checkpoint)) {
             throw new BrevetException("Checkpoint not exists", 5, null);
         }
-        
+
         $track = $this->trackRepository->getTrackByUid($participant->getTrackUid());
-        
+
         if (!isset($track)) {
             throw new BrevetException("Track not exists", 5, null);
         }
-        
+
         try {
             // Parse the incoming date, accommodating ISO-8601 format with 'Z' (UTC)
             $datetime = new \DateTime($checkouttime);
-            
+
             // Account for GMT+2 timezone if the input is in UTC (has 'Z' suffix)
             if (strpos($checkouttime, 'Z') !== false) {
                 // Set the timezone to GMT+2
                 $datetime->setTimezone(new \DateTimeZone('Europe/Stockholm'));
             }
-            
+
             // Format to MySQL datetime format (YYYY-MM-DD HH:MM:SS)
             $formattedDateTime = $datetime->format('Y-m-d H:i:s');
         } catch (\Exception $e) {
             throw new BrevetException("Invalid date format: " . $e->getMessage(), 5, $e);
         }
-        
+
         // Update the checkout timestamp in the database
         // This assumes there's a method to update checkout time - you might need to create one
         $this->participantRepository->updateCheckoutTime(
@@ -573,7 +580,7 @@ class ParticipantService extends ServiceAbstract
             $checkpoint_uid,
             $formattedDateTime
         );
-        
+
         return true;
     }
 
@@ -597,17 +604,17 @@ class ParticipantService extends ServiceAbstract
             }
             if (date('Y-m-d H:i:s') < $track->getStartDateTime()) {
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, null, null);
-                
+
                 // For start checkpoint, set checkout time equal to checkin time
                 $this->participantRepository->checkoutFromCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, 1, 0, $track->getStartDateTime());
             } else if (date('Y-m-d H:i:s') < $checkpoint->getClosing() && date('Y-m-d H:i:s') > $track->getStartDateTime()) {
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, null, null);
-                
+
                 // For start checkpoint, set checkout time equal to checkin time
                 $this->participantRepository->checkoutFromCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, 1, 0, $track->getStartDateTime());
             } else if (date('Y-m-d H:i:s') > $checkpoint->getClosing()) {
                 $this->participantRepository->stampOnCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, $track->getStartDateTime(), 1, 0, null, null);
-                
+
                 // For start checkpoint, set checkout time equal to checkin time
                 $this->participantRepository->checkoutFromCheckpointWithTime($participant->getParticipantUid(), $checkpoint_uid, 1, 0, $track->getStartDateTime());
             } else {
@@ -636,10 +643,10 @@ class ParticipantService extends ServiceAbstract
             }
 
             $this->participantRepository->stampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0, null, null);
-            
+
             // For end checkpoint, set checkout time equal to checkin time
             $this->participantRepository->checkoutFromCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0);
-            
+
             $participant->setDnf(false);
             $participant->setDns(false);
 
@@ -700,30 +707,23 @@ class ParticipantService extends ServiceAbstract
     {
 
         $this->createparticipant($track_uid, $participantInformationRepresentation, "");
-//        $track = $this->trackRepository->getTrackByUid($participant->getTrackUid());
+        //        $track = $this->trackRepository->getTrackByUid($participant->getTrackUid());
 
     }
 
-    public function addParticipantOnTrackFromLoppservice(LoppservicePersonRepresentation $loppservicePersonRepresentation, string $track_uid, $loppserviceRegistrationRepresentation, $club): bool
+    public function addParticipantOnTrackFromLoppservice(LoppservicePersonRepresentation $loppservicePersonRepresentation, string $track_uid, $loppserviceRegistrationRepresentation, $club, $medal): bool
     {
 
 
-    
-
-
-              
         $finnsitabell = GlobalConfig::get($track_uid);
-   
-        if($finnsitabell){
+
+        if ($finnsitabell) {
             $track_uid = $finnsitabell;
         }
-   
-        if($track_uid == 'ecc0fccc-ced8-493d-b671-e3379e2f5743'){
+
+        if ($track_uid == 'ecc0fccc-ced8-493d-b671-e3379e2f5743') {
             $track_uid = '15689abe-ebdd-459a-8209-5b04815af486';
         }
-
- 
-     
 
         try {
             $this->validateInput($loppserviceRegistrationRepresentation, $track_uid);
@@ -750,12 +750,11 @@ class ParticipantService extends ServiceAbstract
 
             $competitor = $this->competitorService->getCompetitorByUid3($participant_to_create['person_uid'], "");
             if (!isset($competitor)) {
-                $competitorc = $this->competitorService->createCompetitorFromLoppservice($participant_to_create['firstname'], $participant_to_create['surname'], "", $participant_to_create['birthdate'], $participant_to_create['person_uid'],$participant_to_create['gender']);
-                  if ($competitorc) {
-               $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParamsFromLoppservice($contactinformation['email'], $contactinformation['tel'], $adress['adress'], $adress['postal_code'], $adress['city'], $this->countryrepository->countryFor($adress['country_id'])->country_name_sv, $participant_to_create['person_uid'], $adress['country_id']);
+                $competitorc = $this->competitorService->createCompetitorFromLoppservice($participant_to_create['firstname'], $participant_to_create['surname'], "", $participant_to_create['birthdate'], $participant_to_create['person_uid'], $participant_to_create['gender']);
+                if ($competitorc) {
+                    $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParamsFromLoppservice($contactinformation['email'], $contactinformation['tel'], $adress['adress'], $adress['postal_code'], $adress['city'], $this->countryrepository->countryFor($adress['country_id'])->country_name_sv, $participant_to_create['person_uid'], $adress['country_id']);
                 }
                 $competitor = $competitorc;
-
             }
             if (isset($competitor)) {
                 $participant = new Participant();
@@ -769,6 +768,7 @@ class ParticipantService extends ServiceAbstract
                 $participant->setTime(null);
                 $participant->setStarted(false);
                 $participant->setAcpkod("s");
+                $participant->setMedal($medal);
 
                 if (isset($club)) {
                     // kolla om klubben finns i databasen annars skapa vi en klubb
@@ -799,8 +799,6 @@ class ParticipantService extends ServiceAbstract
         } catch (Exception $e) {
             throw new BrevetException($e->getLine() . $e->getFile(), 5, null);
         }
-
-
     }
 
     private function validateInput($datatovalidate, $trackuid): bool
@@ -839,7 +837,6 @@ class ParticipantService extends ServiceAbstract
     public function updateTime(?string $track_uid, ?string $participant_uid, string $newTime)
     {
         $this->participantRepository->updateTime($track_uid, $participant_uid, $newTime);
-
     }
 
     public function updateParticipantwithbrevenumber($participant_uid, $brevenr)
@@ -877,49 +874,49 @@ class ParticipantService extends ServiceAbstract
     {
         // Empty method to be implemented
 
-      $participant =  $this->participantRepository->participantFor($participant_uid);
+        $participant =  $this->participantRepository->participantFor($participant_uid);
 
-      if(!isset($participant)){
-        throw new BrevetException("Participant not found", 5, null);
-      }
-      $this->participantRepository->setDns($participant->getParticipantUid());
+        if (!isset($participant)) {
+            throw new BrevetException("Participant not found", 5, null);
+        }
+        $this->participantRepository->setDns($participant->getParticipantUid());
 
-      
-      
-        return true ;
+
+
+        return true;
     }
 
     public function checkoutAdmin(?string $participant_uid, ?string $checkpoint_uid, string $getAttribute): array
     {
         $participant = $this->participantRepository->participantFor($participant_uid);
-        
+
         if (!isset($participant)) {
             throw new BrevetException("Cannot find participant", 5, null);
         }
-        
+
         $checkpoint = $this->checkpointsService->checkpointFor($checkpoint_uid);
-        
+
         if (!isset($checkpoint)) {
             throw new BrevetException("Checkpoint not exists", 5, null);
         }
-        
+
         $track = $this->trackRepository->getTrackByUid($participant->getTrackUid());
-        
+
         if (!isset($track)) {
             throw new BrevetException("Track not exists", 5, null);
         }
-        
+
         // Check if the participant has checked in at this checkpoint
         $stampExists = $this->participantRepository->hasStampOnCheckpoint($participant->getParticipantUid(), $checkpoint_uid);
-        
+
         if (!$stampExists) {
             throw new BrevetException("Cannot checkout before checking in", 6, null);
         }
-        
+
         // Check if this is a start or end checkpoint - for these, checkout time equals check-in time
         $isStart = $this->checkpointsService->isStartCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
         $isEnd = $this->checkpointsService->isEndCheckpoint($participant->getTrackUid(), $checkpoint->getCheckpointUid());
-        
+
         if ($isStart || $isEnd) {
             // For start/end checkpoints, checkout time should equal check-in time
             // Get current check-in time
@@ -927,10 +924,10 @@ class ParticipantService extends ServiceAbstract
             if ($checkpointStatus && $checkpointStatus->getPassededDateTime()) {
                 // Set checkout time equal to check-in time
                 $this->participantRepository->checkoutFromCheckpointWithTime(
-                    $participant->getParticipantUid(), 
-                    $checkpoint_uid, 
-                    1, 
-                    0, 
+                    $participant->getParticipantUid(),
+                    $checkpoint_uid,
+                    1,
+                    0,
                     $checkpointStatus->getPassededDateTime()
                 );
             }
@@ -938,25 +935,114 @@ class ParticipantService extends ServiceAbstract
             // For intermediate checkpoints, set current time as checkout time
             $this->participantRepository->checkoutFromCheckpoint($participant->getParticipantUid(), $checkpoint_uid, 1, 0);
         }
-        
+
         return $this->randonneurservice->getChecpointsForRandonneurForAdmin($participant, $track);
     }
 
     public function rollbackCheckoutAdmin(?string $participant_uid, ?string $checkpoint_uid, string $getAttribute): bool
     {
         $participant = $this->participantRepository->participantFor($participant_uid);
-        
+
         if (!isset($participant)) {
             throw new BrevetException("Cannot find participant", 5, null);
         }
-        
+
         $checkpoint = $this->checkpointsService->checkpointFor($checkpoint_uid);
-        
+
         if (!isset($checkpoint)) {
             throw new BrevetException("Checkpoint not exists", 5, null);
         }
-        
+
         // Use clearCheckoutTimeOnly for all checkpoint types to ensure check-in times are never removed
         return $this->participantRepository->clearCheckoutTimeOnly($participant->getParticipantUid(), $checkpoint_uid);
+    }
+
+
+    function generateHomologationCsv($track_uid)
+    {
+        $track = $this->trackRepository->getTrackByUid($track_uid);
+        if (!isset($track)) {
+            throw new BrevetException("Track not exists", 5, null);
+        }
+
+        // Convert string date to DateTime object if needed
+        $startDateTime = $track->getStartDateTime();
+        if (is_string($startDateTime)) {
+            $startDateTime = new \DateTime($startDateTime);
+        }
+        $date = $startDateTime->format('Y-m-d');
+        $distance = $track->getDistance();
+
+        // Get participants data using resultOnTrack
+        $participants = $this->resultRepository->resultOnTrack($track_uid);
+
+
+
+        $track_name = $track->getTitle();
+        $organizing_clubID = $track->getOrganizerId();
+
+        // Get organizer information
+        $club = null;
+        if ($organizing_clubID !== null) {
+            $organizer = $this->organizerRepository->getOrganizerById($organizing_clubID);
+            if ($organizer && $organizer->getClubUid() != null) {
+                $club = $this->clubrepository->getClubByUid($organizer->getClubUid());
+            }
+        }
+
+        if (!$club) {
+            // Create a default club entry or throw an exception based on your business logic
+            throw new BrevetException("No valid club found for this track", 5, null);
+        }
+
+        // Create a new CSV writer with proper UTF-8 encoding
+        $startDateTime = $track->getStartDateTime();
+        if (is_string($startDateTime)) {
+            $startDateTime = new \DateTime($startDateTime);
+        }
+        $filename = 'Homologation_' . $track->getTitle() . '_' . $startDateTime->format('Y-m-d') . '.csv';
+        
+        // Create CSV with UTF-8 BOM for proper encoding of Swedish characters
+        $csv = Writer::createFromString('');
+        $csv->setOutputBOM(Writer::BOM_UTF8);
+
+        // Add the header rows
+        $csv->insertOne(['', 'ORGANIZING CLUB', '', '', 'ACP code number', 'DATE', 'DISTANCE', 'INFORMATION', '', '']);
+        $csv->insertOne(['', $club->getTitle(), '', '', $club->getAcpKod(), $date, $distance . ' km', 'Medal', 'Gender', '']);
+        $csv->insertOne(['Homologation number', 'LAST NAME', 'FIRST NAME', 'RIDER\'S CLUB', '', 'ACP CODE NUMBER', 'TIME', '(x)', '(F)', 'BIRTH DATE']);
+        // Add participant data rows
+
+    
+        foreach ($participants as $participant) {
+        
+
+            // Get participant object to access competitor_uid
+            $participantObj = $this->participantRepository->participantFor($participant['participant_uid']);
+            
+            // Skip participants with DNS or DNF status
+            if ($participantObj->isDns() || $participantObj->isDnf()) {
+                continue;
+            }
+            
+            $competitor = $this->competitorService->getCompetitorByUid($participantObj->getCompetitorUid(), "");
+
+            $csv->insertOne([
+                $participant['brevenr'] === 0 ? '' : $participant['brevenr'], // Homologation number
+                $participant['efternamn'], // Last name
+                $participant['fornamn'], // First name
+                $participant['klubb'], // Rider's club
+                '', // Empty column
+                $participant['brevenr'] == 0 ? '' : $participant['brevenr'], // ACP code number
+                $participant['tid'] ?? '', // Time
+                $participant['medal'] ? 'x' : '', // Medal (x)
+                $competitor->getGender() == 1 ? 'F' : '', // Gender (F for female)
+                $competitor->getBirthDate() // Birth date
+            ]);
+        }
+
+        return [
+            'filename' => $filename,
+            'content' => $csv->toString()
+        ];
     }
 }

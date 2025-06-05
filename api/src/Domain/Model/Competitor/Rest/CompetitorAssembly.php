@@ -39,7 +39,10 @@ class CompetitorAssembly
         $competitorrepresentation = new CompetitorRepresentation();
         $competitorrepresentation->setGivenName($competitor->getGivenname());
         $competitorrepresentation->setFamilyName($competitor->getFamilyname());
+        $competitorrepresentation->setGender($competitor->getGender());
         $competitorrepresentation->setCompetitorUid($competitor->getId());
+        $competitorrepresentation->setBirthDate($competitor->getBirthdate() ?? '');
+        $competitorrepresentation->setGender($competitor->getGender() ?? '');
 
         $linkArray = array();
         $competitorrepresentation->setLinks($linkArray);

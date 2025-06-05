@@ -29,7 +29,8 @@
     "slim/psr7": "^1.2",
     "slim/slim": "^4.6",
     "slim/twig-view": "^3.2",
-    "ext-dom": "*"
+    "ext-dom": "*",
+    "phpoffice/phpspreadsheet": "^4.2"
   },
   "autoload": {
     "psr-4": {

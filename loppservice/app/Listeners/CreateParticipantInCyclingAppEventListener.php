@@ -19,15 +19,18 @@ class CreateParticipantInCyclingAppEventListener
     public function __construct(){}
     public function handle(CreateParticipantInCyclingAppEvent $event): void
     {
-        Log::debug("Handling creatparticiapant");
+        Log::debug("Handling creatparticiapant for registration_uid: " . $event->registration_uid);
         $person = Person::where('person_uid',$event->person_uid)->get()->first();
         $registration = Registration::where('registration_uid',$event->registration_uid)->get()->first();
         $event_event = Event::find($registration->course_uid)->get()->first();
         $club = DB::table('clubs')->select('name')->where('club_uid', $registration->club_uid)->get()->first();
 
-        $responses = Http::withHeaders([
+
+        $medal = DB::table('optionals')->where('registration_uid', $registration->registration_uid)->where('productID', 1014)->exists();
+
+/*         $responses = Http::withHeaders([
             'APIKEY' => env('BREVET_APP_API_KEY'),
-        ])->get(env("BREVET_APP_URL") . '/ping');
+        ])->get(env("BREVET_APP_URL") . '/ping'); */
 
         $responseUid = Uuid::uuid4();
 
@@ -38,7 +41,8 @@ class CreateParticipantInCyclingAppEventListener
             'registration' => $registration,
             'event_uid' => $event_event->event_uid,
             'club' => $club,
-            'response_uid' => $responseUid
+            'response_uid' => $responseUid,
+            'medal' => $medal
         ]);
 
         if ($response->successful()) {

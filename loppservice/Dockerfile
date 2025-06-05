@@ -40,7 +40,7 @@ RUN chmod +x /usr/local/bin/wait-for-db.sh
 
 RUN chmod 777 -R /var/www/html/storage/ && \
     chmod 777 -R /var/www/html/bootstrap/cache/ && \
-    chmod 777 -R /var/www/html/resources/images/ && \
+    chmod 777 -R /var/www/html/resources/ && \
     chown -R www-data:www-data /var/www/ && \
     a2enmod rewrite
 

@@ -77,6 +77,14 @@ export class ParticipantComponentService {
     this.trackService.currentTrack(trackUid);
   }
 
+  public getCurrentTrack(){
+    return this.trackService.getCurrentTrackUid;
+  }
+
+  public getCurrentTrackUid(): string {
+    return this.trackService.getCurrentTrackUid();
+  }
+
   public setCurrentparticipant(participant: ParticipantRepresentation){
     this.participantService.currentparticipant(participant);
   }

@@ -40,42 +40,42 @@
 	</div>
 
 	<div class="overflow-x-auto bg-white shadow-md rounded-lg">
-		<table class="min-w-full">
+		<table class="min-w-full text-sm sm:text-md">
 			<thead>
-				<tr class="bg-[#f5e4a3] text-black">
-					<th class="py-3 px-2 text-left">ID</th>
-					<th class="py-3 px-2 text-left">Efternamn</th>
-					<th class="py-3 px-2 text-left">Förnamn</th>
-					<th class="py-3 px-2 text-left">Klubb</th>
-					<th class="py-3 px-2 text-left">Bana</th>
-					<th class="py-3 px-2 text-left">Kontroll</th>
-					<th class="py-3 px-2 text-left">Stämplat</th>
-					<th class="py-3 px-2 text-left">Status</th>
+				<tr class="bg-[#f5e4a3] text-black text-left">
+					<th class="py-2 sm:py-3 px-2 sm:px-4">#</th>
+					<th class="py-2 sm:py-3 px-2 sm:px-4">Efternamn</th>
+					<th class="py-2 sm:py-3 px-2 sm:px-4">Förnamn</th>
+					<th class="py-2 sm:py-3 px-2 sm:px-4">Klubb</th>
+					<th class="py-2 sm:py-3 px-2 sm:px-4">Bana</th>
+					<th class="py-2 sm:py-3 px-2 sm:px-4">Kontroll</th>
+					<th class="py-2 sm:py-3 px-2 sm:px-4">Stämplat</th>
+					<th class="py-2 sm:py-3 px-2 sm:px-4">Status</th>
 				</tr>
 			</thead>
 			<tbody>
 				{% for name, entry in tracks %}
-				<tr class="{% if loop.index is odd %}bg-white{% else %}bg-gray-100{% endif %} border-b border-gray-200 hover:bg-gray-50">
-					<td class="py-3 px-2">{{entry.ID}}</td>
-					<td class="py-3 px-2">{{entry.Efternamn}}</td>
-					<td class="py-3 px-2">{{entry.Förnamn}}</td>
-					<td class="py-3 px-2">{{entry.Klubb}}</td>
-					<td class="py-3 px-2">
-						<a href="{{entry.trackurl}}" class="text-blue-600 hover:text-blue-800 hover:underline">
+				<tr class="border-b bg-neutral-100 even:bg-white">
+					<td class="py-2 sm:py-3 px-2 sm:px-4">{{entry.ID}}</td>
+					<td class="py-2 sm:py-3 px-2 sm:px-4">{{entry.Efternamn}}</td>
+					<td class="py-2 sm:py-3 px-2 sm:px-4">{{entry.Förnamn}}</td>
+					<td class="py-2 sm:py-3 px-2 sm:px-4">{{entry.Klubb}}</td>
+					<td class="py-2 sm:py-3 px-2 sm:px-4">
+						<a href="{{entry.trackurl}}" class="underline hover:underline decoration-gray-950">
 							{{entry.Bana}}
 						</a>
 					</td>
-					<td class="py-3 px-2">{{entry.Kontroll}}</td>
-					<td class="py-3 px-2">{{entry.Stämplat | date('D j M H:i')}}</td>
-					<td class="py-3 px-2">
+					<td class="py-2 sm:py-3 px-2 sm:px-4">{{entry.Kontroll}}</td>
+					<td class="py-2 sm:py-3 px-2 sm:px-4">{{entry.Stämplat | date('D j M H:i')}}</td>
+					<td class="py-2 sm:py-3 px-2 sm:px-4">
 						{% if entry.Status == 'DNF' %}
-							<img class="status-icon" src="/app/api/uploads/dnf.svg" alt="DNF">
+							<img  src="/app/api/uploads/dnf.svg" alt="DNF">
 						{% elseif entry.Status == 'DNS' %}
-							<img class="status-icon" src="/app/api/uploads/dns.svg" alt="DNS">
+							<img  src="/app/api/uploads/dns.svg" alt="DNS">
 						{% elseif entry.Status == 'FIN' %}
-							<img class="status-icon" src="/app/api/uploads/fin.svg" alt="FIN">
+							<img src="/app/api/uploads/fin.svg" alt="FIN">
 						{% else %}
-							<img class="status-icon" src="/app/api/uploads/ck.svg" alt="Active">
+							<img src="/app/api/uploads/ck.svg" alt="Active">
 						{% endif %}
 					</td>
 				</tr>

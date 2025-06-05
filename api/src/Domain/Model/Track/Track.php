@@ -12,6 +12,7 @@ class Track
    private string $event_uid;
    private ?string $description;
    private ?string $link = "";
+   private ?int $organizer_id = null;
    private ?string $distance;
    private bool $active;
    private array $checkpoints = [];
@@ -202,5 +203,20 @@ class Track
         $this->active = $active;
     }
 
+    /**
+     * @return int|null
+     */
+    public function getOrganizerId(): ?int
+    {
+        return $this->organizer_id;
+    }
+
+    /**
+     * @param int|null $organizer_id
+     */
+    public function setOrganizerId(?int $organizer_id): void
+    {
+        $this->organizer_id = $organizer_id;
+    }
 
 }

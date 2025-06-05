@@ -16,6 +16,8 @@ class Participant
     private bool $dns;
     private bool $dnf;
     private ?bool $started;
+    private ?bool $medal;
+
 
 
     private ?string $brevenr = null;
@@ -230,6 +232,22 @@ class Participant
     public function setStarted(bool $started): void
     {
         $this->started = $started;
+    }
+
+        /**
+     * @return bool|null
+     */
+    public function getMedal(): ?bool
+    {
+        return $this->medal;
+    }
+
+    /**
+     * @param bool|null $medal
+     */
+    public function setMedal(?bool $medal): void
+    {
+        $this->medal = $medal;
     }
 
 
