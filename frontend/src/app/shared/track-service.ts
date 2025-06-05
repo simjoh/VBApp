@@ -87,6 +87,10 @@ export class TrackService {
     this.$currentTrackSubject.next(trackUid);
   }
 
+  public getCurrentTrackUid(): string {
+    return this.$currentTrackSubject.getValue();
+  }
+
   publishReultLinkExists(track: TrackRepresentation) {
     return this.linkService.exists(track.links, 'relation.track.publisresults', HttpMethod.PUT );
   }

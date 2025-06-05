@@ -1,8 +1,8 @@
 <div class="card">
-  <p-table 
-    #dt1  
-    [globalFilterFields]="['participant.startnumber', 'competitorRepresentation.given_name', 'competitorRepresentation.family_name', 'clubRepresentation.title']" 
-    [value]="$participant | async" 
+  <p-table
+    #dt1
+    [globalFilterFields]="['participant.startnumber', 'competitorRepresentation.given_name', 'competitorRepresentation.family_name', 'clubRepresentation.title']"
+    [value]="$participant | async"
     dataKey="participant.participant_uid"
     [tableStyle]="{'width': '100%'}"
     styleClass="p-datatable-customers p-datatable-striped p-datatable-sm p-datatable-gridlines shadow-2"
@@ -14,15 +14,24 @@
       <div class="flex flex-wrap justify-content-between align-items-center gap-3 p-3">
         <span class="p-input-icon-left flex-auto sm:flex-none">
           <i class="pi pi-search"></i>
-          <input 
-            [disabled]="$searchDisabled | async" 
-            pInputText 
-            type="text" 
-            (input)="dt1.filterGlobal($event.target.value, 'contains')" 
-            placeholder="Sök deltagare..." 
+          <input
+            [disabled]="$searchDisabled | async"
+            pInputText
+            type="text"
+            (input)="dt1.filterGlobal($event.target.value, 'contains')"
+            placeholder="Sök deltagare..."
             class="w-full sm:w-auto"
             style="padding-left: 2.5rem"/>
         </span>
+        <button
+          pButton
+          pRipple
+          icon="pi pi-download"
+          label="Exportera homologation"
+          (click)="exportHomologation()"
+          class="p-button-success"
+          [disabled]="!participantComponentService.getCurrentTrackUid()">
+        </button>
       </div>
     </ng-template>
     <ng-template pTemplate="header">
@@ -60,12 +69,12 @@
     <ng-template pTemplate="body" let-participant let-expanded="expanded">
       <tr class="p-selectable-row">
         <td>
-          <button 
-            (click)="currentparticipant(participant.participant)" 
-            type="button" 
-            pButton 
-            pRipple 
-            [pRowToggler]="participant" 
+          <button
+            (click)="currentparticipant(participant.participant)"
+            type="button"
+            pButton
+            pRipple
+            [pRowToggler]="participant"
             class="p-button-text p-button-rounded p-button-plain"
             [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'">
           </button>
@@ -96,11 +105,11 @@
         </td>
         <td>
           <div class="flex justify-content-end gap-2">
-            <button 
-              [disabled]="!isPossibleToDelete(participant.participant)" 
-              (click)="remove(participant.participant)" 
-              pButton 
-              pRipple 
+            <button
+              [disabled]="!isPossibleToDelete(participant.participant)"
+              (click)="remove(participant.participant)"
+              pButton
+              pRipple
               icon="pi pi-trash"
               class="p-button-rounded p-button-danger p-button-text"
               pTooltip="Ta bort"
@@ -139,38 +148,38 @@
               </div>
               <div class="flex justify-content-between align-items-center mt-3">
                 <div class="flex gap-2">
-                  <p-tag 
-                    *ngIf="track.participant.time" 
-                    (click)="editTotalTime(track.participant)" 
-                    icon="pi pi-pencil" 
-                    severity="success" 
+                  <p-tag
+                    *ngIf="track.participant.time"
+                    (click)="editTotalTime(track.participant)"
+                    icon="pi pi-pencil"
+                    severity="success"
                     value="Sluttid: {{track.participant.time}}">
                   </p-tag>
-                  <p-tag 
-                    *ngIf="track.participant.time" 
-                    (click)="editbrevenr(track.participant)" 
-                    icon="pi pi-pencil" 
-                    severity="info" 
+                  <p-tag
+                    *ngIf="track.participant.time"
+                    (click)="editbrevenr(track.participant)"
+                    icon="pi pi-pencil"
+                    severity="info"
                     value="brevetnr: {{track.participant.brevenr}}">
                   </p-tag>
                 </div>
                 <span class="p-buttonset">
-                  <button  
-                    pButton 
-                    pRipple  
-                    [disabled]="!track.participant.started || track.participant.finished" 
-                    (click)="dnf(track.participant)" 
-                    type="button" 
-                    label="{{textDnfButton(track.participant.started, track.participant.dnf)}}" 
+                  <button
+                    pButton
+                    pRipple
+                    [disabled]="!track.participant.started || track.participant.finished"
+                    (click)="dnf(track.participant)"
+                    type="button"
+                    label="{{textDnfButton(track.participant.started, track.participant.dnf)}}"
                     class="p-button-danger">
                   </button>
-                  <button  
-                    pButton 
-                    [disabled]="track.participant.started" 
-                    (click)="dns(track.participant)" 
-                    pRipple 
-                    type="button" 
-                    label="{{textDnsButton(track.participant.started, track.participant.dns)}}" 
+                  <button
+                    pButton
+                    [disabled]="track.participant.started"
+                    (click)="dns(track.participant)"
+                    pRipple
+                    type="button"
+                    label="{{textDnsButton(track.participant.started, track.participant.dns)}}"
                     class="p-button-secondary">
                   </button>
                 </span>
@@ -189,7 +198,7 @@
           <div class="align-items-center">
             <i class="pi pi-users text-primary" style="font-size: 3rem"></i>
             <span class="pl-3  font-bold text-xl mt-3">Välj en bana för att se deltagare</span>
-        
+
           </div>
         </td>
       </tr>

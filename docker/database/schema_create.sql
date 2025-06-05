@@ -30,7 +30,7 @@ CREATE TABLE `checkpoint`
 CREATE TABLE `club`
 (
     `club_uid` char(36) NOT NULL,
-    `acp_kod`  int(10) UNSIGNED DEFAULT NULL,
+    `acp_kod`  varchar(11) DEFAULT NULL,
     `title`    varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -111,6 +111,7 @@ CREATE TABLE `participant`
     `dns`                tinyint(1) DEFAULT 0,
     `dnf`                tinyint(1) DEFAULT 0,
     `started`            tinyint(1) DEFAULT 0,
+    `medal`              tinyint(1) DEFAULT 0,
     `brevenr`            int(10) UNSIGNED DEFAULT NULL,
     `register_date_time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -173,6 +174,7 @@ CREATE TABLE `track`
     `title`            varchar(100)   DEFAULT NULL,
     `link`             varchar(100)   DEFAULT NULL,
     `heightdifference` int(10) UNSIGNED DEFAULT NULL,
+    `organizer_id`     bigint(10)     DEFAULT NULL,
     `event_uid`        char(36)     NOT NULL,
     `description`      varchar(500) NOT NULL,
     `distance`         decimal(10, 2) DEFAULT NULL,
@@ -677,6 +679,7 @@ CREATE TABLE `organizers` (
   `contact_person_name` varchar(100) NOT NULL,
   `email` varchar(255) NOT NULL,
   `active` tinyint(1) NOT NULL DEFAULT 1,
+  `club_uid` char(36) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),

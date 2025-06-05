@@ -160,7 +160,7 @@ class ResultRepository extends BaseRepository
             array_push($track_uids, $track->track_uid);
         }
         $in = str_repeat('?,', count($track_uids) - 1) . '?';
-        $statement = $this->connection->prepare("select p.startnumber as  startnumber, t.title, com.given_name as fornamn, cl.title as klubb, p.time as tid, p.dns, p.dnf , com.family_name as efternamn, t.track_uid, p.participant_uid, co.flag_url_svg as flagga, p.brevenr   from competitors c inner join participant p on p.competitor_uid = c.competitor_uid inner join competitor_info ci on ci.competitor_uid = c.competitor_uid inner join competitors com on com.competitor_uid = p.competitor_uid inner join club cl on cl.club_uid = p.club_uid left join countries co on co.country_id = ci.country_id inner join track t on t.track_uid = p.track_uid where t.track_uid in ($in) and t.active = false order by com.family_name, com.given_name, t.distance;");
+        $statement = $this->connection->prepare("SELECT distinct(p.startnumber) AS startnumber, t.title, com.given_name AS fornamn, cl.title AS klubb, p.time AS tid, p.dns, p.dnf, com.family_name AS efternamn, t.track_uid, p.participant_uid, co.flag_url_svg AS flagga, p.brevenr FROM competitors c INNER JOIN participant p ON p.competitor_uid = c.competitor_uid INNER JOIN competitor_info ci ON ci.competitor_uid = c.competitor_uid INNER JOIN competitors com ON com.competitor_uid = p.competitor_uid INNER JOIN club cl ON cl.club_uid = p.club_uid LEFT JOIN countries co ON co.country_id = ci.country_id INNER JOIN track t ON t.track_uid = p.track_uid WHERE t.track_uid IN ($in) AND t.active = false AND t.start_date_time >= DATE_FORMAT(CURDATE(), '%Y-01-01') AND t.start_date_time < DATE_FORMAT(CURDATE() + INTERVAL 1 YEAR, '%Y-01-01') ORDER BY com.family_name, com.given_name, t.distance;");
         $statement->execute($track_uids);
         $resultset = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $resultset;
@@ -169,10 +169,11 @@ class ResultRepository extends BaseRepository
 
     public function resultOnTrack(string $track_uid)
     {
-        $statement = $this->connection->prepare("select distinct(p.startnumber) as  startnumber, t.title, com.given_name as fornamn, cl.title as klubb, p.time as tid, p.dns, p.dnf , com.family_name as efternamn, t.track_uid, p.participant_uid, co.flag_url_svg as flagga, p.brevenr  from competitors c inner join participant p on p.competitor_uid = c.competitor_uid left join competitor_info ci on ci.competitor_uid = c.competitor_uid inner join competitors com on com.competitor_uid = p.competitor_uid inner join club cl on cl.club_uid = p.club_uid left join countries co on co.country_id = ci.country_id inner join track t on t.track_uid = p.track_uid where t.track_uid=:track_uid and t.active = false order by com.family_name, com.given_name;");
+        $statement = $this->connection->prepare("select distinct(p.startnumber) as  startnumber, t.title, com.given_name as fornamn, cl.title as klubb, p.time as tid, p.dns, p.dnf , com.family_name as efternamn, t.track_uid, p.participant_uid, co.flag_url_svg as flagga, p.brevenr  from competitors c inner join participant p on p.competitor_uid = c.competitor_uid left join competitor_info ci on ci.competitor_uid = c.competitor_uid inner join competitors com on com.competitor_uid = p.competitor_uid inner join club cl on cl.club_uid = p.club_uid left join countries co on co.country_id = ci.country_id inner join track t on t.track_uid = p.track_uid where t.track_uid=:track_uid and t.active = false order by com.family_name, com.given_name, p.medal;");
         $statement->bindParam(':track_uid', $track_uid);
         $statement->execute();
         $resultset = $statement->fetchAll(PDO::FETCH_ASSOC);
+
         return $resultset;
     }
 
@@ -284,78 +285,6 @@ class ResultRepository extends BaseRepository
                     $files['Tid'] = "";
                 } else {
                     $lastcheckpoint_adress = $this->lastCheckpointOnTrack($item['track_uid']);
-                    View
-                    v_dns_on_event_and_track
-                    View
-                    v_partisipant_passed_checkpoints
-                    View
-                    v_partisipant_to_pass_checkpoint
-                    View
-                    v_race_statistic
-                    View
-                    v_result_for_event_and_track
-                    View
-                    v_track_contestant_on_event_and_track
-        
-            Server: s687.loopia.se
-            Database: vasterbottenbrevet_se
-            Table: competitors
-        
-            Browse Browse
-            Structure Structure
-            SQL SQL
-            Search Search
-            Insert Insert
-            Export Export
-            Import Import
-            Operations Operations
-        
-        Page-related settings Click on the bar to scroll to top of page
-        SQL Query Console Console
-        ascending
-        descending
-        Order:
-        Debug SQL
-        Execution order
-        Time taken
-        Order by:
-        Group queries
-        Some error occurred while getting SQL debug info.
-        Options
-        Set default
-        Always expand query messages
-        Show query history at start
-        Show current browsing query
-        Execute queries on Enter and insert new line with Shift+Enter. To make this permanent, view settings.
-        Switch to dark theme
-        
-        Current selection does not contain a unique column. Grid edit, checkbox, Edit, Copy and Delete features are not available. Documentation
-        Showing rows 0 - 24 (35 total, Query took 0.0081 seconds.)
-        select DISTINCT(p.startnumber) as startnumber, t.title, com.given_name as fornamn, cl.title as klubb, p.time as tid, p.dns, p.dnf , com.family_name as efternamn, t.track_uid, p.participant_uid, co.flag_url_svg as flagga, p.brevenr from competitors c inner join participant p on p.competitor_uid = c.competitor_uid left join competitor_info ci on ci.competitor_uid = c.competitor_uid inner join competitors com on com.competitor_uid = p.competitor_uid inner join club cl on cl.club_uid = p.club_uid left join countries co on co.country_id = ci.country_id inner join track t on t.track_uid = p.track_uid where t.track_uid= '3b48ab13-599a-43b8-8fb4-566be94820e3' and t.active = false order by com.family_name, com.given_name;
-        Profiling [ Edit inline ] [ Edit ] [ Explain SQL ] [ Create PHP code ] [ Refresh ]
-            
-            
-            
-            |
-            Show all 	|
-                    Number of rows:
-                Filter rows: 	Sort by key:
-            
-        startnumber 	title 	fornamn 	klubb 	tid 	dns 	dnf 	efternamn 	track_uid 	participant_uid 	flagga 	brevenr 	
-        1035 	Södertörns Pärla 200 	Michael 	Independent Sweden 	NULL 	1 	0 	Ah-King 	3b48ab13-599a-43b8-8fb4-566be94820e3 	b37774dd-f21e-4307-917c-3babb34c075b 	https://flagcdn.com/se.svg 	0
-        1018 	Södertörns Pärla 200 	Jonas 	Randonneur Stockholm 	8:11 	0 	0 	Ahlström 	3b48ab13-599a-43b8-8fb4-566be94820e3 	242e5e67-22db-4199-a71b-5e056f603698 	https://flagcdn.com/se.svg 	988752
-        1029 	Södertörns Pärla 200 	Nicklas 	Fredrikshofs IF CK 	NULL 	1 	0 	Almlöf 	3b48ab13-599a-43b8-8fb4-566be94820e3 	e48a61be-13dd-4557-bed8-8c9bf700daf4 	https://flagcdn.com/se.svg 	0
-        1006 	Södertörns Pärla 200 	Mats 	Randonneur Stockholm 	7:15 	0 	0 	Ängehult 	3b48ab13-599a-43b8-8fb4-566be94820e3 	226bec54-d2cb-4b5f-acb7-eba237c97fff 	https://flagcdn.com/se.svg 	988769
-        1010 	Södertörns Pärla 200 	David 	Independent Sweden 	7:23 	0 	0 	Berling 	3b48ab13-599a-43b8-8fb4-566be94820e3 	15053a9f-1835-457a-883e-fa4f06fc5213 	https://flagcdn.com/se.svg 	988748
-        1007 	Södertörns Pärla 200 	Sven 	Randonneur Stockholm 	8:40 	0 	0 	Cederberg 	3b48ab13-599a-43b8-8fb4-566be94820e3 	ddb6aca7-f92e-4f72-be4c-91db8bd9e069 	https://flagcdn.com/se.svg 	988753
-        1030 	Södertörns Pärla 200 	Tomas 	Randonneur Stockholm 	10:57 	0 	0 	Clemmedsson 	3b48ab13-599a-43b8-8fb4-566be94820e3 	0562a41e-9e55-40b6-b40d-019ae1b70f9b 	https://flagcdn.com/se.svg 	988754
-        1003 	Södertörns Pärla 200 	Niklas 	Randonneur Stockholm 	NULL 	1 	0 	Edvall 	3b48ab13-599a-43b8-8fb4-566be94820e3 	821da58e-8f1b-4030-9404-a3d811485d4a 	https://flagcdn.com/se.svg 	0
-        1021 	Södertörns Pärla 200 	Erland 	Randonneur Stockholm 	8:11 	0 	0 	Ekheden 	3b48ab13-599a-43b8-8fb4-566be94820e3 	f05dc515-b62c-417d-9fe1-05a89ad3fceb 	https://flagcdn.com/se.svg 	988755
-        1028 	Södertörns Pärla 200 	Magnus 	Randonneur Stockholm 	9:53 	0 	0 	Eklund 	3b48ab13-599a-43b8-8fb4-566be94820e3 	a2b978b7-5154-4e0e-abaf-82516b897045 	https://flagcdn.com/se.svg 	988756
-        1015 	Södertörns Pärla 200 	Jenny 	CK Uni 	8:39 	0 	0 	Envall 	3b48ab13-599a-43b8-8fb4-566be94820e3 	657f154d-556e-49db-ad23-c21a54c1e6d1 	https://flagcdn.com/se.svg 	988745
-        1033 	Södertörns Pärla 200 	Mikael 	CK Uni 	8:39 	0 	0 	Envall 	3b48ab13-599a-43b8-8fb4-566be94820e3 	de668d4c-7376-467c-9ce0-3b8dc00f2d85 	https://flagcdn.com/se.svg 	988746
-        1013 	Södertörns Pärla 200 	Johan 	Randonneur Stockholm 	8:19 	0 	0 	Fernberger 	3b48ab13-599a-43b8-8fb4-566be94820e3 	52d2b7c1-8316-42cc-bc60-c176426c8184 	https://flagcdn.com/se.svg 	988757
-        1008 	Södertörns Pärla 200 	Kjell 	Randonneur Stockholm 	8:12 	0 	0 	Fredriksson 	3b48ab13-599a-43b8-8fb4-566be94820e3 	d25851b9-d381-4c98-9881-88cb936d2776 	https://flagcdn.com/se.svg 	988758
                     if ($lastcheckpoint_adress != $item['Sista'] && $lastcheckpoint_adress != null) {
                         $files['Last checkpoint'] = $lastcheckpoint_adress;
                     } else {

@@ -9,6 +9,7 @@ class CompetitorRepresentation implements JsonSerializable
     private string $given_name;
     private string $family_name;
     private string $birth_date;
+    private string $gender;
     private string $competitor_uid;
 
 
@@ -97,6 +98,16 @@ class CompetitorRepresentation implements JsonSerializable
     public function jsonSerialize(): mixed
     {
         return (object)get_object_vars($this);
+    }
+
+    public function getGender(): string
+    {
+        return $this->gender;
+    }
+
+    public function setGender(string $gender): void
+    {
+        $this->gender = $gender;
     }
 
 }

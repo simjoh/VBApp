@@ -307,6 +307,11 @@
       <path value="$PROJECT_DIR$/loppservice/vendor/composer" />
       <path value="$PROJECT_DIR$/loppservice/vendor/spatie/error-solutions" />
       <path value="$PROJECT_DIR$/loppservice/vendor/carbonphp/carbon-doctrine-types" />
+      <path value="$PROJECT_DIR$/api/vendor/markbaker/matrix" />
+      <path value="$PROJECT_DIR$/api/vendor/markbaker/complex" />
+      <path value="$PROJECT_DIR$/api/vendor/maennchen/zipstream-php" />
+      <path value="$PROJECT_DIR$/api/vendor/phpoffice/phpspreadsheet" />
+      <path value="$PROJECT_DIR$/api/vendor/psr/simple-cache" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4">
@@ -315,6 +320,7 @@
   <component name="PhpUnit">
     <phpunit_settings>
       <PhpUnitSettings configuration_file_path="$PROJECT_DIR$/loppservice/phpunit.xml" custom_loader_path="$PROJECT_DIR$/loppservice/vendor/autoload.php" use_configuration_file="true" />
+      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/api/vendor/autoload.php" />
     </phpunit_settings>
   </component>
 </project>

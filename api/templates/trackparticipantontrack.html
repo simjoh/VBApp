@@ -137,18 +137,18 @@
 	{% set extended = (track.distance > 10) %}
 
 	<div class="overflow-x-auto bg-white shadow-md rounded-lg">
-		<table class="min-w-full track-table rounded-lg">
+		<table class="min-w-full text-sm sm:text-md">
 			<thead>
-				<tr class="bg-[#f5e4a3] text-black rounded-t-lg">
-					<th class="py-3 px-2 text-left col-narrow rounded-tl-lg">Control</th>
-					<th class="py-3 px-2 text-left col-small">Km</th>
-					<th class="py-3 px-2 text-left col-small">Km Total</th>
+				<tr class="bg-[#f5e4a3] text-black text-left">
+					<th class="py-2 sm:py-3 px-2 sm:px-4">#</th>
+					<th class="py-2 sm:py-3 px-2 sm:px-4 text-left col-small">Km</th>
+					<th class="py-2 sm:py-3 px-2 sm:px-4 text-left col-small">Km Total</th>
 
 					{% if extended %}
-					<th class="py-3 px-2 text-left col-date">Check in</th>
-					<th class="py-3 px-2 text-left col-medium">Moving Time</th>
-					<th class="py-3 px-2 text-left col-small">Pace km/h</th>
-					<th class="py-3 px-2 text-left col-medium">Moving Total</th>
+					<th class="py-2 sm:py-3 px-2 sm:px-4 text-left col-date">Check in</th>
+					<th class="py-2 sm:py-3 px-2 sm:px-4 text-left col-medium">Moving Time</th>
+					<th class="py-2 sm:py-3 px-2 sm:px-4 text-left col-small">Pace km/h</th>
+					<th class="py-2 sm:py-3 px-2 sm:px-4 text-left col-medium">Moving Total</th>
 					<th class="py-3 px-2 text-left col-small">Avg. km/h</th>
 					<th class="py-3 px-2 text-left col-date">Check out</th>
 					<th class="py-3 px-2 text-left col-medium">Stop Total</th>
@@ -290,69 +290,69 @@
 						{% set total_time = date(first_time).diff(date("now")) %}
 					{% endif %}
 
-					<tr class="{% if loop.index is odd %}bg-white{% else %}bg-gray-100{% endif %} border-b border-gray-200 hover:bg-gray-50">
-						<td class="py-3 px-2">{{ entry.place }}</td>
-						<td class="py-3 px-2">{{ "%.0f" | format(checkpoint_dist) }}</td>
-						<td class="py-3 px-2">{{ "%.0f" | format(entry.distance) }}</td>
+					<tr class="border-b bg-neutral-100 even:bg-white ">
+						<td class="py-2 sm:py-3 px-2 sm:px-4">{{ entry.place }}</td>
+						<td class="py-2 sm:py-3 px-2 sm:px-4">{{ "%.0f" | format(checkpoint_dist) }}</td>
+						<td class="py-2 sm:py-3 px-2 sm:px-4">{{ "%.0f" | format(entry.distance) }}</td>
 
 						{% if extended %}
-						<td class="py-3 px-2">
+						<td class="py-2 sm:py-3 px-2 sm:px-4">
 							{% if has_checked_in %}
 								{{ entry.passeded_date_time | date('D j M H:i') }}
 							{% endif %}
 						</td>
-						<td class="py-3 px-2">
+						<td class="py-2 sm:py-3 px-2 sm:px-4">
 							{% if has_checked_in and not loop.first %}
 								{{ "%d:%02d" | format(delta_time_moving.days * 24 + delta_time_moving.h, delta_time_moving.i) }} 
 							{% endif %}
 						</td>
-						<td class="py-3 px-2">
+						<td class="py-2 sm:py-3 px-2 sm:px-4">
 							{% if has_checked_in and not loop.first %}
 								{{ "%.1f" | format(speed_moving) }}
 							{% endif %}
 						</td>
-						<td class="py-3 px-2">
+						<td class="py-2 sm:py-3 px-2 sm:px-4">
 							{% if has_checked_in and not loop.first %}
 								{{ "%d:%02d" | format(moving_days * 24 + moving_hours, moving_minutes) }}
 							{% endif %}
 						</td>
-						<td class="py-3 px-2">
+						<td class="py-2 sm:py-3 px-2 sm:px-4">
 							{% if has_checked_in and not loop.first %}
 								{{ "%.1f" | format(speed_moving_avg) }}
 							{% endif %}
 						</td>
-						<td class="py-3 px-2">
+						<td class="py-2 sm:py-3 px-2 sm:px-4">
 							{% if has_checked_out %}
 								{{ checkout | date('D j M H:i') }}
 							{% endif %}
 						</td>
-						<td class="py-3 px-2">
+						<td class="py-2 sm:py-3 px-2 sm:px-4">
 							{% if has_checked_in and not loop.first %}
 								{{ "%d:%02d" | format(stop_days * 24 + stop_hours, stop_minutes) }}
 							{% endif %}
 						</td>
-						<td class="py-3 px-2">
+						<td class="py-2 sm:py-3 px-2 sm:px-4">
 							{% if has_checked_in and not loop.first %}
 								{{ "%.1f" | format(speed_avg) }}
 							{% endif %}
 						</td>
 						{% else %}
-						<td class="py-3 px-2">
+						<td class="py-2 sm:py-3 px-2 sm:px-4">
 							{{ entry.passeded_date_time | date('D j M H:i') }}
 						</td>
-						<td class="py-3 px-2">{{ "%.1f" | format(speed) }}</td>
-						<td class="py-3 px-2">
+						<td class="py-2 sm:py-3 px-2 sm:px-4">{{ "%.1f" | format(speed) }}</td>
+						<td class="py-2 sm:py-3 px-2 sm:px-4">
 							{{ "%d:%02d" | format(delta_time.days * 24 + delta_time.h, delta_time.i) }}
 						</td>
 						{% endif %}
 
-						<td class="py-3 px-2">
+						<td class="py-2 sm:py-3 px-2 sm:px-4">
 							{% if (loop.index == last_seen_at_loop_index + 1 and not entry.dnf and has_started) or (has_checked_in and loop.index <= last_seen_at_loop_index) %}
 								{{ "%d:%02d" | format(total_time.days * 24 + total_time.h, total_time.i) }}
 							{% endif %}
 						</td>
 
-						<td class="py-3 px-2 text-center">
+						<td class="py-2 sm:py-3 px-2 sm:px-4 text-left">
 							{% if entry.dns %}
 								<img class="status-icon inline-block" src="/app/api/uploads/dns.svg" alt="DNS">
 							{% elseif loop.last and entry.finished %}
@@ -372,9 +372,9 @@
 					{% if loop.last %}
 					<tr class="bg-gray-200 border-t border-black">
 						{% if extended %}
-						<td colspan="11" class="py-3 px-2 text-right font-bold">
+						<td colspan="11" class="py-2 sm:py-3 px-2 sm:px-4 text-right font-bold">
 						{% else %}
-						<td colspan="6" class="py-3 px-2 text-right font-bold">
+						<td colspan="6" class="py-2 sm:py-3 px-2 sm:px-4 text-right font-bold">
 						{% endif %}
 						{% if entry.finished %}
 							Homologated time:
@@ -382,7 +382,7 @@
 							Remaining time:
 						{% endif %}
 						</td>
-						<td class="py-3 px-2 font-bold">
+						<td class="py-2 sm:py-3 px-2 sm:px-4 font-bold">
 						{% if entry.finished %}
 							{{ entry.time }}
 						{% elseif not entry.dnf and not entry.dns %}
@@ -425,7 +425,7 @@
 							{% endif %}
 						{% endif %}
 						</td>
-						<td class="py-3 px-2"></td>
+						<td class="py-2 sm:py-3 px-2 sm:px-4"></td>
 					</tr>
 					{% endif %}
 				{% endfor %}

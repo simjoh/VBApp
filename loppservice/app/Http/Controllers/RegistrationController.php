@@ -380,13 +380,21 @@ class RegistrationController extends Controller
                 }
             }
             $adress = $person->adress;
+            if ($adress === null) {
+                $adress = new Adress();
+                $adress->adress_uid = Uuid::uuid4();
+                $adress->person_person_uid = $person->person_uid;
+            }
             $adress->adress = $request['street-address'];
             $adress->postal_code = $request['postal-code'];
             $adress->country_id = $request['country'];
             $adress->city = $request['city'];
-            $adress->person_person_uid = $person->person_uid;
 
-            $person->adress->save();
+            if ($person->adress === null) {
+                $person->adress()->save($adress);
+            } else {
+                $person->adress->save();
+            }
 
             $contact = $person->contactinformation;
             $contact->contactinformation_uid = Uuid::uuid4();

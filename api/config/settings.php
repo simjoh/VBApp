@@ -58,6 +58,9 @@ $settings['db'] = [
 ];
 
 
+
+
+
 //$settings['db'] = [
 //    'driver' => 'mysql',
 //    'host' => 's513.loopia.se',
