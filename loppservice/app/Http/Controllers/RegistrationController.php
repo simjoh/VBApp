@@ -396,11 +396,18 @@ class RegistrationController extends Controller
                 $person->adress->save();
             }
 
-            $contact = $person->contactinformation;
-            $contact->contactinformation_uid = Uuid::uuid4();
-            $contact->tel = $request['tel'];
-            $contact->email = $request['email'];
-            $person->contactinformation->save();
+            if ($person->contactinformation) {
+                $contact = $person->contactinformation;
+                $contact->tel = $request['tel'];
+                $contact->email = $request['email'];
+                $person->contactinformation->save();
+            } else {
+                $contact = new Contactinformation();
+                $contact->contactinformation_uid = Uuid::uuid4();
+                $contact->tel = $request['tel'];
+                $contact->email = $request['email'];
+                $person->contactinformation()->save($contact);
+            }
         } else {
             $person = new Person();
             $person->gender = $request['gender'];
