@@ -1,0 +1,4 @@
+
+# docker/stripe/stripe/config.toml
+[default]
+api_key = "pk_test_51NpxWrLnAzN3QPcUsdgdXGnyzj3Fw6SJTiJwp6zX8aYacJMlEfk59Qec2Z687dFEC07iuWrgZra7NHHx7p8Qg2uY00SYfM1ECd"
