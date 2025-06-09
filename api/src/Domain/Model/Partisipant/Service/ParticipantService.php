@@ -715,6 +715,9 @@ class ParticipantService extends ServiceAbstract
     {
 
 
+
+
+
         $finnsitabell = GlobalConfig::get($track_uid);
 
         if ($finnsitabell) {
@@ -980,6 +983,8 @@ class ParticipantService extends ServiceAbstract
 
         $track_name = $track->getTitle();
         $organizing_clubID = $track->getOrganizerId();
+
+       
 
         // Get organizer information
         $club = null;

@@ -27,7 +27,7 @@ services:
       dockerfile: ./loppservice/Dockerfile
       target: dev
     volumes:
-      - ./loppservice:/var/www/html/loppservice
+      - ./loppservice:/var/www/html
       - working_dir2:/var/www/html
     ports:
       - "8082:80"
@@ -35,14 +35,16 @@ services:
       - APP_ENV=dev
       - APP_DEBUG=true
       - DB_CONNECTION=mysql
-      - DB_HOST=db-1
-      - DB_PORT=3306
-      - DB_DATABASE=loppservice
-      - DB_USERNAME=myuser
+      - DB_HOST=192.168.1.194
+      - DB_PORT=3309
+      - DB_DATABASE=vasterbottenbrevet_se_db_2
+      - DB_USERNAME=root
       - DB_PASSWORD=secret
     depends_on:
       db-1:
         condition: service_healthy
+      stripe:
+        condition: service_started
     networks:
       - sample_network
     command: ["/usr/local/bin/wait-for-db.sh", "db-1", "apache2-foreground"]
@@ -114,6 +116,25 @@ services:
       - 8025:8025 # web ui
     networks:
       sample_network:
+  stripe:
+    image: stripe/stripe-cli
+    container_name: stripe-cli
+    volumes:
+      - ./docker/stripe:/root/.config/stripe  # persist credentials/config
+    entrypoint: [ ]
+    command:
+      - sh
+      - -c
+      - |
+        apk add --no-cache curl
+        stripe config --set api_key ${STRIPE_API_KEY}
+        echo "Starting webhook listener..."
+        stripe listen --forward-to app:80/payments/events
+    environment:
+      STRIPE_API_KEY: ${STRIPE_API_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+    networks:
+      - sample_network
 #  brevetapp_gui:
 #    build:
 #      context: ./frontend
@@ -144,3 +165,8 @@ volumes:
   working_dir2:
   db1_data:
   db2_data:
+
+
+
+
+

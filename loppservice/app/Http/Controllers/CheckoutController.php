@@ -68,6 +68,10 @@ class CheckoutController extends Controller
         Session::put('registration', $request["reg"]);
         $YOUR_DOMAIN = env("APP_URL");
         $is_final = $request->boolean('is_final_registration_on_event') == true ? 'true' : 'false';
+
+        // Conditionally add /public only in production
+        $public_path = App::isProduction() ? '/public' : '';
+
         $checkout_session = \Stripe\Checkout\Session::create([
             'client_reference_id' => $registration->registration_uid,
             'line_items' => [$line_items],
@@ -77,8 +81,8 @@ class CheckoutController extends Controller
                 'event_type' => $request["event_type"]
             ],
             'allow_promotion_codes' => true,
-            'success_url' => $YOUR_DOMAIN . '/public/checkout/success?event_type=' . $request["event_type"],
-            'cancel_url' => $YOUR_DOMAIN . '/public/checkout/cancel?registration=' . $registration->registration_uid . '&is_final_registration_on_event=' . $is_final . '&event_type=' . $request['event_type'],
+            'success_url' => $YOUR_DOMAIN . $public_path . '/checkout/success?event_type=' . $request["event_type"],
+            'cancel_url' => $YOUR_DOMAIN . $public_path . '/checkout/cancel?registration=' . $registration->registration_uid . '&is_final_registration_on_event=' . $is_final . '&event_type=' . $request['event_type'],
         ]);
 
         return redirect($checkout_session->url);

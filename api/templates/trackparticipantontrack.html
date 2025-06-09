@@ -213,6 +213,32 @@
 						{% set stop_hours   = 0 %}
 						{% set stop_minutes = 0 %}
 						{% set stop_seconds = 0 %}
+						
+						{# Calculate time limits based on track distance #}
+						{% set time_limit_minutes = 0 %}
+						{% set time_limit_hours = 0 %}
+						{% if track.distance >= 1200 %}
+							{% set time_limit_hours = 90 %}
+						{% elseif track.distance >= 1000 %}
+							{% set time_limit_hours = 75 %}
+						{% elseif track.distance >= 600 %}
+							{% set time_limit_hours = 40 %}
+						{% elseif track.distance >= 400 %}
+							{% set time_limit_hours = 27 %}
+						{% elseif track.distance >= 300 %}
+							{% set time_limit_hours = 20 %}
+						{% elseif track.distance >= 200 %}
+							{% set time_limit_hours = 13 %}
+							{% set time_limit_minutes = 30 %}
+						{% elseif track.distance >= 100 %}
+							{% set time_limit_hours = 6 %}
+							{% set time_limit_minutes = 40 %}
+						{% elseif track.distance >= 80 %}
+							{% set time_limit_hours = 5 %}
+							{% set time_limit_minutes = 20 %}
+						{% else %}
+							{% set time_limit_hours = 0 %}
+						{% endif %}
 					{% endif %}
 
 					{% set checkpoint_dist = entry.distance - prev_checkpoint_dist %}
@@ -290,6 +316,16 @@
 						{% set total_time = date(first_time).diff(date("now")) %}
 					{% endif %}
 
+					{# Check if over time limit #}
+					{% set is_over_time_limit = false %}
+					{% if time_limit_hours > 0 and has_checked_in %}
+						{% set total_time_in_minutes = total_time.days * 24 * 60 + total_time.h * 60 + total_time.i %}
+						{% set time_limit_total_minutes = time_limit_hours * 60 + time_limit_minutes %}
+						{% if total_time_in_minutes > time_limit_total_minutes %}
+							{% set is_over_time_limit = true %}
+						{% endif %}
+					{% endif %}
+
 					<tr class="border-b bg-neutral-100 even:bg-white ">
 						<td class="py-2 sm:py-3 px-2 sm:px-4">{{ entry.place }}</td>
 						<td class="py-2 sm:py-3 px-2 sm:px-4">{{ "%.0f" | format(checkpoint_dist) }}</td>
@@ -352,13 +388,17 @@
 							{% endif %}
 						</td>
 
+			
+
 						<td class="py-2 sm:py-3 px-2 sm:px-4 text-left">
 							{% if entry.dns %}
 								<img class="status-icon inline-block" src="/app/api/uploads/dns.svg" alt="DNS">
-							{% elseif loop.last and entry.finished %}
-								<img class="status-icon inline-block" src="/app/api/uploads/fin.svg" alt="FIN">
 							{% elseif entry.dnf and loop.index == last_seen_at_loop_index %}
 								<img class="status-icon inline-block" src="/app/api/uploads/dnf.svg" alt="DNF">
+							{% elseif loop.last and entry.finished and is_over_time_limit %}
+								<img class="status-icon inline-block" src="/app/api/uploads/otl.svg" alt="OTL">
+							{% elseif loop.last and entry.finished %}
+								<img class="status-icon inline-block" src="/app/api/uploads/fin.svg" alt="FIN">
 							{% elseif has_checked_in and not has_checked_out %}
 								<img class="status-icon inline-block" src="/app/api/uploads/stop.svg" alt="STOP">
 							{% elseif has_checked_out %}
@@ -386,30 +426,6 @@
 						{% if entry.finished %}
 							{{ entry.time }}
 						{% elseif not entry.dnf and not entry.dns %}
-							{% set time_limit_minutes = 0 %}
-							{% set time_limit_hours = 0 %}
-							{% if track.distance >= 1200 %}
-								{% set time_limit_hours = 90 %}
-							{% elseif track.distance >= 1000 %}
-								{% set time_limit_hours = 75 %}
-							{% elseif track.distance >= 600 %}
-								{% set time_limit_hours = 40 %}
-							{% elseif track.distance >= 400 %}
-								{% set time_limit_hours = 27 %}
-							{% elseif track.distance >= 300 %}
-								{% set time_limit_hours = 20 %}
-							{% elseif track.distance >= 200 %}
-								{% set time_limit_hours = 13 %}
-								{% set time_limit_minutes = 30 %}
-							{% elseif track.distance >= 100 %}
-								{% set time_limit_hours = 6 %}
-								{% set time_limit_minutes = 40 %}
-							{% elseif track.distance >= 80 %}
-								{% set time_limit_hours = 5 %}
-								{% set time_limit_minutes = 20 %}
-							{% else %}
-								{% set time_limit_hours = 0 %}
-							{% endif %}
 							{% set hours_left = time_limit_hours - total_time.days * 24 - total_time.h %}
 							{% set minutes_left = time_limit_minutes - total_time.i %}
 							{% if minutes_left < 0 %}

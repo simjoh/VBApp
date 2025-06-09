@@ -1,4 +1,5 @@
+color = ''
+project-name = 'default'
 
-# docker/stripe/stripe/config.toml
 [default]
-api_key = "pk_test_51NpxWrLnAzN3QPcUsdgdXGnyzj3Fw6SJTiJwp6zX8aYacJMlEfk59Qec2Z687dFEC07iuWrgZra7NHHx7p8Qg2uY00SYfM1ECd"
+api_key = 'sk_test_51NpxWrLnAzN3QPcUCkuBUsgtvo9w9PvZIjXDW2JaA4f6gxQbaoxFFEF6A9KHVy7XOEz4ZuCv1AjPIhUqqE1P3dil00qFNy1EWV'

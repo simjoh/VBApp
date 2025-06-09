@@ -387,6 +387,7 @@ class ParticipantRepository extends BaseRepository
             $brevenr2 = $participanttoCreate->getBrevenr() == null ? null : $participanttoCreate->getBrevenr();
             $brevenr = intval($brevenr2);
             $time = $participanttoCreate->getTime();
+            $medal = $participanttoCreate->getMedal();
             //  date("Y-m-d H:i:s");
             $register_date_time = $participanttoCreate->getRegisterDateTime();
             $stmt = $this->connection->prepare($this->sqls('createParticipant'));

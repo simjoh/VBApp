@@ -10,3 +10,9 @@ tmp/*
 
 docker/loppservice/mysql8
 loppservice/vendor
+
+
+
+.env
+docker/stripe/config.toml
+docker/stripe/stripe

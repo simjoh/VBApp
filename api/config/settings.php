@@ -36,9 +36,9 @@ $settings['error'] = [
 //// Database settings
 $settings['db'] = [
     'driver' => 'mysql',
-    'host' => 'db-2',
-    'port' => '3306',
-    'username' => 'myuser',
+    'host' => '192.168.1.194',
+    'port' => '3310',
+    'username' => 'root',
     'database' => 'vasterbottenbrevet_se',
     'password' => 'secret',
     'charset' => 'utf8mb4',

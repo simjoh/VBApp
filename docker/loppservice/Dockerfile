@@ -24,7 +24,12 @@ RUN php artisan config:cache && \
     chmod 777 -R /var/www/html/resources/images/ && \
     chmod 777 -R /var/www/html/ && \
     chown -R www-data:www-data /var/www/ && \
-    a2enmod rewrite
+    a2enmod rewrite && \
+    a2enmod setenvif && \
+    a2enmod headers || true # Added these two for Stripe-Signature header!
+
+WORKDIR /var/www/html
+
 
 FROM php:8.1-apache-buster as production
 

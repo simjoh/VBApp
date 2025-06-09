@@ -31,6 +31,9 @@ class RegistrationController extends Controller
     use HashTrait;
     use GenderTrait;
 
+    // Use class constants instead of enum
+    private const PRODUCT_REGISTRATION = 6;
+    private const PRODUCT_RESERVATION = 7;
 
     public function index(Request $request)
     {
@@ -224,39 +227,6 @@ class RegistrationController extends Controller
             }
         }
 
-        //        $result = DB::connection('vbapp')->select('SELECT * FROM competitors  WHERE competitor_uid = ?', ['2922a6e9-9e32-4832-9575-b3d2eb3011b9']);
-        //        if (count($result) > 0) {
-        //            $data = [
-        //                'given_name' => $person->firstname,
-        //                'family_name' => $person->surname,
-        //                'birthdate' => $person->birthdate,
-        //            ];
-        //            $affectedRows = DB::connection('vbapp')->table('competitors')->where('competitor_uid', '2922a6e9-9e32-4832-9575-b3d2eb3011b9')->update($data);
-        //            if ($affectedRows > 0) {
-        //
-        //                $competitor_info_data = [
-        //                    'email' => $adress->email,
-        //                    'adress' => $adress->adress,
-        //                    'postal_code' => $adress->postal_code,
-        //                    'place' => $adress->city,
-        //                    'cuntry_id' => $adress->country_id,
-        //                ];
-        //
-        //                $info = DB::connection('vbapp')->select('SELECT * FROM competitor_info  WHERE competitor_uid = ?', ['2922a6e9-9e32-4832-9575-b3d2eb3011b9']);
-        //                if (count($info) > 0) {
-        //                    $affectedRows = DB::connection('vbapp')->table('competitor_info')->where('competitor_uid', '2922a6e9-9e32-4832-9575-b3d2eb3011b9')->update($competitor_info_data);
-        //                } else {
-        //                    $competitor_info_data['competitor_uid'] = '2922a6e9-9e32-4832-9575-b3d2eb3011b9';
-        //                    $affectedRows = DB::connection('vbapp')->table('competitor_info')->insert($competitor_info_data);
-        //                }
-        //
-        //                echo "Record updated successfully.";
-        //            } else {
-        //                echo "No record found to update.";
-        //            }
-        //        }
-
-
         return view('registrations.updatesuccess')->with(['text' => 'Your registration details is updated']);
     }
 
@@ -331,14 +301,44 @@ class RegistrationController extends Controller
 
     public function create(Request $request): RedirectResponse
     {
-        $event = Event::where('event_uid', $request['uid'])->get()->first();
-
+        $event = $this->validateEventExists($request['uid']);
         if (!$event) {
-            http_response_code(404);
-            exit();
+            abort(404, 'Event not found');
         }
 
-        $validated = $request->validate([
+        $this->validateRegistrationRequest($request);
+
+        if (!$this->isRegistrationOpen($event)) {
+            return back()->withErrors(['registration_closes' => 'Registrering är stängd'])->withInput();
+        }
+
+        try {
+            // Use transaction only for the data creation part
+            $registration = DB::transaction(function () use ($request, $event) {
+                $person = $this->handlePersonData($request, $event);
+                $registration = $this->createRegistration($request, $event, $person);
+                $this->handleClubAssignment($request, $event, $registration);
+                $this->processOptionalProducts($request, $registration);
+
+                return $registration;
+            });
+
+            // Handle payment redirect outside of transaction so registration is committed
+            return $this->handlePaymentRedirect($event, $registration);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()])->withInput();
+        }
+    }
+
+    private function validateEventExists(string $eventUid): ?Event
+    {
+        return Event::where('event_uid', $eventUid)->first();
+    }
+
+    private function validateRegistrationRequest(Request $request): array
+    {
+
+        return  $request->validate([
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
             'country' => 'required',
@@ -352,225 +352,262 @@ class RegistrationController extends Controller
             'month' => 'required',
             'day' => 'required'
         ]);
+    }
 
+    private function isRegistrationOpen(Event $event): bool
+    {
         $registration_closes = Carbon::parse($event->eventconfiguration->registration_closes);
-        if ($registration_closes->lt(Carbon::now())) {
-            return back()->withErrors(['registration_closes' => 'Registrering är stängd'])->withInput();
-        }
+        return $registration_closes->gt(Carbon::now());
+    }
 
+    private function handlePersonData(Request $request, Event $event): Person
+    {
         $string_to_hash = strtolower($request['first_name']) . strtolower($request['last_name']) . strtolower($request['year'] . "-" . $request['month'] . "-" . $request['day']);
-        // Rimligen är en och samma person bara registrerad en gång per event
+
         if (Person::where('checksum', $this->hashsumfor($string_to_hash))->exists()) {
-            $person = Person::where('checksum', $this->hashsumfor($string_to_hash))->first();
-            $person->gender = $request['gender'];
-            if ($request['gdpr'] == 'on') {
-                $person->gdpr_approved = true;
-            } else {
-                //                return back()->withErrors(['gdpr' => 'You need to approve GDPR'])->withInput();
-                $person->gdpr_approved = false;
-            }
+            return $this->updateExistingPerson($request, $string_to_hash, $event);
+        } else {
+            return $this->createNewPerson($request, $string_to_hash);
+        }
+    }
 
+    private function updateExistingPerson(Request $request, string $string_to_hash, Event $event): Person
+    {
+        $person = Person::where('checksum', $this->hashsumfor($string_to_hash))->first();
 
-            $registrationsforperson = $person->registration;
-            if ($registrationsforperson) {
-                foreach ($registrationsforperson as $x) {
-                    if ($x->course_uid === $request['uid']) {
-                        return back()->withErrors(['same' => 'You already registered on event'])->withInput();
-                    }
+        // Check if already registered for this event
+        $registrationsforperson = $person->registration;
+        if ($registrationsforperson) {
+            foreach ($registrationsforperson as $registration) {
+                if ($registration->course_uid === $request['uid']) {
+                    throw new \Exception('You already registered on event');
                 }
             }
-            $adress = $person->adress;
-            if ($adress === null) {
-                $adress = new Adress();
-                $adress->adress_uid = Uuid::uuid4();
-                $adress->person_person_uid = $person->person_uid;
-            }
-            $adress->adress = $request['street-address'];
-            $adress->postal_code = $request['postal-code'];
-            $adress->country_id = $request['country'];
-            $adress->city = $request['city'];
-
-            if ($person->adress === null) {
-                $person->adress()->save($adress);
-            } else {
-                $person->adress->save();
-            }
-
-            if ($person->contactinformation) {
-                $contact = $person->contactinformation;
-                $contact->tel = $request['tel'];
-                $contact->email = $request['email'];
-                $person->contactinformation->save();
-            } else {
-                $contact = new Contactinformation();
-                $contact->contactinformation_uid = Uuid::uuid4();
-                $contact->tel = $request['tel'];
-                $contact->email = $request['email'];
-                $person->contactinformation()->save($contact);
-            }
-        } else {
-            $person = new Person();
-            $person->gender = $request['gender'];
-            $person->person_uid = Uuid::uuid4();
-            $person->firstname = Str::of($request['first_name'])->ucfirst();
-            $person->surname = Str::of($request['last_name'])->ucfirst();
-            $person->birthdate = $request['year'] . "-" . $request['month'] . "-" . $request['day'];
-            $person->registration_registration_uid = '1111111';
-            $person->checksum = $this->hashsumfor($string_to_hash);
-            if ($request['gdpr'] == 'on') {
-                $person->gdpr_approved = true;
-            } else {
-                $person->gdpr_approved = false;
-            }
-
-
-            $adress = new Adress();
-            $adress->adress_uid = Uuid::uuid4();
-            $adress->adress = $request['street-address'];
-            $adress->postal_code = $request['postal-code'];
-            $adress->country_id = $request['country'];
-            $adress->city = $request['city'];
-            $adress->person_person_uid = $person->person_uid;
-
-            $contact = new Contactinformation();
-            $contact->contactinformation_uid = Uuid::uuid4();
-            $contact->tel = $request['tel'];
-            $contact->email = $request['email'];
-
-            $country = Country::find($request['country']);
-            $person->save();
-            $person->adress()->save($adress);
-            $person->contactinformation()->save($contact);
-            // Set the country_id directly on the address relationship
-            $adress->country_id = $request['country'];
-            $adress->save();
         }
 
+        $person->gender = $request['gender'];
+        $person->gdpr_approved = $request['gdpr'] === 'on';
 
-        $reg_uid = Uuid::uuid4();
+        $this->updatePersonAddress($person, $request);
+        $this->updatePersonContact($person, $request);
+
+        return $person;
+    }
+
+    private function createNewPerson(Request $request, string $string_to_hash): Person
+    {
+        $person = new Person();
+        $person->person_uid = Uuid::uuid4();
+        $person->firstname = Str::of($request['first_name'])->ucfirst();
+        $person->surname = Str::of($request['last_name'])->ucfirst();
+        $person->gender = $request['gender'];
+        $person->birthdate = $request['year'] . "-" . str_pad($request['month'], 2, "0", STR_PAD_LEFT) . "-" . str_pad($request['day'], 2, "0", STR_PAD_LEFT);
+        $person->registration_registration_uid = '1111111';
+        $person->checksum = $this->hashsumfor($string_to_hash);
+        $person->gdpr_approved = $request['gdpr'] === 'on';
+
+        $person->save();
+
+        $this->createPersonAddress($person, $request);
+        $this->createPersonContact($person, $request);
+
+        return $person;
+    }
+
+    private function updatePersonAddress(Person $person, Request $request): void
+    {
+        $address = $person->adress;
+        if ($address === null) {
+            $address = new Adress();
+            $address->adress_uid = Uuid::uuid4();
+            $address->person_person_uid = $person->person_uid;
+        }
+
+        $address->adress = $request['street-address'];
+        $address->postal_code = $request['postal-code'];
+        $address->country_id = $request['country'];
+        $address->city = $request['city'];
+
+        if ($person->adress === null) {
+            $person->adress()->save($address);
+        } else {
+            $address->save();
+        }
+    }
+
+    private function updatePersonContact(Person $person, Request $request): void
+    {
+        if ($person->contactinformation) {
+            $contact = $person->contactinformation;
+            $contact->tel = $request['tel'];
+            $contact->email = $request['email'];
+            $contact->save();
+        } else {
+            $this->createPersonContact($person, $request);
+        }
+    }
+
+    private function createPersonAddress(Person $person, Request $request): void
+    {
+        $address = new Adress();
+        $address->adress_uid = Uuid::uuid4();
+        $address->adress = $request['street-address'];
+        $address->postal_code = $request['postal-code'];
+        $address->country_id = $request['country'];
+        $address->city = $request['city'];
+        $address->person_person_uid = $person->person_uid;
+
+        $person->adress()->save($address);
+    }
+
+    private function createPersonContact(Person $person, Request $request): void
+    {
+        $contact = new Contactinformation();
+        $contact->contactinformation_uid = Uuid::uuid4();
+        $contact->tel = $request['tel'];
+        $contact->email = $request['email'];
+
+        $person->contactinformation()->save($contact);
+    }
+
+    private function createRegistration(Request $request, Event $event, Person $person): Registration
+    {
+        $reg_product = Product::find($request->input('save'));
+        if (!$reg_product) {
+            throw new \Exception('Invalid product selected.');
+        }
+
         $registration = new Registration();
-        $registration->registration_uid = $reg_uid;
-        // banans uid hårdkoda tills vi bygg ut möjlighet att överföra från brevet applikationen
+        $registration->registration_uid = Uuid::uuid4();
         $registration->course_uid = $event->event_uid;
         $registration->person_uid = $person->person_uid;
         $registration->additional_information = $request['extra-info'];
 
-        $reg_product = Product::find($request->input('save'));
-
-        // sätt reserve eller complete baserat på categori. 7 är reservation och 6 är registrering
-        if ($reg_product->categoryID === 7) {
+        // Set reservation status based on product category (7 = reservation, 6 = registration)
+        if ($reg_product->categoryID === self::PRODUCT_RESERVATION) {
             $registration->reservation = true;
             $registration->reservation_valid_until = $event->eventconfiguration->reservationconfig->use_reservation_until;
         } else {
             $registration->reservation = false;
         }
 
-        // Check if the event type is BRM
-        if ($event->event_type === 'BRM' || $event->event_type === 'BP') {
-            // Check if the club exists with the provided ID
-            $club = Club::where('club_uid', $request['club_uid'])->first();
-
-            if (!$club) {
-                return back()->withErrors(['club' => 'The selected club does not exist.'])->withInput();
-            }
-
-            // For BRM events, validate that the club is an official club or has an ACP code
-            if (!$club->official_club && !str_starts_with($club->acp_code ?? '', 'SE')) {
-                return back()->withErrors(['club' => 'For BRM OR BP events, you must select an official club recognized by Audax Club Parisien.'])->withInput();
-            }
-
-            // Set the club_uid to the registration if the club exists and is valid
-            $registration->club_uid = $club->club_uid;
-        } else {
-            // Existing way to check club for MSR
-            $club = Club::whereRaw('LOWER(`name`) LIKE ? ', [trim(strtolower($request['club'])) . '%'])->first();
-            if (!$club) {
-                $club_uid = Uuid::uuid4();
-                $club = new Club();
-                $club->club_uid = $club_uid;
-                $club->name = $request['club'];
-                $club->description = null;
-                $club->official_club = false;
-                $club->save();
-                $registration->club_uid = $club_uid;
-            } else {
-                $registration->club_uid = $club->club_uid;
-            }
-        }
-
         $person->registration()->save($registration);
-        $reg = Registration::find($registration->registration_uid);
 
+        return $registration;
+    }
 
-        //ta hand om  extra tillvalen. väldigt oflexibelt just nu men funkar för det mest initiala
-        $productIds = Product::all('productID')->toArray();;
+    private function handleClubAssignment(Request $request, Event $event, Registration $registration): void
+    {
+        if ($event->event_type === 'BRM' || $event->event_type === 'BP') {
+            $this->handleBrmClubAssignment($request, $registration);
+        } else {
+            $this->handleMsrClubAssignment($request, $registration);
+        }
+    }
 
-        foreach ($productIds as $product) {
-            if ($request[$product['productID']] == 'on') {
-                $optional = new Optional();
-                $optional->registration_uid = $reg->registration_uid;
-                $optional->productID = $product['productID'];
-                $optional->save();
-            }
+    private function handleBrmClubAssignment(Request $request, Registration $registration): void
+    {
+        $club = Club::where('club_uid', $request['club_uid'])->first();
 
-            if (strval($request['productID']) == strval($product['productID'])) {
-                $optional = new Optional();
-                $optional->registration_uid = $reg->registration_uid;
-                $optional->productID = $product['productID'];
-                $optional->save();
-            }
-
-            if (strval($request['dinner']) == strval($product['productID'])) {
-                $optional = new Optional();
-                $optional->registration_uid = $reg->registration_uid;
-                $optional->productID = $product['productID'];
-                $optional->save();
-            }
-
-            if (strval($request['medal']) == strval($product['productID'])) {
-                $optional = new Optional();
-                $optional->registration_uid = $reg->registration_uid;
-                $optional->productID = $product['productID'];
-                $optional->save();
-            }
-
-            if (strval($request['jersey']) == strval($product['productID'])) {
-                $optional = new Optional();
-                $optional->registration_uid = $reg->registration_uid;
-                $optional->productID = $product['productID'];
-                $optional->save();
-            }
+        if (!$club) {
+            throw new \Exception('The selected club does not exist.');
         }
 
+        // Validate that the club is official or has SE ACP code
+        if (!$club->official_club && !str_starts_with($club->acp_code ?? '', 'SE')) {
+            throw new \Exception('For BRM OR BP events, you must select an official club recognized by Audax Club Parisien.');
+        }
 
-        if (App::isProduction()) {
-            $use_stripe = isset($event->eventConfiguration) && isset($event->eventConfiguration->use_stripe_payment)
-                ? $event->eventConfiguration->use_stripe_payment
-                : env("USE_STRIPE_PAYMENT_INTEGRATION");
-            if ($use_stripe) {
-                return to_route('checkout', ["reg" => $reg->registration_uid, 'price_id' => $reg_product->price_id, 'event_type' => $event->event_type]);
-            } else {
-                event(new CompletedRegistrationSuccessEvent($registration));
-                return to_route('checkoutsuccess', ["reg" => $reg->registration_uid, 'price_id' => $reg_product->price_id, 'event_type' => $event->event_type]);
+        $registration->club_uid = $club->club_uid;
+        $registration->save();
+    }
+
+    private function handleMsrClubAssignment(Request $request, Registration $registration): void
+    {
+        $club = Club::where(DB::raw('LOWER(name)'), 'LIKE', strtolower(trim($request['club'])) . '%')->first();
+
+        if (!$club) {
+            $club = new Club();
+            $club->club_uid = Uuid::uuid4();
+            $club->name = $request['club'];
+            $club->description = null;
+            $club->official_club = false;
+            $club->save();
+        }
+
+        $registration->club_uid = $club->club_uid;
+        $registration->save();
+    }
+
+    private function processOptionalProducts(Request $request, Registration $registration): void
+    {
+        $productIds = Product::pluck('productID')->toArray();
+        $optionalFields = ['productID', 'dinner', 'medal', 'jersey'];
+
+        foreach ($productIds as $productId) {
+            $shouldAddOptional = false;
+
+            // Check checkbox selections
+            if ($request[$productId] === 'on') {
+                $shouldAddOptional = true;
             }
-        } else {
-            $use_stripe = isset($event->eventConfiguration) && isset($event->eventConfiguration->use_stripe_payment)
-                ? $event->eventConfiguration->use_stripe_payment
-                : env("USE_STRIPE_PAYMENT_INTEGRATION");
-            if ($use_stripe) {
-                if ($reg_product->categoryID === 7) {
-                    $price = env("STRIPE_TEST_PRODUCT_RESERVATION");
-                } else {
-                    $price = env("STRIPE_TEST_PRODUCT");
+
+            // Check specific field matches
+            foreach ($optionalFields as $field) {
+                if (strval($request[$field]) === strval($productId)) {
+                    $shouldAddOptional = true;
+                    break;
                 }
-                return to_route('checkout', ["reg" => $reg->registration_uid, 'price_id' => $price, "event_type" => $event->event_type]);
-            } else {
-                event(new CompletedRegistrationSuccessEvent($registration));
-                return to_route('checkoutsuccess', ["reg" => $reg->registration_uid, 'price_id' => $reg_product->price_id, 'event_type' => $event->event_type]);
+            }
+
+            if ($shouldAddOptional) {
+                $optional = new Optional();
+                $optional->registration_uid = $registration->registration_uid;
+                $optional->productID = $productId;
+                $optional->save();
             }
         }
     }
 
+    private function handlePaymentRedirect(Event $event, Registration $registration): RedirectResponse
+    {
+        $reg_product = Product::find(request()->input('save'));
+        $use_stripe = $this->shouldUseStripe($event);
+
+        if ($use_stripe) {
+            $price_id = $this->getStripePrice($reg_product);
+            return to_route('checkout', [
+                "reg" => (string) $registration->registration_uid,
+                'price_id' => $price_id,
+                "event_type" => $event->event_type
+            ]);
+        } else {
+            event(new CompletedRegistrationSuccessEvent($registration));
+            return to_route('checkoutsuccess', [
+                "reg" => (string) $registration->registration_uid,
+                'price_id' => $reg_product->price_id,
+                'event_type' => $event->event_type
+            ]);
+        }
+    }
+
+    private function shouldUseStripe(Event $event): bool
+    {
+        return isset($event->eventConfiguration) && isset($event->eventConfiguration->use_stripe_payment)
+            ? $event->eventConfiguration->use_stripe_payment
+            : env("USE_STRIPE_PAYMENT_INTEGRATION");
+    }
+
+    private function getStripePrice(Product $reg_product): string
+    {
+        if (App::isProduction()) {
+            return $reg_product->price_id;
+        } else {
+            return $reg_product->categoryID === 7
+                ? env("STRIPE_TEST_PRODUCT_RESERVATION")
+                : env("STRIPE_TEST_PRODUCT");
+        }
+    }
 
     private function isExistingregistrationWithTelOnCourse(string $tel, string $course_uid): bool
     {

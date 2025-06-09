@@ -61,7 +61,54 @@
 				</tr>
 			</thead>
 			<tbody>
+				{# Calculate time limits based on track distance #}
+				{% set time_limit_minutes = 0 %}
+				{% set time_limit_hours = 0 %}
+				{% if track.distance >= 1200 %}
+					{% set time_limit_hours = 90 %}
+				{% elseif track.distance >= 1000 %}
+					{% set time_limit_hours = 75 %}
+				{% elseif track.distance >= 600 %}
+					{% set time_limit_hours = 40 %}
+				{% elseif track.distance >= 400 %}
+					{% set time_limit_hours = 27 %}
+				{% elseif track.distance >= 300 %}
+					{% set time_limit_hours = 20 %}
+				{% elseif track.distance >= 200 %}
+					{% set time_limit_hours = 13 %}
+					{% set time_limit_minutes = 30 %}
+				{% elseif track.distance >= 100 %}
+					{% set time_limit_hours = 6 %}
+					{% set time_limit_minutes = 40 %}
+				{% elseif track.distance >= 80 %}
+					{% set time_limit_hours = 5 %}
+					{% set time_limit_minutes = 20 %}
+				{% else %}
+					{% set time_limit_hours = 0 %}
+				{% endif %}
+
 				{% for name, entry in participants %}
+					{# Check if participant exceeded time limit #}
+					{% set is_over_time_limit = false %}
+					{% if entry.Status == 'FIN' and time_limit_hours > 0 %}
+						{% if track.start_date_time is defined %}
+							{% set start_time = track.start_date_time %}
+						{% elseif track.getStartDateTime is defined %}
+							{% set start_time = track.getStartDateTime() %}
+						{% else %}
+							{% set start_time = null %}
+						{% endif %}
+						
+						{% if start_time and entry.Stämplat %}
+							{% set total_time = date(start_time).diff(date(entry.Stämplat)) %}
+							{% set total_time_in_minutes = total_time.days * 24 * 60 + total_time.h * 60 + total_time.i %}
+							{% set time_limit_total_minutes = time_limit_hours * 60 + time_limit_minutes %}
+							{% if total_time_in_minutes > time_limit_total_minutes %}
+								{% set is_over_time_limit = true %}
+							{% endif %}
+						{% endif %}
+					{% endif %}
+
 				<tr class="border-b bg-neutral-100 even:bg-white">
 					<td class="py-2 sm:py-3 px-2 sm:px-4"><a class="py-2 px-2 sm:px-3 underline hover:underline decoration-gray-950"
 						href="{{entry.trackurl}}">{{entry.ID}}</a></td>
@@ -72,11 +119,13 @@
 					<td class="py-2 sm:py-3 px-2 sm:px-4">{{entry.Stämplat | date('D j M H:i') }}</td>
 					<td class="py-2 sm:py-3 px-2 sm:px-4">
 						{% if entry.Status == 'DNF' %}
-							<img  src="/app/api/uploads/dnf.svg" alt="DNF">
+							<img src="/app/api/uploads/dnf.svg" alt="DNF">
 						{% elseif entry.Status == 'DNS' %}
 							<img src="/app/api/uploads/dns.svg" alt="DNS">
+						{% elseif entry.Status == 'FIN' and is_over_time_limit %}
+							<img src="/app/api/uploads/otl.svg" alt="OTL">
 						{% elseif entry.Status == 'FIN' %}
-							<img  src="/app/api/uploads/fin.svg" alt="FIN">
+							<img src="/app/api/uploads/fin.svg" alt="FIN">
 						{% else %}
 							<img src="/app/api/uploads/ck.svg" alt="Active">
 						{% endif %}

@@ -36,12 +36,10 @@ class StatisticsRepository extends BaseRepository
                 return null;
             }
 
-
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
+            return null;
         }
-        return $tracks[0];
-
     }
 
 
