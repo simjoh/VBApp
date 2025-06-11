@@ -28,15 +28,12 @@ class CreateParticipantInCyclingAppEventListener
 
         $medal = DB::table('optionals')->where('registration_uid', $registration->registration_uid)->where('productID', 1014)->exists();
 
-/*         $responses = Http::withHeaders([
-            'APIKEY' => env('BREVET_APP_API_KEY'),
-        ])->get(env("BREVET_APP_URL") . '/ping'); */
 
         $responseUid = Uuid::uuid4();
 
         $response = Http::withHeaders([
             'APIKEY' => env('BREVET_APP_API_KEY'),
-            'User-Agent' => 'Loppservice/1.0'
+            'User-Agent' => env('LOPPSERVICE_USER_AGENT')
         ])->post(env("BREVET_APP_URL") . '/participant/addparticipant/track/' . $registration->course_uid, [
             'participant' => $person,
             'registration' => $registration,

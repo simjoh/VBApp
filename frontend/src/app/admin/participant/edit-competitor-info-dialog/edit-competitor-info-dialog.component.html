@@ -1,0 +1,142 @@
+<form [formGroup]="competitorInfoForm" class="competitor-info-form">
+  <div class="grid">
+    <!-- Email field -->
+    <div class="col-12 md:col-6">
+      <label for="email" class="block text-900 font-medium mb-2">Email *</label>
+      <input
+        pInputText
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="Ange email"
+        class="w-full"
+        [class.ng-invalid]="isFieldInvalid('email')"
+        pTooltip="Ange email adress"
+        tooltipPosition="top">
+      <small *ngIf="isFieldInvalid('email')" class="p-error block">
+        {{getFieldError('email')}}
+      </small>
+    </div>
+
+    <!-- Phone field -->
+    <div class="col-12 md:col-6">
+      <label for="phone" class="block text-900 font-medium mb-2">Telefon</label>
+      <input
+        pInputText
+        id="phone"
+        type="tel"
+        formControlName="phone"
+        placeholder="Ange telefonnummer"
+        class="w-full"
+        pTooltip="Ange telefonnummer"
+        tooltipPosition="top">
+    </div>
+
+    <!-- Address field -->
+    <div class="col-12">
+      <label for="adress" class="block text-900 font-medium mb-2">Adress</label>
+      <input
+        pInputText
+        id="adress"
+        type="text"
+        formControlName="adress"
+        placeholder="Ange adress"
+        class="w-full"
+        pTooltip="Ange gatuadress"
+        tooltipPosition="top">
+    </div>
+
+    <!-- Postal code field -->
+    <div class="col-12 md:col-4">
+      <label for="postal_code" class="block text-900 font-medium mb-2">Postnummer</label>
+      <input
+        pInputText
+        id="postal_code"
+        type="text"
+        formControlName="postal_code"
+        placeholder="Ange postnummer"
+        class="w-full"
+        pTooltip="Ange postnummer"
+        tooltipPosition="top">
+    </div>
+
+    <!-- Place field -->
+    <div class="col-12 md:col-4">
+      <label for="place" class="block text-900 font-medium mb-2">Ort</label>
+      <input
+        pInputText
+        id="place"
+        type="text"
+        formControlName="place"
+        placeholder="Ange ort"
+        class="w-full"
+        pTooltip="Ange ort"
+        tooltipPosition="top">
+    </div>
+
+            <!-- Country field -->
+    <div class="col-12 md:col-4">
+      <label for="country_id" class="block text-900 font-medium mb-2">Land *</label>
+                        <p-dropdown
+        id="country_id"
+        formControlName="country_id"
+        [options]="countries"
+        optionLabel="country_name_sv"
+        optionValue="country_id"
+        dataKey="country_id"
+        [virtualScroll]="true"
+        [lazy]="false"
+        placeholder="Välj land"
+        [filter]="true"
+        filterBy="country_name_sv,country_name_en,country_code"
+        filterPlaceholder="Sök land..."
+        [showClear]="true"
+        resetFilterOnHide="true"
+        emptyFilterMessage="Inga länder hittades"
+        emptyMessage="Inga länder tillgängliga"
+        appendTo="body"
+        [autoZIndex]="true"
+        baseZIndex="10000"
+        scrollHeight="300px"
+        class="w-full"
+        [class.ng-invalid]="isFieldInvalid('country_id')"
+        pTooltip="Sök och välj land"
+        tooltipPosition="top">
+        <ng-template pTemplate="item" let-country>
+          <div class="flex align-items-center gap-2">
+            <img
+              [src]="country.flag_url_svg || country.flag_url_png"
+              [alt]="country.country_code"
+              class="flag-icon"
+              *ngIf="country.flag_url_svg || country.flag_url_png"
+              style="width: 20px; height: 15px; object-fit: cover;">
+            <div class="flex flex-column">
+              <span class="font-medium">{{country.country_name_sv}}</span>
+              <small class="text-500">{{country.country_name_en}} ({{country.country_code}})</small>
+            </div>
+          </div>
+        </ng-template>
+      </p-dropdown>
+      <small *ngIf="isFieldInvalid('country_id')" class="p-error block">
+        Land är obligatoriskt
+      </small>
+    </div>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="flex justify-content-end gap-2 mt-4">
+    <p-button
+      (click)="cancel()"
+      label="Avbryt"
+      icon="pi pi-times"
+      styleClass="p-button-text">
+    </p-button>
+    <p-button
+      (click)="save()"
+      label="Spara"
+      icon="pi pi-check"
+      [disabled]="competitorInfoForm.invalid"
+      styleClass="p-button-raised">
+    </p-button>
+  </div>
+</form>

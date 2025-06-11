@@ -29,6 +29,7 @@ class PingEbrevetEventApp extends Command
     {
         $response = Http::withHeaders([
             'APIKEY' => env('BREVET_APP_API_KEY'),
+            'User-Agent' => env('LOPPSERVICE_USER_AGENT')
         ])->get(env("BREVET_APP_URL") . '/ping');
 
         Log::info($response->status());

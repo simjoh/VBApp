@@ -982,7 +982,7 @@ class ParticipantService extends ServiceAbstract
         $track_name = $track->getTitle();
         $organizing_clubID = $track->getOrganizerId();
 
-       
+
 
         // Get organizer information
         $club = null;
@@ -1005,7 +1005,7 @@ class ParticipantService extends ServiceAbstract
         }
         $sanitizedTrackTitle = preg_replace('/[^A-Za-z0-9_\-]/', '_', $track->getTitle());
         $filename = 'Homologation_' . $sanitizedTrackTitle . '_' . $startDateTime->format('Y-m-d') . '.csv';
-        
+
         // Create CSV with UTF-8 BOM for proper encoding of Swedish characters
         $csv = Writer::createFromString('');
         $csv->setOutputBOM(Writer::BOM_UTF8);
@@ -1016,18 +1016,18 @@ class ParticipantService extends ServiceAbstract
         $csv->insertOne(['Homologation number', 'LAST NAME', 'FIRST NAME', 'RIDER\'S CLUB', '', 'ACP CODE NUMBER', 'TIME', '(x)', '(F)', 'BIRTH DATE']);
         // Add participant data rows
 
-    
+
         foreach ($participants as $participant) {
-        
+
 
             // Get participant object to access competitor_uid
             $participantObj = $this->participantRepository->participantFor($participant['participant_uid']);
-            
+
             // Skip participants with DNS or DNF status
             if ($participantObj->isDns() || $participantObj->isDnf()) {
                 continue;
             }
-            
+
             $competitor = $this->competitorService->getCompetitorByUid($participantObj->getCompetitorUid(), "");
 
             $csv->insertOne([
@@ -1059,7 +1059,7 @@ class ParticipantService extends ServiceAbstract
 
         // Get participants for the track
         $participants = $this->participantRepository->participantsOnTrack($track_uid);
-        
+
         if (empty($participants)) {
             throw new BrevetException("No participants found for this track", 5, null);
         }
@@ -1083,7 +1083,7 @@ class ParticipantService extends ServiceAbstract
         // Create filename with sanitized track title
         $sanitizedTrackTitle = preg_replace('/[^A-Za-z0-9_\-]/', '_', $track->getTitle());
         $filename = 'Participant_List_' . $sanitizedTrackTitle . '_' . $startDateTime->format('Y-m-d') . '.csv';
-        
+
         // Create CSV with UTF-8 BOM for proper encoding of Swedish characters
         $csv = Writer::createFromString('');
         $csv->setOutputBOM(Writer::BOM_UTF8);
@@ -1101,7 +1101,7 @@ class ParticipantService extends ServiceAbstract
         // Add column headers
         $csv->insertOne([
             'Start Number',
-            'First Name', 
+            'First Name',
             'Last Name',
             'Club',
             'Birth Date',
@@ -1119,13 +1119,13 @@ class ParticipantService extends ServiceAbstract
         foreach ($participants as $participant) {
             // Get competitor information
             $competitor = $this->competitorService->getCompetitorByUid($participant->getCompetitorUid(), "");
-            
+
             // Get competitor info (contact details, address, etc.) - use repository directly to get full entity
             $competitorInfo = null;
             if ($competitor) {
                 $competitorInfo = $this->competitorInfoRepository->getCompetitorInfoByCompetitorUid($competitor->getCompetitorUid());
             }
-            
+
             // Get club information
             $club = null;
             if ($participant->getClubUid()) {
