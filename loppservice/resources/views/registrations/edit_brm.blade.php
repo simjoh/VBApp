@@ -97,6 +97,19 @@
                     </div>
                 </div>
 
+                <div>
+                    <label for="country" class="block text-gray-900 font-semibold text-sm sm:text-base">Land</label>
+                    <select name="country" id="country" autocomplete="country-name"
+                            class="mt-1 block w-full sm:w-1/2 px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
+                        <option>Välj land</option>
+                        @foreach ($countries as $country)
+                            <option value="{{ $country->country_id }}" {{ $registration->country_id == $country->country_id ? 'selected' : '' }}>
+                                {{ $country->country_name_sv }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label for="tel" class="block text-gray-900 font-semibold text-sm sm:text-base">Telefon</label>

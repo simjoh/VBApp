@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\CompletedRegistrationSuccessEvent;
+use App\Events\UpdateCompetitorInfoEvent;
 use App\Models\Adress;
 use App\Models\Club;
 use App\Models\Contactinformation;
@@ -179,6 +180,7 @@ class RegistrationController extends Controller
         $adress->adress = $request['street-address'];
         $adress->postal_code = $request['postal-code'];
         $adress->city = $request['city'];
+        $adress->country_id = $request['country'];
         $person->adress->update();
 
         $contact = $person->contactinformation;
@@ -226,6 +228,10 @@ class RegistrationController extends Controller
                 $optional->save();
             }
         }
+
+
+        // Fire event to update competitor info in cycling app
+        event(new UpdateCompetitorInfoEvent($registration->registration_uid, $person->person_uid));
 
         return view('registrations.updatesuccess')->with(['text' => 'Your registration details is updated']);
     }

@@ -6,9 +6,12 @@ import {BehaviorSubject, interval} from "rxjs";
 import {DialogService} from "primeng/dynamicdialog";
 import {EditTimeDialogComponent} from "../edit-time-dialog/edit-time-dialog.component";
 import {EditBrevenrDialogComponent} from "../edit-brevenr-dialog/edit-brevenr-dialog.component";
+import {EditCompetitorInfoDialogComponent} from "../edit-competitor-info-dialog/edit-competitor-info-dialog.component";
 import {environment} from "../../../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import { saveAs } from 'file-saver';
+import { CompetitorInfoService, CompetitorInfo } from "../../../shared/competitor-info.service";
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'brevet-participant-table',
@@ -41,7 +44,9 @@ export class ParticipantTableComponent implements OnInit {
   constructor(
     private participantComponentService: ParticipantComponentService,
     private dialogService: DialogService,
-    private http: HttpClient
+    private http: HttpClient,
+    private competitorInfoService: CompetitorInfoService,
+    private messageService: MessageService
   ) {
   }
 
@@ -197,6 +202,78 @@ export class ParticipantTableComponent implements OnInit {
       },
       error: (error) => {
         console.error('Export error:', error);
+      }
+    });
+  }
+
+  exportStartList() {
+    const trackUid = this.participantComponentService.getCurrentTrackUid();
+    console.log('Track UID for start list:', trackUid);
+
+    if (!trackUid) {
+      console.error('No track UID available');
+      return;
+    }
+
+    const url = environment.backend_url + 'participants/track/' + trackUid + '/startlist/export';
+    console.log('Export Start List URL:', url);
+
+    this.http.get(url, {
+      responseType: 'blob',
+      headers: {
+        'Accept': 'text/csv; charset=utf-8'
+      }
+    }).subscribe({
+      next: (response: Blob) => {
+        console.log('Start list response received:', response);
+
+        // Generate filename based on current date
+        const date = new Date().toISOString().split('T')[0];
+        const filename = `Participant_List_${date}.csv`;
+
+        saveAs(response, filename);
+      },
+      error: (error) => {
+        console.error('Start list export error:', error);
+      }
+    });
+  }
+
+  editCompetitorInfo(participant: any) {
+    const competitorUid = participant.competitorRepresentation.competitor_uid;
+    const currentInfo = participant.competitorInforepresentation;
+
+    const ref = this.dialogService.open(EditCompetitorInfoDialogComponent, {
+      data: {
+        competitorInfo: currentInfo
+      },
+      header: 'Redigera kontaktinformation',
+      width: '700px',
+      modal: true,
+      closable: true
+    });
+
+    ref.onClose.subscribe((updatedInfo: CompetitorInfo) => {
+      if (updatedInfo) {
+        this.competitorInfoService.updateCompetitorInfo(competitorUid, updatedInfo)
+          .subscribe({
+            next: (response) => {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Framgång',
+                detail: 'Kontaktinformation uppdaterad'
+              });
+              this.participantComponentService.reload();
+            },
+            error: (error) => {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Fel',
+                detail: 'Kunde inte uppdatera kontaktinformation'
+              });
+              console.error('Error updating competitor info:', error);
+            }
+          });
       }
     });
   }

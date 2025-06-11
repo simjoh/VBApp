@@ -69,6 +69,6 @@ class CountryRepository extends BaseRepository
     {
         $eventqls['allCountries'] = 'select * from countries e;';
         $eventqls['getCountryByID'] = 'select *  from countries e where e.country_id=:country_id;';
-        // TODO: Implement sqls() method.
+        return $eventqls[$type] ?? '';
     }
 }

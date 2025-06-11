@@ -23,15 +23,26 @@
             class="w-full sm:w-auto"
             style="padding-left: 2.5rem"/>
         </span>
-        <button
-          pButton
-          pRipple
-          icon="pi pi-download"
-          label="Exportera homologation"
-          (click)="exportHomologation()"
-          class="p-button-success"
-          [disabled]="!participantComponentService.getCurrentTrackUid()">
-        </button>
+        <div class="flex gap-2">
+          <button
+            pButton
+            pRipple
+            icon="pi pi-list"
+            label="Exportera startlista"
+            (click)="exportStartList()"
+            class="p-button-info"
+            [disabled]="!participantComponentService.getCurrentTrackUid()">
+          </button>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-download"
+            label="Exportera homologation"
+            (click)="exportHomologation()"
+            class="p-button-success"
+            [disabled]="!participantComponentService.getCurrentTrackUid()">
+          </button>
+        </div>
       </div>
     </ng-template>
     <ng-template pTemplate="header">
@@ -141,9 +152,20 @@
                   <strong>Telefon:</strong>
                   <div>{{track.competitorInforepresentation.phone}}</div>
                 </div>
-                <div class="col-12 md:col-4">
+                <div class="col-12 md:col-3">
                   <strong>Email:</strong>
                   <div>{{track.competitorInforepresentation.email}}</div>
+                </div>
+                <div class="col-12 md:col-1">
+                  <button
+                    pButton
+                    pRipple
+                    icon="pi pi-pencil"
+                    (click)="editCompetitorInfo(track)"
+                    class="p-button-rounded p-button-text p-button-info"
+                    pTooltip="Redigera kontaktinfo"
+                    tooltipPosition="top">
+                  </button>
                 </div>
               </div>
               <div class="flex justify-content-between align-items-center mt-3">

@@ -12,6 +12,7 @@ class CompetitorInfoAssembly
 
         $competitorInforeprepresentation = new CompetitorInforepresentation();
         $competitorInforeprepresentation->setAdress($competitorInfo->getAdress());
+        $competitorInforeprepresentation->setPostalCode($competitorInfo->getPostalCode());
         $competitorInforeprepresentation->setPlace($competitorInfo->getPlace());
         $competitorInforeprepresentation->setCountry($competitorInfo->getCountry());
         $competitorInforeprepresentation->setEmail($competitorInfo->getEmail());

@@ -154,6 +154,7 @@ return function (App $app) {
         $app->put('/participant/{uid}/track/{trackUid}/updateTime', \App\Action\Participant\ParticipantAction::class . ':updateTime');
         $app->put('/participant/{uid}/track/{trackUid}/addbrevetnumber', \App\Action\Participant\ParticipantAction::class . ':addbrevetnumber');
         $app->get('/participants/track/{trackUid}/report/export', \App\Action\Participant\ParticipantAction::class . ':generateHomologationCsv');
+        $app->get('/participants/track/{trackUid}/startlist/export', \App\Action\Participant\ParticipantAction::class . ':generateParticipantListCsv');
         $app->get('/participants/track/{trackUid}/export/test', \App\Action\Participant\ParticipantAction::class . ':exportParticipantsToExcelTest');
 
      //   $app->post('/participants/{trackUid}/upload', \App\Action\Participant\ParticipantAction::class . ':uploadParticipants');
@@ -172,7 +173,14 @@ return function (App $app) {
 
         // roller i systemet endast läsa
 
+        // Countries management
+        $app->get('/countries', \App\Action\Country\CountryAction::class . ':getAllCountries');
 
+        // Competitor info management
+        $app->get('/competitor/{competitorUid}/info', \App\Action\Competitor\CompetitorInfoAction::class . ':getCompetitorInfo');
+        $app->put('/competitor/{competitorUid}/info', \App\Action\Competitor\CompetitorInfoAction::class . ':updateCompetitorInfo');
+        $app->post('/competitor/{competitorUid}/info', \App\Action\Competitor\CompetitorInfoAction::class . ':createCompetitorInfo');
+        $app->patch('/competitor/{competitorUid}/info/params', \App\Action\Competitor\CompetitorInfoAction::class . ':updateCompetitorInfoParams');
 
     })->add(\App\Middleware\JwtTokenValidatorMiddleware::class)->add(\App\Middleware\PermissionvalidatorMiddleWare::class);
 

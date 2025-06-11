@@ -35,7 +35,7 @@ services:
       - APP_ENV=dev
       - APP_DEBUG=true
       - DB_CONNECTION=mysql
-      - DB_HOST=192.168.1.194
+      - DB_HOST=192.168.1.221
       - DB_PORT=3309
       - DB_DATABASE=vasterbottenbrevet_se_db_2
       - DB_USERNAME=root

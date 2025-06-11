@@ -11,6 +11,7 @@ class CompetitorInforepresentation implements JsonSerializable
     private $email;
     private $phone;
     private $adress;
+    private $postal_code;
     private $place;
     private $country;
     private $country_id;
@@ -85,6 +86,22 @@ class CompetitorInforepresentation implements JsonSerializable
     public function setPlace($place): void
     {
         $this->place = $place;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPostalCode()
+    {
+        return $this->postal_code;
+    }
+
+    /**
+     * @param mixed $postal_code
+     */
+    public function setPostalCode($postal_code): void
+    {
+        $this->postal_code = $postal_code;
     }
 
     /**

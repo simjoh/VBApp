@@ -36,6 +36,7 @@ class CreateParticipantInCyclingAppEventListener
 
         $response = Http::withHeaders([
             'APIKEY' => env('BREVET_APP_API_KEY'),
+            'User-Agent' => 'Loppservice/1.0'
         ])->post(env("BREVET_APP_URL") . '/participant/addparticipant/track/' . $registration->course_uid, [
             'participant' => $person,
             'registration' => $registration,

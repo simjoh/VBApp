@@ -714,10 +714,6 @@ class ParticipantService extends ServiceAbstract
     public function addParticipantOnTrackFromLoppservice(LoppservicePersonRepresentation $loppservicePersonRepresentation, string $track_uid, $loppserviceRegistrationRepresentation, $club, $medal): bool
     {
 
-
-
-
-
         $finnsitabell = GlobalConfig::get($track_uid);
 
         if ($finnsitabell) {
@@ -775,10 +771,15 @@ class ParticipantService extends ServiceAbstract
 
                 if (isset($club)) {
                     // kolla om klubben finns i databasen annars skapa vi en klubb
-                    $existingClub = $this->clubrepository->getClubByTitle($club['name']);
+                    $existingClub = $this->clubrepository->getClubByUId($club['club_uid']);
                     if (!isset($existingClub)) {
-                        $clubUid = $this->clubrepository->createClub("", $club['name']);
-                        $participant->setClubUid($clubUid);
+                        $existingClub = $this->clubrepository->getClubByTitle($club['name']);
+                        if (!isset($existingClub)) {
+                            $clubUid = $this->clubrepository->createClub("", $club['name']);
+                            $participant->setClubUid($clubUid);
+                        } else {
+                            $participant->setClubUid($existingClub->getClubUid());
+                        }
                     } else {
                         $participant->setClubUid($existingClub->getClubUid());
                     }
@@ -788,8 +789,6 @@ class ParticipantService extends ServiceAbstract
                 $participant->setRegisterDateTime(new DateTime($registration['created_at']));
                 $participantcreated = $this->participantRepository->createparticipant($participant);
                 if (isset($participantcreated)) {
-
-
                     $this->participantRepository->createTrackCheckpointsFor($participant, $this->trackRepository->checkpoints($track->getTrackUid()));
                 }
                 if (isset($participantcreated) && isset($competitor)) {
@@ -797,7 +796,6 @@ class ParticipantService extends ServiceAbstract
                     $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $participant->getStartnumber(), $registration['ref_nr']);
                 }
             }
-            //   $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParamsFromLoppservice($contactinformation['email'], $contactinformation['tel'], $adress['adress'], $adress['postal_code'], $adress['city'], $this->countryrepository->countryFor($adress['country_id'])->country_name_sv, $participant_to_create['person_uid'], $adress['country_id']);
             return true;
         } catch (Exception $e) {
             throw new BrevetException($e->getLine() . $e->getFile(), 5, null);
@@ -1005,7 +1003,8 @@ class ParticipantService extends ServiceAbstract
         if (is_string($startDateTime)) {
             $startDateTime = new \DateTime($startDateTime);
         }
-        $filename = 'Homologation_' . $track->getTitle() . '_' . $startDateTime->format('Y-m-d') . '.csv';
+        $sanitizedTrackTitle = preg_replace('/[^A-Za-z0-9_\-]/', '_', $track->getTitle());
+        $filename = 'Homologation_' . $sanitizedTrackTitle . '_' . $startDateTime->format('Y-m-d') . '.csv';
         
         // Create CSV with UTF-8 BOM for proper encoding of Swedish characters
         $csv = Writer::createFromString('');
@@ -1042,6 +1041,123 @@ class ParticipantService extends ServiceAbstract
                 $participant['medal'] ? 'x' : '', // Medal (x)
                 $competitor->getGender() == 1 ? 'F' : '', // Gender (F for female)
                 $competitor->getBirthDate() // Birth date
+            ]);
+        }
+
+        return [
+            'filename' => $filename,
+            'content' => $csv->toString()
+        ];
+    }
+
+    function generateParticipantListCsv($track_uid)
+    {
+        $track = $this->trackRepository->getTrackByUid($track_uid);
+        if (!isset($track)) {
+            throw new BrevetException("Track not exists", 5, null);
+        }
+
+        // Get participants for the track
+        $participants = $this->participantRepository->participantsOnTrack($track_uid);
+        
+        if (empty($participants)) {
+            throw new BrevetException("No participants found for this track", 5, null);
+        }
+
+        // Convert string date to DateTime object if needed
+        $startDateTime = $track->getStartDateTime();
+        if (is_string($startDateTime)) {
+            $startDateTime = new \DateTime($startDateTime);
+        }
+
+        // Get organizer information
+        $organizing_clubID = $track->getOrganizerId();
+        $club = null;
+        if ($organizing_clubID !== null) {
+            $organizer = $this->organizerRepository->getOrganizerById($organizing_clubID);
+            if ($organizer && $organizer->getClubUid() != null) {
+                $club = $this->clubrepository->getClubByUid($organizer->getClubUid());
+            }
+        }
+
+        // Create filename with sanitized track title
+        $sanitizedTrackTitle = preg_replace('/[^A-Za-z0-9_\-]/', '_', $track->getTitle());
+        $filename = 'Participant_List_' . $sanitizedTrackTitle . '_' . $startDateTime->format('Y-m-d') . '.csv';
+        
+        // Create CSV with UTF-8 BOM for proper encoding of Swedish characters
+        $csv = Writer::createFromString('');
+        $csv->setOutputBOM(Writer::BOM_UTF8);
+
+        // Add header information
+        $csv->insertOne(['PARTICIPANT LIST']);
+        $csv->insertOne(['Event:', $track->getTitle()]);
+        $csv->insertOne(['Date:', $startDateTime->format('Y-m-d')]);
+        $csv->insertOne(['Distance:', $track->getDistance() . ' km']);
+        $csv->insertOne(['Organizing Club:', $club ? $club->getTitle() : 'N/A']);
+        $csv->insertOne(['ACP Code:', $club ? $club->getAcpKod() : 'N/A']);
+        $csv->insertOne(['Total Participants:', count($participants)]);
+        $csv->insertOne([]); // Empty row for spacing
+
+        // Add column headers
+        $csv->insertOne([
+            'Start Number',
+            'First Name', 
+            'Last Name',
+            'Club',
+            'Birth Date',
+            'Email',
+            'Phone',
+            'Address',
+            'Postal Code',
+            'City',
+            'Country',
+            'Registration Date',
+            'Status'
+        ]);
+
+        // Add participant data
+        foreach ($participants as $participant) {
+            // Get competitor information
+            $competitor = $this->competitorService->getCompetitorByUid($participant->getCompetitorUid(), "");
+            
+            // Get competitor info (contact details, address, etc.) - use repository directly to get full entity
+            $competitorInfo = null;
+            if ($competitor) {
+                $competitorInfo = $this->competitorInfoRepository->getCompetitorInfoByCompetitorUid($competitor->getCompetitorUid());
+            }
+            
+            // Get club information
+            $club = null;
+            if ($participant->getClubUid()) {
+                $club = $this->clubrepository->getClubByUid($participant->getClubUid());
+            }
+
+            // Determine status
+            $status = 'Registered';
+            if ($participant->isDns()) {
+                $status = 'DNS';
+            } elseif ($participant->isDnf()) {
+                $status = 'DNF';
+            } elseif ($participant->isStarted()) {
+                $status = 'Started';
+            } elseif ($participant->isFinished()) {
+                $status = 'Finished';
+            }
+
+            $csv->insertOne([
+                $participant->getStartnumber(),
+                $competitor ? $competitor->getGivenName() : '',
+                $competitor ? $competitor->getFamilyName() : '',
+                $club ? $club->getTitle() : '',
+                $competitor ? $competitor->getBirthDate() : '',
+                $competitorInfo ? $competitorInfo->getEmail() : '',
+                $competitorInfo ? $competitorInfo->getPhone() : '',
+                $competitorInfo ? $competitorInfo->getAdress() : '',
+                $competitorInfo ? $competitorInfo->getPostalCode() : '',
+                $competitorInfo ? $competitorInfo->getPlace() : '',
+                $competitorInfo ? $competitorInfo->getCountry() : '',
+                $participant->getRegisterDateTime(),
+                $status
             ]);
         }
 

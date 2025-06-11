@@ -540,6 +540,25 @@ class ParticipantAction
             ->withBody($stream);
     }
 
+    public function generateParticipantListCsv(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('trackUid');
+
+        $result = $this->participantService->generateParticipantListCsv($track_uid);
+        
+        // Create stream from CSV content
+        $stream = new \Slim\Psr7\Stream(fopen('php://temp', 'r+'));
+        $stream->write($result['content']);
+        $stream->rewind();
+
+        return $response
+            ->withHeader('Content-Type', 'text/csv; charset=utf-8')
+            ->withHeader('Content-Disposition', 'attachment; filename="' . $result['filename'] . '"')
+            ->withBody($stream);
+    }
+
     function moveUploadedFile($directory, UploadedFile $uploadedFile)
     {
         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);

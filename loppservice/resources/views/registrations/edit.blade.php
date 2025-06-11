@@ -80,6 +80,19 @@
                     </div>
                 </div>
 
+                <div class="mt-2 mb-4 md:w-1/2 sm:w-full">
+                    <label for="country" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Country</label>
+                    <select name="country" id="country" autocomplete="country-name"
+                            class="w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
+                        <option>Select country</option>
+                        @foreach ($countries as $country)
+                            <option value="{{ $country->country_id }}" {{ $registration->country_id == $country->country_id ? 'selected' : '' }}>
+                                {{ $country->country_name_en }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">
                     <div class="mt-2">
                         <label for="tel" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Tel</label>

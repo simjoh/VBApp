@@ -37,6 +37,14 @@ class PermissionvalidatorMiddleWare
     public function __invoke(Request $request, RequestHandler $handler): Response
     {
 
+        $userAgent = $request->getHeaderLine("User-Agent");
+      
+
+
+        if ($userAgent === 'Loppservice/1.0') {
+            return $handler->handle($request);
+        }
+
 
         $token = $request->getHeaderLine("TOKEN");
 
