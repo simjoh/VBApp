@@ -121,7 +121,6 @@ class ResultsController
 
    public function gettrackranonneurview(ServerRequestInterface $request, ResponseInterface $response, $args)
     {
-
         $view = Twig::fromRequest($request);
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
@@ -133,10 +132,34 @@ class ResultsController
 
         $event = $this->eventservice->eventFor($tracks->getEventUid(), "");
 
-        $tracks = $this->trackService->getTrackByTrackUid($trackUid, "");
-        $participant = $this->participantservice->participantFor($participantUid, '');
-
         $result = $this->resultService->trackRandonneurOnTrack($participant->getParticipantUid(), $tracks->getTrackUid());
+        
+            // Filter checkpoints based on specific UIDs
+            if ($trackUid == '05851816-58ff-442c-8d29-3588244d13ad') {
+                $allowedCheckpointUids = [
+                    '1304eec8-64e4-4ac8-ba3f-ef608cf37517',
+                    '1d5db746-9598-4ce1-9835-43b328cbfaaa',
+                    '1f114ec3-bd94-474d-ad66-bb37d81aecc2',
+                    '2e101463-d50f-40de-95df-a3d48c59d249',
+                    '6c248578-281b-4180-b43f-5b6f74d14154',
+                    '6eec6814-5293-469f-8da4-e2bd750db079',
+                    '700c76f6-de4f-488c-a2dd-20ee62a2744a',
+                    '899cb804-aff2-4f55-b40b-98ada932d35d',
+                    'd1b47bb1-80fe-4a84-865f-d9c7e3424c62',
+                    'd9383cac-6a73-4d4f-81a1-b1733ab1e285',
+                    'd9ed8e43-eca7-40e0-bf60-f12453a4c183',
+                    'dbc0afe7-5e5c-4bb6-ae8d-243031624af3',
+                    'e95002a7-4141-4d72-adc4-0253570aa79c',
+                    'f3831dc2-a52a-4cdf-9510-0da7520e880b',
+                    'fff43620-bc4e-443c-8d46-f8134c260cfa'
+                ];
+                
+                if (is_array($result)) {
+                    $result = array_filter($result, function($checkpoint) use ($allowedCheckpointUids) {
+                        return in_array($checkpoint['checkpoint_uid'], $allowedCheckpointUids);
+                    });
+                }
+            }
 
         $competitor = $this->competitorservice->getCompetitorByUid($participant->getCompetitorUid(), '');
         return $view->render($response, 'trackparticipantontrack.html', ['trackinginfo' => $result, 'track' => $tracks, 'competitor' => $competitor,
