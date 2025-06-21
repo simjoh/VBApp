@@ -9,6 +9,9 @@ use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 
 return function (App $app) {
+    // Add CORS middleware first
+    $app->add(\App\Middleware\CorsMiddleware::class);
+
     // Parse json, form data and xml
     $app->addBodyParsingMiddleware();
 

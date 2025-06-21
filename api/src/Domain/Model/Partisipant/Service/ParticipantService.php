@@ -1112,6 +1112,7 @@ class ParticipantService extends ServiceAbstract
             'City',
             'Country',
             'Registration Date',
+            'Medal',
             'Status'
         ]);
 
@@ -1157,6 +1158,7 @@ class ParticipantService extends ServiceAbstract
                 $competitorInfo ? $competitorInfo->getPlace() : '',
                 $competitorInfo ? $competitorInfo->getCountry() : '',
                 $participant->getRegisterDateTime(),
+                $participant->getMedal() ? 'Ja' : 'Nej',
                 $status
             ]);
         }
