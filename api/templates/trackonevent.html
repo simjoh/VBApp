@@ -55,6 +55,86 @@
 			</thead>
 			<tbody>
 				{% for name, entry in tracks %}
+					
+					{# Calculate time limits based on track distance for this entry #}
+					{% set time_limit_minutes = 0 %}
+					{% set time_limit_hours = 0 %}
+					{% if entry.Bana is defined %}
+						{# Extract distance from track name #}
+						{% set track_distance = 0 %}
+						{% set track_name = entry.Bana %}
+						
+						{# Try to extract distance using regex - look for numbers at the end or followed by km/KM #}
+						{% if track_name matches '/\\d+\\s*(?:km|KM)?\\s*$/i' %}
+							{% set matches = track_name|split(' ') %}
+							{% for word in matches %}
+								{% if word matches '/^\\d+$/' %}
+									{% set track_distance = word|number_format %}
+								{% endif %}
+							{% endfor %}
+						{% endif %}
+						
+						{# Fallback: try to extract any number from the track name #}
+						{% if track_distance == 0 %}
+							{% set words = track_name|split(' ') %}
+							{% for word in words %}
+								{% if word matches '/^\\d+$/' and track_distance == 0 %}
+									{% set track_distance = word|number_format %}
+								{% endif %}
+							{% endfor %}
+						{% endif %}
+						
+						{# Remove commas from track_distance for comparison #}
+						{% set track_distance_clean = track_distance|replace({',': ''}) %}
+						{% set track_distance_clean = track_distance_clean|abs %}
+						
+						{% if track_distance_clean >= 1200 %}
+							{% set time_limit_hours = 91 %}
+						{% elseif track_distance_clean >= 1000 %}
+							{% set time_limit_hours = 75 %}
+						{% elseif track_distance_clean >= 600 %}
+							{% set time_limit_hours = 40 %}
+						{% elseif track_distance_clean >= 400 %}
+							{% set time_limit_hours = 27 %}
+						{% elseif track_distance_clean >= 300 %}
+							{% set time_limit_hours = 20 %}
+						{% elseif track_distance_clean >= 200 %}
+							{% set time_limit_hours = 13 %}
+							{% set time_limit_minutes = 30 %}
+						{% elseif track_distance_clean >= 100 %}
+							{% set time_limit_hours = 6 %}
+							{% set time_limit_minutes = 40 %}
+						{% elseif track_distance_clean >= 80 %}
+							{% set time_limit_hours = 5 %}
+							{% set time_limit_minutes = 20 %}
+						{% else %}
+							{% set time_limit_hours = 0 %}
+						{% endif %}
+					{% endif %}
+
+			
+
+					{# Check if participant exceeded time limit #}
+					{% set is_over_time_limit = false %}
+					{% if entry.Status == 'FIN' and time_limit_hours > 0 and entry.Tid is defined %}
+						{# Convert HH:MM format to total minutes #}
+						{% set time_parts = entry.Tid|split(':') %}
+						{% if time_parts|length == 2 %}
+							{% set hours = time_parts[0]|number_format %}
+							{% set minutes = time_parts[1]|number_format %}
+							{% set total_time_in_minutes = (hours * 60) + minutes %}
+						{% else %}
+							{% set total_time_in_minutes = entry.Tid|number_format %}
+						{% endif %}
+						
+						{% set time_limit_total_minutes = time_limit_hours * 60 + time_limit_minutes %}
+						{% if total_time_in_minutes > time_limit_total_minutes %}
+							{% set is_over_time_limit = true %}
+						{% endif %}
+					{% endif %}
+
+			
+		
 				<tr class="border-b bg-neutral-100 even:bg-white">
 					<td class="py-2 sm:py-3 px-2 sm:px-4">{{entry.ID}}</td>
 					<td class="py-2 sm:py-3 px-2 sm:px-4">{{entry.Efternamn}}</td>
@@ -64,14 +144,18 @@
 						<a href="{{entry.trackurl}}" class="underline hover:underline decoration-gray-950">
 							{{entry.Bana}}
 						</a>
+					
 					</td>
 					<td class="py-2 sm:py-3 px-2 sm:px-4">{{entry.Kontroll}}</td>
 					<td class="py-2 sm:py-3 px-2 sm:px-4">{{entry.Stämplat | date('D j M H:i')}}</td>
 					<td class="py-2 sm:py-3 px-2 sm:px-4">
+			
 						{% if entry.Status == 'DNF' %}
 							<img  src="/app/api/uploads/dnf.svg" alt="DNF">
 						{% elseif entry.Status == 'DNS' %}
 							<img  src="/app/api/uploads/dns.svg" alt="DNS">
+						{% elseif entry.Status == 'FIN' and is_over_time_limit %}
+							<img src="/app/api/uploads/otl.svg" alt="OTL">
 						{% elseif entry.Status == 'FIN' %}
 							<img src="/app/api/uploads/fin.svg" alt="FIN">
 						{% else %}

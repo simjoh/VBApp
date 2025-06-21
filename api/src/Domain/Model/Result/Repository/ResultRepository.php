@@ -126,6 +126,8 @@ class ResultRepository extends BaseRepository
         $statement->execute($track_uids);
         $resultset = $statement->fetchAll(PDO::FETCH_ASSOC);
 
+    
+
         return $this->getTrackArray($resultset);
 
     }
@@ -357,6 +359,7 @@ class ResultRepository extends BaseRepository
             $files['Kontroll'] = $item['Sista'];
             $files['Stämplat'] = $item['passedtime'];
             $files['Status'] = '';
+            $files['Tid'] = $item['Tid'];
 
             if ($item['mal'] == true) {
 
