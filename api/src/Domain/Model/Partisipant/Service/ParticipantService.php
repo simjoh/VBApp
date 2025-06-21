@@ -1012,7 +1012,7 @@ class ParticipantService extends ServiceAbstract
 
         // Add the header rows
         $csv->insertOne(['', 'ORGANIZING CLUB', '', '', 'ACP code number', 'DATE', 'DISTANCE', 'INFORMATION', '', '']);
-        $csv->insertOne(['', $club->getTitle(), '', '', $club->getAcpKod(), $date, $distance . ' km', 'Medal', 'Gender', '']);
+        $csv->insertOne(['', $club->getTitle() ?? 'Unknown Club', '', '', $club->getAcpKod() ?? 'N/A', $date, $distance . ' km', 'Medal', 'Gender', '']);
         $csv->insertOne(['Homologation number', 'LAST NAME', 'FIRST NAME', 'RIDER\'S CLUB', '', 'ACP CODE NUMBER', 'TIME', '(x)', '(F)', 'BIRTH DATE']);
         // Add participant data rows
 
@@ -1093,8 +1093,8 @@ class ParticipantService extends ServiceAbstract
         $csv->insertOne(['Event:', $track->getTitle()]);
         $csv->insertOne(['Date:', $startDateTime->format('Y-m-d')]);
         $csv->insertOne(['Distance:', $track->getDistance() . ' km']);
-        $csv->insertOne(['Organizing Club:', $club ? $club->getTitle() : 'N/A']);
-        $csv->insertOne(['ACP Code:', $club ? $club->getAcpKod() : 'N/A']);
+        $csv->insertOne(['Organizing Club:', $club ? ($club->getTitle() ?? 'Unknown Club') : 'N/A']);
+        $csv->insertOne(['ACP Code:', $club ? ($club->getAcpKod() ?? 'N/A') : 'N/A']);
         $csv->insertOne(['Total Participants:', count($participants)]);
         $csv->insertOne([]); // Empty row for spacing
 
@@ -1149,7 +1149,7 @@ class ParticipantService extends ServiceAbstract
                 $participant->getStartnumber(),
                 $competitor ? $competitor->getGivenName() : '',
                 $competitor ? $competitor->getFamilyName() : '',
-                $club ? $club->getTitle() : '',
+                $club ? ($club->getTitle() ?? 'Unknown Club') : '',
                 $competitor ? $competitor->getBirthDate() : '',
                 $competitorInfo ? $competitorInfo->getEmail() : '',
                 $competitorInfo ? $competitorInfo->getPhone() : '',

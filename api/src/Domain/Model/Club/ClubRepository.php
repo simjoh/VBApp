@@ -64,9 +64,13 @@ class ClubRepository extends BaseRepository
 
     }
 
-    public function getClubByTitle(string $title): ?Club
+    public function getClubByTitle(?string $title): ?Club
     {
         try {
+            if ($title === null) {
+                return null;
+            }
+            
             $statement = $this->connection->prepare($this->sqls('clubByTitle'));
             $statement->bindParam(':title', $title);
             $statement->execute();
@@ -86,11 +90,14 @@ class ClubRepository extends BaseRepository
     }
 
 
-    public function getClubByTitleLower(string $title): ?Club
+    public function getClubByTitleLower(?string $title): ?Club
     {
         try {
+            if ($title === null) {
+                return null;
+            }
 
-            $trimmmedandlover = strtolower(strlen($title));
+            $trimmmedandlover = strtolower(trim($title));
             $statement = $this->connection->prepare($this->sqls('clubByTitleLower'));
             $statement->bindParam(':title', $trimmmedandlover);
             $statement->execute();
@@ -131,7 +138,7 @@ class ClubRepository extends BaseRepository
 
     }
 
-    public function createClub(string $acp_kod, string $title): ?string
+    public function createClub(string $acp_kod, ?string $title): ?string
     {
         try {
             $club_uid = Uuid::uuid4();
@@ -154,7 +161,7 @@ class ClubRepository extends BaseRepository
     {
         try {
             $club_uid = $club->getClubUid();
-            $acpkod = intval($club->getAcpKod());
+            $acpkod = intval($club->getAcpKod() ?? 0);
             $title = $club->getTitle();
             $stmt = $this->connection->prepare($this->sqls('updateClub'));
             $stmt->bindParam(':club_uid', $club_uid);

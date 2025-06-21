@@ -8,8 +8,8 @@ class ClubRepresentation implements JsonSerializable
 {
 
     private string $club_uid;
-    private string $title;
-    private $acp_code;
+    private ?string $title = null;
+    private ?string $acp_code = null;
     private array $links = [];
 
 
@@ -31,17 +31,17 @@ class ClubRepresentation implements JsonSerializable
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
     /**
-     * @param mixed $title
+     * @param string|null $title
      */
-    public function setTitle($title): void
+    public function setTitle(?string $title): void
     {
         $this->title = $title;
     }
@@ -63,17 +63,17 @@ class ClubRepresentation implements JsonSerializable
     }
 
     /**
-     * @return mixed
+     * @return string|null
      */
-    public function getAcpCode()
+    public function getAcpCode(): ?string
     {
         return $this->acp_code;
     }
 
     /**
-     * @param mixed $acp_code
+     * @param string|null $acp_code
      */
-    public function setAcpCode($acp_code): void
+    public function setAcpCode(?string $acp_code): void
     {
         $this->acp_code = $acp_code;
     }
