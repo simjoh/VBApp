@@ -54,19 +54,34 @@ class ClubService
         $club = $this->clubrepository->getClubByTitleLower($clubRepresentation->getTitle());
         if ($club == null) {
             $club_uid = $this->clubrepository->createClub($clubRepresentation->getAcpCode(), $clubRepresentation->getTitle());
+            $clubreturn = $this->clubrepository->getClubByUId($club_uid);
+        } else {
+            $clubreturn = $club;
         }
-        $clubreturn = $this->clubrepository->getClubByUId($club_uid);
         return $this->clubAssembly->toRepresentation($clubreturn, $permissions);
     }
 
     public function updateClub(string $currentuser_id, ClubRepresentation $clubRepresentation): ?ClubRepresentation
     {
         $club = $this->clubrepository->getClubByUId($clubRepresentation->getClubUid());
+        if ($club == null) {
+            return null;
+        }
+        
+        // Update the club with new values
+        $club->setTitle($clubRepresentation->getTitle());
+        $club->setAcpKod($clubRepresentation->getAcpCode());
+        
         $permissions = $this->getPermissions($currentuser_id);
         $clubReturn = $this->clubrepository->updateClub($club);
         return $this->clubAssembly->toRepresentation($clubReturn, $permissions);
     }
 
+    public function deleteClub(string $currentuser_id, string $club_uid): bool
+    {
+        $permissions = $this->getPermissions($currentuser_id);
+        return $this->clubrepository->deleteClub($club_uid);
+    }
 
     public function getPermissions($user_uid): array
     {

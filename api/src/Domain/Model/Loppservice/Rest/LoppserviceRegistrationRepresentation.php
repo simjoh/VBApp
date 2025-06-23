@@ -20,6 +20,13 @@ class LoppserviceRegistrationRepresentation implements JsonSerializable
     public $person_uid;
     public $registration;
     public $contactinformation;
+    
+    // Properties for addparticipant payload
+    public $participant;
+    public $event_uid;
+    public $club;
+    public $response_uid;
+    public $medal;
 
 
     public function jsonSerialize(): mixed

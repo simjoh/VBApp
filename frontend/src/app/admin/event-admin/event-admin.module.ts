@@ -7,6 +7,7 @@ import { EventInfoPopoverComponent } from './event-info-popover/event-info-popov
 import { CreateEventDialogComponent } from './create-event-dialog/create-event-dialog.component';
 import {EventAdminRoutingModule} from "./event-admin-routing.module";
 import { EditEventDialogComponent } from './edit-event-dialog/edit-event-dialog.component';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { EditEventDialogComponent } from './edit-event-dialog/edit-event-dialog.
   imports: [
     CommonModule,
     SharedModule,
-    EventAdminRoutingModule
+    EventAdminRoutingModule,
+    RadioButtonModule
   ]
 })
 export class EventAdminModule { }

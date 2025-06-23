@@ -1,0 +1,147 @@
+<form [formGroup]="organizerForm" (ngSubmit)="onSubmit()" class="organizer-form">
+  <div class="p-fluid">
+    <div class="formgrid grid">
+      <!-- Organization Name -->
+      <div class="field col-12">
+        <label for="organization_name">Organisationsnamn *</label>
+        <input
+          id="organization_name"
+          type="text"
+          pInputText
+          formControlName="organization_name"
+          placeholder="Ange organisationsnamn"
+          [class.ng-invalid]="organizerForm.get('organization_name')?.invalid && organizerForm.get('organization_name')?.touched"
+        />
+        <small class="p-error" *ngIf="organizerForm.get('organization_name')?.invalid && organizerForm.get('organization_name')?.touched">
+          {{ getErrorMessage('organization_name') }}
+        </small>
+      </div>
+
+      <!-- Contact Person Name -->
+      <div class="field col-12">
+        <label for="contact_person_name">Kontaktpersonens namn *</label>
+        <input
+          id="contact_person_name"
+          type="text"
+          pInputText
+          formControlName="contact_person_name"
+          placeholder="Ange kontaktpersonens namn"
+          [class.ng-invalid]="organizerForm.get('contact_person_name')?.invalid && organizerForm.get('contact_person_name')?.touched"
+        />
+        <small class="p-error" *ngIf="organizerForm.get('contact_person_name')?.invalid && organizerForm.get('contact_person_name')?.touched">
+          {{ getErrorMessage('contact_person_name') }}
+        </small>
+      </div>
+
+      <!-- Email -->
+      <div class="field col-12">
+        <label for="email">E-post *</label>
+        <input
+          id="email"
+          type="email"
+          pInputText
+          formControlName="email"
+          placeholder="Ange e-postadress"
+          [class.ng-invalid]="organizerForm.get('email')?.invalid && organizerForm.get('email')?.touched"
+        />
+        <small class="p-error" *ngIf="organizerForm.get('email')?.invalid && organizerForm.get('email')?.touched">
+          {{ getErrorMessage('email') }}
+        </small>
+      </div>
+
+      <!-- Website -->
+      <div class="field col-12">
+        <label for="website">Webbsida</label>
+        <input
+          id="website"
+          type="url"
+          pInputText
+          formControlName="website"
+          placeholder="Ange webbsida URL"
+        />
+      </div>
+
+      <!-- Payment Website -->
+      <div class="field col-12">
+        <label for="website_pay">Betalningswebbsida</label>
+        <input
+          id="website_pay"
+          type="url"
+          pInputText
+          formControlName="website_pay"
+          placeholder="Ange betalningswebbsida URL"
+        />
+      </div>
+
+      <!-- Status -->
+      <div class="field col-12">
+        <label>Status</label>
+        <div class="flex gap-3 mt-2">
+          <div class="flex align-items-center">
+            <p-radioButton
+              inputId="active"
+              name="status"
+              [value]="true"
+              formControlName="active"
+            ></p-radioButton>
+            <label for="active" class="ml-2">Aktiv</label>
+          </div>
+          <div class="flex align-items-center">
+            <p-radioButton
+              inputId="inactive"
+              name="status"
+              [value]="false"
+              formControlName="active"
+            ></p-radioButton>
+            <label for="inactive" class="ml-2">Inaktiv</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logo SVG -->
+      <div class="field col-12">
+        <label for="logo_svg">Logotyp SVG</label>
+        <textarea
+          id="logo_svg"
+          pInputTextarea
+          formControlName="logo_svg"
+          placeholder="Ange SVG-kod för logotyp"
+          [rows]="1"
+          [autoResize]="false"
+        ></textarea>
+      </div>
+
+      <!-- Description -->
+      <div class="field col-12">
+        <label for="description">Beskrivning</label>
+        <textarea
+          id="description"
+          pInputTextarea
+          formControlName="description"
+          placeholder="Ange organisationsbeskrivning"
+          [rows]="1"
+          [autoResize]="false"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="form-actions">
+    <p-button
+      type="button"
+      label="Avbryt"
+      icon="pi pi-times"
+      severity="secondary"
+      [text]="true"
+      (click)="onCancel()"
+    ></p-button>
+    <p-button
+      type="submit"
+      label="Uppdatera Arrangör"
+      icon="pi pi-check"
+      [loading]="loading"
+      [disabled]="organizerForm.invalid"
+    ></p-button>
+  </div>
+</form>

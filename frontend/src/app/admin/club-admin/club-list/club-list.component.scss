@@ -1,0 +1,143 @@
+:host ::ng-deep {
+  .p-datatable {
+    .p-datatable-header {
+      background: transparent;
+      border: none;
+      padding: 0.5rem;
+    }
+
+    .p-datatable-thead > tr > th {
+      background: var(--surface-section);
+      border: 1px solid var(--surface-border);
+      font-weight: 600;
+      color: var(--text-color);
+      padding: 0.3rem;
+    }
+
+    .p-datatable-tbody > tr > td {
+      border: 1px solid var(--surface-border);
+      padding: 0.3rem;
+    }
+
+    .p-datatable-tbody > tr:nth-child(even) {
+      background: var(--surface-ground);
+    }
+
+    .p-datatable-tbody > tr:hover {
+      background: var(--surface-hover);
+    }
+
+    .p-paginator-bottom {
+      justify-content: flex-end;
+    }
+  }
+
+  .p-button {
+    &.p-button-text {
+      color: var(--primary-color);
+
+      &:hover {
+        background: var(--primary-50);
+      }
+    }
+  }
+
+  .p-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  cursor: auto;
+}
+
+@media screen and (max-width: 960px) {
+  :host ::ng-deep {
+    .p-datatable {
+      &.p-datatable-customers {
+        .p-datatable-thead > tr > th,
+        .p-datatable-tfoot > tr > td {
+          display: none !important;
+        }
+        .p-datatable-tbody > tr {
+          border-bottom: 1px solid var(--layer-d);
+          > td {
+            text-align: left;
+            display: block;
+            border: 0 none !important;
+            width: 100% !important;
+            float: left;
+            clear: left;
+            border: 0 none;
+            .p-column-title {
+              padding: .4rem;
+              min-width: 30%;
+              display: inline-block;
+              margin: -.4rem 1rem -.4rem -.4rem;
+              font-weight: bold;
+            }
+            .p-progressbar {
+              margin-top: .5rem;
+            }
+            &:last-child {
+              border-bottom: 1px solid var(--surface-d) !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Delete button styling - changes color when available
+.p-button-danger {
+  // When enabled (can delete)
+  &:not([disabled]) {
+    background: rgba(239, 68, 68, 0.1) !important;
+    border-color: rgb(239, 68, 68) !important;
+    color: rgb(239, 68, 68) !important;
+    transition: all 0.2s ease-in-out !important;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.2) !important;
+      border-color: rgb(220, 38, 38) !important;
+      color: rgb(220, 38, 38) !important;
+      transform: scale(1.1) !important;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.3) !important;
+    }
+  }
+
+  // When disabled (cannot delete)
+  &[disabled] {
+    background: transparent !important;
+    border-color: #e5e7eb !important;
+    color: #9ca3af !important;
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+  }
+}
+
+// Edit button styling for consistency
+.p-button-success {
+  &:not([disabled]) {
+    background: rgba(34, 197, 94, 0.1) !important;
+    border-color: rgb(34, 197, 94) !important;
+    color: rgb(34, 197, 94) !important;
+    transition: all 0.2s ease-in-out !important;
+
+    &:hover {
+      background: rgba(34, 197, 94, 0.2) !important;
+      border-color: rgb(21, 128, 61) !important;
+      color: rgb(21, 128, 61) !important;
+      transform: scale(1.1) !important;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.3) !important;
+    }
+  }
+}

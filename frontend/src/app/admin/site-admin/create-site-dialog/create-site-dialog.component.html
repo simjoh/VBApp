@@ -1,60 +1,156 @@
 <!--{{siteform |json}}-->
-<form #eventFormName="ngForm" (ngSubmit)="addEvent(eventFormName)" novalidate>
-  <div class="p-dynamicdialog">
-    <div class="p-dialog-content">
-      <div class="form-group">
-        <label class="col-form-label" for="place">Plats</label>
+<div class="p-fluid formgrid grid">
+  <form #eventFormName="ngForm" (ngSubmit)="addEvent(eventFormName)" novalidate>
 
-        <input pInputText pTooltip="Plats"  tooltipPosition="left"   #place="ngModel" type="text" name="place" class="form-control" id="place" [(ngModel)]="siteform.place" placeholder="Broparken" required>
-      </div>
-      <div class="form-group">
-        <label class="col-form-label" for="adress">Adress</label>
-        <input pInputText pTooltip="Adress"  tooltipPosition="left"   #adress="ngModel" type="text" name="adress" class="form-control" id="adress" [(ngModel)]="siteform.adress" placeholder="Brogatan 1" required>
-      </div>
-      <div class="form-group">
-        <div class="form-row">
-          <div class="col-6">
-            Latitud
-            <input pInputText pTooltip="Latitud"  tooltipPosition="left"   #title="ngModel" type="text" name="title" class="form-control" id="lat" [(ngModel)]="siteform.lat" placeholder="" required>
-          </div>
-          <div class="col-6">
-            Longitud
-            <input pInputText pTooltip="Longitud"  tooltipPosition="left"   #title="ngModel" type="text" name="title" class="form-control" id="long" [(ngModel)]="siteform.long" placeholder="" required>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="form-group">
-          Description
-          <textarea  pTooltip="Beskrivning för platsen" tooltipPosition="left" [(ngModel)]="siteform.description" name="description" placeholder="" class="col-12" rows="5"  pInputTextarea autoResize="autoResize"></textarea>
-        </div>
-        <div class="form-group">
-          Ladda upp bild
-<!--          <p-fileUpload showCancelButton="false" (onSelect)="onupload($event)" name="myfile[]" url="/api/site/upload"></p-fileUpload>-->
-
-          <p-fileUpload #primeFileUpload (onProgress)="progressReport($event)" name="myfile[]" customUpload="true" (uploadHandler)="myUploader($event)">
-            multiple="multiple" accept="image/*" maxFileSize="1000000">
-            <ng-template pTemplate="content">
-              <ul *ngIf="uploadedFiles.length">
-                <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
-              </ul>
-            </ng-template>
-          </p-fileUpload>
-
-
-        </div>
-        <div class="form-group">
-        </div>
-      </div>
+    <!-- Place Field -->
+    <div class="col-12 field">
+      <label for="place" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-map-marker mr-2"></i>
+        Plats
+      </label>
+      <input
+        pInputText
+        id="place"
+        name="place"
+        #place="ngModel"
+        [(ngModel)]="siteform.place"
+        placeholder="Ex: Broparken"
+        required
+        class="w-full"
+        [class.ng-invalid]="place.invalid && (place.dirty || place.touched)"
+      />
+      <small *ngIf="place.invalid && (place.dirty || place.touched)" class="p-error block mt-1">
+        Plats krävs
+      </small>
     </div>
-    <div class="p-dialog-footer">
-  <span class="p-buttonset">
-    <button pTooltip="Klicka för att spara" type="submit"  [disabled]="!eventFormName.valid" tooltipPosition="left" pButton pRipple label="Save"  icon="pi pi-check" class="p-button-sm"></button>
-    <button pTooltip="Klicka för att avbryta" pButton pRipple label="Cancel" (click)="cancel()"  icon="pi pi-times" class="p-button-sm"></button>
-</span>
+
+    <!-- Address Field -->
+    <div class="col-12 field">
+      <label for="adress" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-home mr-2"></i>
+        Adress
+      </label>
+      <input
+        pInputText
+        id="adress"
+        name="adress"
+        #adress="ngModel"
+        [(ngModel)]="siteform.adress"
+        placeholder="Ex: Brogatan 1"
+        required
+        class="w-full"
+        [class.ng-invalid]="adress.invalid && (adress.dirty || adress.touched)"
+      />
+      <small *ngIf="adress.invalid && (adress.dirty || adress.touched)" class="p-error block mt-1">
+        Adress krävs
+      </small>
     </div>
-  </div>
-</form>
+
+    <!-- Coordinates -->
+    <div class="col-12 md:col-6 field">
+      <label for="lat" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-globe mr-2"></i>
+        Latitud
+      </label>
+      <input
+        pInputText
+        id="lat"
+        name="lat"
+        #lat="ngModel"
+        [(ngModel)]="siteform.lat"
+        placeholder="Ex: 59.3293"
+        required
+        class="w-full"
+        [class.ng-invalid]="lat.invalid && (lat.dirty || lat.touched)"
+      />
+      <small *ngIf="lat.invalid && (lat.dirty || lat.touched)" class="p-error block mt-1">
+        Latitud krävs
+      </small>
+    </div>
+
+    <div class="col-12 md:col-6 field">
+      <label for="lng" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-globe mr-2"></i>
+        Longitud
+      </label>
+      <input
+        pInputText
+        id="lng"
+        name="lng"
+        #lng="ngModel"
+        [(ngModel)]="siteform.lng"
+        placeholder="Ex: 18.0686"
+        required
+        class="w-full"
+        [class.ng-invalid]="lng.invalid && (lng.dirty || lng.touched)"
+      />
+      <small *ngIf="lng.invalid && (lng.dirty || lng.touched)" class="p-error block mt-1">
+        Longitud krävs
+      </small>
+    </div>
+
+    <!-- Description -->
+    <div class="col-12 field">
+      <label for="description" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-file-edit mr-2"></i>
+        Beskrivning
+      </label>
+      <textarea
+        pInputTextarea
+        id="description"
+        [(ngModel)]="siteform.description"
+        name="description"
+        rows="4"
+        autoResize="autoResize"
+        placeholder="Beskrivning för platsen..."
+        class="w-full">
+      </textarea>
+    </div>
+
+    <!-- Image Upload -->
+    <div class="col-12 field">
+      <label class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-image mr-2"></i>
+        Ladda upp bild
+      </label>
+      <p-fileUpload
+        #primeFileUpload
+        (onProgress)="progressReport($event)"
+        name="myfile[]"
+        customUpload="true"
+        (uploadHandler)="myUploader($event)"
+        accept="image/*"
+        maxFileSize="1000000"
+        class="w-full">
+        <ng-template pTemplate="content">
+          <ul *ngIf="uploadedFiles.length" class="mt-2">
+            <li *ngFor="let file of uploadedFiles" class="text-sm text-gray-600">
+              {{file.name}} - {{file.size}} bytes
+            </li>
+          </ul>
+        </ng-template>
+      </p-fileUpload>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="col-12 flex justify-content-end gap-2 mt-4">
+      <p-button
+        icon="pi pi-times"
+        label="Avbryt"
+        (click)="cancel()"
+        severity="secondary"
+        [text]="true">
+      </p-button>
+      <p-button
+        icon="pi pi-check"
+        label="Spara"
+        type="submit"
+        [disabled]="!eventFormName.valid">
+      </p-button>
+    </div>
+
+  </form>
+</div>
 
 
 

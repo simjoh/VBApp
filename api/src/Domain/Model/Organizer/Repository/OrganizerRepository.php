@@ -88,15 +88,25 @@ class OrganizerRepository extends BaseRepository
     {
         try {
             $statement = $this->connection->prepare($this->sqls('createOrganizer'));
-            $statement->bindParam(':organization_name', $organizer->getOrganizationName());
-            $statement->bindParam(':description', $organizer->getDescription());
-            $statement->bindParam(':website', $organizer->getWebsite());
-            $statement->bindParam(':website_pay', $organizer->getWebsitePay());
-            $statement->bindParam(':logo_svg', $organizer->getLogoSvg());
-            $statement->bindParam(':contact_person_name', $organizer->getContactPersonName());
-            $statement->bindParam(':email', $organizer->getEmail());
-            $statement->bindParam(':active', $organizer->isActive());
-            $statement->bindParam(':club_uid', $organizer->getClubUid());
+            $organizationName = $organizer->getOrganizationName();
+            $description = $organizer->getDescription();
+            $website = $organizer->getWebsite();
+            $websitePay = $organizer->getWebsitePay();
+            $logoSvg = $organizer->getLogoSvg();
+            $contactPersonName = $organizer->getContactPersonName();
+            $email = $organizer->getEmail();
+            $active = $organizer->isActive();
+            $clubUid = $organizer->getClubUid();
+
+            $statement->bindParam(':organization_name', $organizationName);
+            $statement->bindParam(':description', $description);
+            $statement->bindParam(':website', $website);
+            $statement->bindParam(':website_pay', $websitePay);
+            $statement->bindParam(':logo_svg', $logoSvg);
+            $statement->bindParam(':contact_person_name', $contactPersonName);
+            $statement->bindParam(':email', $email);
+            $statement->bindParam(':active', $active, PDO::PARAM_BOOL);
+            $statement->bindParam(':club_uid', $clubUid);
             $statement->execute();
 
             $id = (int)$this->connection->lastInsertId();
@@ -111,16 +121,27 @@ class OrganizerRepository extends BaseRepository
     {
         try {
             $statement = $this->connection->prepare($this->sqls('updateOrganizer'));
-            $statement->bindParam(':id', $organizer->getId());
-            $statement->bindParam(':organization_name', $organizer->getOrganizationName());
-            $statement->bindParam(':description', $organizer->getDescription());
-            $statement->bindParam(':website', $organizer->getWebsite());
-            $statement->bindParam(':website_pay', $organizer->getWebsitePay());
-            $statement->bindParam(':logo_svg', $organizer->getLogoSvg());
-            $statement->bindParam(':contact_person_name', $organizer->getContactPersonName());
-            $statement->bindParam(':email', $organizer->getEmail());
-            $statement->bindParam(':active', $organizer->isActive());
-            $statement->bindParam(':club_uid', $organizer->getClubUid());
+            $id = $organizer->getId();
+            $organizationName = $organizer->getOrganizationName();
+            $description = $organizer->getDescription();
+            $website = $organizer->getWebsite();
+            $websitePay = $organizer->getWebsitePay();
+            $logoSvg = $organizer->getLogoSvg();
+            $contactPersonName = $organizer->getContactPersonName();
+            $email = $organizer->getEmail();
+            $active = $organizer->isActive();
+            $clubUid = $organizer->getClubUid();
+
+            $statement->bindParam(':id', $id, PDO::PARAM_INT);
+            $statement->bindParam(':organization_name', $organizationName);
+            $statement->bindParam(':description', $description);
+            $statement->bindParam(':website', $website);
+            $statement->bindParam(':website_pay', $websitePay);
+            $statement->bindParam(':logo_svg', $logoSvg);
+            $statement->bindParam(':contact_person_name', $contactPersonName);
+            $statement->bindParam(':email', $email);
+            $statement->bindParam(':active', $active, PDO::PARAM_BOOL);
+            $statement->bindParam(':club_uid', $clubUid);
             $statement->execute();
 
             return $this->getOrganizerById($organizer->getId());

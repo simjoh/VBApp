@@ -33,6 +33,10 @@ const routes: Routes = [{
       path: 'eventadmin',
       loadChildren: () => import('./event-admin/event-admin.module').then(m => m.EventAdminModule),
     },
+    {
+      path: 'organizeradmin',
+      loadChildren: () => import('./organizer-admin/organizer-admin.module').then(m => m.OrganizerAdminModule),
+    },
     { path: 'brevet-admin-start', component: AdminStartComponent },
     // { path: 'brevet-site-admin', component: SiteAdminComponent},
     // { path: 'brevet-kontroller-combiner', component: KontrollerCombinerComponent},

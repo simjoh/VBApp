@@ -6,6 +6,7 @@ import { Table } from 'primeng/table';
 import {DialogService} from 'primeng/dynamicdialog';
 import {ConfirmationService, OverlayService, PrimeNGConfig} from 'primeng/api';
 import {CreateUserDialogComponent} from "../create-user-dialog/create-user-dialog.component";
+import {EditUserDialogComponent} from "../edit-user-dialog/edit-user-dialog.component";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {map, tap} from "rxjs/operators";
 
@@ -20,6 +21,7 @@ export class UserListComponent implements OnInit {
 
   @ViewChild('dt',{ static: false }) table: Table;
   $users = this.userService.usersWithAdd$.pipe(
+    tap(users => console.log("Users in list component:", users)),
     map((s:Array<User>) => {
       return s;
     })
@@ -39,14 +41,43 @@ export class UserListComponent implements OnInit {
   }
 
 
-  editProduct(product: any) {
-    console.log(product);
+        editProduct(user: User) {
+    console.log("Edit product - User from list:", user);
+
+    let width;
+    if ( this.deviceDetector.isDesktop()){
+      width = "30%";
+    } else {
+      width = "80%"
+    }
+
+    // Fetch fresh user data from backend before opening dialog
+    console.log("Fetching fresh user data for:", user.user_uid);
+    this.userService.getUser(user.user_uid).subscribe((freshUser: User) => {
+      console.log("Fresh user data from backend:", freshUser);
+      console.log("Fresh user roles:", freshUser.roles);
+
+      const ref = this.dialogService.open(EditUserDialogComponent, {
+        data: {
+          user: freshUser
+        },
+        header: 'Redigera Användare',
+        width: width
+      });
+
+      ref.onClose.subscribe((updatedUser: User) => {
+        if (updatedUser) {
+          console.log("Updating user:", updatedUser);
+          this.userService.updateUserInList(updatedUser);
+        }
+      });
+    });
   }
 
   deleteProduct(product: any) {
     this.confirmationService.confirm({
-      message: 'Are you sure you want to delete ' + product + '?',
-      header: 'Confirm',
+      message: 'Är du säker på att du vill ta bort ' + product + '?',
+      header: 'Bekräfta',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         console.log(product)
@@ -71,7 +102,8 @@ export class UserListComponent implements OnInit {
       data: {
         id: '51gF3'
       },
-      header: 'Lägg till användare',
+      header: 'Lägg till Användare',
+      width: width
     });
 
     ref.onClose.subscribe((user: User) => {

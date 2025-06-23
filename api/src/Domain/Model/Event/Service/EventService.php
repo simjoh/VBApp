@@ -101,34 +101,49 @@ class EventService extends ServiceAbstract
         $connection->beginTransaction();
         
         try {
-            // Update event in local database
+            // Update event in local database first
             $event = $this->eventRepository->updateEvent($event_uid, $event);
             
-            // Try to get the event group by event UID
-            $eventGroup = $this->eventGroupRestClient->getEventGroupById($event->getEventUid());
-    
-            if ($eventGroup) {
-                // Update the existing event group
-                $eventGroupDTO = $this->updateEventGroupFromEvent($eventGroup, $event);
-                
-           
-                
-                $updatedEventGroup = $this->eventGroupRestClient->updateEventGroup($event->getEventUid(), $eventGroupDTO);
-                
-                if (!$updatedEventGroup) {
-                    $connection->rollBack();
-                    throw new BrevetException("Det gick inte att uppdatera eventgrupp i loppservice: Inget svar mottogs", 12, null);
+            // Try to sync with LoppService, but don't fail if LoppService is unavailable
+            try {
+                // Try to get the event group by event UID
+                $eventGroup = $this->eventGroupRestClient->getEventGroupById($event->getEventUid());
+        
+                if ($eventGroup) {
+                    // Update the existing event group
+                    $eventGroupDTO = $this->updateEventGroupFromEvent($eventGroup, $event);
+                    
+                    $updatedEventGroup = $this->eventGroupRestClient->updateEventGroup($event->getEventUid(), $eventGroupDTO);
+                    
+                    if (!$updatedEventGroup) {
+                        error_log("Warning: Failed to update event group in LoppService, but continuing with local update: " . $event->getEventUid());
+                    } else {
+                        error_log("Successfully updated event group in LoppService: " . $event->getEventUid());
+                    }
+                } else {
+                    // Event group doesn't exist in LoppService, try to create it
+                    $eventGroupDTO = $this->createEventGroupFromEvent($event);
+                    
+                    $createdEventGroup = $this->eventGroupRestClient->createEventGroup($eventGroupDTO);
+                    
+                    if (!$createdEventGroup) {
+                        error_log("Warning: Failed to create event group in LoppService, but continuing with local update: " . $event->getEventUid());
+                    } else {
+                        error_log("Successfully created event group in LoppService: " . $event->getEventUid());
+                    }
                 }
-            } else {
-                // Event group doesn't exist in LoppService, create it
-                $eventGroupDTO = $this->createEventGroupFromEvent($event);
-                
-          
-                $createdEventGroup = $this->eventGroupRestClient->createEventGroup($eventGroupDTO);
-                
-                if (!$createdEventGroup) {
-                    $connection->rollBack();
-                    throw new BrevetException("Det gick inte att skapa eventgrupp i loppservice: Inget svar mottogs", 13, null);
+            } catch (\Exception $loppServiceException) {
+                // Only skip LoppService for connection errors, otherwise re-throw
+                $errorMessage = $loppServiceException->getMessage();
+                if (strpos($errorMessage, 'Could not resolve host') !== false || 
+                    strpos($errorMessage, 'Connection refused') !== false ||
+                    strpos($errorMessage, 'Connection timed out') !== false) {
+                    // Connection issue - log and continue
+                    error_log("LoppService connection failed for event " . $event->getEventUid() . ": " . $errorMessage);
+                    error_log("Continuing with local event update only");
+                } else {
+                    // Other error - re-throw to maintain existing behavior for non-connection issues
+                    throw $loppServiceException;
                 }
             }
             
@@ -173,27 +188,43 @@ class EventService extends ServiceAbstract
             // Create event in local database first
             $event = $this->eventRepository->createEvent($event);
 
-            // Create corresponding event group in loppservice with our UID
-            $eventGroupDTO = $this->createEventGroupFromEvent($event);
-            
-            // Debug log
-            error_log("Creating event group with data: " . json_encode([
-                'uid' => $eventGroupDTO->uid,
-                'name' => $eventGroupDTO->name,
-                'description' => $eventGroupDTO->description,
-                'startdate' => $eventGroupDTO->startdate,
-                'enddate' => $eventGroupDTO->enddate
-            ]));
-            
-            $createdEventGroup = $this->eventGroupRestClient->createEventGroup($eventGroupDTO);
-    
-            if ($createdEventGroup) {
-                $connection->commit();
-                return $this->eventAssembly->toRepresentation($event, $permissions);
-            } else {
-                $connection->rollBack();
-                throw new BrevetException("Det gick inte att skapa eventgrupp i loppservice: Inget svar mottogs", 10, null);
+            // Try to create corresponding event group in LoppService, but don't fail if unavailable
+            try {
+                $eventGroupDTO = $this->createEventGroupFromEvent($event);
+                
+                // Debug log
+                error_log("Creating event group with data: " . json_encode([
+                    'uid' => $eventGroupDTO->uid,
+                    'name' => $eventGroupDTO->name,
+                    'description' => $eventGroupDTO->description,
+                    'startdate' => $eventGroupDTO->startdate,
+                    'enddate' => $eventGroupDTO->enddate
+                ]));
+                
+                $createdEventGroup = $this->eventGroupRestClient->createEventGroup($eventGroupDTO);
+        
+                if (!$createdEventGroup) {
+                    error_log("Warning: Failed to create event group in LoppService, but continuing with local event: " . $event->getEventUid());
+                } else {
+                    error_log("Successfully created event group in LoppService: " . $event->getEventUid());
+                }
+            } catch (\Exception $loppServiceException) {
+                // Only skip LoppService for connection errors, otherwise re-throw
+                $errorMessage = $loppServiceException->getMessage();
+                if (strpos($errorMessage, 'Could not resolve host') !== false || 
+                    strpos($errorMessage, 'Connection refused') !== false ||
+                    strpos($errorMessage, 'Connection timed out') !== false) {
+                    // Connection issue - log and continue
+                    error_log("LoppService connection failed for new event " . $event->getEventUid() . ": " . $errorMessage);
+                    error_log("Continuing with local event creation only");
+                } else {
+                    // Other error - re-throw to maintain existing behavior for non-connection issues
+                    throw $loppServiceException;
+                }
             }
+            
+            $connection->commit();
+            return $this->eventAssembly->toRepresentation($event, $permissions);
         } catch (\Exception $e) {
             // Rollback the transaction if any exception occurs
             $connection->rollBack();
@@ -263,8 +294,10 @@ class EventService extends ServiceAbstract
         $event->setActive($eventRepresentation->isActive());
         $event->setCanceled($eventRepresentation->isCanceled());
         $event->setCompleted($eventRepresentation->isCompleted());
-        $event->setStartdate($eventRepresentation->getStartdate());
-        $event->setEnddate($eventRepresentation->getEnddate());
+        
+        // Format dates properly for MySQL storage
+        $event->setStartdate($this->formatDateForDatabase($eventRepresentation->getStartdate()));
+        $event->setEnddate($this->formatDateForDatabase($eventRepresentation->getEnddate()));
 
         return $event;
     }
@@ -336,20 +369,8 @@ class EventService extends ServiceAbstract
         $eventGroupDTO->canceled = $event->isCanceled();
         $eventGroupDTO->completed = $event->isCompleted();
         
-        // Get tracks associated with this event using the current user's UID
-        // Since we're in a system context, we'll use a special system user UID
-        $systemUserUid = 'system'; // You might want to use a real system user UID here
-        $tracks = $this->trackservice->tracksForEvent($systemUserUid, $event->getEventUid());
-        
-        // Initialize event_uids array with track UIDs
+        // Initialize empty event_uids array - LoppService will manage this
         $eventGroupDTO->event_uids = [];
-        
-        // Add track UIDs to event_uids
-        if (!empty($tracks)) {
-            foreach ($tracks as $track) {
-                $eventGroupDTO->event_uids[] = $track->getTrackUid();
-            }
-        }
 
         return $eventGroupDTO;
     }
@@ -371,24 +392,10 @@ class EventService extends ServiceAbstract
         $eventGroupDTO->canceled = $event->isCanceled();
         $eventGroupDTO->completed = $event->isCompleted();
         
-        // Get tracks associated with this event using the current user's UID
-        // Since we're in a system context, we'll use a special system user UID
-        $systemUserUid = 'system'; // You might want to use a real system user UID here
-        $tracks = $this->trackservice->tracksForEvent($systemUserUid, $event->getEventUid());
-        
-        // Initialize event_uids array if not set
+        // Keep existing event_uids - don't modify them during updates
+        // LoppService manages the event_uids relationship separately
         if (!isset($eventGroupDTO->event_uids) || !is_array($eventGroupDTO->event_uids)) {
             $eventGroupDTO->event_uids = [];
-        }
-        
-        // Add track UIDs to event_uids
-        if (!empty($tracks)) {
-            foreach ($tracks as $track) {
-                $trackUid = $track->getTrackUid();
-                if (!in_array($trackUid, $eventGroupDTO->event_uids)) {
-                    $eventGroupDTO->event_uids[] = $trackUid;
-                }
-            }
         }
         
         return $eventGroupDTO;
@@ -412,6 +419,58 @@ class EventService extends ServiceAbstract
         
         // Default fallback
         return date('Y-m-d', strtotime($date));
+    }
+    
+    /**
+     * Format a date for MySQL database storage
+     * Handles JavaScript ISO date strings and converts them to MySQL-compatible format
+     * 
+     * @param mixed $date The date to format
+     * @return string|null The formatted date
+     */
+    private function formatDateForDatabase($date): ?string
+    {
+        if (is_null($date) || $date === '') {
+            return null;
+        }
+        
+        if (is_string($date)) {
+            // Handle JavaScript ISO date format (e.g., "2026-12-29T23:00:00.000Z")
+            if (preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/', $date)) {
+                try {
+                    $dateTime = new \DateTime($date);
+                    return $dateTime->format('Y-m-d');
+                } catch (\Exception $e) {
+                    error_log("Failed to parse ISO date: " . $date . " - " . $e->getMessage());
+                    return date('Y-m-d');
+                }
+            }
+            
+            // If it's already in a proper format, return as is
+            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+                return $date;
+            }
+            
+            // Try to parse other string formats
+            try {
+                return date('Y-m-d', strtotime($date));
+            } catch (\Exception $e) {
+                error_log("Failed to parse date string: " . $date . " - " . $e->getMessage());
+                return date('Y-m-d');
+            }
+        }
+        
+        if ($date instanceof \DateTime) {
+            return $date->format('Y-m-d');
+        }
+        
+        // Default fallback
+        try {
+            return date('Y-m-d', strtotime($date));
+        } catch (\Exception $e) {
+            error_log("Failed to format date: " . print_r($date, true) . " - " . $e->getMessage());
+            return date('Y-m-d');
+        }
     }
 
 }

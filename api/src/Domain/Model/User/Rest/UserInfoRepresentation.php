@@ -7,25 +7,25 @@ use JsonSerializable;
 class UserInfoRepresentation  implements JsonSerializable
 {
 
-    private ?string $user_uid;
-    private ?string $uid;
-    private string $phone;
-    private string $email;
+    private ?string $user_uid = null;
+    private ?string $uid = null;
+    private string $phone = '';
+    private string $email = '';
     private ?array $link;
 
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUid(): string
+    public function getUid(): ?string
     {
         return $this->uid;
     }
 
     /**
-     * @param string $uid
+     * @param string|null $uid
      */
-    public function setUid(string $uid): void
+    public function setUid(?string $uid): void
     {
         $this->uid = $uid;
     }
@@ -63,17 +63,17 @@ class UserInfoRepresentation  implements JsonSerializable
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUserUid(): string
+    public function getUserUid(): ?string
     {
         return $this->user_uid;
     }
 
     /**
-     * @param string $user_uid
+     * @param string|null $user_uid
      */
-    public function setUserUid(string $user_uid): void
+    public function setUserUid(?string $user_uid): void
     {
         $this->user_uid = $user_uid;
     }

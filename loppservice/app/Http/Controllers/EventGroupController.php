@@ -8,8 +8,8 @@ use App\Repositories\Interfaces\EventGroupRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class EventGroupController extends Controller
 {
@@ -22,12 +22,17 @@ class EventGroupController extends Controller
 
     public function create(Request $request): JsonResponse
     {
+        // Preprocess dates if they are in ISO format
+        $this->preprocessDates($request);
+
+        Log::debug("Handling create for event group: ");
+
         $validated = $request->validate([
             'uid' => 'required|string',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'startdate' => 'required|date',
-            'enddate' => 'required|date|after_or_equal:startdate',
+            'startdate' => 'required|date_format:Y-m-d|after_or_equal:today',
+            'enddate' => 'required|date_format:Y-m-d|after_or_equal:startdate',
             'event_uids' => 'array',
             'event_uids.*' => 'string|exists:events,event_uid'
         ]);
@@ -49,6 +54,14 @@ class EventGroupController extends Controller
             ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             DB::rollBack();
+
+            // Log the error for debugging
+            Log::error('Failed to create event group', [
+                'error' => $e->getMessage(),
+                'request_data' => $request->all(),
+                'validated' => $validated ?? null
+            ]);
+
             return response()->json([
                 'message' => 'Failed to create event group',
                 'error' => $e->getMessage()
@@ -58,11 +71,16 @@ class EventGroupController extends Controller
 
     public function update(Request $request, string $uid): JsonResponse
     {
+        // Preprocess dates if they are in ISO formatte
+        $this->preprocessDates($request);
+
+        Log::debug("Handling update for event group: " . $uid);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'startdate' => 'required|date',
-            'enddate' => 'required|date|after_or_equal:startdate',
+            'startdate' => 'required|date_format:Y-m-d',
+            'enddate' => 'required|date_format:Y-m-d|after_or_equal:startdate',
             'event_uids' => 'array',
             'event_uids.*' => 'string|exists:events,event_uid'
         ]);
@@ -84,6 +102,15 @@ class EventGroupController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+
+            // Log the error for debugging
+            Log::error('Failed to update event group', [
+                'uid' => $uid,
+                'error' => $e->getMessage(),
+                'request_data' => $request->all(),
+                'validated' => $validated ?? null
+            ]);
+
             return response()->json([
                 'message' => 'Failed to update event group',
                 'error' => $e->getMessage()
@@ -97,7 +124,7 @@ class EventGroupController extends Controller
             DB::beginTransaction();
 
             $eventGroup = $this->eventGroupRepository->findByUid($uid);
-            
+
             if (!$eventGroup) {
                 return response()->json([
                     'message' => 'Event group not found'
@@ -130,7 +157,7 @@ class EventGroupController extends Controller
     {
         try {
             $eventGroup = $this->eventGroupRepository->findByUid($uid);
-            
+
             if (!$eventGroup) {
                 return response()->json([
                     'message' => 'Event group not found'
@@ -152,7 +179,7 @@ class EventGroupController extends Controller
     {
         try {
             $eventGroups = $this->eventGroupRepository->all();
-            
+
             return response()->json([
                 'data' => $eventGroups
             ]);
@@ -163,4 +190,35 @@ class EventGroupController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-} 
+
+    /**
+     * Preprocess date fields to convert ISO format to Y-m-d format
+     *
+     * @param Request $request
+     */
+    private function preprocessDates(Request $request): void
+    {
+        $dateFields = ['startdate', 'enddate'];
+
+        foreach ($dateFields as $field) {
+            if ($request->has($field)) {
+                $value = $request->input($field);
+
+                // Check if it's an ISO date format (e.g., 2026-12-29T23:00:00.000Z)
+                if (is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/', $value)) {
+                    try {
+                        $date = new \DateTime($value);
+                        $request->merge([$field => $date->format('Y-m-d')]);
+                    } catch (\Exception $e) {
+                        // If conversion fails, leave the original value for validation to catch it
+                        Log::warning('Failed to convert ISO date', [
+                            'field' => $field,
+                            'value' => $value,
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                }
+            }
+        }
+    }
+}

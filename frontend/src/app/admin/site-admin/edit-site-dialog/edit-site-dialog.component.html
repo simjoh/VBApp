@@ -1,66 +1,173 @@
 <!--{{siteform |json}}-->
-<form #eventFormName="ngForm" (ngSubmit)="addEvent(eventFormName)" novalidate>
-  <div class="p-dynamicdialog">
-    <div class="p-dialog-content">
+<div class="p-fluid formgrid grid">
+  <form #eventFormName="ngForm" (ngSubmit)="addEvent(eventFormName)" novalidate>
 
-      <div class="form-group">
-        <label class="col-form-label" for="place"><strong>Plats</strong></label>
+    <!-- Place Field -->
+    <div class="col-12 field">
+      <label for="place" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-map-marker mr-2"></i>
+        Plats
+      </label>
+      <input
+        pInputText
+        id="place"
+        name="place"
+        #place="ngModel"
+        [(ngModel)]="siteform.place"
+        placeholder="Ex: Broparken"
+        required
+        class="w-full"
+        [class.ng-invalid]="place.invalid && (place.dirty || place.touched)"
+      />
+      <small *ngIf="place.invalid && (place.dirty || place.touched)" class="p-error block mt-1">
+        Plats krävs
+      </small>
+    </div>
 
-        <input pInputText pTooltip="Plats"  tooltipPosition="left"   #place="ngModel" type="text" name="place" class="form-control" id="place" [(ngModel)]="siteform.place" placeholder="Broparken" required>
-      </div>
-      <div class="form-group">
-        <label class="col-form-label" for="adress"><strong>Adress</strong></label>
-        <input pInputText pTooltip="Adress"  tooltipPosition="left"   #adress="ngModel" type="text" name="adress" class="form-control" id="adress" [(ngModel)]="siteform.adress" placeholder="Brogatan 1" required>
-      </div>
-      <div class="form-group">
-        <div class="form-row">
-          <div class="col-6">
+    <!-- Address Field -->
+    <div class="col-12 field">
+      <label for="adress" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-home mr-2"></i>
+        Adress
+      </label>
+      <input
+        pInputText
+        id="adress"
+        name="adress"
+        #adress="ngModel"
+        [(ngModel)]="siteform.adress"
+        placeholder="Ex: Brogatan 1"
+        required
+        class="w-full"
+        [class.ng-invalid]="adress.invalid && (adress.dirty || adress.touched)"
+      />
+      <small *ngIf="adress.invalid && (adress.dirty || adress.touched)" class="p-error block mt-1">
+        Adress krävs
+      </small>
+    </div>
 
-            <strong>Latitud</strong>
-            <input pInputText pTooltip="Latitud"  tooltipPosition="left"   #lat="ngModel" type="text" name="lat" class="form-control" id="lat" [(ngModel)]="siteform.lat" placeholder="" required>
-          </div>
-          <div class="col-6">
-            <strong>Longitud</strong>
-            <input pInputText pTooltip="Longitud"  tooltipPosition="left"   #lng="ngModel" type="text" name="lng" class="form-control" id="long" [(ngModel)]="siteform.lng" placeholder="" required>
-          </div>
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="form-group">
-          <strong>Description</strong>
-          <textarea  pTooltip="Beskrivning för platsen" tooltipPosition="left" [(ngModel)]="siteform.description" name="description" placeholder="" class="col-12" rows="5"  pInputTextarea autoResize="autoResize"></textarea>
-        </div>
-        <div class="form-group">
-          <img width="70" height="70" class="p-shadow-4" [src]="siteform.image"  alt="logga">
-        </div>
-        <div class="form-group">
-          <strong>Byt logga</strong>
+    <!-- Coordinates -->
+    <div class="col-12 md:col-6 field">
+      <label for="lat" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-globe mr-2"></i>
+        Latitud
+      </label>
+      <input
+        pInputText
+        id="lat"
+        name="lat"
+        #lat="ngModel"
+        [(ngModel)]="siteform.lat"
+        placeholder="Ex: 59.3293"
+        required
+        class="w-full"
+        [class.ng-invalid]="lat.invalid && (lat.dirty || lat.touched)"
+      />
+      <small *ngIf="lat.invalid && (lat.dirty || lat.touched)" class="p-error block mt-1">
+        Latitud krävs
+      </small>
+    </div>
 
-          <!--          <p-fileUpload showCancelButton="false" (onSelect)="onupload($event)" name="myfile[]" url="/api/site/upload"></p-fileUpload>-->
+    <div class="col-12 md:col-6 field">
+      <label for="lng" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-globe mr-2"></i>
+        Longitud
+      </label>
+      <input
+        pInputText
+        id="lng"
+        name="lng"
+        #lng="ngModel"
+        [(ngModel)]="siteform.lng"
+        placeholder="Ex: 18.0686"
+        required
+        class="w-full"
+        [class.ng-invalid]="lng.invalid && (lng.dirty || lng.touched)"
+      />
+      <small *ngIf="lng.invalid && (lng.dirty || lng.touched)" class="p-error block mt-1">
+        Longitud krävs
+      </small>
+    </div>
 
-          <p-fileUpload #primeFileUploadw (onProgress)="progressReport($event)" name="myfile[]" customUpload="true" (uploadHandler)="myUploader($event)">
-            multiple="multiple" accept="image/*" maxFileSize="1000000">
-            <ng-template pTemplate="content">
-              <ul *ngIf="uploadedFiles.length">
-                <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
-              </ul>
-            </ng-template>
-          </p-fileUpload>
+    <!-- Description -->
+    <div class="col-12 field">
+      <label for="description" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-file-edit mr-2"></i>
+        Beskrivning
+      </label>
+      <textarea
+        pInputTextarea
+        id="description"
+        [(ngModel)]="siteform.description"
+        name="description"
+        rows="4"
+        autoResize="autoResize"
+        placeholder="Beskrivning för platsen..."
+        class="w-full">
+      </textarea>
+    </div>
 
-
-        </div>
-        <div class="form-group">
-        </div>
+    <!-- Current Image -->
+    <div class="col-12 field" *ngIf="siteform.image">
+      <label class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-image mr-2"></i>
+        Nuvarande bild
+      </label>
+      <div class="flex align-items-center">
+        <img
+          width="70"
+          height="70"
+          class="border-round shadow-2"
+          [src]="siteform.image"
+          alt="Plats bild"
+        />
       </div>
     </div>
-    <div class="p-dialog-footer">
-  <span class="p-buttonset">
-    <button pTooltip="Klicka för att spara" type="submit"  [disabled]="!eventFormName.valid" tooltipPosition="left" pButton pRipple label="Save"  icon="pi pi-check" class="p-button-sm"></button>
-    <button pTooltip="Klicka för att avbryta" pButton pRipple label="Cancel" (click)="cancel()"  icon="pi pi-times" class="p-button-sm"></button>
-</span>
+
+    <!-- Image Upload -->
+    <div class="col-12 field">
+      <label class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-upload mr-2"></i>
+        Byt bild
+      </label>
+      <p-fileUpload
+        #primeFileUploadw
+        (onProgress)="progressReport($event)"
+        name="myfile[]"
+        customUpload="true"
+        (uploadHandler)="myUploader($event)"
+        accept="image/*"
+        maxFileSize="1000000"
+        class="w-full">
+        <ng-template pTemplate="content">
+          <ul *ngIf="uploadedFiles.length" class="mt-2">
+            <li *ngFor="let file of uploadedFiles" class="text-sm text-gray-600">
+              {{file.name}} - {{file.size}} bytes
+            </li>
+          </ul>
+        </ng-template>
+      </p-fileUpload>
     </div>
-  </div>
-</form>
+
+    <!-- Footer Buttons -->
+    <div class="col-12 flex justify-content-end gap-2 mt-4">
+      <p-button
+        icon="pi pi-times"
+        label="Avbryt"
+        (click)="cancel()"
+        severity="secondary"
+        [text]="true">
+      </p-button>
+      <p-button
+        icon="pi pi-check"
+        label="Spara"
+        type="submit"
+        [disabled]="!eventFormName.valid">
+      </p-button>
+    </div>
+
+  </form>
+</div>
 
 
 

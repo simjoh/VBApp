@@ -1,0 +1,237 @@
+<div class="p-fluid formgrid grid">
+  <form #contactForm="ngForm" (ngSubmit)="updateUser(contactForm)" novalidate>
+
+    <!-- User Information Section -->
+    <div class="col-12">
+      <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
+        <i class="pi pi-user mr-2 text-blue-600"></i>
+        Användaruppgifter
+      </h4>
+    </div>
+
+    <!-- First Name Field -->
+    <div class="col-12 md:col-6 field">
+      <label for="givenname" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-user mr-2"></i>
+        Förnamn
+      </label>
+      <input
+        pInputText
+        id="givenname"
+        name="givenname"
+        #givenname="ngModel"
+        [(ngModel)]="userForm.givenname"
+        placeholder="Ange förnamn"
+        required
+        class="w-full"
+        [class.ng-invalid]="givenname.invalid && (givenname.dirty || givenname.touched)"
+      />
+      <small *ngIf="givenname.invalid && (givenname.dirty || givenname.touched)" class="p-error block mt-1">
+        Förnamn krävs
+      </small>
+    </div>
+
+    <!-- Last Name Field -->
+    <div class="col-12 md:col-6 field">
+      <label for="familyname" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-user mr-2"></i>
+        Efternamn
+      </label>
+      <input
+        pInputText
+        id="familyname"
+        name="familyname"
+        #familyname="ngModel"
+        [(ngModel)]="userForm.familyname"
+        placeholder="Ange efternamn"
+        required
+        class="w-full"
+        [class.ng-invalid]="familyname.invalid && (familyname.dirty || familyname.touched)"
+      />
+      <small *ngIf="familyname.invalid && (familyname.dirty || familyname.touched)" class="p-error block mt-1">
+        Efternamn krävs
+      </small>
+    </div>
+
+    <!-- Username Field -->
+    <div class="col-12 field">
+      <label for="username" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-at mr-2"></i>
+        Användarnamn
+      </label>
+      <input
+        pInputText
+        id="username"
+        name="username"
+        #username="ngModel"
+        [(ngModel)]="userForm.username"
+        placeholder="Ange användarnamn"
+        required
+        class="w-full"
+        [class.ng-invalid]="username.invalid && (username.dirty || username.touched)"
+      />
+      <small *ngIf="username.invalid && (username.dirty || username.touched)" class="p-error block mt-1">
+        Användarnamn krävs
+      </small>
+    </div>
+
+    <!-- Contact Information Section -->
+    <div class="col-12">
+      <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
+        <i class="pi pi-phone mr-2 text-blue-600"></i>
+        Kontaktuppgifter
+      </h4>
+    </div>
+
+    <!-- Phone Field -->
+    <div class="col-12 md:col-6 field">
+      <label for="phone" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-phone mr-2"></i>
+        Telefon
+      </label>
+      <input
+        pInputText
+        id="phone"
+        name="phone"
+        [(ngModel)]="userForm.phone"
+        placeholder="Ange telefonnummer"
+        class="w-full"
+      />
+    </div>
+
+    <!-- Email Field -->
+    <div class="col-12 md:col-6 field">
+      <label for="email" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-envelope mr-2"></i>
+        E-post
+      </label>
+      <input
+        pInputText
+        id="email"
+        name="email"
+        type="email"
+        [(ngModel)]="userForm.email"
+        placeholder="Ange e-postadress"
+        class="w-full"
+      />
+    </div>
+
+    <!-- Permissions Section -->
+    <div class="col-12">
+      <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
+        <i class="pi pi-shield mr-2 text-blue-600"></i>
+        Behörigheter
+      </h4>
+    </div>
+
+    <!-- Permission Checkboxes -->
+    <div class="col-12 field">
+      <div class="grid">
+        <div class="col-12 md:col-6 lg:col-4">
+          <div class="flex align-items-center">
+            <p-checkbox
+              [(ngModel)]="userForm.superuser"
+              name="superuser"
+              inputId="superuser"
+              [binary]="true">
+            </p-checkbox>
+            <label for="superuser" class="ml-2 font-medium">
+              Superanvändare
+            </label>
+          </div>
+          <small class="text-gray-500 block mt-1">
+            Superanvändare med alla behörigheter
+          </small>
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-4">
+          <div class="flex align-items-center">
+            <p-checkbox
+              [(ngModel)]="userForm.admin"
+              name="admin"
+              inputId="admin"
+              [binary]="true">
+            </p-checkbox>
+            <label for="admin" class="ml-2 font-medium">
+              Administratör
+            </label>
+          </div>
+          <small class="text-gray-500 block mt-1">
+            Administratör med skriv och läsrättigheter
+          </small>
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-4">
+          <div class="flex align-items-center">
+            <p-checkbox
+              [(ngModel)]="userForm.user"
+              name="user"
+              inputId="user"
+              [binary]="true">
+            </p-checkbox>
+            <label for="user" class="ml-2 font-medium">
+              Användare
+            </label>
+          </div>
+          <small class="text-gray-500 block mt-1">
+            Läsbehörighet och viss skrivbehörighet
+          </small>
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-4">
+          <div class="flex align-items-center">
+            <p-checkbox
+              [(ngModel)]="userForm.volonteer"
+              name="volonteer"
+              inputId="volonteer"
+              [binary]="true">
+            </p-checkbox>
+            <label for="volonteer" class="ml-2 font-medium">
+              Volontär
+            </label>
+          </div>
+          <small class="text-gray-500 block mt-1">
+            Behörighet att checka in och se passeringar vid kontroller
+          </small>
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-4">
+          <div class="flex align-items-center">
+            <p-checkbox
+              [(ngModel)]="userForm.developer"
+              name="developer"
+              inputId="developer"
+              [binary]="true">
+            </p-checkbox>
+            <label for="developer" class="ml-2 font-medium">
+              Utvecklare
+            </label>
+          </div>
+          <small class="text-gray-500 block mt-1">
+            Utvecklare med access till utvecklingsverktyg
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="col-12">
+      <div class="flex justify-content-end gap-2 pt-4 border-t border-gray-200">
+        <p-button
+          label="Avbryt"
+          icon="pi pi-times"
+          styleClass="p-button-text p-button-secondary"
+          (onClick)="cancel()">
+        </p-button>
+        <p-button
+          label="Uppdatera användare"
+          icon="pi pi-check"
+          type="submit"
+          styleClass="p-button-raised"
+          [disabled]="contactForm.invalid">
+        </p-button>
+      </div>
+    </div>
+
+  </form>
+</div>

@@ -25,7 +25,10 @@ class RouteServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RateLimiter::for('loppservice', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+            // For API requests, use the API key or IP address for rate limiting
+            // Increase the limit to 120 requests per minute for API usage
+            $identifier = $request->header('apikey') ?: $request->ip();
+            return Limit::perMinute(120)->by($identifier);
         });
 
 

@@ -138,11 +138,11 @@ class ClubRepository extends BaseRepository
 
     }
 
-    public function createClub(string $acp_kod, ?string $title): ?string
+    public function createClub(?string $acp_kod, ?string $title): ?string
     {
         try {
             $club_uid = Uuid::uuid4();
-            $acpkod = intval($acp_kod);
+            $acpkod = $acp_kod !== null ? intval($acp_kod) : 0;
             $stmt = $this->connection->prepare($this->sqls('createClub'));
             $stmt->bindParam(':club_uid', $club_uid);
             $stmt->bindParam(':acpkod', $acpkod);
@@ -160,22 +160,41 @@ class ClubRepository extends BaseRepository
     public function updateClub(Club $club): ?Club
     {
         try {
+            $this->connection->beginTransaction();
+            
             $club_uid = $club->getClubUid();
             $acpkod = intval($club->getAcpKod() ?? 0);
             $title = $club->getTitle();
+            
             $stmt = $this->connection->prepare($this->sqls('updateClub'));
             $stmt->bindParam(':club_uid', $club_uid);
-            $stmt->bindParam(':acpkod', $acpkod);
+            $stmt->bindParam(':acp_kod', $acpkod);
             $stmt->bindParam(':title', $title);
             $status = $stmt->execute();
 
             if($status){
+                $this->connection->commit();
                 return $club;
+            } else {
+                $this->connection->rollBack();
             }
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
+            $this->connection->rollBack();
         }
         return $club;
+    }
+
+    public function deleteClub(string $club_uid): bool
+    {
+        try {
+            $stmt = $this->connection->prepare($this->sqls('deleteClub'));
+            $stmt->bindParam(':club_uid', $club_uid);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
     }
 
     public function sqls($type)
@@ -187,6 +206,7 @@ class ClubRepository extends BaseRepository
         $clubsql['clubByAcpkod'] = 'select * from club e where acp_kod=:acpkod;';
         $clubsql['createClub'] = 'INSERT INTO club(club_uid, acp_kod, title) VALUES (:club_uid, :acpkod, :title)';
         $clubsql['updateClub'] = 'UPDATE club set acp_kod=:acp_kod, title=:title where club_uid=:club_uid';
+        $clubsql['deleteClub'] = 'DELETE FROM club WHERE club_uid = :club_uid';
         return $clubsql[$type];
     }
 }

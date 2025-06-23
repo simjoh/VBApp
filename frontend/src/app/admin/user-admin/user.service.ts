@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {BehaviorSubject, combineLatest, forkJoin, merge, Observable, of, Subject, throwError} from "rxjs";
 import {User} from "../../shared/api/api";
 import {environment} from "../../../environments/environment";
-import {catchError, map, shareReplay, startWith, tap} from "rxjs/operators";
+import {catchError, map, shareReplay, startWith, switchMap, tap} from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
 
 @Injectable({
@@ -15,8 +15,19 @@ export class UserService {
     startWith(''),
   );
 
+  private userUpdatedSubject = new Subject<User>();
+  userUpdatedAction$ = this.userUpdatedSubject.asObservable().pipe(
+    startWith(''),
+  );
 
-  allUsers$ = this.getAllUSers() as Observable<User[]>;
+  private refreshSubject = new Subject<void>();
+  refresh$ = this.refreshSubject.asObservable().pipe(
+    startWith(null),
+  );
+
+  allUsers$ = this.refresh$.pipe(
+    switchMap(() => this.getAllUSers())
+  ) as Observable<User[]>;
 
 private userInsertedSubject = new Subject<User>();
   userInsertedAction$ = this.userInsertedSubject.asObservable().pipe(
@@ -36,8 +47,8 @@ private userInsertedSubject = new Subject<User>();
   //   tap(jj => console.log("All user",jj))
   //   );
 
-  usersWithAdd$ = combineLatest([this.getAllUSers(), this.userInsertedAction$, this.relaod$]).pipe(
-    map(([all, insert, del]) =>  {
+  usersWithAdd$ = combineLatest([this.allUsers$, this.userInsertedAction$, this.relaod$, this.userUpdatedAction$]).pipe(
+    map(([all, insert, del, update]) =>  {
          if(insert){
           return  [...all, insert]
          }
@@ -46,6 +57,13 @@ private userInsertedSubject = new Subject<User>();
            all.splice(index, 1);
            const userArray = all;
            return   this.deepCopyProperties(all);
+         }
+         if(update && typeof update === 'object' && update.user_uid){
+           var index = all.findIndex((elt) => elt.user_uid === update.user_uid);
+           if(index >= 0) {
+             all[index] = update;
+           }
+           return this.deepCopyProperties(all);
          }
          return this.deepCopyProperties(all);
     }),
@@ -62,6 +80,26 @@ private userInsertedSubject = new Subject<User>();
  async newUser(newUser: User) {
      const user = await this.addUser(newUser)
     this.userInsertedSubject.next(user);
+  }
+
+  async updateUserInList(userToUpdate: User) {
+    try {
+      const updatedUser = await this.updateUser(userToUpdate.user_uid, userToUpdate).toPromise();
+      console.log("UserService - Updated user from backend:", updatedUser);
+
+      // Force refresh the users list by triggering a reload
+      this.refreshUsersList();
+
+      this.userUpdatedSubject.next(updatedUser);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  }
+
+  private refreshUsersList() {
+    // Force refresh by triggering the refresh subject
+    this.refreshSubject.next();
   }
 
   private getAllUSers(): Observable<User[]>{
@@ -92,13 +130,13 @@ private userInsertedSubject = new Subject<User>();
     ).toPromise();
   }
 
-  public updateUser(useruid: string, user: User){
-    return this.httpClient.put<User>(environment.backend_url + "user", {} as User).pipe(
-      map((user: User) => {
-        return user;
+  public updateUser(useruid: string, user: User): Observable<User>{
+    return this.httpClient.put<User>(environment.backend_url + "user/" + useruid, user).pipe(
+      map((updatedUser: User) => {
+        return updatedUser;
       }),
-      tap(users =>   console.log(users))
-    ) as Observable<User>
+      tap(updatedUser => console.log("Updated user:", updatedUser))
+    );
   }
 
   public deleterUser(userUid: string){

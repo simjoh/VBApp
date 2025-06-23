@@ -85,7 +85,7 @@ class ToolController extends Controller
         } else {
             $count = 0;
         }
-        return view('tool.show')->with(['migratelink' => '', 'callping' => env("APP_URL") . '/api/ping', 'events' => Event::all(), 'transferurl' => env("APP_URL") . '/api/transfer', 'errors' => [], 'counttransferred' => $count]);
+        return view('tool.show')->with(['migratelink' => '', 'callping' => env("APP_URL") . '/api/ping', 'events' => Event::all(), 'transferurl' => env("APP_URL") . '/api/transfer', 'counttransferred' => $count]);
 
 
     }

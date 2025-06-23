@@ -20,6 +20,11 @@ class LoppservicePersonRepresentation implements JsonSerializable {
     public array $registration;
     public string $response_uid;
     public bool $medal;
+    
+    // Additional properties for addparticipant payload
+    public $participant;
+    public $event_uid;
+    public $club;
 
     public function __construct() {
 

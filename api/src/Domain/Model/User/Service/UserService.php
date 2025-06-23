@@ -58,9 +58,26 @@ class UserService extends  ServiceAbstract
         return null;
     }
 
-    public function updateUser($id, User $userParsed, string $currentUserUIDInSystem): ?UserRepresentation {
-        $user = $this->repository->updateUser($id, $userParsed);
+    public function updateUser($id, UserRepresentation $userrepresentation, string $currentUserUIDInSystem): ?UserRepresentation {
+        // Update basic user information
+        $user = $this->repository->updateUser($id, $this->userAssembly->toUser($userrepresentation));
+        
         if (isset($user)) {
+            // Update user info (phone, email)
+            if($userrepresentation->getUserInfoRepresentation()) {
+                $userinfo = $this->userInfoAssembly->toUserinfo($userrepresentation->getUserInfoRepresentation(), $id, false);
+                if(isset($userinfo)){
+                    $this->userInfoRepository->updateUserInfo($userinfo, $id);
+                }
+            }
+            
+            // Update user roles - delete existing roles and add new ones
+            $this->userRoleRepository->deleteRoles($id);
+            foreach ($userrepresentation->getRoles() as $row) {
+                $role = new Role($row['id'],$row['role_name']);
+                $this->userRoleRepository->createUser($role, $id);
+            }
+            
             return $this->userAssembly->toRepresentation($user,$this->getPermissions($currentUserUIDInSystem));
         }
 
@@ -87,6 +104,15 @@ class UserService extends  ServiceAbstract
     }
 
     public function deleteUser($user_uid): void{
+        // Delete related records first to avoid foreign key constraint violations
+        
+        // Delete user info records
+        $this->userInfoRepository->deleteUserInfoForUser($user_uid);
+        
+        // Delete user role assignments  
+        $this->userRoleRepository->deleteRoles($user_uid);
+        
+        // Finally delete the user
         $this->repository->deleteUser($user_uid);
     }
 

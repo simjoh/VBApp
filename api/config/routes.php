@@ -166,10 +166,17 @@ return function (App $app) {
 
         // lägg till ingångar för admin av klubbar
           $app->get('/club/allclubs', \App\Action\Club\ClubAction::class . ':allClubs');
-        // $app->get('/club/club/{clubUid}', \App\Action\Club\ClubAction::class . ':allUsers')->setName("club");
+        $app->get('/club/{clubUid}', \App\Action\Club\ClubAction::class . ':getClubByUid');
         $app->post('/club/createclub', \App\Action\Club\ClubAction::class . ':createClub');
-        // $app->put('/club/updateClub/{clubUid}', \App\Action\Club\ClubAction::class . ':allUsers')->setName("updateClub");
-        // $app->delete('/club/deleteClub/{clubUid}', \App\Action\Club\ClubAction::class . ':allUsers')->setName("deleteClub");
+        $app->put('/club/{clubUid}', \App\Action\Club\ClubAction::class . ':updateClub');
+        $app->delete('/club/{clubUid}', \App\Action\Club\ClubAction::class . ':deleteClub');
+
+        // lägg till ingångar för admin av organisatörer
+        $app->get('/organizer/allorganizers', \App\Action\Organizer\OrganizerAction::class . ':allOrganizers');
+        $app->get('/organizer/{organizerId}', \App\Action\Organizer\OrganizerAction::class . ':getOrganizerById');
+        $app->post('/organizer/createorganizer', \App\Action\Organizer\OrganizerAction::class . ':createOrganizer');
+        $app->put('/organizer/{organizerId}', \App\Action\Organizer\OrganizerAction::class . ':updateOrganizer');
+        $app->delete('/organizer/{organizerId}', \App\Action\Organizer\OrganizerAction::class . ':deleteOrganizer');
 
         // roller i systemet endast läsa
 

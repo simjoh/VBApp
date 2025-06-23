@@ -716,6 +716,8 @@ class ParticipantService extends ServiceAbstract
 
         $finnsitabell = GlobalConfig::get($track_uid);
 
+        echo "track_uid: " . $track_uid;
+
         if ($finnsitabell) {
             $track_uid = $finnsitabell;
         }
@@ -750,9 +752,9 @@ class ParticipantService extends ServiceAbstract
             $competitor = $this->competitorService->getCompetitorByUid3($participant_to_create['person_uid'], "");
             if (!isset($competitor)) {
                 $competitorc = $this->competitorService->createCompetitorFromLoppservice($participant_to_create['firstname'], $participant_to_create['surname'], "", $participant_to_create['birthdate'], $participant_to_create['person_uid'], $participant_to_create['gender']);
-                if ($competitorc) {
+          /*       if ($competitorc) {
                     $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParamsFromLoppservice($contactinformation['email'], $contactinformation['tel'], $adress['adress'], $adress['postal_code'], $adress['city'], $this->countryrepository->countryFor($adress['country_id'])->country_name_sv, $participant_to_create['person_uid'], $adress['country_id']);
-                }
+                } */
                 $competitor = $competitorc;
             }
             if (isset($competitor)) {

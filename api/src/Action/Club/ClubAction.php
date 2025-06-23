@@ -33,23 +33,39 @@ class ClubAction
 
 
     public function createClub(ServerRequestInterface $request, ResponseInterface $response){
+        $data = $request->getParsedBody();
+        $club = new ClubRepresentation();
+        $club->setTitle($data['title'] ?? null);
+        $club->setAcpCode($data['acp_code'] ?? null);
 
-
-        $jsonDecoder = new JsonDecoder();
-        $jsonDecoder->register(new ClubRepresentationTransformer());
-        $club = $jsonDecoder->decode($request->getBody()->getContents(), ClubRepresentation::class);
-
-        $response->getBody()->write(json_encode($this->clubservice->createClub($request->getAttribute('currentuserUid'), $club, ), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        $response->getBody()->write(json_encode($this->clubservice->createClub($request->getAttribute('currentuserUid'), $club), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+    }
 
-
-
-
-        $response->getBody()->write(json_encode($this->clubservice->createClub(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    public function getClubByUid(ServerRequestInterface $request, ResponseInterface $response, array $args){
+        $clubUid = $args['clubUid'];
+        $response->getBody()->write(json_encode($this->clubservice->getClubByUid($clubUid, $request->getAttribute('currentuserUid')), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    public function updateClub(ServerRequestInterface $request, ResponseInterface $response, array $args){
+        $clubUid = $args['clubUid'];
+        $data = $request->getParsedBody();
 
+        $club = new ClubRepresentation();
+        $club->setClubUid($clubUid);
+        $club->setTitle($data['title'] ?? null);
+        $club->setAcpCode($data['acp_code'] ?? null);
 
+        $result = $this->clubservice->updateClub($request->getAttribute('currentuserUid'), $club);
+        $response->getBody()->write(json_encode($result, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+    public function deleteClub(ServerRequestInterface $request, ResponseInterface $response, array $args){
+        $clubUid = $args['clubUid'];
+        $response->getBody()->write(json_encode($this->clubservice->deleteClub($request->getAttribute('currentuserUid'), $clubUid), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
 
 }

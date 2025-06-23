@@ -1,0 +1,64 @@
+<div class="p-fluid formgrid grid">
+  <form #clubFormName="ngForm" (ngSubmit)="addClub(clubFormName)" novalidate>
+
+    <!-- Club Name Field -->
+    <div class="col-12 field">
+      <label for="title" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-users mr-2"></i>
+        Klubbnamn
+      </label>
+      <input
+        pInputText
+        id="title"
+        name="title"
+        #title="ngModel"
+        [(ngModel)]="clubForm.title"
+        placeholder="Ange klubbnamn"
+        required
+        class="w-full"
+        [class.ng-invalid]="title.invalid && (title.dirty || title.touched)"
+      />
+      <small *ngIf="title.invalid && (title.dirty || title.touched)" class="p-error block mt-1">
+        Klubbnamn krävs
+      </small>
+    </div>
+
+    <!-- ACP Code Field -->
+    <div class="col-12 field">
+      <label for="acp_code" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-id-card mr-2"></i>
+        ACP-kod (Valfritt)
+      </label>
+      <input
+        pInputText
+        id="acp_code"
+        name="acp_code"
+        #acp_code="ngModel"
+        [(ngModel)]="clubForm.acp_code"
+        placeholder="Lämna tomt om ingen ACP-kod"
+        class="w-full"
+      />
+      <small class="text-gray-500 block mt-1">
+        Lämna tomt om klubben inte har en ACP-kod
+      </small>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="col-12 flex justify-content-end gap-2 mt-4">
+      <p-button
+        icon="pi pi-times"
+        label="Avbryt"
+        (click)="cancel()"
+        severity="secondary"
+        [text]="true">
+      </p-button>
+      <p-button
+        icon="pi pi-check"
+        label="Spara"
+        type="submit"
+        [disabled]="!clubFormName.valid">
+      </p-button>
+    </div>
+
+  </form>
+</div>

@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+when fixing errors and try to fix issues always try to fix the main problem and dont try to write code that not solve the main problem

@@ -43,16 +43,19 @@ export class EventListComponent implements OnInit {
 
     let width;
     if ( this.deviceDetector.isDesktop()){
-      width = "60%";
+      width = "400px";
     } else {
-      width = "80%"
+      width = "95%"
     }
 
     const ref = this.dialogService.open(CreateEventDialogComponent, {
       data: {
         id: '51gF3'
       },
-      header: 'Lägg till event',
+      header: 'Lägg till Evenemang',
+      width: width,
+      height: 'auto',
+      contentStyle: { 'overflow': 'visible' }
     });
 
     ref.onClose.subscribe((event: EventRepresentation) => {
@@ -65,12 +68,22 @@ export class EventListComponent implements OnInit {
 
   editProduct(user_uid: any) {
 
+    let width;
+    if ( this.deviceDetector.isDesktop()){
+      width = "400px";
+    } else {
+      width = "95%"
+    }
+
     const editref = this.dialogService.open(EditEventDialogComponent, {
       data: {
         event: user_uid,
         id: '51gF3'
       },
-      header: 'Editera event',
+      header: 'Redigera Evenemang',
+      width: width,
+      height: 'auto',
+      contentStyle: { 'overflow': 'visible' }
     });
 
     editref.onClose.pipe(take(1)).subscribe(((event: EventRepresentation) => {
@@ -86,8 +99,8 @@ export class EventListComponent implements OnInit {
 
   deleteProduct(event_uid: any) {
     this.confirmationService.confirm({
-      message: 'Are you sure you want to delete ' + event_uid + '?',
-      header: 'Confirm',
+      message: 'Är du säker på att du vill ta bort ' + event_uid + '?',
+      header: 'Bekräfta',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         console.log(event_uid)

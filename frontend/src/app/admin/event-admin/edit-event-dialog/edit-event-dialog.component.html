@@ -1,106 +1,129 @@
-<form #eventFormName="ngForm" (ngSubmit)="editEvent(eventFormName)" novalidate class="p-fluid">
-  <div class="p-dynamicdialog">
-    <div class="p-dialog-content">
+<div class="p-fluid formgrid grid">
+  <form #eventFormName="ngForm" (ngSubmit)="editEvent(eventFormName)" novalidate>
+
+    <!-- Title Field -->
+    <div class="col-12 field">
+      <label for="title" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-tag mr-2"></i>
+        Titel
+      </label>
+      <input
+        pInputText
+        id="title"
+        name="title"
+        #title="ngModel"
+        [(ngModel)]="eventForm.title"
+        placeholder="Ex: Månskensbrevet"
+        required
+        class="w-full"
+        [class.ng-invalid]="title.invalid && (title.dirty || title.touched)"
+      />
+      <small *ngIf="title.invalid && (title.dirty || title.touched)" class="p-error block mt-1">
+        Titel krävs
+      </small>
+    </div>
+
+    <!-- Date Fields -->
+    <div class="col-12 field">
+      <label for="startdate" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-calendar mr-2"></i>
+        Startdatum
+      </label>
+      <p-calendar
+        id="startdate"
+        [(ngModel)]="eventForm.startdate"
+        name="startdate"
+        [showIcon]="true"
+        [monthNavigator]="true"
+        [yearNavigator]="true"
+        yearRange="2021:2030"
+        dateFormat="yy-mm-dd"
+        placeholder="YYYY-MM-DD"
+        [showButtonBar]="true"
+        styleClass="w-full">
+      </p-calendar>
+    </div>
+
+    <div class="col-12 field">
+      <label for="enddate" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-calendar mr-2"></i>
+        Slutdatum
+      </label>
+      <p-calendar
+        id="enddate"
+        [(ngModel)]="eventForm.enddate"
+        name="enddate"
+        [showIcon]="true"
+        [monthNavigator]="true"
+        [yearNavigator]="true"
+        yearRange="2021:2030"
+        dateFormat="yy-mm-dd"
+        placeholder="YYYY-MM-DD"
+        [showButtonBar]="true"
+        styleClass="w-full">
+      </p-calendar>
+    </div>
+
+    <!-- Categories -->
+    <div class="col-12 field">
+      <label class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-tags mr-2"></i>
+        Status
+      </label>
       <div class="grid">
-        <!-- Title Field -->
-        <div class="col-12 field">
-          <label for="title" class="font-medium">Title</label>
-          <span class="p-input-icon-left w-full">
-            <i class="pi pi-tag"></i>
-            <input pInputText 
-                   id="title" 
-                   name="title" 
-                   #title="ngModel" 
-                   [(ngModel)]="eventForm.title" 
-                   placeholder="Ex: Månskensbrevet" 
-                   required
-                   class="w-full">
-          </span>
-          <small *ngIf="title.invalid && (title.dirty || title.touched)" class="p-error">Title is required</small>
-        </div>
-
-        <!-- Date Fields -->
-        <div class="col-12 date-fields">
-          <div class="field">
-            <label for="startdate" class="font-medium">Start Date</label>
-            <p-calendar id="startdate"
-                       [(ngModel)]="eventForm.startdate"
-                       name="startdate"
-                       [showIcon]="true"
-                       [monthNavigator]="true"
-                       [yearNavigator]="true"
-                       yearRange="2021:2030"
-                       dateFormat="yy-mm-dd"
-                       placeholder="YYYY-MM-DD"
-                       [showButtonBar]="true">
-            </p-calendar>
+        <div *ngFor="let category of categories" class="col-12 md:col-6">
+          <div class="flex align-items-center">
+            <p-radioButton
+              [inputId]="category.key"
+              name="category"
+              [value]="category"
+              [(ngModel)]="city"
+              [disabled]="category.key === 'R'"
+              (onClick)="changeStatus($event)">
+            </p-radioButton>
+            <label [for]="category.key" class="ml-2 font-medium">{{category.name}}</label>
           </div>
-
-          <div class="field">
-            <label for="enddate" class="font-medium">End Date</label>
-            <p-calendar id="enddate"
-                       [(ngModel)]="eventForm.enddate"
-                       name="enddate"
-                       [showIcon]="true"
-                       [monthNavigator]="true"
-                       [yearNavigator]="true"
-                       yearRange="2021:2030"
-                       dateFormat="yy-mm-dd"
-                       placeholder="YYYY-MM-DD"
-                       [showButtonBar]="true">
-            </p-calendar>
-          </div>
-        </div>
-
-        <!-- Categories -->
-        <div class="col-12 field">
-          <label class="font-medium mb-2 block">Category</label>
-          <div class="grid">
-            <div *ngFor="let category of categories" class="col-12 md:col-4 lg:col-3">
-              <p-radioButton [inputId]="category.key"
-                           name="category"
-                           [value]="category"
-                           [(ngModel)]="city"
-                           [disabled]="category.key === 'R'"
-                           (onClick)="changeStatus($event)">
-              </p-radioButton>
-              <label [for]="category.key" class="ml-2">{{category.name}}</label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Description -->
-        <div class="col-12 field">
-          <label for="description" class="font-medium">Description</label>
-          <textarea pInputTextarea
-                    id="description"
-                    [(ngModel)]="eventForm.description"
-                    name="description"
-                    rows="5"
-                    autoResize="autoResize"
-                    placeholder="Enter event description..."
-                    class="w-full">
-          </textarea>
         </div>
       </div>
     </div>
 
-    <!-- Footer -->
-    <div class="p-dialog-footer">
-      <div class="flex justify-content-end gap-2">
-        <p-button icon="pi pi-times" 
-                  label="Cancel" 
-                  (click)="cancel()" 
-                  styleClass="p-button-outlined p-button-secondary"></p-button>
-        <p-button icon="pi pi-check" 
-                  label="Save" 
-                  type="submit" 
-                  [disabled]="!eventFormName.valid"
-                  styleClass="p-button-primary"></p-button>
-      </div>
+    <!-- Description -->
+    <div class="col-12 field">
+      <label for="description" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-file-edit mr-2"></i>
+        Beskrivning
+      </label>
+      <textarea
+        pInputTextarea
+        id="description"
+        [(ngModel)]="eventForm.description"
+        name="description"
+        rows="5"
+        autoResize="autoResize"
+        placeholder="Ange evenemangsbeskrivning..."
+        class="w-full">
+      </textarea>
     </div>
-  </div>
-</form>
+
+    <!-- Footer Buttons -->
+    <div class="col-12 flex justify-content-end gap-2 mt-4">
+      <p-button
+        icon="pi pi-times"
+        label="Avbryt"
+        (click)="cancel()"
+        severity="secondary"
+        [text]="true">
+      </p-button>
+      <p-button
+        icon="pi pi-check"
+        label="Spara"
+        type="submit"
+        [disabled]="!eventFormName.valid">
+      </p-button>
+    </div>
+
+  </form>
+</div>
 
 
 

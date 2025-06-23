@@ -21,7 +21,10 @@ import {EditSiteDialogComponent} from "../edit-site-dialog/edit-site-dialog.comp
 })
 export class SiteListComponent implements OnInit {
 
-
+  // Image preview properties
+  displayImagePreview = false;
+  selectedImageUrl = '';
+  imagePreviewTitle = '';
 
   $sites = this.siteService.siteWithAdd$.pipe(
     map((s:Array<Site>) => {
@@ -51,7 +54,7 @@ export class SiteListComponent implements OnInit {
       data: {
         id: '51gF3'
       },
-      header: 'Lägg till Site',
+      header: 'Lägg till Plats',
     });
 
     ref.onClose.subscribe((event: Site) => {
@@ -68,7 +71,7 @@ export class SiteListComponent implements OnInit {
         user: site,
         id: '51gF3'
       },
-      header: 'Editera kontrollplats',
+      header: 'Redigera Kontrollplats',
     });
 
     editref.onClose.pipe(take(1)).subscribe(((user: SiteRepresentation) => {
@@ -83,14 +86,14 @@ export class SiteListComponent implements OnInit {
 
   }
 
-  deleteProduct(site_uid: any) {
+  deleteProduct(site: Site) {
     this.confirmationService.confirm({
-      message: 'Are you sure you want to delete ' + site_uid + '?',
-      header: 'Confirm',
+      message: `Är du säker på att du vill ta bort platsen "${site.place}"?`,
+      header: 'Bekräfta',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        console.log(site_uid)
-        this.siteService.deleteSite(site_uid);
+        console.log(site.site_uid)
+        this.siteService.deleteSite(site.site_uid);
       },
       reject: () => {
         console.log("reject");
@@ -100,5 +103,11 @@ export class SiteListComponent implements OnInit {
 
   canDelete(site: any):boolean {
     return this.linkService.exists(site.links,"relation.site.delete");
+  }
+
+  showImagePreview(imageUrl: string, placeName: string) {
+    this.selectedImageUrl = imageUrl;
+    this.imagePreviewTitle = `Bild av ${placeName}`;
+    this.displayImagePreview = true;
   }
 }

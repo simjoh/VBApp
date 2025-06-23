@@ -1,196 +1,196 @@
-<div class="card">
-  <ng-container *ngIf="events$ | async as events">
-    <p-table 
-      #dt 
-      [value]="events" 
-      [(selection)]="selectedCustomers" 
-      dataKey="id" 
-      [tableStyle]="{'min-width': '60rem'}"
-      styleClass="p-datatable-customers p-datatable-striped p-datatable-sm p-datatable-gridlines shadow-2" 
-      [rowHover]="true"
-      [rows]="10" 
-      [showCurrentPageReport]="true" 
-      [rowsPerPageOptions]="[10,25,50]" 
-      [loading]="loading"
-      [paginator]="true" 
-      [paginatorTemplate]="paginatorTemplate"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-      [filterDelay]="0" 
-      [globalFilterFields]="['title','startdate','enddate','active']"
-      responsiveLayout="scroll"
-      [scrollable]="true"
-      scrollHeight="flex">
-      <ng-template pTemplate="caption">
-        <div class="flex flex-wrap justify-content-between align-items-center gap-3 p-3">
+<ng-container *ngIf="events$ | async as events">
+  <p-table
+    #dt
+    [value]="events"
+    [(selection)]="selectedCustomers"
+    dataKey="id"
+    [tableStyle]="{'min-width': '60rem'}"
+    styleClass="p-datatable-customers p-datatable-striped p-datatable-sm p-datatable-gridlines shadow-2"
+    [rowHover]="true"
+    [rows]="10"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10,25,50,100,200,300]"
+    [loading]="loading"
+    [paginator]="true"
+    [paginatorTemplate]="paginatorTemplate"
+    currentPageReportTemplate="Visar {first} till {last} av {totalRecords} poster"
+    [filterDelay]="0"
+    [globalFilterFields]="['title','startdate','enddate','active']"
+    responsiveLayout="scroll"
+    [scrollable]="true"
+    scrollHeight="flex">
+    <ng-template pTemplate="caption">
+      <div class="flex flex-wrap justify-content-between align-items-center gap-3 p-3">
+        <div class="flex align-items-center gap-2">
           <span class="p-input-icon-left flex-auto sm:flex-none">
             <i class="pi pi-search"></i>
-            <input 
-              pInputText 
-              #filter 
-              (input)="dt.filterGlobal($event.target.value, 'contains')" 
-              placeholder="Search events..." 
+            <input
+              pInputText
+              #filter
+              (input)="dt.filterGlobal($event.target.value, 'contains')"
+              placeholder="Sök evenemang..."
               class="w-full sm:w-auto"
               style="padding-left: 2.5rem"/>
           </span>
+        </div>
+        <div class="flex align-items-center gap-2">
+          <button
+            pButton
+            pRipple
+            label="Nytt Evenemang"
+            icon="pi pi-plus"
+            class="p-button-success"
+            (click)="openNew()">
+          </button>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-refresh"
+            class="p-button-text p-button-rounded"
+            (click)="dt.reset()">
+          </button>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="title" class="min-w-200">
           <div class="flex align-items-center gap-2">
-            <button 
-              pButton 
-              pRipple 
-              label="New Event" 
-              icon="pi pi-plus" 
-              class="p-button-success" 
-              (click)="openNew()">
+            <span>Titel</span>
+            <p-sortIcon field="title"></p-sortIcon>
+            <p-columnFilter type="text" field="title" display="menu" [showMatchModes]="true" [showOperator]="false"></p-columnFilter>
+          </div>
+        </th>
+        <th pSortableColumn="startdate" class="min-w-200">
+          <div class="flex align-items-center gap-2">
+            <span>Startdatum</span>
+            <p-sortIcon field="startdate"></p-sortIcon>
+            <p-columnFilter type="date" field="startdate" display="menu"></p-columnFilter>
+          </div>
+        </th>
+        <th pSortableColumn="enddate" class="min-w-200">
+          <div class="flex align-items-center gap-2">
+            <span>Slutdatum</span>
+            <p-sortIcon field="enddate"></p-sortIcon>
+            <p-columnFilter type="date" field="enddate" display="menu"></p-columnFilter>
+          </div>
+        </th>
+        <th pSortableColumn="status" class="min-w-150">
+          <div class="flex align-items-center gap-2">
+            <span>Status</span>
+            <p-sortIcon field="status"></p-sortIcon>
+            <p-columnFilter
+              field="status"
+              matchMode="equals"
+              display="menu">
+              <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                <p-dropdown
+                  [ngModel]="value"
+                  [options]="[
+                    {label: 'Aktiv', value: 'active'},
+                    {label: 'Inställd', value: 'canceled'},
+                    {label: 'Utförd', value: 'completed'}
+                  ]"
+                  (onChange)="filter($event.value)"
+                  placeholder="Välj status">
+                  <ng-template let-option pTemplate="item">
+                    <p-tag
+                      [value]="option.label"
+                      [severity]="option.value === 'active' ? 'success' : option.value === 'canceled' ? 'danger' : 'info'"
+                      [rounded]="false">
+                    </p-tag>
+                  </ng-template>
+                </p-dropdown>
+              </ng-template>
+            </p-columnFilter>
+          </div>
+        </th>
+        <th class="min-w-150">
+          <div class="text-right">Åtgärder</div>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-event>
+      <tr class="p-selectable-row">
+        <td>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-calendar text-primary"></i>
+            <span class="font-semibold">{{event.title}}</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-clock text-primary-600"></i>
+            <span>{{event.startdate}}</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-clock text-primary-600"></i>
+            <span>{{event.enddate}}</span>
+          </div>
+        </td>
+        <td>
+          <p-tag
+            [value]="event.completed ? 'Utförd' : event.active ? 'Aktiv' : 'Inställd'"
+            [severity]="event.completed ? 'info' : event.active ? 'success' : 'danger'"
+            [rounded]="false"
+            styleClass="text-xs"
+            [style]="{'padding': '0.15rem 0.5rem', 'border-radius': '2px'}">
+          </p-tag>
+        </td>
+        <td>
+          <div class="flex justify-content-end gap-2">
+            <brevet-event-info-popover [event]="event" class="scale-50"></brevet-event-info-popover>
+            <button
+              pButton
+              pRipple
+              icon="pi pi-pencil"
+              class="p-button-rounded p-button-success p-button-text scale-50"
+              (click)="editProduct(event)"
+              pTooltip="Redigera Evenemang"
+              tooltipPosition="top">
             </button>
-            <button 
-              pButton 
-              pRipple 
-              icon="pi pi-refresh" 
-              class="p-button-text p-button-rounded" 
-              (click)="dt.reset()">
+            <button
+              pButton
+              pRipple
+              icon="pi pi-trash"
+              class="p-button-rounded p-button-danger p-button-text scale-50"
+              [disabled]="!canDelete(event)"
+              (click)="deleteProduct(event.event_uid)"
+              pTooltip="Ta bort Evenemang"
+              tooltipPosition="top">
             </button>
           </div>
-        </div>
-      </ng-template>
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="title" class="min-w-200">
-            <div class="flex align-items-center gap-2">
-              <span>Title</span>
-              <p-sortIcon field="title"></p-sortIcon>
-              <p-columnFilter type="text" field="title" display="menu" [showMatchModes]="true" [showOperator]="false"></p-columnFilter>
-            </div>
-          </th>
-          <th pSortableColumn="startdate" class="min-w-200">
-            <div class="flex align-items-center gap-2">
-              <span>Start Date</span>
-              <p-sortIcon field="startdate"></p-sortIcon>
-              <p-columnFilter type="date" field="startdate" display="menu"></p-columnFilter>
-            </div>
-          </th>
-          <th pSortableColumn="enddate" class="min-w-200">
-            <div class="flex align-items-center gap-2">
-              <span>End Date</span>
-              <p-sortIcon field="enddate"></p-sortIcon>
-              <p-columnFilter type="date" field="enddate" display="menu"></p-columnFilter>
-            </div>
-          </th>
-          <th pSortableColumn="status" class="min-w-150">
-            <div class="flex align-items-center gap-2">
-              <span>Status</span>
-              <p-sortIcon field="status"></p-sortIcon>
-              <p-columnFilter 
-                field="status" 
-                matchMode="equals" 
-                display="menu">
-                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                  <p-dropdown 
-                    [ngModel]="value" 
-                    [options]="[
-                      {label: 'Aktiv', value: 'active'},
-                      {label: 'Inställd', value: 'canceled'},
-                      {label: 'Utförd', value: 'completed'}
-                    ]" 
-                    (onChange)="filter($event.value)" 
-                    placeholder="Välj status">
-                    <ng-template let-option pTemplate="item">
-                      <p-tag 
-                        [value]="option.label" 
-                        [severity]="option.value === 'active' ? 'success' : option.value === 'canceled' ? 'danger' : 'info'"
-                        [rounded]="false">
-                      </p-tag>
-                    </ng-template>
-                  </p-dropdown>
-                </ng-template>
-              </p-columnFilter>
-            </div>
-          </th>
-          <th class="min-w-150">
-            <div class="text-right">Actions</div>
-          </th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-event>
-        <tr class="p-selectable-row">
-          <td>
-            <div class="flex align-items-center gap-2">
-              <i class="pi pi-calendar text-primary"></i>
-              <span class="font-semibold">{{event.title}}</span>
-            </div>
-          </td>
-          <td>
-            <div class="flex align-items-center gap-2">
-              <i class="pi pi-clock text-primary-600"></i>
-              <span>{{event.startdate}}</span>
-            </div>
-          </td>
-          <td>
-            <div class="flex align-items-center gap-2">
-              <i class="pi pi-clock text-primary-600"></i>
-              <span>{{event.enddate}}</span>
-            </div>
-          </td>
-          <td>
-            <p-tag 
-              [value]="event.completed ? 'Utförd' : event.active ? 'Aktiv' : 'Inställd'"
-              [severity]="event.completed ? 'info' : event.active ? 'success' : 'danger'"
-              [rounded]="false"
-              styleClass="text-xs"
-              [style]="{'padding': '0.15rem 0.5rem', 'border-radius': '2px'}">
-            </p-tag>
-          </td>
-          <td>
-            <div class="flex justify-content-end gap-2">
-              <brevet-event-info-popover [event]="event" class="scale-50"></brevet-event-info-popover>
-              <button 
-                pButton 
-                pRipple 
-                icon="pi pi-pencil" 
-                class="p-button-rounded p-button-success p-button-text scale-50" 
-                (click)="editProduct(event)"
-                pTooltip="Edit Event"
-                tooltipPosition="top">
-              </button>
-              <button 
-                pButton 
-                pRipple 
-                icon="pi pi-trash" 
-                class="p-button-rounded p-button-danger p-button-text scale-50" 
-                [disabled]="!canDelete(event)" 
-                (click)="deleteProduct(event.event_uid)"
-                pTooltip="Delete Event"
-                tooltipPosition="top">
-              </button>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="5" class="text-center p-6">
-            <div class="flex flex-column align-items-center">
-              <i class="pi pi-folder-open text-primary" style="font-size: 3rem"></i>
-              <span class="font-bold text-xl mt-3">No Events Found</span>
-              <span class="text-600 mt-2">Start by adding a new event.</span>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template #paginatorTemplate let-state>
-        <div class="flex align-items-center justify-content-between gap-3 px-3">
-          <p-paginator 
-            [rows]="state.rows" 
-            [first]="state.first" 
-            [totalRecords]="state.totalRecords"
-            [rowsPerPageOptions]="state.rowsPerPageOptions"
-            (onPageChange)="dt.onPageChange($event)"
-            [showCurrentPageReport]="true"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} events"
-            [showFirstLastIcon]="true"
-            styleClass="flex-auto">
-          </p-paginator>
-        </div>
-      </ng-template>
-    </p-table>
-    <p-confirmDialog [style]="{width: '450px'}" [baseZIndex]="10000" styleClass="shadow-7"></p-confirmDialog>
-  </ng-container>
-</div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5" class="text-center p-6">
+          <div class="flex flex-column align-items-center">
+            <i class="pi pi-folder-open text-primary" style="font-size: 3rem"></i>
+            <span class="font-bold text-xl mt-3">Inga Evenemang Hittades</span>
+            <span class="text-600 mt-2">Börja med att lägga till ett nytt evenemang.</span>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template #paginatorTemplate let-state>
+      <div class="flex align-items-center justify-content-between gap-3 px-3">
+        <p-paginator
+          [rows]="state.rows"
+          [first]="state.first"
+          [totalRecords]="state.totalRecords"
+          [rowsPerPageOptions]="state.rowsPerPageOptions"
+          (onPageChange)="dt.onPageChange($event)"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Visar {first} till {last} av {totalRecords} evenemang"
+          [showFirstLastIcon]="true"
+          styleClass="flex-auto">
+        </p-paginator>
+      </div>
+    </ng-template>
+  </p-table>
+  <p-confirmDialog [style]="{width: '450px'}" [baseZIndex]="10000" styleClass="shadow-7"></p-confirmDialog>
+</ng-container>

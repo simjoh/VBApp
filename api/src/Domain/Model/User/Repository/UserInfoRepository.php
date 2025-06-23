@@ -65,6 +65,38 @@ class UserInfoRepository extends BaseRepository
         return null;
     }
 
+    public function deleteUserInfoForUser(string $userUid): void {
+        try {
+            $statement = $this->connection->prepare($this->sqls('deleteUserInfoForUser'));
+            $statement->bindParam(':user_uid', $userUid);
+            $statement->execute();
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+    public function updateUserInfo(UserInfo $userInfo, string $user_uid): UserInfo
+    {
+        try {
+            $phone = $userInfo->getPhone();
+            $email = $userInfo->getEmail();
+            $stmt = $this->connection->prepare($this->sqls('updateUserInfo'));
+            $stmt->bindParam(':user_uid', $user_uid);
+            $stmt->bindParam(':phone', $phone);
+            $stmt->bindParam(':email', $email);
+
+            $stmt->execute();
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+
+        return $userInfo;
+    }
+
 
     public function sqls($type)
     {
@@ -73,6 +105,7 @@ class UserInfoRepository extends BaseRepository
         $usersqls['userInfoByUid'] = 'select * from user_info  where uid = :uid';
         $usersqls['userInfoBuUserUid'] = 'select * from user_info  where user_uid = :user_uid';
         $usersqls['createUserinfo']  = "INSERT INTO user_info(uid, user_uid, phone, email) VALUES (:uid, :user_uid, :phone, :email)";
+        $usersqls['updateUserInfo'] = "UPDATE user_info SET phone = :phone, email = :email WHERE user_uid = :user_uid";
         return $usersqls[$type];
     }
 }

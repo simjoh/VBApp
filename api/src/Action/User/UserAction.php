@@ -56,8 +56,8 @@ class UserAction extends BaseAction
         $route = $routeContext->getRoute();
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new UserRepresentationTransformer());
-        $userParsed = $jsonDecoder->decode($request->getBody(), UserRepresentation::class);
-        $userUpdated = $this->userservice->updateUser($route->getArgument('id'), $userParsed, $request->getAttribute('currentuserUid'));
+        $userrepresentation = $jsonDecoder->decode($request->getBody(), UserRepresentation::class);
+        $userUpdated = $this->userservice->updateUser($route->getArgument('id'), $userrepresentation, $request->getAttribute('currentuserUid'));
         $response->getBody()->write((string)json_encode($userUpdated));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }

@@ -1,29 +1,162 @@
-
-  <div class="lg:col-5 sm:col-12 md:col-12" >
-    <p-table  #dt1 [globalFilterFields]="['title', 'acp_code']"  [value]="$clubs | async " styleClass="p-datatable-sm p-datatable-striped" dataKey="club_uid"
-             responsiveLayout="scroll">
-      <ng-template pTemplate="caption">
-        <div class="p-input-icon-left ml-auto">
-          <i class="pi pi-search"></i>
-          <input [disabled]="$searchDisabled | async" pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Sök klubbar" />
+<ng-container *ngIf="filteredClubs$ | async as clubs">
+  <p-table
+    #dt
+    [value]="clubs"
+    [(selection)]="selectedCustomers"
+    dataKey="id"
+    [tableStyle]="{'min-width': '60rem', 'table-layout': 'fixed'}"
+    styleClass="p-datatable-customers p-datatable-striped p-datatable-sm p-datatable-gridlines shadow-2"
+    [rowHover]="true"
+    [rows]="10"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10,25,50,100,200,300]"
+    [loading]="loading"
+    [paginator]="true"
+    currentPageReportTemplate="Visar {first} till {last} av {totalRecords} poster"
+    [filterDelay]="0"
+    [globalFilterFields]="['title','acp_code']"
+    responsiveLayout="scroll"
+    [scrollable]="true"
+    scrollHeight="flex">
+    <ng-template pTemplate="caption">
+      <div class="flex flex-wrap justify-content-between align-items-center gap-3 p-3">
+        <div class="flex align-items-center gap-2">
+          <span class="p-input-icon-left flex-auto sm:flex-none">
+            <i class="pi pi-search"></i>
+            <input
+              pInputText
+              #filter
+              (input)="dt.filterGlobal($event.target.value, 'contains')"
+              placeholder="Sök klubbar..."
+              class="w-full sm:w-auto"
+              style="padding-left: 2.5rem"/>
+          </span>
+          <div *ngIf="showOnlyWithAcpCode" class="flex align-items-center gap-1">
+            <p-tag value="ACP Filter Aktiv" severity="info" styleClass="text-xs"></p-tag>
+          </div>
         </div>
-      </ng-template>
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Titel</th>
-          <th>Acpkod</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-club>
-        <tr>
-          <td>
-            {{club.title}}
-          </td>
-          <td>{{club.acp_code}}</td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
+        <div class="flex align-items-center gap-2">
+          <p-button
+            pRipple
+            [label]="filterButtonLabel"
+            [icon]="filterButtonIcon"
+            [styleClass]="filterButtonStyleClass"
+            (click)="toggleAcpCodeFilter()"
+            pTooltip="Filtrera klubbar med ACP-koder"
+            tooltipPosition="top">
+          </p-button>
+          <button
+            pButton
+            pRipple
+            label="Ny Klubb"
+            icon="pi pi-plus"
+            class="p-button-success"
+            (click)="openNew()">
+          </button>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-refresh"
+            class="p-button-text p-button-rounded"
+            (click)="dt.reset()">
+          </button>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="title" style="width: 40%">
+          <div class="flex align-items-center gap-2">
+            <span>Klubbnamn</span>
+            <p-sortIcon field="title"></p-sortIcon>
+            <p-columnFilter type="text" field="title" display="menu" [showMatchModes]="true" [showOperator]="false"></p-columnFilter>
+          </div>
+        </th>
+        <th pSortableColumn="acp_code" style="width: 20%">
+          <div class="flex align-items-center gap-2">
+            <span>ACP-kod</span>
+            <p-sortIcon field="acp_code"></p-sortIcon>
+            <p-columnFilter type="text" field="acp_code" display="menu" [showMatchModes]="true" [showOperator]="false"></p-columnFilter>
+          </div>
+        </th>
+        <th pSortableColumn="acp_code" style="width: 20%">
+          <div class="flex align-items-center gap-2">
+            <span>Status</span>
+            <p-sortIcon field="acp_code"></p-sortIcon>
+          </div>
+        </th>
+        <th style="width: 20%">
+          <div class="text-right">Åtgärder</div>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-club>
+      <tr class="p-selectable-row">
+        <td>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-users text-primary"></i>
+            <span class="font-semibold">{{club.title}}</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-id-card text-primary-600"></i>
+            <span *ngIf="club.acp_code && club.acp_code !== '0' && club.acp_code !== null">{{club.acp_code}}</span>
+            <span *ngIf="!club.acp_code || club.acp_code === '0' || club.acp_code === null" class="text-gray-400">-</span>
+          </div>
+        </td>
+        <td>
+          <p-tag
+            [value]="(club.acp_code && club.acp_code !== '0' && club.acp_code !== null) ? 'ACP Registrerad' : 'Annan'"
+            [severity]="(club.acp_code && club.acp_code !== '0' && club.acp_code !== null) ? 'success' : 'info'"
+            [rounded]="false"
+            styleClass="text-xs"
+            [style]="{'padding': '0.15rem 0.5rem', 'border-radius': '2px'}">
+          </p-tag>
+        </td>
+        <td>
+          <div class="flex justify-content-end gap-2">
+            <button
+              pButton
+              pRipple
+              icon="pi pi-pencil"
+              class="p-button-rounded p-button-success p-button-text scale-50"
+              (click)="editClub(club)"
+              pTooltip="Redigera Klubb"
+              tooltipPosition="top">
+            </button>
+            <button
+              pButton
+              pRipple
+              icon="pi pi-trash"
+              class="p-button-rounded p-button-danger p-button-text scale-50"
+              [disabled]="!canDelete(club)"
+              (click)="deleteClub(club.club_uid)"
+              pTooltip="Ta bort Klubb"
+              tooltipPosition="top">
+            </button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="4" class="text-center p-6">
+          <div class="flex flex-column align-items-center">
+            <i class="pi pi-users text-primary" style="font-size: 3rem"></i>
+            <span class="font-bold text-xl mt-3">
+              {{ showOnlyWithAcpCode ? 'Inga Klubbar med ACP-kod Hittades' : 'Inga Klubbar Hittades' }}
+            </span>
+            <span class="text-600 mt-2">
+              {{ showOnlyWithAcpCode ? 'Prova att justera dina filter eller sökkriterier.' : 'Börja med att lägga till en ny klubb.' }}
+            </span>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <p-confirmDialog [style]="{width: '450px'}" [baseZIndex]="10000" styleClass="shadow-7"></p-confirmDialog>
+</ng-container>
 
 
 

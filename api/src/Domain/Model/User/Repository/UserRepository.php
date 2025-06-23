@@ -104,7 +104,7 @@ class UserRepository extends BaseRepository
         $user->setId($data['user_uid']);
         $user->setGivenname($data['given_name']);
         $user->setFamilyname($data['family_name']);
-        $user->setFamilyname($data['user_name']);
+        $user->setUsername($data['user_name']);
         $user->setToken('');
 
         $user_roles_stmt = $this->connection->prepare($this->sqls('roles'));
@@ -112,7 +112,13 @@ class UserRepository extends BaseRepository
         $user_roles_stmt->execute();
         $roles = $user_roles_stmt->fetchAll();
 
-        $user->setRoles($roles);
+        $roleArray = [];
+        if(!empty($roles)){
+            foreach ($roles as $role) {
+                array_push($roleArray, new Role($role["role_id"], $role['role_name']));
+            }
+            $user->setRoles($roleArray);
+        }
 
         return $user;
     }
@@ -152,16 +158,17 @@ class UserRepository extends BaseRepository
             'givenname' => $userParsed->getGivenname(),
             'familyname' => $userParsed->getFamilyname(),
             'username' => $userParsed->getUsername(),
-            'user_uid' => $userParsed->getId(),
+            'user_uid' => $id,  // Use the ID parameter instead of trying to get it from the User object
         ];
         try {
             $statement = $this->connection->prepare($this->sqls('updateUser'));
             $statement->execute($data);
-            echo json_encode($data, JSON_UNESCAPED_UNICODE);
         } catch (PDOException $e) {
             echo 'Kunde inte uppdatera användare: ' . $e->getMessage();
         }
 
+        // Set the ID on the user object before returning it
+        $userParsed->setId($id);
         return $userParsed;
     }
 
@@ -209,7 +216,7 @@ class UserRepository extends BaseRepository
         $usersqls['login2'] = 'select * from users s inner join user_role r on r.user_uid = s.user_uid inner join roles ru on ru.role_id = r.role_id  where s.user_name = :user_name and password = :password';
         $usersqls['allUsers'] = 'select * from users s;';
         $usersqls['getUserById'] = 'select * from users s where s.user_uid = :user_uid;';
-        $usersqls['updateUser']  = "UPDATE users SET given_name=:givenname, family_name=:familyname, username=:username WHERE user_uid=:user_uid";
+        $usersqls['updateUser']  = "UPDATE users SET given_name=:givenname, family_name=:familyname, user_name=:username WHERE user_uid=:user_uid";
         $usersqls['createUser']  = "INSERT INTO users(user_uid, user_name, given_name, family_name, password) VALUES (:user_uid, :user_name, :given_name, :family_name, :password)";
         $usersqls['deleteUser'] = 'delete from users  where user_uid = :user_uid';
         $usersqls['roles'] = 'select distinct(r.role_name) , r.role_id from user_role ur inner join roles r on r.role_id = ur.role_id  where ur.user_uid = :user_uid';

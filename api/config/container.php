@@ -68,6 +68,43 @@ return [
     RusaTimeRestClient::class => function(ContainerInterface $container){
              return new RusaTimeRestClient($container->get('settings')['rusaurl']);
 
+    },
+
+    \App\Domain\Model\Club\Rest\ClubAssembly::class => function(ContainerInterface $container) {
+        return new \App\Domain\Model\Club\Rest\ClubAssembly(
+            $container->get(\App\Domain\Permission\PermissionRepository::class),
+            $container,
+            $container->get(PDO::class)
+        );
+    },
+
+    \App\Domain\Model\Organizer\Rest\OrganizerAssembly::class => function(ContainerInterface $container) {
+        return new \App\Domain\Model\Organizer\Rest\OrganizerAssembly(
+            $container->get(\App\Domain\Permission\PermissionRepository::class),
+            $container
+        );
+    },
+
+    \App\Domain\Model\Organizer\Service\OrganizerService::class => function(ContainerInterface $container) {
+        return new \App\Domain\Model\Organizer\Service\OrganizerService(
+            $container,
+            $container->get(\App\Domain\Model\Organizer\Repository\OrganizerRepository::class),
+            $container->get(\App\Domain\Permission\PermissionRepository::class),
+            $container->get(\App\Domain\Model\Organizer\Rest\OrganizerAssembly::class)
+        );
+    },
+
+    \App\Domain\Model\Organizer\Repository\OrganizerRepository::class => function(ContainerInterface $container) {
+        return new \App\Domain\Model\Organizer\Repository\OrganizerRepository(
+            $container->get(PDO::class)
+        );
+    },
+
+    \App\Action\Organizer\OrganizerAction::class => function(ContainerInterface $container) {
+        return new \App\Action\Organizer\OrganizerAction(
+            $container,
+            $container->get(\App\Domain\Model\Organizer\Service\OrganizerService::class)
+        );
     }
 
 

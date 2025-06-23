@@ -30,8 +30,8 @@ export class CreateSiteDialogComponent implements OnInit {
       event_uid: "",
       place: "",
       adress: "",
-      lat: null,
-      long: null,
+      lat: "",
+      lng: "",
       description: "",
       picture: ""
     } as unknown as SiteFormModel;
@@ -54,7 +54,7 @@ export class CreateSiteDialogComponent implements OnInit {
       image: this.siteform.image,
       description: this.siteform.description,
       lat:  this.siteform.lat,
-      lng:  this.siteform.long,
+      lng:  this.siteform.lng,
       place: this.siteform.place,
       adress: this.siteform.adress
     }
@@ -89,7 +89,7 @@ export class SiteFormModel extends NgForm{
   event_uid: string;
   image: string;
   lat: string;
-  long: string;
+  lng: string;
   description: string;
   place: string;
   adress: string;

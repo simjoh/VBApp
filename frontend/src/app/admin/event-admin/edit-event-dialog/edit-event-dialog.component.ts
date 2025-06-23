@@ -42,10 +42,28 @@ export class EditEventDialogComponent implements OnInit {
 
   editEvent(siteForm: NgForm) {
     if (siteForm.valid) {
+      // Format dates properly before sending to backend
+      if (this.eventForm.startdate instanceof Date) {
+        this.eventForm.startdate = this.formatDateForBackend(this.eventForm.startdate);
+      }
+      if (this.eventForm.enddate instanceof Date) {
+        this.eventForm.enddate = this.formatDateForBackend(this.eventForm.enddate);
+      }
+
       this.ref.close(this.eventForm);
     } else {
       siteForm.dirty
     }
+  }
+
+  private formatDateForBackend(date: Date): string {
+    if (!date) return '';
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 
   cancel() {

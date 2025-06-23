@@ -1,17 +1,15 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import {MenuItem} from "primeng/api";
-import {ClubAdminComponentService} from "./club-admin-component.service";
+import { DialogService } from "primeng/dynamicdialog";
+import { ConfirmationService, MenuItem } from "primeng/api";
 
 @Component({
   selector: 'brevet-club-admin',
   templateUrl: 'club-admin.component.html',
   styleUrls: ['club-admin.component.scss'],
-  providers: [ClubAdminComponentService],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [DialogService, ConfirmationService]
 })
 export class ClubAdminComponent implements OnInit {
-
-
 
   designTabs = [];
 
@@ -21,7 +19,7 @@ export class ClubAdminComponent implements OnInit {
 
     this.designTabs = [
       {
-        label: "Klubbar",
+        label: "Klubblista",
         routerLink: 'brevet-club-list',
         icon: 'pi pi-list'
       }

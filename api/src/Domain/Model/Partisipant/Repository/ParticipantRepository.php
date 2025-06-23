@@ -274,7 +274,7 @@ class ParticipantRepository extends BaseRepository
     public function participantsbyTrackAndClub(string $track_uid, $club_uid)
     {
         try {
-            $statement = $this->connection->prepare($this->sqls('allParticipants'));
+            $statement = $this->connection->prepare($this->sqls('participantByTrackAndClub'));
             $statement->bindParam(':track_uid', $track_uid);
             $statement->bindParam(':club_uid', $club_uid);
             $statement->execute();
@@ -286,9 +286,9 @@ class ParticipantRepository extends BaseRepository
 
             return $events;
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            throw new BrevetException("Error fetching participants", 1, null);
+            //  echo "Error: " . $e->getMessage();
         }
-        return array();
 
     }
 
@@ -1037,12 +1037,25 @@ class ParticipantRepository extends BaseRepository
         $eventqls['deleteParticipantsOnTrack'] = 'delete  from participant e where e.track_uid=:track_uid;';
         $eventqls['deleteParticipantCheckpointOnTrack'] = 'delete from participant_checkpoint e where e.participant_uid=:participant_uid;';
         $eventqls['stampCheckoutOnCheckpoint'] = "UPDATE participant_checkpoint SET  checkedout=:checkedout, checkout_date_time=:checkout_date_time, volonteer_checkout=:volonteer_checkout, lat=:lat, lng=:lng  WHERE participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid;";
+        $eventqls['participantCountByClub'] = 'SELECT COUNT(*) as count FROM participant WHERE club_uid = :club_uid;';
 
 
         return $eventqls[$type];
         // TODO: Implement sqls() method.
     }
 
-
+    public function isClubInUseByParticipants(string $club_uid): bool
+    {
+        try {
+            $statement = $this->connection->prepare($this->sqls('participantCountByClub'));
+            $statement->bindParam(':club_uid', $club_uid);
+            $statement->execute();
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
+            
+            return $result['count'] > 0;
+        } catch (PDOException $e) {
+            throw new BrevetException("Error checking if club is in use", 1, null);
+        }
+    }
 
 }

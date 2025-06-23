@@ -25,7 +25,7 @@ class UserInfoAssembly
         if($create){
             $uid = "";
         } else {
-          $uid =  $userInfoRepresentation->getUid();
+          $uid = $userInfoRepresentation->getUid() ?? "";  // Handle null case by using empty string
         }
 
         $userinfo = new UserInfo($user_uid,$uid, $userInfoRepresentation->getPhone(), $userInfoRepresentation->getEmail());

@@ -1,155 +1,156 @@
-<div class="card">
-  <ng-container *ngIf="$users | async as users">
-    <p-table 
-      #dt 
-      [value]="users" 
-      [(selection)]="selectedCustomers" 
-      dataKey="id" 
-      [tableStyle]="{'min-width': '60rem'}"
-      styleClass="p-datatable-customers p-datatable-striped p-datatable-sm p-datatable-gridlines shadow-2" 
-      [rowHover]="true"
-      [rows]="10" 
-      [showCurrentPageReport]="true" 
-      [rowsPerPageOptions]="[10,25,50]" 
-      [loading]="loading"
-      [paginator]="true" 
-      [paginatorTemplate]="paginatorTemplate"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-      [filterDelay]="0" 
-      [globalFilterFields]="['givenname','familyname','username','status']"
-      responsiveLayout="scroll"
-      [scrollable]="true"
-      scrollHeight="flex">
-      <ng-template pTemplate="caption">
-        <div class="flex flex-wrap justify-content-between align-items-center gap-3 p-3">
+<ng-container *ngIf="$users | async as users">
+  <p-table
+    #dt
+    [value]="users"
+    [(selection)]="selectedCustomers"
+    dataKey="id"
+    [tableStyle]="{'min-width': '60rem'}"
+    styleClass="p-datatable-customers p-datatable-striped p-datatable-sm p-datatable-gridlines shadow-2"
+    [rowHover]="true"
+    [rows]="10"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10,25,50,100,200,300]"
+    [loading]="loading"
+    [paginator]="true"
+    [paginatorTemplate]="paginatorTemplate"
+    currentPageReportTemplate="Visar {first} till {last} av {totalRecords} poster"
+    [filterDelay]="0"
+    [globalFilterFields]="['givenname','familyname','username','status']"
+    responsiveLayout="scroll"
+    [scrollable]="true"
+    scrollHeight="flex">
+    <ng-template pTemplate="caption">
+      <div class="flex flex-wrap justify-content-between align-items-center gap-3 p-3">
+        <div class="flex align-items-center gap-2">
           <span class="p-input-icon-left flex-auto sm:flex-none">
             <i class="pi pi-search"></i>
-            <input 
-              pInputText 
-              #filter 
-              (input)="dt.filterGlobal($event.target.value, 'contains')" 
-              placeholder="Search users..." 
+            <input
+              pInputText
+              #filter
+              (input)="dt.filterGlobal($event.target.value, 'contains')"
+              placeholder="Sök användare..."
               class="w-full sm:w-auto"
               style="padding-left: 2.5rem"/>
           </span>
+        </div>
+        <div class="flex align-items-center gap-2">
+          <button
+            pButton
+            pRipple
+            label="Ny Användare"
+            icon="pi pi-plus"
+            class="p-button-success"
+            (click)="openNew()">
+          </button>
+          <button
+            pButton
+            pRipple
+            icon="pi pi-refresh"
+            class="p-button-text p-button-rounded"
+            (click)="dt.reset()">
+          </button>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="givenname" class="min-w-200">
           <div class="flex align-items-center gap-2">
-            <button 
-              pButton 
-              pRipple 
-              label="New User" 
-              icon="pi pi-plus" 
-              class="p-button-success" 
-              (click)="openNew()">
+            <span>Förnamn</span>
+            <p-sortIcon field="givenname"></p-sortIcon>
+            <p-columnFilter type="text" field="givenname" display="menu" [showMatchModes]="true" [showOperator]="false"></p-columnFilter>
+          </div>
+        </th>
+        <th pSortableColumn="familyname" class="min-w-200">
+          <div class="flex align-items-center gap-2">
+            <span>Efternamn</span>
+            <p-sortIcon field="familyname"></p-sortIcon>
+            <p-columnFilter type="text" field="familyname" display="menu"></p-columnFilter>
+          </div>
+        </th>
+        <th pSortableColumn="username" class="min-w-200">
+          <div class="flex align-items-center gap-2">
+            <span>Användarnamn</span>
+            <p-sortIcon field="username"></p-sortIcon>
+            <p-columnFilter type="text" field="username" display="menu"></p-columnFilter>
+          </div>
+        </th>
+        <th class="min-w-150">
+          <div class="text-right">Åtgärder</div>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-customer>
+      <tr class="p-selectable-row">
+        <td>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-user text-primary"></i>
+            <span class="font-semibold">{{customer.givenname}}</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-user text-primary-600"></i>
+            <span>{{customer.familyname}}</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-id-card text-primary-600"></i>
+            <span>{{customer.username}}</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex justify-content-end gap-2">
+            <brevet-user-info-popover [user]="customer" class="scale-50"></brevet-user-info-popover>
+            <button
+              pButton
+              pRipple
+              icon="pi pi-pencil"
+              class="p-button-rounded p-button-success p-button-text scale-50"
+              (click)="editProduct(customer)"
+              pTooltip="Redigera Användare"
+              tooltipPosition="top">
             </button>
-            <button 
-              pButton 
-              pRipple 
-              icon="pi pi-refresh" 
-              class="p-button-text p-button-rounded" 
-              (click)="dt.reset()">
+            <button
+              pButton
+              pRipple
+              icon="pi pi-trash"
+              class="p-button-rounded p-button-danger p-button-text scale-50"
+              (click)="deleteProduct(customer.user_uid)"
+              pTooltip="Ta bort Användare"
+              tooltipPosition="top">
             </button>
           </div>
-        </div>
-      </ng-template>
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="givenname" class="min-w-200">
-            <div class="flex align-items-center gap-2">
-              <span>First Name</span>
-              <p-sortIcon field="givenname"></p-sortIcon>
-              <p-columnFilter type="text" field="givenname" display="menu" [showMatchModes]="true" [showOperator]="false"></p-columnFilter>
-            </div>
-          </th>
-          <th pSortableColumn="familyname" class="min-w-200">
-            <div class="flex align-items-center gap-2">
-              <span>Last Name</span>
-              <p-sortIcon field="familyname"></p-sortIcon>
-              <p-columnFilter type="text" field="familyname" display="menu"></p-columnFilter>
-            </div>
-          </th>
-          <th pSortableColumn="username" class="min-w-200">
-            <div class="flex align-items-center gap-2">
-              <span>Username</span>
-              <p-sortIcon field="username"></p-sortIcon>
-              <p-columnFilter type="text" field="username" display="menu"></p-columnFilter>
-            </div>
-          </th>
-          <th class="min-w-150">
-            <div class="text-right">Actions</div>
-          </th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-customer>
-        <tr class="p-selectable-row">
-          <td>
-            <div class="flex align-items-center gap-2">
-              <i class="pi pi-user text-primary"></i>
-              <span class="font-semibold">{{customer.givenname}}</span>
-            </div>
-          </td>
-          <td>
-            <div class="flex align-items-center gap-2">
-              <span>{{customer.familyname}}</span>
-            </div>
-          </td>
-          <td>
-            <div class="flex align-items-center gap-2">
-              <i class="pi pi-id-card text-primary-600"></i>
-              <span>{{customer.username}}</span>
-            </div>
-          </td>
-          <td>
-            <div class="flex justify-content-end gap-2">
-              <brevet-user-info-popover [user]="customer" class="scale-50"></brevet-user-info-popover>
-              <button 
-                pButton 
-                pRipple 
-                icon="pi pi-pencil" 
-                class="p-button-rounded p-button-success p-button-text scale-50" 
-                (click)="editProduct(customer.user_uid)"
-                pTooltip="Edit User"
-                tooltipPosition="top">
-              </button>
-              <button 
-                pButton 
-                pRipple 
-                icon="pi pi-trash" 
-                class="p-button-rounded p-button-danger p-button-text scale-50" 
-                (click)="deleteProduct(customer.user_uid)"
-                pTooltip="Delete User"
-                tooltipPosition="top">
-              </button>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="4" class="text-center p-6">
-            <div class="flex flex-column align-items-center">
-              <i class="pi pi-users text-primary" style="font-size: 3rem"></i>
-              <span class="font-bold text-xl mt-3">No Users Found</span>
-              <span class="text-600 mt-2">Start by adding a new user.</span>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template #paginatorTemplate let-state>
-        <div class="flex align-items-center justify-content-between gap-3 px-3">
-          <p-paginator 
-            [rows]="state.rows" 
-            [first]="state.first" 
-            [totalRecords]="state.totalRecords"
-            [rowsPerPageOptions]="state.rowsPerPageOptions"
-            (onPageChange)="dt.onPageChange($event)"
-            [showCurrentPageReport]="true"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users"
-            [showFirstLastIcon]="true"
-            styleClass="flex-auto">
-          </p-paginator>
-        </div>
-      </ng-template>
-    </p-table>
-    <p-confirmDialog [style]="{width: '450px'}" [baseZIndex]="10000" styleClass="shadow-7"></p-confirmDialog>
-  </ng-container>
-</div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="4" class="text-center p-6">
+          <div class="flex flex-column align-items-center">
+            <i class="pi pi-users text-primary" style="font-size: 3rem"></i>
+            <span class="font-bold text-xl mt-3">Inga Användare Hittades</span>
+            <span class="text-600 mt-2">Börja med att lägga till en ny användare.</span>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template #paginatorTemplate let-state>
+      <div class="flex align-items-center justify-content-between gap-3 px-3">
+        <p-paginator
+          [rows]="state.rows"
+          [first]="state.first"
+          [totalRecords]="state.totalRecords"
+          [rowsPerPageOptions]="state.rowsPerPageOptions"
+          (onPageChange)="dt.onPageChange($event)"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Visar {first} till {last} av {totalRecords} användare"
+          [showFirstLastIcon]="true"
+          styleClass="flex-auto">
+        </p-paginator>
+      </div>
+    </ng-template>
+  </p-table>
+  <p-confirmDialog [style]="{width: '450px'}" [baseZIndex]="10000" styleClass="shadow-7"></p-confirmDialog>
+</ng-container>
