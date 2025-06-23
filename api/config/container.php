@@ -85,12 +85,21 @@ return [
         );
     },
 
+    \App\common\Rest\Client\LoppServiceOrganizerRestClient::class => function(ContainerInterface $container) {
+        return new \App\common\Rest\Client\LoppServiceOrganizerRestClient($container->get('settings'));
+    },
+
+    \App\common\Rest\Client\LoppServiceClubRestClient::class => function(ContainerInterface $container) {
+        return new \App\common\Rest\Client\LoppServiceClubRestClient($container->get('settings'));
+    },
+
     \App\Domain\Model\Organizer\Service\OrganizerService::class => function(ContainerInterface $container) {
         return new \App\Domain\Model\Organizer\Service\OrganizerService(
             $container,
             $container->get(\App\Domain\Model\Organizer\Repository\OrganizerRepository::class),
             $container->get(\App\Domain\Permission\PermissionRepository::class),
-            $container->get(\App\Domain\Model\Organizer\Rest\OrganizerAssembly::class)
+            $container->get(\App\Domain\Model\Organizer\Rest\OrganizerAssembly::class),
+            $container->get(\App\common\Rest\Client\LoppServiceOrganizerRestClient::class)
         );
     },
 
@@ -105,10 +114,29 @@ return [
             $container,
             $container->get(\App\Domain\Model\Organizer\Service\OrganizerService::class)
         );
+    },
+
+    \App\Domain\Model\Club\ClubRepository::class => function(ContainerInterface $container) {
+        return new \App\Domain\Model\Club\ClubRepository(
+            $container->get(PDO::class)
+        );
+    },
+
+    \App\Domain\Model\Club\Service\ClubService::class => function(ContainerInterface $container) {
+        return new \App\Domain\Model\Club\Service\ClubService(
+            $container,
+            $container->get(\App\Domain\Model\Club\ClubRepository::class),
+            $container->get(\App\Domain\Permission\PermissionRepository::class),
+            $container->get(\App\Domain\Model\Club\Rest\ClubAssembly::class),
+            $container->get(\App\common\Rest\Client\LoppServiceClubRestClient::class)
+        );
+    },
+
+    \App\Action\Club\ClubAction::class => function(ContainerInterface $container) {
+        return new \App\Action\Club\ClubAction(
+            $container,
+            $container->get(\App\Domain\Model\Club\Service\ClubService::class)
+        );
     }
-
-
-
-
 
 ];

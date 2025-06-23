@@ -29,20 +29,35 @@ export class ClubService {
 
   clubsWithAdd$ = combineLatest([this.getAllClubs(), this.clubInsertedAction$, this.reload$, this.$clubReload]).pipe(
     map(([all, insert, del, clubReload]) => {
-      if (insert) {
-        return [...all, insert]
-      }
-      if (del) {
-        var index = all.findIndex((elt) => elt.club_uid === del);
-        all.splice(index, 1);
-        const clubArray = all;
-        return this.deepCopyProperties(all);
+      // Handle deletion first (del will be a club_uid string when deletion occurs)
+      if (del && del !== '') {
+        console.log("Processing deletion for club:", del);
+        const index = all.findIndex((elt) => elt.club_uid === del);
+        if (index !== -1) {
+          console.log("Removing club at index:", index);
+          const updatedClubs = [...all];
+          updatedClubs.splice(index, 1);
+          return this.deepCopyProperties(updatedClubs);
+        }
       }
 
-      if (clubReload) {
-        var indexReload = all.findIndex((elt) => elt.club_uid === clubReload.club_uid);
-        all[indexReload] = clubReload;
+      // Handle insertion
+      if (insert && insert !== '') {
+        console.log("Processing insertion for club:", insert);
+        return [...all, insert]
       }
+
+      // Handle update/reload
+      if (clubReload) {
+        console.log("Processing update for club:", clubReload.club_uid);
+        const indexReload = all.findIndex((elt) => elt.club_uid === clubReload.club_uid);
+        if (indexReload !== -1) {
+          const updatedClubs = [...all];
+          updatedClubs[indexReload] = clubReload;
+          return this.deepCopyProperties(updatedClubs);
+        }
+      }
+
       return this.deepCopyProperties(all);
     }),
   );
@@ -83,13 +98,19 @@ export class ClubService {
   }
 
   public deleteClub(clubUid: string) {
+    console.log("Attempting to delete club:", clubUid);
     return this.httpClient.delete(environment.backend_url + "club/" + clubUid)
       .pipe(
         catchError(err => {
+          console.error("Error deleting club:", err);
           return throwError(err);
         })
       ).toPromise().then((s) => {
+        console.log("Club deletion successful, triggering UI update for:", clubUid);
         this.removeSubject.next(clubUid);
+      }).catch((error) => {
+        console.error("Club deletion failed:", error);
+        throw error;
       })
   }
 

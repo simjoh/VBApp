@@ -90,7 +90,15 @@ export class OrganizerListComponent implements OnInit {
 
     ref.onClose.subscribe((organizer: OrganizerRepresentation) => {
       if (organizer) {
-        this.organizerService.createOrganizer(organizer);
+        this.organizerService.createOrganizer(organizer).subscribe({
+          next: (createdOrganizer) => {
+            console.log('Organizer created successfully:', createdOrganizer);
+          },
+          error: (error) => {
+            console.error('Error creating organizer:', error);
+            // You might want to show a toast message here
+          }
+        });
       }
     });
   }
@@ -142,7 +150,15 @@ export class OrganizerListComponent implements OnInit {
       header: 'Bekräfta',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.organizerService.deleteOrganizer(organizer_id);
+        this.organizerService.deleteOrganizer(organizer_id).subscribe({
+          next: () => {
+            console.log('Organizer deleted successfully');
+          },
+          error: (error) => {
+            console.error('Error deleting organizer:', error);
+            // You might want to show a toast message here
+          }
+        });
       },
       reject: () => {
         console.log("reject");

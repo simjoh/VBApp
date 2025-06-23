@@ -36,7 +36,7 @@ class ClubAction
         $data = $request->getParsedBody();
         $club = new ClubRepresentation();
         $club->setTitle($data['title'] ?? null);
-        $club->setAcpCode($data['acp_code'] ?? null);
+        $club->setAcpCode($data['acp_kod'] ?? $data['acp_code'] ?? null);
 
         $response->getBody()->write(json_encode($this->clubservice->createClub($request->getAttribute('currentuserUid'), $club), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
@@ -55,7 +55,7 @@ class ClubAction
         $club = new ClubRepresentation();
         $club->setClubUid($clubUid);
         $club->setTitle($data['title'] ?? null);
-        $club->setAcpCode($data['acp_code'] ?? null);
+        $club->setAcpCode($data['acp_kod'] ?? $data['acp_code'] ?? null);
 
         $result = $this->clubservice->updateClub($request->getAttribute('currentuserUid'), $club);
         $response->getBody()->write(json_encode($result, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));

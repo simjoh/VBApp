@@ -69,7 +69,7 @@ class OrganizerAction
 
     public function deleteOrganizer(ServerRequestInterface $request, ResponseInterface $response, array $args){
         $organizerId = (int)$args['organizerId'];
-        $response->getBody()->write(json_encode($this->organizerService->deleteOrganizer($request->getAttribute('currentuserUid'), $organizerId), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        $response->getBody()->write(json_encode($this->organizerService->deleteOrganizer($organizerId, $request->getAttribute('currentuserUid')), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 } 

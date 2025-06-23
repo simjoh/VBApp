@@ -39,4 +39,5 @@ interface ClubRepositoryInterface extends BaseRepositoryInterface
     public function findByUuid(string $uuid);
     public function findOfficialClubs();
     public function findByNameExact(string $name);
+    public function deleteByUuid(string $uuid): bool;
 }

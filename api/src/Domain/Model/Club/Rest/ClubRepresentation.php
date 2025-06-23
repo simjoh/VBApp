@@ -9,7 +9,7 @@ class ClubRepresentation implements JsonSerializable
 
     private string $club_uid;
     private ?string $title = null;
-    private ?string $acp_code = null;
+    private ?string $acp_kod = null;
     private array $links = [];
 
 
@@ -67,20 +67,25 @@ class ClubRepresentation implements JsonSerializable
      */
     public function getAcpCode(): ?string
     {
-        return $this->acp_code;
+        return $this->acp_kod;
     }
 
     /**
-     * @param string|null $acp_code
+     * @param string|null $acp_kod
      */
-    public function setAcpCode(?string $acp_code): void
+    public function setAcpCode(?string $acp_kod): void
     {
-        $this->acp_code = $acp_code;
+        $this->acp_kod = $acp_kod;
     }
 
 
     public function jsonSerialize(): mixed
     {
-        return (object)get_object_vars($this);
+        return (object)[
+            'club_uid' => $this->club_uid,
+            'title' => $this->title,
+            'acp_code' => $this->acp_kod,  // Output as acp_code for frontend compatibility
+            'links' => $this->links
+        ];
     }
 }

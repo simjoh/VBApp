@@ -17,6 +17,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\ToolController;
 use App\Http\Controllers\EventGroupController;
 use App\Http\Controllers\OrganizerController;
+use App\Http\Controllers\ClubController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -86,6 +87,15 @@ Route::prefix('/api')->group(function () {
             Route::put('/{id}', [OrganizerController::class, 'update'])->name('api.organizers.update');
             Route::delete('/{id}', [OrganizerController::class, 'destroy'])->name('api.organizers.destroy');
             Route::get('/{id}/events', [OrganizerController::class, 'events'])->name('api.organizers.events');
+        });
+
+        // Club API routes
+        Route::prefix('/clubs')->group(function () {
+            Route::get('/', [ClubController::class, 'index'])->name('api.clubs.index');
+            Route::post('/', [ClubController::class, 'store'])->name('api.clubs.store');
+            Route::get('/{id}', [ClubController::class, 'show'])->name('api.clubs.show');
+            Route::put('/{id}', [ClubController::class, 'update'])->name('api.clubs.update');
+            Route::delete('/{id}', [ClubController::class, 'destroy'])->name('api.clubs.destroy');
         });
     });
 

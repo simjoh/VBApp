@@ -94,4 +94,21 @@ class ClubRepository extends BaseRepository implements ClubRepositoryInterface
     {
         return $this->model->where('name', $name)->first();
     }
+
+    /**
+     * Delete a club by its UUID
+     *
+     * @param string $uuid
+     * @return bool
+     */
+    public function deleteByUuid(string $uuid): bool
+    {
+        $club = $this->findByUuid($uuid);
+
+        if (!$club) {
+            return false;
+        }
+
+        return $club->delete();
+    }
 }

@@ -11,6 +11,18 @@ class Club extends Model
     use HasFactory;
     use HasUuids;
 
+    protected $fillable = [
+        'club_uid',
+        'name',
+        'acp_code',
+        'description',
+        'official_club'
+    ];
+
+    protected $casts = [
+        'official_club' => 'boolean'
+    ];
+
     public function club()
     {
         return $this->morphTo();

@@ -163,6 +163,16 @@ class OrganizerRepository extends BaseRepository
         return false;
     }
 
+    /**
+     * Get the database connection
+     * 
+     * @return PDO The database connection
+     */
+    public function getConnection(): PDO
+    {
+        return $this->connection;
+    }
+
     public function sqls($type)
     {
         $sqls = [
