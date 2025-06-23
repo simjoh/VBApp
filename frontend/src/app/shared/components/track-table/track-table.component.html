@@ -1,8 +1,8 @@
 <ng-container *ngIf="$tracksviewinformation | async as tracks">
   <div class="w-full">
-    <p-table 
-      [value]="tracks" 
-      styleClass="p-datatable-customers p-datatable-sm p-datatable-gridlines p-datatable-striped shadow-2" 
+    <p-table
+      [value]="tracks"
+      styleClass="p-datatable-customers p-datatable-sm p-datatable-gridlines p-datatable-striped shadow-2"
       [tableStyle]="{'width': '100%'}"
       [rowHover]="true"
       dataKey="trackRepresentation.track_uid"
@@ -19,7 +19,7 @@
           </th>
           <th style="width: 10%" class="hide">
             <div class="flex align-items-center gap-2">
-              <span>Länk till strava</span>
+              <span>Länk till bana</span>
             </div>
           </th>
           <th style="width: 15%">
@@ -50,11 +50,11 @@
       <ng-template pTemplate="body" let-track let-expanded="expanded">
         <tr class="p-selectable-row">
           <td>
-            <button 
-              type="button" 
-              pButton 
-              pRipple 
-              [pRowToggler]="track" 
+            <button
+              type="button"
+              pButton
+              pRipple
+              [pRowToggler]="track"
               class="p-button-text p-button-rounded p-button-plain"
               [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'">
             </button>
@@ -91,9 +91,9 @@
           <td>
             <div class="flex align-items-center gap-2">
               <i class="pi pi-link text-primary-600"></i>
-              <brevet-html-link 
-                [target]="'_blank'" 
-                [text]="'Följ deltagare på bana'" 
+              <brevet-html-link
+                [target]="'_blank'"
+                [text]="'Följ deltagare på bana'"
                 [rel]="'relation.track.tracktrack'"
                 [link]="track.trackRepresentation.links">
               </brevet-html-link>
@@ -101,31 +101,31 @@
           </td>
           <td>
             <div class="flex justify-content-end gap-2">
-              <button 
-                [disabled]="!isPossibleToDelete(track.trackRepresentation)" 
-                (click)="remove(track.trackRepresentation)" 
-                pButton 
-                pRipple 
+              <button
+                [disabled]="!isPossibleToDelete(track.trackRepresentation)"
+                (click)="remove(track.trackRepresentation)"
+                pButton
+                pRipple
                 icon="pi pi-trash"
                 class="p-button-rounded p-button-danger p-button-text"
                 pTooltip="Ta bort"
                 tooltipPosition="top">
               </button>
-              <button 
+              <button
                 [hidden]="track.trackMetricsRepresentation.countParticipants == 0 || isPossibleToPublishResults(track.trackRepresentation)"
                 (click)="publish(track.trackRepresentation)"
-                pButton 
-                pRipple 
+                pButton
+                pRipple
                 icon="pi pi-wifi"
                 class="p-button-rounded p-button-success p-button-text"
                 pTooltip="Publicera resultat"
                 tooltipPosition="top">
               </button>
-              <button 
+              <button
                 [hidden]="track.trackMetricsRepresentation.countParticipants == 0 || !isPossibleToPublishResults(track.trackRepresentation)"
                 (click)="publish(track.trackRepresentation)"
-                pButton 
-                pRipple 
+                pButton
+                pRipple
                 icon="pi pi-wifi"
                 class="p-button-rounded p-button-danger p-button-text"
                 pTooltip="Ångra publicera resultat"

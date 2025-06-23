@@ -34,6 +34,9 @@ export class OrganizerService {
   }
 
   getOrganizerById(id: number): Observable<OrganizerRepresentation> {
+    if (!id || id === undefined || id === null) {
+      throw new Error('Organizer ID is required and cannot be undefined');
+    }
     return this.http.get<OrganizerRepresentation>(`${environment.backend_url}organizer/${id}`);
   }
 
@@ -49,6 +52,9 @@ export class OrganizerService {
   }
 
   updateOrganizer(id: number, organizer: OrganizerRepresentation): Observable<OrganizerRepresentation> {
+    if (!id || id === undefined || id === null) {
+      throw new Error('Organizer ID is required and cannot be undefined');
+    }
     const { ...organizerData } = organizer;
     return this.http.put<OrganizerRepresentation>(`${environment.backend_url}organizer/${id}`, organizerData)
       .pipe(
@@ -59,6 +65,9 @@ export class OrganizerService {
   }
 
   deleteOrganizer(id: number): Observable<any> {
+    if (!id || id === undefined || id === null) {
+      throw new Error('Organizer ID is required and cannot be undefined');
+    }
     return this.http.delete(`${environment.backend_url}organizer/${id}`)
       .pipe(
         tap(() => {

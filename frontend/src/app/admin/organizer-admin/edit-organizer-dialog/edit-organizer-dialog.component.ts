@@ -40,7 +40,10 @@ export class EditOrganizerDialogComponent implements OnInit {
   onSubmit(): void {
     if (this.organizerForm.valid) {
       this.loading = true;
-      const organizer: OrganizerRepresentation = this.organizerForm.value;
+      const organizer: OrganizerRepresentation = {
+        ...this.organizerForm.value,
+        id: this.organizer.id
+      };
 
       // Close dialog with the organizer data
       this.dialogRef.close(organizer);

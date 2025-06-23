@@ -117,9 +117,20 @@ export class OrganizerListComponent implements OnInit {
     });
 
     editref.onClose.pipe(take(1)).subscribe(((organizer: OrganizerRepresentation) => {
-      if (organizer) {
-        this.organizerService.updateOrganizer(organizer.id, organizer).subscribe();
+      if (organizer && organizer.id) {
+        this.organizerService.updateOrganizer(organizer.id, organizer).subscribe({
+          next: (updatedOrganizer) => {
+            console.log('Organizer updated successfully:', updatedOrganizer);
+          },
+          error: (error) => {
+            console.error('Error updating organizer:', error);
+            // You might want to show a toast message here
+          }
+        });
       } else {
+        if (organizer && !organizer.id) {
+          console.error('Cannot update organizer: ID is missing');
+        }
         editref.destroy();
       }
     }));
