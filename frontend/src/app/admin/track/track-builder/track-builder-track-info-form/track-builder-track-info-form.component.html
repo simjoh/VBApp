@@ -1,42 +1,267 @@
-<p-card>
-<!--  {{model|json}}-->
-  <div class="grid p-fluid">
+<div class="track-info-form">
+    <!-- Event Selection -->
+  <div class="section">
+    <h3 class="section-title">
+      <i class="pi pi-calendar"></i>
+      Arrangemang
+    </h3>
 
-    <div class="col-12 lg:col-12 md:col-12">
-      <span><strong>Arrangemang</strong></span>
+            <div class="field-group">
+      <label>Välj event *</label>
       <brevet-event-selector (trackChange)="addEvent($event)"></brevet-event-selector>
     </div>
   </div>
-  <div class="grid p-fluid">
-    <div class="col-12 lg:col-6 md:col-6">
-      <span><strong>Bana</strong></span>
-      <div class="p-inputgroup">
-        <input  (blur)="add()" [(ngModel)]="model.trackname"  pTooltip="Banans namn tex MSR 1200 " type="text" id="trackname" pInputText placeholder="Ange ett namn på banan">
+
+  <!-- Organizer Details -->
+  <div class="section">
+    <h3 class="section-title">
+      <i class="pi pi-users"></i>
+      Arrangör
+    </h3>
+
+    <div class="field-group">
+      <label>Arrangör</label>
+      <brevet-organizer-selector
+        (organizerChange)="onOrganizerChange($event)"
+        (organizerObjectChange)="onOrganizerObjectChange($event)"
+        [showPreview]="false"
+        placeholder="Välj arrangör"
+        class="form-input">
+      </brevet-organizer-selector>
+    </div>
+  </div>
+
+  <!-- Basic Information -->
+  <div class="section">
+    <h3 class="section-title">
+      <i class="pi pi-info-circle"></i>
+      Grundläggande information
+    </h3>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <label>Arrangemangsnnam *</label>
+        <input
+          (blur)="add()"
+          (input)="onTrackNameChange()"
+          [(ngModel)]="model.trackname"
+          pTooltip="Banans namn tex MSR 1200"
+          type="text"
+          id="trackname"
+          pInputText
+          placeholder="t.ex. Vätternrundan 300km"
+          class="form-input">
+      </div>
+
+      <div class="field-group">
+        <label>Distans (km) *</label>
+        <p-dropdown
+          [options]="distanceOptions"
+          [(ngModel)]="selectedDistance"
+          (onChange)="onDistanceChange($event)"
+          placeholder="Välj eller skriv egen distans"
+          [editable]="true"
+          optionLabel="label"
+          optionValue="value"
+          class="form-input"
+          pTooltip="Välj en standarddistans eller skriv egen">
+        </p-dropdown>
       </div>
     </div>
-    <div class="col-12 lg:col-6 md:col-6">
-      <span><strong>Distans</strong></span>
-      <div class="p-inputgroup">
-        <p-inputNumber  (onBlur)="add()"  pTooltip="Banans sträcka tex 200" [(ngModel)]="model.trackdistance" max="2000"  placeholder="Ange banans längd" [showButtons]="true" id="tracklength"  suffix=" km"></p-inputNumber>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <label>Höjdskillnad (m)</label>
+        <input
+          [(ngModel)]="model.elevation"
+          (blur)="add()"
+          (input)="onElevationChange()"
+          type="number"
+          min="0"
+          max="99999"
+          step="1"
+          placeholder="1700"
+          pInputText
+          class="form-input"
+          pTooltip="Total höjdskillnad i meter">
+      </div>
+
+      <div class="field-group">
+        <!-- Empty for spacing -->
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <label>Startdatum *</label>
+        <p-calendar
+          [(ngModel)]="model.startdate"
+          (onBlur)="add()"
+          (onSelect)="onStartDateChange()"
+          dateFormat="yy-mm-dd"
+          placeholder="YYYY-MM-DD"
+          showIcon="true"
+          locale="sv"
+          pTooltip="Om fältet lämnas tomt sätt startdatum automatiskt till nästkommande dag"
+          class="form-input">
+        </p-calendar>
+      </div>
+
+      <div class="field-group">
+        <label>Starttid *</label>
+        <p-calendar
+          [(ngModel)]="model.starttime"
+          (onBlur)="add()"
+          (onSelect)="onStartTimeChange()"
+          timeOnly="true"
+          hourFormat="24"
+          placeholder="07:00"
+          showIcon="true"
+          pTooltip="24-timmarsformat, t.ex. 07:00"
+          class="form-input">
+        </p-calendar>
       </div>
     </div>
   </div>
-  <div class="grid p-fluid">
-    <div class="col-12 lg:col-6 md:col-6">
-      <span><strong>Startdatum</strong></span>
-      <div class="p-inputgroup">
-        <input  (blur)="add()" [(ngModel)]="model.startdate" pTooltip="Om fältet lämnas tomt sätt startdatum  automatiskt till nästkommande dag" tooltipPosition="top" type="text" id="startdate" pInputText placeholder="YYYY-MM-DD">
+
+  <!-- Description -->
+  <div class="section">
+    <h3 class="section-title">
+      <i class="pi pi-align-left"></i>
+      Beskrivning och länkar
+    </h3>
+
+    <div class="field-group">
+      <label>Beskrivning</label>
+      <textarea
+        [(ngModel)]="model.description"
+        (blur)="add()"
+        (input)="onDescriptionChange()"
+        pInputText
+        rows="3"
+        placeholder="Beskriv arrangemanget..."
+        class="form-input">
+      </textarea>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <label>Startplats</label>
+        <input
+          [(ngModel)]="model.startLocation"
+          (blur)="add()"
+          (input)="onStartLocationChange()"
+          type="text"
+          pInputText
+          placeholder="t.ex. ICA Kvantum, Norrköping"
+          class="form-input">
+      </div>
+
+      <div class="field-group">
+        <label>Betalning</label>
+        <input
+          [(ngModel)]="model.payment"
+          (blur)="add()"
+          (input)="onPaymentChange()"
+          type="text"
+          pInputText
+          placeholder="t.ex. Swish 123 456 78 90"
+          class="form-input">
       </div>
     </div>
-    <div class="col-12 lg:col-6 md:col-6">
-      <span><strong>Starttid</strong></span>
-      <div class="p-inputgroup">
-        <input (blur)="add()" [(ngModel)]="model.starttime" pTooltip="Om fältet lämnas tomt sätt starttiden automatiskt till 07:00" tooltipPosition="top" type="text" id="starttime" pInputText placeholder="HH:MM">
-      </div>
-    </div>
-    <div class="col-12">
-      <span><strong>Banan på Strava</strong></span>
-      <input  (blur)="add()" [(ngModel)]="model.link"  pTooltip="Banans namn tex MSR 1200 " type="text" id="linktostrava" pInputText placeholder="Länk till strava">
+
+    <div class="field-group">
+      <label>Strava-länk</label>
+      <input
+        (blur)="add()"
+        (input)="onLinkChange()"
+        [(ngModel)]="model.link"
+        pTooltip="Länk till banan på Strava"
+        type="url"
+        id="linktostrava"
+        pInputText
+        placeholder="https://www.strava.com/routes/..."
+        class="form-input">
     </div>
   </div>
-</p-card>
+
+  <!-- Options -->
+  <div class="section">
+    <h3 class="section-title">
+      <i class="pi pi-cog"></i>
+      Inställningar
+    </h3>
+
+    <div class="field-group">
+      <label>Max deltagare</label>
+      <input
+        type="number"
+        min="1"
+        max="9999"
+        step="1"
+        placeholder="100"
+        pInputText
+        class="form-input"
+        pTooltip="Maximalt antal deltagare">
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <label>Anmälan öppnar</label>
+        <p-calendar
+          [(ngModel)]="model.registration_opens"
+          (onSelect)="onRegistrationOpensChange()"
+          (onBlur)="onRegistrationOpensChange()"
+          dateFormat="yy-mm-dd"
+          [showTime]="true"
+          hourFormat="24"
+          placeholder="YYYY-MM-DD HH:MM"
+          showIcon="true"
+          locale="sv"
+          pTooltip="Datum och tid när anmälan öppnar"
+          class="form-input">
+        </p-calendar>
+      </div>
+
+      <div class="field-group">
+        <label>Anmälan stänger</label>
+        <p-calendar
+          [(ngModel)]="model.registration_closes"
+          (onSelect)="onRegistrationClosesChange()"
+          (onBlur)="onRegistrationClosesChange()"
+          dateFormat="yy-mm-dd"
+          [showTime]="true"
+          hourFormat="24"
+          placeholder="YYYY-MM-DD HH:MM"
+          showIcon="true"
+          locale="sv"
+          pTooltip="Datum och tid när anmälan stänger"
+          class="form-input">
+        </p-calendar>
+      </div>
+    </div>
+
+    <div class="options-grid">
+      <div class="option-item">
+        <p-checkbox
+          inputId="accept-stripe"
+          [(ngModel)]="stripeEnabled"
+          (onChange)="onStripeChange()"
+          [binary]="true"
+          label="Stripe kortbetalning">
+        </p-checkbox>
+        <span class="option-desc">Aktivera säker kortbetalning</span>
+      </div>
+
+      <div class="option-item">
+        <p-checkbox
+          inputId="email-confirmation"
+          value="email"
+          label="E-postbekräftelse">
+        </p-checkbox>
+        <span class="option-desc">Skicka bekräftelse vid anmälan</span>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -20,6 +20,13 @@ export class TrackBuilderComponentService {
   $choosenEventSubject = new BehaviorSubject<string>("0");
   $choosenEventUid = this.$choosenEventSubject.asObservable();
 
+  $organizerSubject = new BehaviorSubject<any>(null);
+  $organizer = this.$organizerSubject.asObservable();
+
+  // Track form data for real-time preview updates
+  $formDataSubject = new BehaviorSubject<any>({});
+  $formData = this.$formDataSubject.asObservable();
+
   $currentEvent = this.$choosenEventUid.pipe(
     switchMap((term) => {
       if (term != "0") {
@@ -73,8 +80,11 @@ export class TrackBuilderComponentService {
 
   $all = combineLatest([this.$currentEvent, this.$rusaPlannerInput, this.$rusaPlannerControlsInput]).pipe(
     map(([event, rusaplanner, controls]) => {
+      console.log('$all combineLatest data:', { event, rusaplanner, controls });
+
       // Skip if any required data is missing
       if (!rusaplanner || !event || !event.event_uid) {
+        console.log('Missing required data, skipping API call');
         return null;
       }
 
@@ -83,18 +93,22 @@ export class TrackBuilderComponentService {
       const sortedControls = this.sortControlsByDistance([...controls]);
 
       // Create a simple input object with sorted controls
-      return {
+      const inputData = {
         ...rusaplanner,
         event_uid: event.event_uid,
         use_acp_calculator: true,
         controls: sortedControls
       };
+
+      console.log('API input data prepared:', inputData);
+      return inputData;
     }),
     switchMap((input) => {
       if (!input) {
         return of(null);
       }
 
+      console.log('Calling rusatimeService.addSite with:', input);
       // Call the API
       return this.rusatimeService.addSite(input);
     })
@@ -128,9 +142,24 @@ export class TrackBuilderComponentService {
   }
 
   addControls(controls: Array<RusaPlannerControlInputRepresentation>) {
+    console.log('Service addControls called with:', controls);
     // Update the controls subject - no need to sort here
     // The sorting will happen in the $all observable before sending to API
     this.$rusaPlannerControlsSubject.next(controls);
+  }
+
+  setOrganizer(organizer: any) {
+    this.$organizerSubject.next(organizer);
+  }
+
+  updateFormData(fieldName: string, value: any) {
+    const currentData = this.$formDataSubject.getValue();
+    const updatedData = { ...currentData, [fieldName]: value };
+    this.$formDataSubject.next(updatedData);
+  }
+
+  updateAllFormData(formData: any) {
+    this.$formDataSubject.next(formData);
   }
 
   /**
@@ -179,6 +208,7 @@ export class TrackBuilderComponentService {
       const event = await this.$currentEvent.pipe(take(1)).toPromise();
       const rusaplanner = await this.$rusaPlannerInput.pipe(take(1)).toPromise();
       const controls = await this.$rusaPlannerControlsInput.pipe(take(1)).toPromise();
+      const formData = this.getFormData();
 
       // Check if we have all the required data
       if (!event || !event.event_uid || !rusaplanner || !controls || controls.length === 0) {
@@ -215,8 +245,14 @@ export class TrackBuilderComponentService {
         return false;
       }
 
-      // Save the track
-      await this.trackService.createTrack(trackData as RusaPlannerResponseRepresentation);
+      // Create request payload with both track data and form data
+      const requestPayload = {
+        trackData: trackData,
+        formData: formData
+      };
+
+      // Save the track with form data for loppservice integration
+      await this.trackService.createTrackWithFormData(requestPayload);
 
       this.messageService.add({
         key: 'tc',
@@ -236,5 +272,9 @@ export class TrackBuilderComponentService {
       });
       return false;
     }
+  }
+
+  getFormData(): any {
+    return this.$formDataSubject.getValue();
   }
 }

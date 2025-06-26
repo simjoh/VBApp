@@ -26,6 +26,45 @@ class SitesAction
 
     public function allSites(ServerRequestInterface $request, ResponseInterface $response){
         $sites = $this->siteservice->allSites($request->getAttribute('currentuserUid'));
+        
+        // If no sites exist and we're in demo mode, return mock data
+        if(empty($sites) && $this->settings['demo'] === 'true'){
+            $mockSites = [
+                (object)[
+                    'site_uid' => 'mock-site-1',
+                    'place' => 'Stockholm',
+                    'adress' => 'Centralen',
+                    'description' => 'Central Station Stockholm',
+                    'image' => '',
+                    'lat' => '59.3293',
+                    'lng' => '18.0686',
+                    'links' => []
+                ],
+                (object)[
+                    'site_uid' => 'mock-site-2', 
+                    'place' => 'Göteborg',
+                    'adress' => 'Centralstationen',
+                    'description' => 'Central Station Gothenburg',
+                    'image' => '',
+                    'lat' => '57.7089',
+                    'lng' => '11.9746',
+                    'links' => []
+                ],
+                (object)[
+                    'site_uid' => 'mock-site-3',
+                    'place' => 'Malmö',
+                    'adress' => 'Centralstationen', 
+                    'description' => 'Central Station Malmö',
+                    'image' => '',
+                    'lat' => '55.6095',
+                    'lng' => '13.0038',
+                    'links' => []
+                ]
+            ];
+            $response->getBody()->write(json_encode($mockSites));
+            return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        }
+        
         if(empty($sites)){
             return  $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }

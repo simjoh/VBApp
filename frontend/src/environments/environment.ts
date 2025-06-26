@@ -7,7 +7,7 @@ export const environment = {
   api_key: "notsecret_developer_key",
   mock_backend: false,
   backend_url: '/api/',
-  mock_login: false,
+  mock_login: true,
   mockbackendurl: '/fejk-fejk',
   pictureurl: '../../../../../../api/uploads',
   http_url: 'http://localhost:8090'

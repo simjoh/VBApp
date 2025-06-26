@@ -468,43 +468,122 @@ class TrackService extends ServiceAbstract
         }
     }
 
-    public function createTrackFromPlanner(stdClass $trackrepresentation, string $currentUserUId): TrackRepresentation
+    public function createTrackFromPlanner(stdClass $trackrepresentation, string $currentUserUId, $formData = null): TrackRepresentation
     {
+        try {
+            $event = $this->eventRepository->eventFor($trackrepresentation->eventRepresentation->event_uid);
 
-        $event = $this->eventRepository->eventFor($trackrepresentation->eventRepresentation->event_uid);
+            $trackToCreate = new Track();
+            $trackToCreate->setEventUid($event->getEventUid());
+            $trackToCreate->setDescription("");
+            $trackToCreate->setTitle($trackrepresentation->rusaTrackRepresentation->TRACK_TITLE);
+            $trackToCreate->setLink($trackrepresentation->rusaTrackRepresentation->LINK_TO_TRACK);
+            $trackToCreate->setActive(true);
+            $trackToCreate->setHeightdifference(2000);
+            $trackToCreate->setDistance($trackrepresentation->rusaTrackRepresentation->EVENT_DISTANCE_KM);
+            $trackToCreate->setStartDateTime($trackrepresentation->rusaTrackRepresentation->START_DATE . ' ' . $trackrepresentation->rusaTrackRepresentation->START_TIME);
 
-        $trackToCreate = new Track();
-        $trackToCreate->setEventUid($event->getEventUid());
-        $trackToCreate->setDescription("");
-        $trackToCreate->setTitle($trackrepresentation->rusaTrackRepresentation->TRACK_TITLE);
-        $trackToCreate->setLink($trackrepresentation->rusaTrackRepresentation->LINK_TO_TRACK);
-        $trackToCreate->setActive(true);
-        $trackToCreate->setHeightdifference(2000);
-        $trackToCreate->setDistance($trackrepresentation->rusaTrackRepresentation->EVENT_DISTANCE_KM);
-        $trackToCreate->setStartDateTime($trackrepresentation->rusaTrackRepresentation->START_DATE . ' ' . $trackrepresentation->rusaTrackRepresentation->START_TIME);
+            $checkpoints = array();
+            foreach ($trackrepresentation->rusaplannercontrols as $checkpointiput) {
+                $checkpoint = new Checkpoint();
+                $checkpoint->setSiteUid($checkpointiput->siteRepresentation->site_uid);
+                $checkpoint->setDistance($checkpointiput->rusaControlRepresentation->CONTROL_DISTANCE_KM);
+                $open = date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->OPEN));
+                $close = date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->CLOSE));
+                $checkpoint->setOpens($open);
+                $checkpoint->setClosing($close);
+                array_push($checkpoints, $this->checkpointRepository->createCheckpoint(null, $checkpoint));
+            }
 
+            $checkUids = array();
+            foreach ($checkpoints as $check){
+                array_push($checkUids, $check->getCheckpointUid());
+            }
 
-        $checkpoints = array();
-        foreach ($trackrepresentation->rusaplannercontrols as $checkpointiput) {
-            $checkpoint = new Checkpoint();
-            $checkpoint->setSiteUid($checkpointiput->siteRepresentation->site_uid);
-            $checkpoint->setDistance($checkpointiput->rusaControlRepresentation->CONTROL_DISTANCE_KM);
-            $open = date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->OPEN));
-            $close = date('Y-m-d H:i:s', strtotime($checkpointiput->rusaControlRepresentation->CLOSE));
-            $checkpoint->setOpens($open);
-            $checkpoint->setClosing($close);
-            array_push($checkpoints, $this->checkpointRepository->createCheckpoint(null, $checkpoint));
+            $trackToCreate->setCheckpoints($checkUids);
+            $track = $this->trackRepository->createTrack($trackToCreate);
+
+            // If form data is provided, create event in loppservice
+            if ($formData) {
+                $loppserviceSuccess = $this->createEventInLoppservice($trackrepresentation, $formData, $event, $track->getTrackUid());
+                if (!$loppserviceSuccess) {
+                    // Cleanup: delete the created track and checkpoints
+                    $this->deleteTrack($track->getTrackUid(), $currentUserUId);
+                    throw new BrevetException("Failed to create event in loppservice. Track creation cancelled.", 5);
+                }
+            }
+
+            return $this->trackAssembly->toRepresentation($track, array(), $currentUserUId);
+            
+        } catch (\Exception $e) {
+            throw $e;
         }
+    }
 
-        $checkUids = array();
-        foreach ($checkpoints as $check){
-            array_push($checkUids, $check->getCheckpointUid());
+    private function createEventInLoppservice(stdClass $trackrepresentation, $formData, $event, $trackUid = null): bool
+    {
+        try {
+            // Import the LoppService Event REST Client
+            $loppServiceClient = new \App\common\Rest\Client\LoppServiceEventRestClient($this->settings);
+
+            // Create EventDTO object instead of stdClass
+            $eventDTO = new \App\common\Rest\DTO\EventDTO();
+            $eventDTO->title = $formData->trackname ?? $trackrepresentation->rusaTrackRepresentation->TRACK_TITLE;
+            $eventDTO->description = $formData->description ?? '';
+            $eventDTO->startdate = $formData->startdate ?? $trackrepresentation->rusaTrackRepresentation->START_DATE;
+            $eventDTO->enddate = $formData->startdate ?? $trackrepresentation->rusaTrackRepresentation->START_DATE; // Same as start date for brevets
+            $eventDTO->event_type = 'BRM'; // Default to BRM for brevet events
+            $eventDTO->organizer_id = $formData->organizer_id ?? null;
+            
+            // Set event_uid to track_uid to link the systems
+            if ($trackUid) {
+                $eventDTO->event_uid = $trackUid;
+            }
+        
+
+            // Create route details DTO
+            $routeDetailsDTO = new \App\common\Rest\DTO\RouteDetailsDTO();
+            $routeDetailsDTO->distance = $trackrepresentation->rusaTrackRepresentation->EVENT_DISTANCE_KM;
+            $routeDetailsDTO->start_time = $formData->starttime ?? $trackrepresentation->rusaTrackRepresentation->START_TIME;
+            $routeDetailsDTO->name = $formData->trackname ?? $trackrepresentation->rusaTrackRepresentation->TRACK_TITLE;
+            $routeDetailsDTO->description = $formData->description ?? '';
+            $routeDetailsDTO->track_link = $formData->link ?? $trackrepresentation->rusaTrackRepresentation->LINK_TO_TRACK;
+            $routeDetailsDTO->start_place = $formData->startLocation ?? '';
+            $routeDetailsDTO->height_difference = $formData->elevation ?? 0;
+            
+            $eventDTO->route_detail = $routeDetailsDTO;
+
+            // Create event configuration DTO
+            $eventConfigDTO = new \App\common\Rest\DTO\EventConfigurationDTO();
+            $eventConfigDTO->use_stripe_payment = $formData->stripe_payment ?? false;
+            $eventConfigDTO->max_registrations = 300; // Default value
+
+            // Set registration dates if provided
+            if (isset($formData->registration_opens)) {
+                $eventConfigDTO->registration_opens = $formData->registration_opens;
+            }
+            
+            if (isset($formData->registration_closes)) {
+                $eventConfigDTO->registration_closes = $formData->registration_closes;
+            }
+
+            $eventDTO->eventconfiguration = $eventConfigDTO;
+
+            // Create event in loppservice
+            $createdEvent = $loppServiceClient->createEvent($eventDTO);
+            
+            if ($createdEvent !== null) {
+                return true;
+            } else {
+                error_log("Failed to create event in loppservice");
+                return false;
+            }
+            
+        } catch (\Exception $e) {
+            error_log("Exception in createEventInLoppservice: " . $e->getMessage());
+            error_log("Loppservice URL being used: " . $this->settings['loppserviceurl']);
+            return false;
         }
-
-        $trackToCreate->setCheckpoints($checkUids);
-        $track = $this->trackRepository->createTrack($trackToCreate);
-
-        return $this->trackAssembly->toRepresentation($track, array(), $currentUserUId);
     }
 
 

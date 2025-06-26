@@ -1,44 +1,99 @@
-<div class="flex justify-content-start mt-4">
-  <p-button (click)="addControl()" label="Lägg till kontroll"  icon="" styleClass="p-button-sm p-button-success"></p-button>
-
-</div>
-<!--{{rusatimeControls |json}}-->
-<ng-container *ngFor="let control of rusatimeControls; index as i">
-<p-card styleClass="mt-1">
-  <div class="grid p-fluid">
-    <div class="col-12 lg:col-5 md:col-5">
-      <span><strong>Kontrollplats</strong></span>
-      <brevet-site-selector (SiteChange)="addSite($event, i)" [styleClass]="''"></brevet-site-selector>
-    </div>
-    <div class="col-12 lg:col-5 md:col-5">
-      <span><strong>Distans</strong></span>
-      <div class="p-inputnumber-wrapper">
-        <p-inputNumber
-          [(ngModel)]="control.DISTANCE"
-          (ngModelChange)="publish($event, i)"
-          [min]="0"
-          [minFractionDigits]="0"
-          [maxFractionDigits]="1"
-          max="2000"
-          id="controllength-{{i}}"
-          [showButtons]="true"
-          suffix=" km"
-          [tabindex]="i + 1"
-          styleClass="p-inputnumber-sm custom-input-height">
-        </p-inputNumber>
+<div class="controls-form">
+  <div class="controls-header">
+    <div class="header-content">
+      <div class="header-info">
+        <h3 class="header-title">
+          <i class="pi pi-map-marker mr-2"></i>
+          Kontroller
+        </h3>
+        <p class="header-description">Generera efter distans</p>
       </div>
-    </div>
-    <div class="col-12 lg:col-2 md:col-2 flex align-items-end justify-content-start">
-      <button pButton pRipple type="button" icon="pi pi-trash"
-        class="p-button-rounded p-button-danger p-button-sm"
-        (click)="removeControl(i)"
-        pTooltip="Ta bort kontroll"
-        tooltipPosition="top">
+      <button
+        class="add-control-btn"
+        (click)="addControl()"
+        pButton
+        pRipple
+        type="button">
+        <i class="pi pi-plus mr-2"></i>
+        Lägg till kontroll
       </button>
     </div>
   </div>
-</p-card>
-</ng-container>
+
+  <div class="controls-list" *ngIf="rusatimeControls && rusatimeControls.length > 0">
+    <ng-container *ngFor="let control of rusatimeControls; index as i">
+      <div class="control-card">
+        <div class="control-header">
+          <div class="control-number">
+            <span>{{i + 1}}</span>
+          </div>
+          <h4 class="control-title">Kontroll #{{i + 1}}</h4>
+          <button
+            class="remove-btn"
+            pButton
+            pRipple
+            type="button"
+            icon="pi pi-trash"
+            (click)="removeControl(i)"
+            pTooltip="Ta bort kontroll"
+            tooltipPosition="top">
+          </button>
+        </div>
+
+        <div class="control-content">
+          <div class="control-field">
+            <label class="field-label">
+              <i class="pi pi-map-marker mr-2"></i>
+              Kontrollplats
+            </label>
+            <brevet-site-selector
+              (SiteChange)="addSite($event, i)"
+              [styleClass]="'modern-selector'">
+            </brevet-site-selector>
+          </div>
+
+          <div class="control-field">
+            <label class="field-label">
+              <i class="pi pi-arrows-h mr-2"></i>
+              Distans (km)
+            </label>
+            <p-inputNumber
+              [(ngModel)]="control.DISTANCE"
+              (ngModelChange)="publish($event, i)"
+              [min]="0"
+              [minFractionDigits]="0"
+              [maxFractionDigits]="1"
+              max="2000"
+              id="controllength-{{i}}"
+              [showButtons]="true"
+              suffix=" km"
+              [tabindex]="i + 1"
+              placeholder="94"
+              styleClass="modern-input-number">
+            </p-inputNumber>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="empty-state" *ngIf="!rusatimeControls || rusatimeControls.length === 0">
+    <div class="empty-icon">
+      <i class="pi pi-map-marker"></i>
+    </div>
+    <h3 class="empty-title">Inga kontroller ännu</h3>
+    <p class="empty-description">Lägg till din första kontroll för att komma igång</p>
+    <button
+      class="add-first-control-btn"
+      (click)="addControl()"
+      pButton
+      pRipple
+      type="button">
+      <i class="pi pi-plus mr-2"></i>
+      Lägg till första kontrollen
+    </button>
+  </div>
+</div>
 
 <style>
   /* Custom styles to match p-dropdown height */

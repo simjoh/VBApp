@@ -1,0 +1,122 @@
+<div class="organizer-selector">
+  <p-dropdown
+    [options]="organizers"
+    [(ngModel)]="selectedOrganizerId"
+    (onChange)="onOrganizerChange($event)"
+    [placeholder]="placeholder"
+    [disabled]="disabled || loading"
+    optionLabel="name"
+    optionValue="id"
+    [showClear]="true"
+    [filter]="true"
+    filterBy="name"
+    class="form-input organizer-dropdown"
+    appendTo="body">
+
+    <!-- Custom option template to show logo and details -->
+    <ng-template pTemplate="item" let-organizer>
+      <div class="organizer-option">
+        <div class="organizer-logo" *ngIf="organizer.logo_svg">
+          <img [src]="getSafeLogoUrl(organizer.logo_svg)"
+               [alt]="organizer.name + ' logo'"
+               class="logo-img"
+               (error)="$event.target.style.display='none'">
+        </div>
+        <div class="organizer-info">
+          <div class="organizer-name">{{ organizer.name }}</div>
+          <div class="organizer-details">
+            <small *ngIf="organizer.contact_person" class="contact-person">
+              <i class="pi pi-user"></i> {{ organizer.contact_person }}
+            </small>
+            <small *ngIf="organizer.email" class="email">
+              <i class="pi pi-envelope"></i> {{ organizer.email }}
+            </small>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+        <!-- Selected value template -->
+    <ng-template pTemplate="selectedItem">
+      <div class="selected-organizer" *ngIf="selectedOrganizerForTemplate">
+        <div class="selected-logo" *ngIf="selectedOrganizerForTemplate.logo_svg">
+          <img [src]="getSafeLogoUrl(selectedOrganizerForTemplate.logo_svg)"
+               [alt]="selectedOrganizerForTemplate.name + ' logo'"
+               class="selected-logo-img"
+               (error)="$event.target.style.display='none'">
+        </div>
+        <span class="selected-name">{{ selectedOrganizerForTemplate.name }}</span>
+      </div>
+    </ng-template>
+
+    <!-- Loading template -->
+    <ng-template pTemplate="empty">
+      <div class="empty-state">
+        <span *ngIf="loading">Laddar arrangörer...</span>
+        <span *ngIf="!loading && organizers.length === 0">Inga arrangörer hittades</span>
+      </div>
+    </ng-template>
+  </p-dropdown>
+
+  <!-- Preview Card - Event Style -->
+  <div class="event-preview-card" *ngIf="showPreview && selectedOrganizer">
+    <div class="event-card">
+      <!-- Logo at top -->
+      <div class="event-logo" *ngIf="selectedOrganizer.logo_svg">
+        <img [src]="getSafeLogoUrl(selectedOrganizer.logo_svg)"
+             [alt]="selectedOrganizer.name + ' logo'"
+             class="event-logo-img">
+      </div>
+
+      <!-- Event Title -->
+      <h2 class="event-title">{{ selectedOrganizer.name }}</h2>
+
+      <!-- Event Details -->
+      <div class="event-details">
+        <div class="detail-row" *ngIf="selectedOrganizer.description">
+          <span class="detail-label">Beskrivning:</span>
+          <span class="detail-value">{{ selectedOrganizer.description }}</span>
+        </div>
+
+        <div class="detail-row" *ngIf="selectedOrganizer.contact_person">
+          <span class="detail-label">Kontaktperson:</span>
+          <span class="detail-value">{{ selectedOrganizer.contact_person }}</span>
+        </div>
+
+        <div class="detail-row" *ngIf="selectedOrganizer.email">
+          <span class="detail-label">E-post:</span>
+          <span class="detail-value">{{ selectedOrganizer.email }}</span>
+        </div>
+
+        <div class="detail-row" *ngIf="selectedOrganizer.website">
+          <span class="detail-label">Hemsida:</span>
+          <span class="detail-value">
+            <a [href]="selectedOrganizer.website" target="_blank" rel="noopener">
+              {{ selectedOrganizer.website }}
+            </a>
+          </span>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div class="event-actions">
+        <button class="event-action-btn selected" type="button">
+          ARRANGÖR VALD
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div class="error-message" *ngIf="error">
+    <small class="text-error">{{ error }}</small>
+    <button type="button" class="retry-btn" (click)="refreshOrganizers()">
+      <i class="pi pi-refresh"></i> Försök igen
+    </button>
+  </div>
+
+  <!-- Loading indicator -->
+  <div class="loading-indicator" *ngIf="loading">
+    <i class="pi pi-spin pi-spinner"></i>
+  </div>
+</div>

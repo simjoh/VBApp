@@ -113,15 +113,14 @@ class TrackAction
     public function createTrackFromPlanner(ServerRequestInterface $request, ResponseInterface $response){
         $jsonDecoder = new JsonDecoder();
         $jsonDecoder->register(new RusaPlannerResponseRepresentationTransformer());
-//        $jsonDecoder->register(new SiteRepresentationTransformer());
 
-        $trackrepresentation = json_decode($request->getBody());
+        $requestData = json_decode($request->getBody());
 
-      //  $trackrepresentation = (object) $jsonDecoder->decode($request->getBody(), RusaPlannerResponseRepresentation::class);
+        // Extract track representation and additional form data
+        $trackrepresentation = $requestData->trackData ?? $requestData;
+        $formData = $requestData->formData ?? null;
 
-
-
-         $created = $this->trackService->createTrackFromPlanner($trackrepresentation,  $request->getAttribute('currentuserUid'));
+        $created = $this->trackService->createTrackFromPlanner($trackrepresentation, $request->getAttribute('currentuserUid'), $formData);
 
         $response->getBody()->write((string)json_encode($created),JSON_UNESCAPED_SLASHES);
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);

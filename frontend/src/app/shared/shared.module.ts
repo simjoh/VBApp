@@ -61,6 +61,7 @@ import { SiteSelectorComponent } from './components/site-selector/site-selector.
 import {ToolbarModule} from "primeng/toolbar";
 import {StepsModule} from "primeng/steps";
 import {CheckboxModule} from "primeng/checkbox";
+import { OrganizerSelectorComponent } from './organizer-selector/organizer-selector.component';
 
 
 
@@ -85,7 +86,8 @@ import {CheckboxModule} from "primeng/checkbox";
         TrackInfoComponent,
         TracksForEventSelectorComponent,
         EventSelectorComponent,
-        SiteSelectorComponent
+        SiteSelectorComponent,
+        OrganizerSelectorComponent
     ],
     imports: [
         CommonModule,
@@ -130,7 +132,7 @@ import {CheckboxModule} from "primeng/checkbox";
         PanelModule, ToolbarModule,
         MenuModule, BadgeModule,CheckboxModule, StepsModule ,ListboxModule, SiteSelectorComponent, EventSelectorComponent, InputNumberModule, TracksForEventSelectorComponent, CheckpointComponent, CheckpointPreviewComponent, CheckpointPreviewDialogComponent, KnobModule, HtmlLinkComponent, ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
         LogoComponent, DatePipe, NgbCollapseModule, ProgressSpinnerModule, AccordionModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
-        ProgressBarModule, TrackTableComponent, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent, DateTimePrettyPrintPipe, RemoveAfterPipe, TracksForEventSelectorComponent, CheckpointTableComponent],
+        ProgressBarModule, TrackTableComponent, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent, DateTimePrettyPrintPipe, RemoveAfterPipe, TracksForEventSelectorComponent, CheckpointTableComponent, OrganizerSelectorComponent],
     providers: [DatePipe, DialogService]
 })
 export class SharedModule { }

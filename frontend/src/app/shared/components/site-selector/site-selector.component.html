@@ -1,9 +1,7 @@
-
-
 <p-dropdown
   styleClass="{{styleClass}}" pTooltip="Plats är en punkt där en kontroll är belägen"
   tooltipPosition="left" optionLabel="place" tooltip="Plats är en punkt där en kontroll är belägen"
-  [options]="$sites | async" [(ngModel)]="selectedEvent"
+  [options]="sites" [(ngModel)]="selectedEvent"
   (ngModelChange)="setValue($event)" placeholder="Välj plats               "
   [virtualScroll]="true" [itemSize]="31"
   [filter]="true">

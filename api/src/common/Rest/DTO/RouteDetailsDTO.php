@@ -52,6 +52,48 @@ class RouteDetailsDTO extends BaseDTO
     public ?string $gpx_file = null;
     
     /**
+     * Start time of the event (e.g., "08:00")
+     * @var string|null
+     */
+    public ?string $start_time = null;
+    
+    /**
+     * Starting place/location of the event
+     * @var string|null
+     */
+    public ?string $start_place = null;
+    
+    /**
+     * Description of the route
+     * @var string|null
+     */
+    public ?string $description = null;
+    
+    /**
+     * Height difference in meters
+     * @var int|null
+     */
+    public ?int $height_difference = null;
+    
+    /**
+     * Contact person email for the route
+     * @var string|null
+     */
+    public ?string $route_contactperson_email = null;
+    
+    /**
+     * Link to the track/route
+     * @var string|null
+     */
+    public ?string $track_link = null;
+    
+    /**
+     * Payment link for the event
+     * @var string|null
+     */
+    public ?string $pay_link = null;
+    
+    /**
      * Event UID that these route details belong to
      * @var string|null
      */

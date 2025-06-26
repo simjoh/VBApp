@@ -40,8 +40,10 @@ export class SiteService {
   }
 
    getAllSites(): Observable<Site[]>{
+    console.log('getAllSites() called, requesting:', environment.backend_url + "sites");
     return this.httpClient.get<Site[]>(environment.backend_url + "sites").pipe(
       map((sites: Array<Site>) => {
+        console.log('getAllSites() received response, sites count:', sites ? sites.length : 'null/undefined');
         return sites;
       }),
       tap(sites =>   console.log("All sites" ,sites)),
@@ -51,6 +53,13 @@ export class SiteService {
 
   siteWithAdd$ = combineLatest([this.getAllSites(), this.siteInsertedAction$, this.relaod$, this.$sitesReload]).pipe(
     map(([all, insert, del, reload]) =>  {
+      console.log('$all combineLatest data:', {
+        allSites: all ? all.length : 'null/undefined',
+        insert: insert,
+        del: del,
+        reload: reload
+      });
+
       if(insert){
         return  [...all, insert]
       }

@@ -160,7 +160,8 @@ class EventController extends Controller
         }
 
         $event = new Event();
-        $event->event_uid = Uuid::uuid4();
+        // Use provided event_uid if available, otherwise generate new UUID
+        $event->event_uid = $data['event_uid'] ?? Uuid::uuid4();
         $event->title = $data['title'];
         $event->description = $data['description'];
         $event->startdate = $data['startdate'];

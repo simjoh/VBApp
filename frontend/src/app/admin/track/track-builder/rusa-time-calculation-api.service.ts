@@ -55,11 +55,13 @@ export class RusaTimeCalculationApiService {
       headers: new HttpHeaders()
     }
     httpOptions.headers.append('Access-Control-Allow-Origin', '*');
+    console.log('API Service calling trackplanner with:', rusaPlannerInputRepresentation);
     return this.httpClient.post<RusaPlannerResponseRepresentation>(environment.backend_url + 'trackplanner', rusaPlannerInputRepresentation, httpOptions).pipe(
       map((site: RusaPlannerResponseRepresentation) => {
+        console.log('API Service received response:', site);
         return site;
       }),
-      tap(site => console.log(site))
+      tap(site => console.log('API Service tap response:', site))
     );
   }
 

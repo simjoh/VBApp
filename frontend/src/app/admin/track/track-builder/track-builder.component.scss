@@ -1,31 +1,351 @@
-
-:host {
-    ::ng-deep {
-
-
-.test .p-inputgroup {
-    /* display: flex; */
-    align-items: stretch;
-    width: 100%;
+// Container
+.track-builder-container {
+  max-width: 100%;
+  margin: 0;
+  padding: 0 2rem;
+  min-height: 100vh;
 }
 
+// Building Options
+.building-options {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 2rem;
+}
 
+.option-card {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  max-width: 300px;
 
-      .p-inputnumber, p-inputnumber {
-          display: inline-flex;
-          width: 100%;
+  &:hover:not(.disabled) {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+  }
 
+  &.selected {
+    border-color: #667eea;
+    background: #667eea;
+    color: white;
+
+    .option-icon {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+
+    .option-icon {
+      background: #f3f4f6;
+      color: #9ca3af;
+    }
+  }
+
+  .option-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    color: #667eea;
+  }
+
+  .option-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: inherit;
+    line-height: 1.3;
+  }
+
+  .option-description {
+    font-size: 0.875rem;
+    opacity: 0.8;
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+// Building Header
+.building-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem 0;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #e5e7eb;
+
+  .back-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #374151;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    min-height: 40px;
+    flex-shrink: 0;
+
+    &:hover:not(:disabled) {
+      background: #f9fafb;
+      border-color: #9ca3af;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .header-title {
+    flex: 1;
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #111827;
+      margin: 0 0 0.25rem 0;
+      line-height: 1.2;
+    }
+
+    p {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin: 0;
+      line-height: 1.4;
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+
+    .back-button {
+      align-self: flex-start;
+    }
+
+    .header-title {
+      width: 100%;
+
+      h2 {
+        font-size: 1.25rem;
+      }
+    }
+  }
+}
+
+// Form Container
+.form-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+  max-width: none;
+
+  @media (max-width: 1200px) {
+    gap: 3rem;
+  }
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.form-column {
+  .form-section {
+    margin-bottom: 0.75rem;
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #111827;
+      margin: 0 0 0.5rem 0;
+      padding-bottom: 0.1rem;
+      border-bottom: 2px solid #e5e7eb;
+    }
+  }
+}
+
+.summary-column {
+  .summary-sticky {
+    position: relative;
+  }
+}
+
+  // Global card improvements
+:host ::ng-deep {
+  .p-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.5rem;
+
+    .p-card-body {
+      padding: 0.75rem;
+    }
+
+    .p-card-header {
+      background: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 1rem 1.5rem;
+
+      .p-card-title {
+        font-weight: 600;
+        color: #111827;
+        font-size: 1.125rem;
+      }
+    }
+  }
+
+  // Input styling improvements - make them more compact
+  .p-inputtext, .p-dropdown, .p-inputnumber-input {
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    min-height: 40px;
+    width: 100%;
+    max-width: 600px;
+
+    &:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+    }
+  }
+
+  // Dropdown specific adjustments
+  .p-dropdown {
+    width: 100%;
+    max-width: 400px;
+
+    .p-dropdown-label {
+      padding: 0.75rem;
+      line-height: 1.4;
+    }
+
+    .p-dropdown-trigger {
+      padding: 0.75rem;
+    }
+  }
+
+  // Input number adjustments
+  .p-inputnumber {
+    width: 100%;
+    max-width: 180px;
+
+    .p-inputnumber-input {
+      padding: 0.75rem 2.5rem 0.75rem 0.75rem !important;
+      height: 40px !important;
+      min-height: 40px !important;
+      line-height: 1.2;
+      box-sizing: border-box !important;
+      border-radius: 6px !important;
+    }
+
+    .p-inputnumber-button {
+      width: 2.5rem !important;
+      height: 20px !important;
+
+      .p-button {
+        height: 100% !important;
+        min-height: 20px !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
       }
 
+      &:first-child .p-button {
+        border-top-right-radius: 6px !important;
+      }
 
-
-//.p-inputgroup .p-inputtext, .p-fluid .p-inputgroup .p-inputtext, .p-inputgroup .p-inputwrapper, .p-inputgroup .p-inputwrapper>.p-component {
-//    flex: 1 1 auto;
-//    width: 20rem;
-//}
-
-
+      &:last-child .p-button {
+        border-bottom-right-radius: 6px !important;
+      }
     }
+  }
+
+  // Override component-specific styling
+  .modern-input .p-inputnumber {
+    .p-inputnumber-input {
+      min-height: 40px !important;
+      height: 40px !important;
+      padding: 0.75rem 2.5rem 0.75rem 0.75rem !important;
     }
+
+    .p-inputnumber-button {
+      width: 2.5rem !important;
+      height: 20px !important;
+    }
+  }
+
+  // Button improvements
+  .p-button {
+    border-radius: 6px;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    min-height: 40px;
+
+    &.p-button-success {
+      background: #059669;
+      border-color: #059669;
+
+      &:hover {
+        background: #047857;
+        border-color: #047857;
+      }
+    }
+  }
+
+  // Label styling
+  label, span strong {
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.05rem;
+    display: block;
+    font-size: 0.9rem;
+    line-height: 1.2;
+  }
+
+  // Textarea improvements
+  textarea {
+    min-height: 80px;
+    resize: vertical;
+    line-height: 1.5;
+    max-width: 500px;
+  }
+
+  // Form layout improvements
+  .p-field {
+    margin-bottom: 0.25rem;
+  }
+
+  // Tooltip improvements
+  .p-tooltip {
+    font-size: 0.8rem;
+    max-width: 250px;
+    line-height: 1.3;
+  }
+}
 
 

@@ -161,6 +161,7 @@ export class TrackBuilderControlsFormComponent implements OnInit, OnDestroy {
       SITE: control.SITE || ""
     }));
 
+    console.log('Controls form updating all controls:', cleanControls);
     // Send all controls to the service
     this.trackbuildercomponentService.addControls(cleanControls);
   }

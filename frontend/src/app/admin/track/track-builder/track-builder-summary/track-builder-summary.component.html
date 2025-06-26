@@ -1,93 +1,242 @@
-<p-card header="Arrangemang">
-  <ng-container *ngIf="event">
-    <h5>{{event.title}}</h5>
-    {{event.startdate}} - {{event.enddate}}
-  </ng-container>
-</p-card>
-
-<p-card header="Bana" styleClass="mt-0">
-  <ng-container *ngIf="track">
-    <div class="grid">
-      <div class="col-5">
-        <h4>{{track.TRACK_TITLE}}</h4>
+<div class="summary-container">
+    <!-- Event Preview Card -->
+  <div class="summary-card event-preview-card">
+    <div class="card-header">
+      <div class="header-icon">
+        <i class="pi pi-eye"></i>
       </div>
-      <div class="col-7">
-        <div class="grid">
-          <div class="col-4">
-            <strong>Distans:</strong> {{track.EVENT_DISTANCE_KM}}
+      <h3 class="card-title">Förhandsvisning - Så här kommer eventet att visas</h3>
+    </div>
+    <div class="card-content">
+      <div class="event-card-exact">
+        <!-- Logo Section -->
+        <div class="logo-container">
+          <div class="logo-wrapper">
+            <img *ngIf="getOrganizerLogo()" [src]="getOrganizerLogo()" alt="SVG Image" class="logo-image">
+            <i *ngIf="!getOrganizerLogo()" class="pi pi-image logo-placeholder"></i>
           </div>
-          <div class="col-4">
-            <strong>Datum:</strong> {{track.START_DATE}}
+        </div>
+
+        <!-- Content Section -->
+        <div class="content-section">
+          <h2 class="event-title" [class.placeholder]="!hasEventTitle()">{{ getEventTitleWithPlaceholder() }}</h2>
+
+          <div class="details-container">
+            <div class="detail-row">
+              <span class="detail-label">Distans:</span>
+              <span class="detail-value" [class.placeholder]="!hasDistance()">{{ getDistanceDisplayWithPlaceholder() }}</span>
+            </div>
+
+            <div class="detail-row">
+              <span class="detail-label">Höjdmeter:</span>
+              <span class="detail-value" [class.placeholder]="!hasElevation()">{{ getElevationDisplayWithPlaceholder() }}</span>
+            </div>
+
+            <div class="detail-row">
+              <span class="detail-label">Startdatum:</span>
+              <span class="detail-value" [class.placeholder]="!hasStartDate()">{{ getStartDateDisplayWithPlaceholder() }}</span>
+            </div>
+
+            <div class="detail-row">
+              <span class="detail-label">Starttid:</span>
+              <span class="detail-value" [class.placeholder]="!hasStartTime()">{{ getStartTimeDisplayWithPlaceholder() }}</span>
+            </div>
+
+            <div class="detail-row">
+              <span class="detail-label">Sista anmälan:</span>
+              <span class="detail-value" [class.placeholder]="!hasStartDate()">{{ getLastRegistrationDisplayWithPlaceholder() }}</span>
+            </div>
+
+            <div class="detail-row">
+              <span class="detail-label">Startort:</span>
+              <span class="detail-value" [class.placeholder]="!hasStartLocation()">{{ getStartLocationDisplayWithPlaceholder() }}</span>
+            </div>
+
+                        <div class="detail-row">
+              <span class="detail-label">Arrangör:</span>
+              <span class="detail-value" [class.placeholder]="!hasOrganizer()">
+                <a *ngIf="hasOrganizer() && getOrganizerWebsite()" [href]="getOrganizerWebsite()" target="_blank" class="organizer-link">
+                  {{ organizer?.organization_name }}
+                </a>
+                <span *ngIf="hasOrganizer() && !getOrganizerWebsite()">{{ organizer?.organization_name }}</span>
+                <span *ngIf="!hasOrganizer()">{{ getOrganizerDisplayWithPlaceholder() }}</span>
+              </span>
+            </div>
+
+            <div class="detail-row" *ngIf="!isStripeEnabled()">
+              <span class="detail-label">Betala&nbsp;via:</span>
+              <span class="detail-value" [class.placeholder]="!hasPayment()">{{ getPaymentDisplayWithPlaceholder() }}</span>
+            </div>
+
+            <div class="detail-row">
+              <span class="detail-label">Övrigt:</span>
+              <span class="detail-value" [class.placeholder]="!hasDescription()">{{ getDescriptionWithPlaceholder() }}</span>
+            </div>
           </div>
-          <div class="col-4">
-            <strong>Tid:</strong> {{track.START_TIME}}
-          </div>
-          <div class="col-12">
-            <strong>Min/Max:</strong> {{track.MIN_TIME}}/{{track.MAX_TIME}}
-          </div>
-          <div class="col-12">
-            <strong>Länk:</strong> {{track.LINK_TO_TRACK}}
-          </div>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="actions-section">
+          <a *ngIf="getTrackLink()" [href]="getTrackLink()" target="_blank" class="action-link">
+            Länk till bana
+          </a>
+          <a *ngIf="!getTrackLink()" href="#" class="action-link" style="color: #d1d5db; pointer-events: none;">
+            Länk till bana
+          </a>
+          <a href="#" class="action-link" style="color: #d1d5db; pointer-events: none;">
+            Startlista
+          </a>
+          <a class="registration-btn" [class.closed]="isRegistrationClosed()" [class.stripe-payment]="isStripeEnabled()">
+            {{ getRegistrationButtonText() }}
+          </a>
         </div>
       </div>
     </div>
-  </ng-container>
-</p-card>
+  </div>
 
-<p-card styleClass="mt-2">
-  <ng-template pTemplate="header">
-    <div class="flex justify-content-between align-items-center p-2">
-      <span class="text-xl font-bold">Kontroller</span>
-      <span class="text-sm text-primary">(Sorterade efter distans)</span>
+  <!-- Event Summary -->
+  <div class="summary-card">
+    <div class="card-header">
+      <div class="header-icon">
+        <i class="pi pi-calendar"></i>
+      </div>
+      <h3 class="card-title">Arrangemang</h3>
     </div>
-  </ng-template>
-
-  <ng-container *ngIf="controls && controls.length > 0">
-    <hr>
-    <ng-container *ngFor="let control of controls; let i = index">
-      <div class="mb-2 ">
-        <div class="grid">
-          <div class="col-1">
-            <p-image width="60" height="60" src="{{control.siteRepresentation?.image}}" alt="Image" [preview]="false"></p-image>
+    <div class="card-content">
+      <ng-container *ngIf="event && event.title; else noEventTemplate">
+        <h4 class="event-title">{{event.title}}</h4>
+        <div class="event-details">
+          <div class="detail-item">
+            <i class="pi pi-clock"></i>
+            <span>{{event.startdate}} - {{event.enddate}}</span>
           </div>
-          <div class="col-11">
-            <div class="grid">
-              <div class="col-3">
-                <strong>Kontroll #{{i+1}}:</strong> {{control.siteRepresentation?.adress}}
-              </div>
-              <div class="col-3">
-                <strong>Distans:</strong> {{control.rusaControlRepresentation?.CONTROL_DISTANCE_KM}}km
-              </div>
-              <div class="col-3">
-                <strong>Öppnar:</strong>  {{control.rusaControlRepresentation?.OPEN}}
-              </div>
-              <div class="col-3">
-                <strong>Stänger:</strong>  {{control.rusaControlRepresentation?.CLOSE}}
-              </div>
-              <div class="col-3">
-                {{control.rusaControlRepresentation?.RELATIVE_OPEN}} {{control.rusaControlRepresentation?.RELATIVE_CLOSE}}
-              </div>
-              <div class="col-9">
-                <strong>Service:</strong> {{control.siteRepresentation?.description}}
+        </div>
+      </ng-container>
+      <ng-template #noEventTemplate>
+        <div class="empty-content">
+          <i class="pi pi-info-circle"></i>
+          <p>Välj ett arrangemang för att visa information här</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Track Summary -->
+  <div class="summary-card">
+    <div class="card-header">
+      <div class="header-icon">
+        <i class="pi pi-map"></i>
+      </div>
+      <h3 class="card-title">Bana</h3>
+    </div>
+    <div class="card-content">
+      <ng-container *ngIf="track && track.TRACK_TITLE; else noTrackTemplate">
+        <h4 class="track-title">{{track.TRACK_TITLE}}</h4>
+        <div class="track-stats">
+          <div class="stat-item">
+            <span class="stat-label">Distans</span>
+            <span class="stat-value">{{track.EVENT_DISTANCE_KM}} km</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Datum</span>
+            <span class="stat-value">{{track.START_DATE}}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Starttid</span>
+            <span class="stat-value">{{track.START_TIME}}</span>
+          </div>
+        </div>
+        <div class="track-times" *ngIf="track.MIN_TIME && track.MAX_TIME">
+          <div class="time-range">
+            <span class="time-label">Min tid:</span>
+            <span class="time-value">{{track.MIN_TIME}}</span>
+          </div>
+          <div class="time-range">
+            <span class="time-label">Max tid:</span>
+            <span class="time-value">{{track.MAX_TIME}}</span>
+          </div>
+        </div>
+        <div class="track-link" *ngIf="track.LINK_TO_TRACK">
+          <a [href]="track.LINK_TO_TRACK" target="_blank" class="external-link">
+            <i class="pi pi-external-link mr-2"></i>
+            Visa på Strava
+          </a>
+        </div>
+      </ng-container>
+      <ng-template #noTrackTemplate>
+        <div class="empty-content">
+          <i class="pi pi-info-circle"></i>
+          <p>Fyll i banans information och lägg till kontroller för att beräkna banan</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Controls Summary -->
+  <div class="summary-card">
+    <div class="card-header">
+      <div class="header-icon">
+        <i class="pi pi-map-marker"></i>
+      </div>
+      <div class="header-content">
+        <h3 class="card-title">Kontroller</h3>
+        <span class="controls-count" *ngIf="controls && controls.length > 0">
+          {{controls.length}} {{controls.length === 1 ? 'kontroll' : 'kontroller'}}
+        </span>
+      </div>
+    </div>
+    <div class="card-content">
+      <div class="controls-list" *ngIf="controls && controls.length > 0">
+        <div class="control-item" *ngFor="let control of controls; let i = index">
+          <div class="control-info">
+            <div class="control-image">
+              <img
+                [src]="control.siteRepresentation?.image"
+                [alt]="'Kontroll ' + (i+1)"
+                *ngIf="control.siteRepresentation?.image"
+                class="site-image">
+              <div class="control-number" *ngIf="!control.siteRepresentation?.image">
+                {{i + 1}}
               </div>
             </div>
-            <div class="col-9">
+            <div class="control-details">
+              <h5 class="control-name">Kontroll #{{i+1}}</h5>
+              <p class="control-address">{{control.siteRepresentation?.adress}}</p>
+              <div class="control-meta">
+                <span class="meta-item">
+                  <i class="pi pi-arrows-h"></i>
+                  {{control.rusaControlRepresentation?.CONTROL_DISTANCE_KM}}km
+                </span>
+                <span class="meta-item" *ngIf="control.rusaControlRepresentation?.OPEN">
+                  <i class="pi pi-clock"></i>
+                  {{control.rusaControlRepresentation?.OPEN}} - {{control.rusaControlRepresentation?.CLOSE}}
+                </span>
+              </div>
+              <p class="control-service" *ngIf="control.siteRepresentation?.description">
+                {{control.siteRepresentation?.description}}
+              </p>
             </div>
           </div>
         </div>
       </div>
-      <hr>
-    </ng-container>
-  </ng-container>
-</p-card>
+      <div class="empty-controls" *ngIf="!controls || controls.length === 0">
+        <i class="pi pi-map-marker"></i>
+        <p>Inga kontroller tillagda än</p>
+      </div>
+    </div>
+  </div>
 
-<div class="flex justify-content-center mt-2">
-  <p-button
-    [disabled]="buttonDisabled || isLoading"
-    label="{{isLoading ? 'Sparar...' : 'Spara bana'}}"
-    (click)="createTrack()"
-    icon="{{isLoading ? 'pi pi-spin pi-spinner' : ''}}"
-    styleClass="p-button-sm p-button-success">
-  </p-button>
+  <!-- Action Button -->
+  <div class="action-section">
+    <button
+      class="save-button"
+      [disabled]="buttonDisabled || isLoading"
+      (click)="createTrack()"
+      pButton
+      pRipple>
+      <i class="pi" [ngClass]="isLoading ? 'pi-spin pi-spinner' : 'pi-check'"></i>
+      <span>{{isLoading ? 'Sparar bana...' : 'Slutför'}}</span>
+    </button>
+  </div>
 </div>
 

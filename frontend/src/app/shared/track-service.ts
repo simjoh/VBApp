@@ -111,4 +111,12 @@ export class TrackService {
           throw error; // Re-throw to allow handling by the caller
         });
   }
+
+  async createTrackWithFormData(requestPayload: any): Promise<any> {
+      return firstValueFrom(this.httpClient.post(environment.backend_url + "trackplanner/createtrackfromplanner", requestPayload))
+        .catch(error => {
+          console.error('Error creating track with form data:', error);
+          throw error; // Re-throw to allow handling by the caller
+        });
+  }
 }

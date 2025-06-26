@@ -31,17 +31,51 @@ export class SiteService {
   }
 
    getAllSites(): Observable<Site[]>{
+    console.log('SiteService: getAllSites() called, requesting:', environment.backend_url + "sites");
+
+    // Log localStorage content for debugging
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    const apiKey = environment.api_key;
+    console.log('SiteService: localStorage loggedInUser exists:', !!loggedInUser);
+    console.log('SiteService: localStorage loggedInUser content:', loggedInUser);
+    console.log('SiteService: environment api_key:', apiKey);
+
     return this.httpClient.get<Site[]>(environment.backend_url + "sites").pipe(
+      tap(() => console.log('SiteService: HTTP request initiated')),
       map((sites: Array<Site>) => {
+        console.log('SiteService: getAllSites() received response, sites count:', sites ? sites.length : 'null/undefined');
+        console.log('SiteService: Response type:', typeof sites);
+        console.log('SiteService: Is array:', Array.isArray(sites));
+        if (sites && Array.isArray(sites) && sites.length > 0) {
+          console.log('SiteService: First site example:', sites[0]);
+        }
         return sites;
       }),
-      tap(sites =>   console.log("All sites" ,sites)),
+      tap(sites =>   console.log("SiteService: All sites after map" ,sites)),
+      catchError(error => {
+        console.error('SiteService: getAllSites() error:', error);
+        console.error('SiteService: Error status:', error.status);
+        console.error('SiteService: Error statusText:', error.statusText);
+        console.error('SiteService: Error message:', error.message);
+        console.error('SiteService: Error url:', error.url);
+        if (error.error) {
+          console.error('SiteService: Error body:', error.error);
+        }
+        console.error('SiteService: Full error object:', error);
+        return throwError(error);
+      }),
       shareReplay(1)
     );
   }
 
   siteWithAdd$ = combineLatest([this.getAllSites(), this.siteInsertedAction$, this.relaod$]).pipe(
     map(([all, insert, del]) =>  {
+      console.log('SiteService: $all combineLatest data:', {
+        allSites: all ? all.length : 'null/undefined',
+        insert: insert,
+        del: del
+      });
+
       if(insert){
         return  [...all, insert]
       }

@@ -1,20 +1,50 @@
 <brevet-toast></brevet-toast>
 
-<div class="grid">
-  <div class="col-12 lg:col-12 md:col-12 sm:col-12">
-    <p-button *ngIf="(editMode$ | async) === false" label="Ny bana" (click)="setMode()" icon="pi pi-plus"
-              styleClass="p-button-sm p-button-success"></p-button>
-    <p-button *ngIf="(editMode$ | async) === true" label="Avbryt" (click)="setMode()" icon=""
-              styleClass="p-button-sm p-button-success"></p-button>
-  </div>
-
-  <ng-container *ngIf="(editMode$ | async) === true">
-    <div class="col-12 lg:col-5 md:col-12 sm:col-12  bg-gray-100 mt-2">
-      <brevet-track-builder-track-info-form></brevet-track-builder-track-info-form>
-      <brevet-track-builder-controls-form></brevet-track-builder-controls-form>
+<!-- Track Building Options -->
+<div class="track-builder-container">
+  <ng-container *ngIf="(editMode$ | async) === false">
+    <div class="building-options">
+      <div class="option-card selected" (click)="setMode()">
+        <div class="option-icon">
+          <i class="pi pi-plus"></i>
+        </div>
+        <h3 class="option-title">Skapa nytt arrangemang</h3>
+        <p class="option-description">Skapa ett helt nytt arrangemang i loppservice med kalenderpost</p>
+      </div>
     </div>
-    <div class="col-12 lg:col-7 md:col-12 sm:col-12 bg-gray-100 mt-2">
-      <brevet-track-builder-summary></brevet-track-builder-summary>
+  </ng-container>
+
+  <!-- Building Form -->
+  <ng-container *ngIf="(editMode$ | async) === true">
+    <div class="building-header">
+      <button class="back-button" (click)="setMode()">
+        <i class="pi pi-arrow-left"></i>
+        <span>Tillbaka</span>
+      </button>
+      <div class="header-title">
+        <h2>Skapa nytt arrangemang</h2>
+        <p>Fyll i informationen nedan för att skapa ditt arrangemang och bana</p>
+      </div>
+    </div>
+
+    <div class="form-container">
+      <div class="form-column">
+        <div class="form-section">
+          <h2 class="section-title">Grundläggande information</h2>
+          <brevet-track-builder-track-info-form></brevet-track-builder-track-info-form>
+        </div>
+
+        <div class="form-section">
+          <h2 class="section-title">Kontroller</h2>
+          <brevet-track-builder-controls-form></brevet-track-builder-controls-form>
+        </div>
+      </div>
+
+      <div class="summary-column">
+        <div class="summary-sticky">
+          <brevet-track-builder-summary></brevet-track-builder-summary>
+        </div>
+      </div>
     </div>
   </ng-container>
 </div>
