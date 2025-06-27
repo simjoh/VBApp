@@ -158,6 +158,7 @@ class TrackRepository extends BaseRepository
         $event_uid = $track->getEventUid();
         $heightdifference = $track->getHeightdifference();
         $link = $track->getLink();
+        $organizer_id = $track->getOrganizerId();
         try {
             $statement = $this->connection->prepare($this->sqls('updateTrack'));
             $statement->bindParam(':title', $title);
@@ -167,6 +168,7 @@ class TrackRepository extends BaseRepository
             $statement->bindParam(':distance', $distance);
             $statement->bindParam(':track_uid', $track_uid);
             $statement->bindParam(':link', $link);
+            $statement->bindParam(':organizer_id', $organizer_id, PDO::PARAM_INT);
             $status = $statement->execute();
             if ($status) {
                 $sql = "UPDATE track_checkpoint SET checkpoint_uid=:checkpoint_uid WHERE track_uid=:track_uid";
@@ -194,6 +196,7 @@ class TrackRepository extends BaseRepository
         $heightdifference = $track->getHeightdifference();
         $link = $track->getLink();
         $start_date_time = $track->getStartDateTime();
+        $organizer_id = $track->getOrganizerId();
 
         try {
             $statement = $this->connection->prepare($this->sqls('createTrack'));
@@ -205,6 +208,7 @@ class TrackRepository extends BaseRepository
             $statement->bindParam(':track_uid', $track_uid);
             $statement->bindParam(':link', $link);
             $statement->bindParam(':start_date_time', $start_date_time);
+            $statement->bindParam(':organizer_id', $organizer_id, PDO::PARAM_INT);
             $data = $statement->execute();
 
             if ($data && !empty($track->getCheckpoints())) {
@@ -384,9 +388,9 @@ class TrackRepository extends BaseRepository
         $tracksqls['trackByUid'] = 'select * from track where track_uid=:track_uid;';
         $tracksqls['tracksByEvent'] = 'select * from track where event_uid=:event_uid;';
         $tracksqls['getCheckpoints'] = 'select checkpoint_uid  from track_checkpoint where track_uid=:track_uid;';
-        $tracksqls['updateTrack'] = "UPDATE track SET  title=:title, link=:link , heightdifference=:heightdifference, event_uid=:event_uid , description=:description, distance=:distance  WHERE track_uid=:track_uid";
+        $tracksqls['updateTrack'] = "UPDATE track SET  title=:title, link=:link , heightdifference=:heightdifference, event_uid=:event_uid , description=:description, distance=:distance, organizer_id=:organizer_id  WHERE track_uid=:track_uid";
         $tracksqls['updateTrackCheckpoint'] = 'UPDATE track_checkpoint SET checkpoint_uid=:checkpoint_uid where track_uid=:track_uid';
-        $tracksqls['createTrack']  = "INSERT INTO track(track_uid, title ,link, heightdifference , event_uid,description, distance, start_date_time) VALUES (:track_uid,:title ,:link, :heightdifference ,:event_uid, :description ,:distance, :start_date_time)";
+        $tracksqls['createTrack']  = "INSERT INTO track(track_uid, title ,link, heightdifference , event_uid,description, distance, start_date_time, organizer_id) VALUES (:track_uid,:title ,:link, :heightdifference ,:event_uid, :description ,:distance, :start_date_time, :organizer_id)";
         $tracksqls['createTrackCheckpoint']  = "INSERT INTO track_checkpoint(track_uid, checkpoint_uid) VALUES (:track_uid,:checkpoint_uid)";
         $tracksqls['trackWithStartdateExists']  = "select * from track where event_uid=:event_uid and title=:title and start_date_time=:start_date_time;";
         $tracksqls['trackdatesPassed']  = "SELECT max(c.distance) as distance ,min(c.opens) as opens , c.checkpoint_uid, max(c.closing) as closing FROM `track` t inner join track_checkpoint tc on tc.track_uid = t.track_uid inner join checkpoint c on c.checkpoint_uid = tc.checkpoint_uid where t.track_uid =:track_uid;";

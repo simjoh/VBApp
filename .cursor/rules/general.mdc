@@ -4,3 +4,5 @@ globs:
 alwaysApply: true
 ---
 when fixing errors and try to fix issues always try to fix the main problem and dont try to write code that not solve the main problem
+
+if you need a jwt token use   curl -X POST -H "Content-Type: application/json" -H "APIKEY: notsecret_developer_key" -d '{"username":"bethem92@gmail.com","password":"cessna172"}' http://localhost:8090/api/login

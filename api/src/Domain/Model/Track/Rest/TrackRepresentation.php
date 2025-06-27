@@ -18,6 +18,7 @@ class TrackRepresentation implements JsonSerializable
     private ?string $event_uid = "";
     private string $start_date_time = "";
     private ?bool $active = false;
+    private ?int $organizer_id = null;
     private ?Link $link = null;
     private array $links = [];
 
@@ -225,5 +226,21 @@ class TrackRepresentation implements JsonSerializable
     public function setLinks(array $links): void
     {
         $this->links = $links;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getOrganizerId(): ?int
+    {
+        return $this->organizer_id;
+    }
+
+    /**
+     * @param int|null $organizer_id
+     */
+    public function setOrganizerId(?int $organizer_id): void
+    {
+        $this->organizer_id = $organizer_id;
     }
 }

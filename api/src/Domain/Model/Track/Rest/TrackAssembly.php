@@ -57,6 +57,7 @@ class TrackAssembly
         $trackRepresentation->setDistance($track->getDistance());
         $trackRepresentation->setEventUid($track->getEventUid());
         $trackRepresentation->setActive($track->isActive());
+        $trackRepresentation->setOrganizerId($track->getOrganizerId());
         if($track->getStartDateTime() !== null){
             $trackRepresentation->setStartDateTime($track->getStartDateTime());
         }
@@ -107,6 +108,7 @@ class TrackAssembly
         }
         $track->setEventUid($trackrepresentation->getEventUid() ?? '');
         $track->setActive($trackrepresentation->getActive() ?? false);
+        $track->setOrganizerId($trackrepresentation->getOrganizerId());
 
         $checkpoints = $trackrepresentation->getCheckpoints();
         if ($checkpoints !== null && !empty($checkpoints)) {

@@ -482,6 +482,11 @@ class TrackService extends ServiceAbstract
             $trackToCreate->setHeightdifference(2000);
             $trackToCreate->setDistance($trackrepresentation->rusaTrackRepresentation->EVENT_DISTANCE_KM);
             $trackToCreate->setStartDateTime($trackrepresentation->rusaTrackRepresentation->START_DATE . ' ' . $trackrepresentation->rusaTrackRepresentation->START_TIME);
+            
+            // Set organizer_id from form data if available
+            if ($formData && isset($formData->organizer_id)) {
+                $trackToCreate->setOrganizerId($formData->organizer_id);
+            }
 
             $checkpoints = array();
             foreach ($trackrepresentation->rusaplannercontrols as $checkpointiput) {
@@ -532,7 +537,7 @@ class TrackService extends ServiceAbstract
             $eventDTO->description = $formData->description ?? '';
             $eventDTO->startdate = $formData->startdate ?? $trackrepresentation->rusaTrackRepresentation->START_DATE;
             $eventDTO->enddate = $formData->startdate ?? $trackrepresentation->rusaTrackRepresentation->START_DATE; // Same as start date for brevets
-            $eventDTO->event_type = 'BRM'; // Default to BRM for brevet events
+            $eventDTO->event_type = $formData->event_type ?? 'BRM'; // Use form data or default to BRM
             $eventDTO->organizer_id = $formData->organizer_id ?? null;
             
             // Set event_uid to track_uid to link the systems
@@ -556,7 +561,7 @@ class TrackService extends ServiceAbstract
             // Create event configuration DTO
             $eventConfigDTO = new \App\common\Rest\DTO\EventConfigurationDTO();
             $eventConfigDTO->use_stripe_payment = $formData->stripe_payment ?? false;
-            $eventConfigDTO->max_registrations = 300; // Default value
+            $eventConfigDTO->max_registrations = $formData->max_participants ?? 300; // Use form data or default
 
             // Set registration dates if provided
             if (isset($formData->registration_opens)) {
@@ -567,6 +572,17 @@ class TrackService extends ServiceAbstract
                 $eventConfigDTO->registration_closes = $formData->registration_closes;
             }
 
+            // Create start number configuration DTO
+            $startNumberConfigDTO = new \App\common\Rest\DTO\StartNumberConfigDTO();
+            $beginsAt = $formData->startnumber_begins_at ?? 1001;
+            $maxParticipants = $formData->max_participants ?? 300;
+            $increments = 1; // Fixed increment value
+            
+            $startNumberConfigDTO->begins_at = $beginsAt;
+            $startNumberConfigDTO->ends_at = $beginsAt + $maxParticipants - 1; // Calculate ends_at from max participants
+            $startNumberConfigDTO->increments = $increments;
+
+            $eventConfigDTO->startnumberconfig = $startNumberConfigDTO;
             $eventDTO->eventconfiguration = $eventConfigDTO;
 
             // Create event in loppservice
