@@ -10,7 +10,9 @@
 .building-options {
   display: flex;
   justify-content: flex-start;
+  gap: 1.5rem; // Add gap between cards
   margin-bottom: 2rem;
+  flex-wrap: wrap; // Allow wrapping on smaller screens
 }
 
 .option-card {
@@ -23,6 +25,7 @@
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   max-width: 300px;
+  position: relative; // For positioning the upcoming badge
 
   &:hover:not(.disabled) {
     border-color: #667eea;
@@ -41,12 +44,23 @@
   }
 
   &.disabled {
-    opacity: 0.6;
+    opacity: 0.8;
     cursor: not-allowed;
+    border-color: #667eea;
+    background: #667eea;
+    color: white;
 
     .option-icon {
-      background: #f3f4f6;
-      color: #9ca3af;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .option-title {
+      color: white;
+    }
+
+    .option-description {
+      color: rgba(255, 255, 255, 0.8);
     }
   }
 
@@ -76,6 +90,33 @@
     opacity: 0.8;
     margin: 0;
     line-height: 1.4;
+  }
+
+  .upcoming-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    animation: pulse-glow 2s infinite;
+  }
+}
+
+// Animation for the upcoming badge
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+  }
+  50% {
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4), 0 0 0 2px rgba(245, 158, 11, 0.1);
   }
 }
 
