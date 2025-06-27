@@ -4,6 +4,9 @@
   tooltipPosition="left" tooltip="Välj event"
   [options]="$eventItems | async" [(ngModel)]="selectedEvent"
   (ngModelChange)="setValue($event)" placeholder="Välj event"
-  [virtualScroll]="true" [itemSize]="31"
-  [filter]="true">
+  [virtualScroll]="true" [itemSize]="36"
+  [filter]="true"
+  appendTo="body"
+  [autoZIndex]="true"
+  baseZIndex="10000">
 </p-dropdown>

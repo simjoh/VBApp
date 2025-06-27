@@ -1,0 +1,141 @@
+// Kontroller styling matching organizer dropdown template
+:host ::ng-deep {
+  .p-dropdown {
+    width: 100% !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    font-size: 0.85rem !important;
+    background: white !important;
+    transition: all 0.15s ease !important;
+
+    &:hover {
+      border-color: #9ca3af !important;
+    }
+
+    &:focus-within,
+    &.p-focus {
+      border-color: #667eea !important;
+      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+    }
+
+    .p-dropdown-label {
+      padding: 0.5rem 0.75rem !important;
+      height: 34px !important;
+      min-height: 34px !important;
+      line-height: 1.2 !important;
+      display: flex !important;
+      align-items: center !important;
+      font-size: 0.85rem !important;
+      color: #111827 !important;
+      flex: 1 !important;
+      border: none !important;
+      background: transparent !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      min-width: 0 !important;
+
+      &.p-placeholder {
+        color: #9ca3af !important;
+        font-size: 0.85rem !important;
+      }
+    }
+
+    .p-dropdown-trigger {
+      width: 2rem !important;
+      height: 34px !important;
+      min-height: 34px !important;
+      padding: 0 !important;
+      border: none !important;
+      background: transparent !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-left: 1px solid #e5e7eb !important;
+      flex-shrink: 0 !important;
+
+      &:hover {
+        background: #f9fafb !important;
+      }
+
+      .p-dropdown-trigger-icon {
+        font-size: 0.7rem !important;
+        color: #6b7280 !important;
+      }
+    }
+
+    // Filter input styling
+    .p-dropdown-filter-container {
+      padding: 0.5rem;
+
+      .p-dropdown-filter {
+        height: 32px !important;
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.85rem !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 4px !important;
+
+        &:focus {
+          border-color: #667eea !important;
+          box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+        }
+      }
+    }
+
+    // Items styling
+    .p-dropdown-items {
+      .p-dropdown-item {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.85rem !important;
+        line-height: 1.2 !important;
+        min-height: 36px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+
+        &:hover {
+          background: #f3f4f6 !important;
+        }
+
+        &.p-highlight {
+          background: #667eea !important;
+          color: white !important;
+        }
+      }
+    }
+
+    // Virtual scroller item size
+    .p-virtualscroller .p-virtualscroller-content {
+      .p-dropdown-item {
+        height: 36px !important;
+        min-height: 36px !important;
+      }
+    }
+  }
+
+    // Panel styling with high z-index
+  .p-dropdown-panel {
+    border: 1px solid #d1d5db !important;
+    border-radius: 4px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    z-index: 9999 !important;
+
+    .p-dropdown-header {
+      padding: 0.5rem !important;
+      border-bottom: 1px solid #e5e7eb !important;
+    }
+
+    .p-dropdown-items-wrapper {
+      max-height: 200px !important;
+    }
+  }
+}
+
+// Global z-index fix for dropdown panels appended to body
+body .p-dropdown-panel {
+  z-index: 99999 !important;
+}

@@ -10,21 +10,22 @@
 .building-options {
   display: flex;
   justify-content: flex-start;
-  gap: 1.5rem; // Add gap between cards
-  margin-bottom: 2rem;
+  gap: 0.75rem; // 25% smaller gap
+  margin-bottom: 1.125rem; // 25% smaller margin
   flex-wrap: wrap; // Allow wrapping on smaller screens
 }
 
 .option-card {
   background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 1.5rem;
+  border: 1px solid #e5e7eb; // Thinner border
+  border-radius: 4px; // Smaller border radius
+  padding: 0.75rem; // 25% smaller padding
   text-align: left;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  max-width: 300px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); // Smaller shadow
+  max-width: 180px; // 25% smaller max width
+  min-height: 105px; // 25% smaller min height
   position: relative; // For positioning the upcoming badge
 
   &:hover:not(.disabled) {
@@ -65,47 +66,47 @@
   }
 
   .option-icon {
-    width: 40px;
-    height: 40px;
+    width: 24px; // 25% smaller icon
+    height: 24px;
     border-radius: 50%;
     background: #f3f4f6;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 0 1rem 0;
-    font-size: 1.25rem;
+    margin: 0 0 0.5rem 0; // 25% smaller margin
+    font-size: 0.75rem; // 25% smaller font size
     color: #667eea;
   }
 
   .option-title {
-    font-size: 1.125rem;
+    font-size: 0.875rem; // 25% smaller title
     font-weight: 600;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.25rem 0; // 25% smaller margin
     color: inherit;
-    line-height: 1.3;
+    line-height: 1.2; // Tighter line height
   }
 
   .option-description {
-    font-size: 0.875rem;
+    font-size: 0.7rem; // 25% smaller description
     opacity: 0.8;
     margin: 0;
-    line-height: 1.4;
+    line-height: 1.25; // Tighter line height
   }
 
   .upcoming-badge {
     display: inline-block;
     background: linear-gradient(135deg, #f59e0b, #f97316);
     color: white;
-    font-size: 0.65rem;
+    font-size: 0.5rem; // 25% smaller
     font-weight: 600;
-    padding: 0.25rem 0.5rem;
-    border-radius: 8px;
+    padding: 0.15rem 0.3rem; // 25% smaller padding
+    border-radius: 4px; // 25% smaller border radius
     text-transform: uppercase;
     letter-spacing: 0.025em;
-    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+    box-shadow: 0 1px 2px rgba(245, 158, 11, 0.2); // Smaller shadow
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: 0.5rem; // 25% smaller positioning
+    right: 0.5rem;
     animation: pulse-glow 2s infinite;
   }
 }

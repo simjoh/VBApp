@@ -7,6 +7,9 @@
   (ngModelChange)="valdKontroll()"
   placeholder="Välj kontroll"
   [virtualScroll]="true"
-  [itemSize]="31" [filter]="false">
+  [itemSize]="36" [filter]="true"
+  appendTo="body"
+  [autoZIndex]="true"
+  baseZIndex="10000">
   </p-dropdown>
 </ng-container>

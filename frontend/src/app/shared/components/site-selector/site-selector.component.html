@@ -3,8 +3,11 @@
   tooltipPosition="left" optionLabel="place" tooltip="Plats är en punkt där en kontroll är belägen"
   [options]="sites" [(ngModel)]="selectedEvent"
   (ngModelChange)="setValue($event)" placeholder="Välj plats               "
-  [virtualScroll]="true" [itemSize]="31"
-  [filter]="true">
+  [virtualScroll]="true" [itemSize]="36"
+  [filter]="true"
+  appendTo="body"
+  [autoZIndex]="true"
+  baseZIndex="10000">
   <ng-template pTemplate="selectedItem">
     <div class="site-item site-item-value" *ngIf="selectedEvent">
       <img [src]="selectedEvent.image" class="mr-3" [height]="'30'" [width]="'30'" [alt]="selectedEvent.adress"/>

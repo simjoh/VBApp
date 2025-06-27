@@ -57,20 +57,19 @@
               <i class="pi pi-arrows-h mr-2"></i>
               Distans (km)
             </label>
-            <p-inputNumber
+            <input
+              type="number"
               [(ngModel)]="control.DISTANCE"
               (ngModelChange)="publish($event, i)"
-              [min]="0"
-              [minFractionDigits]="0"
-              [maxFractionDigits]="1"
+              min="0"
               max="2000"
-              id="controllength-{{i}}"
-              [showButtons]="true"
-              suffix=" km"
-              [tabindex]="i + 1"
+              step="0.1"
               placeholder="94"
-              styleClass="modern-input-number">
-            </p-inputNumber>
+              pInputText
+              pTooltip="Distans till kontrollpunkt i kilometer"
+              class="form-input"
+              id="controllength-{{i}}"
+              [tabindex]="i + 1">
           </div>
         </div>
       </div>

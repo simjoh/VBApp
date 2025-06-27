@@ -6,8 +6,11 @@
   [options]="tracks" [(ngModel)]="choosentrack"
   (ngModelChange)="valdBana()"
   placeholder="Välj bana"
-  [virtualScroll]="true" [itemSize]="31"
-  [filter]="false">
+  [virtualScroll]="true" [itemSize]="36"
+  [filter]="true"
+  appendTo="body"
+  [autoZIndex]="true"
+  baseZIndex="10000">
 
 </p-dropdown>
 
