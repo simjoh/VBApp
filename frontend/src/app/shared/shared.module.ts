@@ -3,6 +3,7 @@ import {CommonModule, DatePipe} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CardModule} from "primeng/card";
 import {ButtonModule} from "primeng/button";
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { LogoComponent } from './logo/logo.component';
 import {TabMenuModule} from 'primeng/tabmenu';
 import {MenubarModule} from 'primeng/menubar';
@@ -126,10 +127,11 @@ import { OrganizerSelectorComponent } from './organizer-selector/organizer-selec
         TabViewModule,
         PanelModule,
         MenuModule,
+        FontAwesomeModule,
         FormsModule, ReactiveFormsModule, StepsModule, AccordionModule, InputNumberModule, ToolbarModule
     ],
     exports: [CommonModule, ToastModule, ConfirmPopupModule, TabViewModule,
-        PanelModule, ToolbarModule,
+        PanelModule, ToolbarModule, FontAwesomeModule,
         MenuModule, BadgeModule,CheckboxModule, StepsModule ,ListboxModule, SiteSelectorComponent, EventSelectorComponent, InputNumberModule, TracksForEventSelectorComponent, CheckpointComponent, CheckpointPreviewComponent, CheckpointPreviewDialogComponent, KnobModule, HtmlLinkComponent, ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
         LogoComponent, DatePipe, NgbCollapseModule, ProgressSpinnerModule, AccordionModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
         ProgressBarModule, TrackTableComponent, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent, DateTimePrettyPrintPipe, RemoveAfterPipe, TracksForEventSelectorComponent, CheckpointTableComponent, OrganizerSelectorComponent],

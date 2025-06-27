@@ -81,13 +81,17 @@ class TrackService extends ServiceAbstract
 //        print_r($track);
 
         $isracePassed = $this->trackRepository->isRacePassed($trackUid);
-        if ($isracePassed == true) {
-            if ($this->settings['demo'] == 'true') {
-                $track->setActive(true);
-            } else {
-                $track->setActive(false);
-            }
+        error_log("Track $trackUid - isRacePassed: " . var_export($isracePassed, true) . ", demo: " . $this->settings['demo'] . ", original active: " . var_export($track->isActive(), true));
+        
+        // Skip demo mode override for tracks that are being manually published/unpublished
+        // Demo mode should not interfere with explicit publish/unpublish actions
+        if ($isracePassed == true && $this->settings['demo'] != 'true') {
+            error_log("Race passed and demo=false - forcing active=false");
+            $track->setActive(false);
         }
+        // If demo=true, we preserve the database value (no override)
+        
+        error_log("Final active status: " . var_export($track->isActive(), true));
         return $this->trackAssembly->toRepresentation($track, $permissions, $currentuserUid);
     }
 
@@ -438,17 +442,48 @@ class TrackService extends ServiceAbstract
 
     public function publishResults(?string $track_uid, $publish, string $currentuserUid)
     {
+        error_log("publishResults called with track_uid: $track_uid, publish: " . var_export($publish, true) . ", user: $currentuserUid");
+        
         $track = $this->trackRepository->getTrackByUid($track_uid);
         if ($track == null) {
             throw new BrevetException("Finns ingen bana med angivet uid", 5);
         }
 
-        if ($track->isActive()) {
-            $this->trackRepository->setInactive($track_uid, 0);
-        } else {
-            $this->trackRepository->setInactive($track_uid, 1);
-        }
+        error_log("Track found - current active status: " . var_export($track->isActive(), true));
 
+        // Get the database connection from the repository for transaction handling
+        $connection = $this->trackRepository->getConnection();
+        
+        // Begin transaction
+        $connection->beginTransaction();
+        
+        try {
+            // Use the $publish parameter to determine what to do
+            if ($publish === true || $publish === "true") {
+                // Publishing results - set track as active
+                error_log("Setting track as active (publish=true)");
+                $this->trackRepository->setInactive($track_uid, 1);
+            } else {
+                // Unpublishing results - set track as inactive
+                error_log("Setting track as inactive (publish=false)");
+                $this->trackRepository->setInactive($track_uid, 0);
+            }
+
+            // Commit the transaction
+            $connection->commit();
+            error_log("Transaction committed successfully");
+            
+        } catch (\Exception $e) {
+            // Rollback the transaction on any error
+            $connection->rollBack();
+            error_log("Transaction rolled back due to error: " . $e->getMessage());
+            
+            if ($e instanceof BrevetException) {
+                throw $e;
+            }
+            
+            throw new BrevetException("Ett fel uppstod vid uppdatering av banan", 6, $e);
+        }
     }
 
     public function planTrack(RusaPlannerInputRepresentation $rusaPlannnerInput, string $currentuserUid): object

@@ -69,12 +69,18 @@ export class TrackService {
   }
 
   async  publishresultaction(link: Link): Promise<any>{
+    if (!link) {
+      throw new Error('Link not found - cannot perform publish action');
+    }
+    console.log('Making PUT request to:', link.url, 'with method:', link.method);
     return await  this.httpClient.put(link.url,{},  {})
       .pipe(
         catchError(err => {
+          console.error('PUT request failed:', err);
           return throwError(err);
         })
       ).toPromise().then((res) => {
+        console.log('PUT request successful:', res);
         return res
       });
   }
@@ -97,11 +103,27 @@ export class TrackService {
 
 
   async undopublishresult(trackRepresentation: TrackRepresentation) {
-    return await this.publishresultaction(this.linkService.findByRel(trackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT ))
+    // Try the old format first since we can see it in the links
+    const link = this.linkService.findByRel(trackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT);
+    console.log('Undopublish link found:', link);
+    if (!link) {
+      throw new Error('Undopublish link not found - track may already be unpublished');
+    }
+    const result = await this.publishresultaction(link);
+    console.log('Undopublish result:', result);
+    return result;
   }
 
   async publishresult(trackRepresentation: TrackRepresentation) {
-    return await this.publishresultaction(this.linkService.findByRel(trackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT ))
+    // Try the old format first since we can see it in the links
+    const link = this.linkService.findByRel(trackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
+    console.log('Publish link found:', link);
+    if (!link) {
+      throw new Error('Publish link not found - track may already be published');
+    }
+    const result = await this.publishresultaction(link);
+    console.log('Publish result:', result);
+    return result;
   }
 
   async createTrack(s: RusaPlannerResponseRepresentation): Promise<any> {
@@ -118,5 +140,15 @@ export class TrackService {
           console.error('Error creating track with form data:', error);
           throw error; // Re-throw to allow handling by the caller
         });
+  }
+
+  public getTrack(trackUid: string): Observable<TrackRepresentation> {
+    const path = 'track/' + trackUid;
+    return this.httpClient.get<TrackRepresentation>(environment.backend_url + path).pipe(
+      take(1),
+      map((track: TrackRepresentation) => {
+        return track;
+      })
+    );
   }
 }

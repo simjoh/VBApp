@@ -6,7 +6,7 @@ import {BehaviorSubject} from "rxjs";
 import {startWith} from "rxjs/operators";
 import {LinkService} from "../../../core/link.service";
 import {HttpMethod} from "../../../core/HttpMethod";
-
+import { faTowerBroadcast, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'brevet-track-table',
@@ -16,6 +16,8 @@ import {HttpMethod} from "../../../core/HttpMethod";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TrackTableComponent implements OnInit, OnChanges {
+  faBroadcast = faTowerBroadcast;
+  faUndo = faRotateLeft;
 
   $tracksviewinformation = this.tracktablecomponentService.tracks$;
 
@@ -66,15 +68,60 @@ export class TrackTableComponent implements OnInit, OnChanges {
     // });
   }
 
-    isPossibleToPublishResults(trackRepresentation: TrackRepresentation): boolean{
-        return !this.link.exists(trackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
+  /**
+   * Returns true if the track is currently published (active=true)
+   * This means the "unpublish" button should be shown
+   */
+  isTrackPublished(trackRepresentation: TrackRepresentation): boolean {
+    return this.link.exists(trackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT);
   }
 
- async publish(trackRepresentation: TrackRepresentation) {
-    trackRepresentation.active = !trackRepresentation.active;
-    await this.tracktablecomponentService.publishReultLinkExists(trackRepresentation)
-    await this.tracktablecomponentService.publishResults(trackRepresentation).then((res) => {
-     this.reload.emit(trackRepresentation.track_uid);
-   })
+  /**
+   * Returns true if the track is currently unpublished (active=false)
+   * This means the "publish" button should be shown
+   */
+  isTrackUnpublished(trackRepresentation: TrackRepresentation): boolean {
+    return this.link.exists(trackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
+  }
+
+  async publish(trackRepresentation: TrackRepresentation) {
+    try {
+      console.log('Publishing track - before API call:', {
+        trackUid: trackRepresentation.track_uid,
+        active: trackRepresentation.active,
+        links: trackRepresentation.links?.map((l: any) => ({ rel: l.rel, method: l.method }))
+      });
+
+      // Disable buttons during the operation to prevent double-clicks
+      const publishButton = document.querySelector(`[data-track-uid="${trackRepresentation.track_uid}"] .publish-btn`) as HTMLButtonElement;
+      const unpublishButton = document.querySelector(`[data-track-uid="${trackRepresentation.track_uid}"] .unpublish-btn`) as HTMLButtonElement;
+
+      if (publishButton) publishButton.disabled = true;
+      if (unpublishButton) unpublishButton.disabled = true;
+
+      await this.tracktablecomponentService.publishResults(trackRepresentation);
+
+      console.log('Publishing track - API call successful, reloading...');
+
+      // Add a delay to ensure the backend transaction is fully committed
+      setTimeout(() => {
+        console.log('Reloading data after publish action...');
+        this.reload.emit(trackRepresentation.track_uid);
+      }, 300);
+
+    } catch (error) {
+      console.error('Error publishing/unpublishing track:', error);
+      // Still reload to refresh the state even on error
+      this.reload.emit(trackRepresentation.track_uid);
+    } finally {
+      // Re-enable buttons after operation
+      setTimeout(() => {
+        const publishButton = document.querySelector(`[data-track-uid="${trackRepresentation.track_uid}"] .publish-btn`) as HTMLButtonElement;
+        const unpublishButton = document.querySelector(`[data-track-uid="${trackRepresentation.track_uid}"] .unpublish-btn`) as HTMLButtonElement;
+
+        if (publishButton) publishButton.disabled = false;
+        if (unpublishButton) unpublishButton.disabled = false;
+      }, 200);
+    }
   }
 }

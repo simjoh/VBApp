@@ -3,6 +3,8 @@ import { TrackRepresentation } from '../../api/api';
 import {BehaviorSubject} from "rxjs";
 import {TrackService} from "../../track-service";
 import {map} from "rxjs/operators";
+import {LinkService} from "../../../core/link.service";
+import {HttpMethod} from "../../../core/HttpMethod";
 
 @Injectable()
 export class TracktableComponentService {
@@ -15,7 +17,7 @@ export class TracktableComponentService {
     })
   );
 
-  constructor(private trackService: TrackService) { }
+  constructor(private trackService: TrackService, private linkService: LinkService) { }
 
   initiateTracks(tracks: TrackRepresentation[]) {
     this.$tracksSubject.next(tracks)
@@ -39,12 +41,31 @@ publishReultLinkExists(track: TrackRepresentation){
   }
 
   async publishResults(trackRepresentation: TrackRepresentation) {
-    if (this.publishReultLinkExists(trackRepresentation) === true){
-      return  await this.trackService.publishresult(trackRepresentation);
-    } else {
-      return  await this.trackService.undopublishresult(trackRepresentation);
-    }
+    try {
+      // Check which links are available
+      const hasPublishLink = this.trackService.publishReultLinkExists(trackRepresentation);
+      const hasUnpublishLink = this.linkService.exists(trackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT);
 
+      // Decide action based on available links
+      if (hasPublishLink && !hasUnpublishLink) {
+        // Track is inactive (unpublished), we should publish it
+        return await this.trackService.publishresult(trackRepresentation);
+      } else if (!hasPublishLink && hasUnpublishLink) {
+        // Track is active (published), we should unpublish it
+        return await this.trackService.undopublishresult(trackRepresentation);
+      } else if (hasPublishLink && hasUnpublishLink) {
+        // Both links exist - this shouldn't happen, but let's handle it
+        console.error('Both publish and unpublish links exist - inconsistent state');
+        // Default to publish since we have a publish link
+        return await this.trackService.publishresult(trackRepresentation);
+      } else {
+        // No relevant links exist
+        throw new Error('No publish or unpublish links available for this track');
+      }
+    } catch (error) {
+      console.error('Error publishing/unpublishing track:', error);
+      throw error; // Re-throw so the component can handle it
+    }
   }
 
   deepCopyProperties(obj: any): any {

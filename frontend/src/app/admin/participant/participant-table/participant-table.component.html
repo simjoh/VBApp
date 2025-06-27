@@ -33,6 +33,43 @@
             class="p-button-info"
             [disabled]="!participantComponentService.getCurrentTrackUid()">
           </button>
+          <!-- Neutral state button - only shown when no track selected -->
+          <button
+            *ngIf="!currentTrackRepresentation"
+            pButton
+            pRipple
+            disabled
+            class="p-button-secondary"
+            pTooltip="Välj en bana först">
+            <fa-icon [icon]="faBroadcast"></fa-icon>
+            <span class="ml-2">Publicera/Ångra publicera resultat</span>
+          </button>
+          <!-- Publish button - shown when track is unpublished -->
+          <button
+            *ngIf="currentTrackRepresentation && hasPublishLink()"
+            pButton
+            pRipple
+            [disabled]="($participant | async)?.length === 0"
+            (click)="publishCurrentTrack()"
+            [attr.data-track-uid]="currentTrackRepresentation?.track_uid"
+            class="publish-btn p-button-success"
+            [pTooltip]="($participant | async)?.length === 0 ? 'Inga deltagare på banan' : ''">
+            <fa-icon [icon]="faBroadcast" [styles]="{'color': '#ffffff'}"></fa-icon>
+            <span class="ml-2">Publicera resultat</span>
+          </button>
+          <!-- Unpublish button - shown when track is published -->
+          <button
+            *ngIf="currentTrackRepresentation && hasUnpublishLink()"
+            pButton
+            pRipple
+            [disabled]="($participant | async)?.length === 0"
+            (click)="publishCurrentTrack()"
+            [attr.data-track-uid]="currentTrackRepresentation?.track_uid"
+            class="unpublish-btn p-button-danger"
+            [pTooltip]="($participant | async)?.length === 0 ? 'Inga deltagare på banan' : ''">
+            <fa-icon [icon]="faBroadcast" [styles]="{'color': '#ffffff'}"></fa-icon>
+            <span class="ml-2">Ångra publicera</span>
+          </button>
           <button
             pButton
             pRipple
@@ -40,7 +77,8 @@
             label="Exportera homologation"
             (click)="exportHomologation()"
             class="p-button-success"
-            [disabled]="!participantComponentService.getCurrentTrackUid()">
+            [disabled]="!participantComponentService.getCurrentTrackUid() || !hasUnpublishLink()"
+            [pTooltip]="!hasUnpublishLink() ? 'Banan måste vara publicerad först' : ''">
           </button>
         </div>
       </div>
@@ -186,7 +224,7 @@
                   </p-tag>
                 </div>
                 <span class="p-buttonset">
-                  <button
+                                    <button
                     pButton
                     pRipple
                     [disabled]="!track.participant.started || track.participant.finished"
@@ -195,6 +233,7 @@
                     label="{{textDnfButton(track.participant.started, track.participant.dnf)}}"
                     class="p-button-danger">
                   </button>
+
                   <button
                     pButton
                     [disabled]="track.participant.started"
@@ -204,6 +243,7 @@
                     label="{{textDnsButton(track.participant.started, track.participant.dns)}}"
                     class="p-button-secondary">
                   </button>
+
                 </span>
               </div>
               <div class="mt-3">

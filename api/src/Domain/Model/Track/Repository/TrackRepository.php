@@ -365,21 +365,40 @@ class TrackRepository extends BaseRepository
 
     {
         $active = $publish;
+        error_log("setInactive called with track_uid: $track_uid, publish: " . var_export($publish, true) . ", active: " . var_export($active, true));
+        
         try {
         $statement = $this->connection->prepare($this->sqls('setStatus'));
-        $statement->bindParam(':active', $active, PDO::PARAM_BOOL);
+        $statement->bindParam(':active', $active, PDO::PARAM_INT);
         $statement->bindParam(':track_uid', $track_uid);
+        
+        error_log("Executing SQL: " . $this->sqls('setStatus') . " with active=$active, track_uid=$track_uid");
+        
         $status = $statement->execute();
+        
+        error_log("SQL execution status: " . var_export($status, true));
+        error_log("Rows affected: " . $statement->rowCount());
 
             if (!$status) {
+                error_log("SQL execution failed");
                 throw new BrevetException("", 1, null);
             }
 
         } catch (PDOException $e) {
+            error_log("PDO Error in setInactive: " . $e->getMessage());
             echo "Error: " . $e->getMessage();
         }
     }
 
+    /**
+     * Get the database connection
+     * 
+     * @return PDO The database connection
+     */
+    public function getConnection(): PDO
+    {
+        return $this->connection;
+    }
 
     public function sqls($type)
     {

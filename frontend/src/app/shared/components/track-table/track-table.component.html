@@ -112,24 +112,28 @@
                 tooltipPosition="top">
               </button>
               <button
-                [hidden]="track.trackMetricsRepresentation.countParticipants == 0 || isPossibleToPublishResults(track.trackRepresentation)"
+                [hidden]="track.trackMetricsRepresentation.countParticipants == 0 || !isTrackUnpublished(track.trackRepresentation)"
                 (click)="publish(track.trackRepresentation)"
+                [attr.data-track-uid]="track.trackRepresentation.track_uid"
+                class="publish-btn"
                 pButton
                 pRipple
-                icon="pi pi-wifi"
                 class="p-button-rounded p-button-success p-button-text"
                 pTooltip="Publicera resultat"
                 tooltipPosition="top">
+                <fa-icon [icon]="faBroadcast" [styles]="{'color': '#198754'}"></fa-icon>
               </button>
               <button
-                [hidden]="track.trackMetricsRepresentation.countParticipants == 0 || !isPossibleToPublishResults(track.trackRepresentation)"
+                [hidden]="track.trackMetricsRepresentation.countParticipants == 0 || !isTrackPublished(track.trackRepresentation)"
                 (click)="publish(track.trackRepresentation)"
+                [attr.data-track-uid]="track.trackRepresentation.track_uid"
+                class="unpublish-btn"
                 pButton
                 pRipple
-                icon="pi pi-wifi"
                 class="p-button-rounded p-button-danger p-button-text"
                 pTooltip="Ångra publicera resultat"
                 tooltipPosition="top">
+                <fa-icon [icon]="faBroadcast"></fa-icon>
               </button>
             </div>
           </td>

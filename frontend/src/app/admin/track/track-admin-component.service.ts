@@ -52,6 +52,8 @@ export class TrackAdminComponentService {
 
 
   init(){
+    console.log('TrackAdminComponentService.init() called - refreshing data...');
+    this.eventtrackService.refresh();
     this.$eventTrackSubject.next([]);
   }
 
