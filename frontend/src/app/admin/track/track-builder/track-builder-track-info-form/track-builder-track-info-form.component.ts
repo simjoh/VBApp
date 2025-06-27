@@ -21,6 +21,15 @@ export class TrackBuilderTrackInfoFormComponent implements OnInit {
   selectedOrganizer: any = null;
   stripeEnabled: boolean = false;
 
+  // Event type options
+  eventTypeOptions = [
+    { label: 'Brevet Randonneur Mondiaux', value: 'BRM' },
+    { label: 'Brevet Populaire', value: 'BP' },
+    { label: 'Midnight Sun Randonnée', value: 'MSR' }
+  ];
+
+  selectedEventType: string = 'BRM'; // Default to BRM
+
   // Distance dropdown options with official brevet distances
   distanceOptions = [
     { label: '100 km', value: 100 },
@@ -205,6 +214,11 @@ export class TrackBuilderTrackInfoFormComponent implements OnInit {
     this.updateFormData();
   }
 
+  onEventTypeChange() {
+    this.model.event_type = this.selectedEventType;
+    this.updateFormData();
+  }
+
   add() {
     // Convert Date objects to strings if needed
     let formattedTime: string;
@@ -282,7 +296,8 @@ export class TrackBuilderTrackInfoFormComponent implements OnInit {
       stripe_payment: this.stripeEnabled,
       registration_opens: formattedRegistrationOpens,
       registration_closes: formattedRegistrationCloses,
-      elevation: this.model.elevation
+      elevation: this.model.elevation,
+      event_type: this.selectedEventType
     };
 
     this.trackbuildercomponentService.updateAllFormData(formData);
@@ -477,6 +492,7 @@ export class EventTrackInfo {
     public registration_opens?: any, // Can be string or Date
     public registration_closes?: any, // Can be string or Date
     public elevation?: number, // Height difference in meters
+    public event_type: string = 'BRM', // Default to BRM
   ) {  }
 
 }

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {map, mergeMap, switchMap, take, tap} from "rxjs/operators";
 import {RusaTimeCalculationApiService} from "./rusa-time-calculation-api.service";
-import {BehaviorSubject, combineLatest, of} from "rxjs";
+import {BehaviorSubject, combineLatest, firstValueFrom, of} from "rxjs";
 import {MessageService} from "primeng/api";
 
 import {EventService} from "../../shared/service/event.service";
@@ -204,19 +204,19 @@ export class TrackBuilderComponentService {
 
   async createTrack(): Promise<boolean> {
     try {
-      // Get the current data
-      const event = await this.$currentEvent.pipe(take(1)).toPromise();
-      const rusaplanner = await this.$rusaPlannerInput.pipe(take(1)).toPromise();
-      const controls = await this.$rusaPlannerControlsInput.pipe(take(1)).toPromise();
-      const formData = this.getFormData();
+      // Get latest form data
+      const formData = this.$formDataSubject.getValue();
+      const eventUid = this.$choosenEventSubject.getValue();
+      const rusaInput = this.$rusaPlannerInputSubject.getValue();
+      const controls = this.$rusaPlannerControlsSubject.getValue();
 
-      // Check if we have all the required data
-      if (!event || !event.event_uid || !rusaplanner || !controls || controls.length === 0) {
+      // Validate required data
+      if (!formData || !eventUid || eventUid === "0" || !rusaInput || !controls) {
+        console.error('Missing required data for track creation');
         this.messageService.add({
-          key: 'tc',
           severity: 'error',
-          summary: 'Fel',
-          detail: 'Saknar nödvändig information för att skapa banan.'
+          summary: 'Error',
+          detail: 'Missing required data for track creation'
         });
         return false;
       }
@@ -224,51 +224,47 @@ export class TrackBuilderComponentService {
       // Sort controls by distance before sending to API
       const sortedControls = this.sortControlsByDistance([...controls]);
 
-      // Create the input data with sorted controls
-      const inputData = {
-        ...rusaplanner,
-        event_uid: event.event_uid,
+      // Create the track data with sorted controls
+      const trackData = await firstValueFrom(this.rusatimeService.addSite({
+        ...rusaInput,
+        event_uid: eventUid,
         use_acp_calculator: true,
         controls: sortedControls
-      };
-
-      // Call the API directly
-      const trackData = await this.rusatimeService.addSite(inputData).toPromise();
+      }));
 
       if (!trackData) {
-        this.messageService.add({
-          key: 'tc',
-          severity: 'error',
-          summary: 'Fel',
-          detail: 'Kunde inte skapa banan.'
-        });
-        return false;
+        throw new Error('Failed to generate track data');
       }
 
       // Create request payload with both track data and form data
       const requestPayload = {
         trackData: trackData,
-        formData: formData
+        formData: {
+          ...formData,
+          event_type: formData.event_type || 'BRM' // Add event type with default
+        }
       };
 
       // Save the track with form data for loppservice integration
-      await this.trackService.createTrackWithFormData(requestPayload);
+      // Since createTrackWithFormData returns a Promise, we use await directly
+      const response = await this.trackService.createTrackWithFormData(requestPayload);
 
-      this.messageService.add({
-        key: 'tc',
-        severity: 'success',
-        summary: 'Bana sparad',
-        detail: 'Banan har sparats framgångsrikt!'
-      });
-
-      return true;
+      if (response) {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Track created successfully'
+        });
+        return true;
+      } else {
+        throw new Error('Failed to create track');
+      }
     } catch (error) {
       console.error('Error creating track:', error);
       this.messageService.add({
-        key: 'tc',
         severity: 'error',
-        summary: 'Sparande misslyckades',
-        detail: 'Det gick inte att spara banan. Försök igen senare.'
+        summary: 'Error',
+        detail: error.message || 'Failed to create track'
       });
       return false;
     }

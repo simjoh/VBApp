@@ -38,12 +38,15 @@ export class LoginComponent implements  OnInit{
 
   login(){
     // @ts-ignore
+    console.log('Login button clicked');
     if (!this.form.invalid){
+      console.log('Form is valid, attempting login with model:', this.loginComponetService.loginModel$);
       this.authServiceService.loginUser(this.loginComponetService.loginModel$).then((ss) => {
+        console.log('Login promise resolved', ss);
       });
+    } else {
+      console.log('Form is invalid:', this.form);
     }
-
-
   }
 
 

@@ -71,6 +71,20 @@
 
     <div class="form-grid">
       <div class="field-group">
+        <label>Typ av arrangemang *</label>
+        <p-dropdown
+          [options]="eventTypeOptions"
+          [(ngModel)]="selectedEventType"
+          (onChange)="onEventTypeChange()"
+          placeholder="Välj typ av arrangemang"
+          optionLabel="label"
+          optionValue="value"
+          class="form-input"
+          pTooltip="Välj typ av arrangemang">
+        </p-dropdown>
+      </div>
+
+      <div class="field-group">
         <label>Höjdskillnad (m)</label>
         <input
           [(ngModel)]="model.elevation"
@@ -84,10 +98,6 @@
           pInputText
           class="form-input"
           pTooltip="Total höjdskillnad i meter">
-      </div>
-
-      <div class="field-group">
-        <!-- Empty for spacing -->
       </div>
     </div>
 

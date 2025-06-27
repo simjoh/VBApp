@@ -36,35 +36,38 @@ export class AuthService {
   constructor(private httpClient: HttpClient, private authenticatedService: AuthenticatedService,private router: Router, private eventService: EventsService, private readonly :DialogService, private asd: ConfirmationService) { }
 
   async loginUser(loginModel$: Observable<LoginModel>)  {
-
+    console.log('AuthService.loginUser called');
     if (this.isMockedLoggin()){
+      console.log('Mock login mode active');
       this.mockLogin();
     }
-await loginModel$.pipe(
+    await loginModel$.pipe(
       map(model => {
+        console.log('loginUser: model received from observable', model);
         this.httpClient.post<any>(this.backendUrl() + "login", this.createPayload(model))
           .pipe(
             map(response => {
+              console.log('loginUser: HTTP response received', response);
               localStorage.setItem('loggedInUser', JSON.stringify(response.token));
               this.authenticatedService.changeStatus(true);
               return response;
             }),
             catchError((error: HttpErrorResponse) => {
+              console.log('loginUser: HTTP error', error);
               this.eventService.nyHändelse(EventType.Error, new AEvent(EventType.Error, "Cannot sign in"));
               return of(null);
             })
             ).toPromise().then((data) => {
+              console.log('loginUser: HTTP promise resolved', data);
               if (data){
                 this.setActiveUser(data)
                 this.redirect(data.roles);
               } else {
                 this.logoutUser();
               }
-
         });
       })
     ).toPromise();
-
     return true;
   }
 
