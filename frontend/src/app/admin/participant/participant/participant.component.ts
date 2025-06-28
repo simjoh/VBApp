@@ -22,11 +22,6 @@ export class ParticipantComponent implements OnInit {
         label: "Lista",
         routerLink: 'brevet-participant-list',
         icon: 'pi pi-list'
-      },
-      {
-        label: "Ladda upp deltagare",
-        routerLink: 'brevet-participant-upload',
-        icon: 'pi pi-fw pi-upload'
       }
     ] as MenuItem[];
   }

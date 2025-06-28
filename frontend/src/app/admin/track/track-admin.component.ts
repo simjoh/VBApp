@@ -36,11 +36,6 @@ export class TrackAdminComponent implements OnInit {
         icon: 'pi pi-list'
       },
       {
-        label: "Ladda upp banor",
-        routerLink: 'brevet-track-upload',
-        icon: 'pi pi-fw pi-upload'
-      },
-      {
         label: "Banbyggare",
         routerLink: 'brevet-track-builder',
       }
