@@ -81,15 +81,7 @@ class TrackService extends ServiceAbstract
 //        print_r($track);
 
         $isracePassed = $this->trackRepository->isRacePassed($trackUid);
-        error_log("Track $trackUid - isRacePassed: " . var_export($isracePassed, true) . ", demo: " . $this->settings['demo'] . ", original active: " . var_export($track->isActive(), true));
-        
-        // Skip demo mode override for tracks that are being manually published/unpublished
-        // Demo mode should not interfere with explicit publish/unpublish actions
-        if ($isracePassed == true && $this->settings['demo'] != 'true') {
-            error_log("Race passed and demo=false - forcing active=false");
-            $track->setActive(false);
-        }
-        // If demo=true, we preserve the database value (no override)
+
         
         error_log("Final active status: " . var_export($track->isActive(), true));
         return $this->trackAssembly->toRepresentation($track, $permissions, $currentuserUid);
