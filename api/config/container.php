@@ -2,6 +2,7 @@
 
 
 use App\common\Rest\Client\RusaTimeRestClient;
+use App\common\Service\EmailService;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\App;
@@ -43,6 +44,12 @@ return [
             (bool)$settings['log_error_details']
         );
     },
+
+    // Email service registration
+    EmailService::class => function (ContainerInterface $container) {
+        return new EmailService($container);
+    },
+
     PDO::class => function (ContainerInterface $container) {
         $settings = $container->get('settings')['db'];
 
@@ -136,6 +143,13 @@ return [
         return new \App\Action\Club\ClubAction(
             $container,
             $container->get(\App\Domain\Model\Club\Service\ClubService::class)
+        );
+    },
+
+    \App\Action\Test\TestEmailAction::class => function(ContainerInterface $container) {
+        return new \App\Action\Test\TestEmailAction(
+            $container->get(EmailService::class),
+            $container
         );
     }
 

@@ -8,6 +8,7 @@
   "license": "MIT",
   "require": {
     "php": "^7.4 || ^8.0",
+    "ext-dom": "*",
     "ext-json": "*",
     "ext-mysqli": "*",
     "ext-pdo": "*",
@@ -19,9 +20,11 @@
     "karriere/json-decoder": "^4.0",
     "league/csv": "^9.0",
     "miladrahimi/php-jwt": "2.*",
-    "nette/utils": "^3.2",
+    "nette/utils": "^4.0",
     "opis/string": "^2.0",
     "php-di/php-di": "^6.3",
+    "phpmailer/phpmailer": "^6.8",
+    "phpoffice/phpspreadsheet": "^4.2",
     "prestashop/decimal": "^1.4",
     "ramsey/uuid": "^4.2",
     "selective/basepath": "^2.1",
@@ -29,8 +32,7 @@
     "slim/psr7": "^1.2",
     "slim/slim": "^4.6",
     "slim/twig-view": "^3.2",
-    "ext-dom": "*",
-    "phpoffice/phpspreadsheet": "^4.2"
+    "vlucas/phpdotenv": "^5.6"
   },
   "autoload": {
     "psr-4": {

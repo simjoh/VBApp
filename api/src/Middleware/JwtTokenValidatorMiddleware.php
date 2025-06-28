@@ -24,7 +24,6 @@ class JwtTokenValidatorMiddleware
 
     public function __invoke(Request $request, RequestHandler $handler): Response
     {
-
         $userAgent = $request->getHeaderLine("User-Agent");
       
 
@@ -35,10 +34,18 @@ class JwtTokenValidatorMiddleware
 
 
         
+        // Try to get token from TOKEN header first
         $token = $request->getHeaderLine("TOKEN");
 
-        if ($token == '') {
+        // If TOKEN header is empty, try Authorization header
+        if (empty($token)) {
+            $authHeader = $request->getHeaderLine("Authorization");
+            if (preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+                $token = $matches[1];
+            }
+        }
 
+        if (empty($token)) {
             return (new Response())->withStatus(403);
         }
 

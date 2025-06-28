@@ -183,6 +183,9 @@ return function (App $app) {
         // Countries management
         $app->get('/countries', \App\Action\Country\CountryAction::class . ':getAllCountries');
 
+        // Test email endpoint
+        $app->post('/test/email', \App\Action\Test\TestEmailAction::class);
+
         // Competitor info management
         $app->get('/competitor/{competitorUid}/info', \App\Action\Competitor\CompetitorInfoAction::class . ':getCompetitorInfo');
         $app->put('/competitor/{competitorUid}/info', \App\Action\Competitor\CompetitorInfoAction::class . ':updateCompetitorInfo');
