@@ -806,10 +806,15 @@ class ParticipantService extends ServiceAbstract
 
     private function validateInput($datatovalidate, $trackuid): bool
     {
-
+        // Check if registration already exists
         $participant = $this->participantRepository->participantFor($datatovalidate->registration['registration_uid']);
         if ($participant) {
-            throw new BrevetException("An participant already exists withuid " . $datatovalidate->registration['registration_uid'], 5, null);
+            throw new BrevetException("A participant already exists with uid " . $datatovalidate->registration['registration_uid'], 5, null);
+        }
+
+        // Check if competitor is already registered for this track
+        if ($this->participantRepository->hasExistingRegistration($datatovalidate->participant['person_uid'], $trackuid)) {
+            throw new BrevetException("This competitor is already registered for this track", 5, null);
         }
 
         if (is_null($trackuid)) {
@@ -823,7 +828,6 @@ class ParticipantService extends ServiceAbstract
         if (is_null($datatovalidate->participant)) {
             throw new BrevetException("Participant must be set", 5, null);
         } else {
-
             if (!$datatovalidate->participant['adress']) {
                 throw new BrevetException("Email must be provided", 5, null);
             }

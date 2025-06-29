@@ -1058,4 +1058,20 @@ class ParticipantRepository extends BaseRepository
         }
     }
 
+    /**
+     * Check if a competitor is already registered for a track
+     */
+    public function hasExistingRegistration(string $competitor_uid, string $track_uid): bool
+    {
+        try {
+            $statement = $this->connection->prepare("SELECT COUNT(*) FROM participant WHERE competitor_uid = :competitor_uid AND track_uid = :track_uid");
+            $statement->bindParam(':competitor_uid', $competitor_uid);
+            $statement->bindParam(':track_uid', $track_uid);
+            $statement->execute();
+            return $statement->fetchColumn() > 0;
+        } catch (PDOException $e) {
+            throw new BrevetException("Error checking for existing registration: " . $e->getMessage(), 5, null);
+        }
+    }
+
 }
