@@ -134,16 +134,16 @@ class ClubService
         
         // Debug logging
         error_log("DEBUG: Updating club " . $clubRepresentation->getClubUid());
-        error_log("DEBUG: Current ACP code: " . ($club->getAcpKod() ?? 'null'));
+        error_log("DEBUG: Current ACP code: " . ($club->getAcpCode() ?? 'null'));
         error_log("DEBUG: New ACP code from request: " . ($clubRepresentation->getAcpCode() ?? 'null'));
         error_log("DEBUG: New title from request: " . ($clubRepresentation->getTitle() ?? 'null'));
         
         // Update the club with new values
         $club->setTitle($clubRepresentation->getTitle());
-        $club->setAcpKod($clubRepresentation->getAcpCode());
+        $club->setAcpCode($clubRepresentation->getAcpCode());
         
         // Debug logging after setting
-        error_log("DEBUG: ACP code after setting: " . ($club->getAcpKod() ?? 'null'));
+        error_log("DEBUG: ACP code after setting: " . ($club->getAcpCode() ?? 'null'));
         
         $permissions = $this->getPermissions($currentuser_id);
 
@@ -285,7 +285,7 @@ class ClubService
         $dto = new ClubDTO();
         $dto->club_uid = $club->getClubUid();
         $dto->name = $club->getTitle(); // VBApp uses 'title' but loppservice uses 'name'
-        $dto->acp_kod = $club->getAcpKod(); // Map ACP code
+        $dto->acp_kod = $club->getAcpCode(); // Map ACP code
         $dto->description = null; // VBApp doesn't have description field, set to null
         $dto->official_club = false; // Default to false, could be made configurable
         

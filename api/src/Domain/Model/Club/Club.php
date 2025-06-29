@@ -8,7 +8,7 @@ class Club
 {
 
     private ?string $club_uid = null;
-    private ?string $acp_kod = null;
+    private ?string $acp_code = null;
     private ?string $title = null;
 
     /**
@@ -30,17 +30,17 @@ class Club
     /**
      * @return string|null
      */
-    public function getAcpKod(): ?string
+    public function getAcpCode(): ?string
     {
-        return $this->acp_kod;
+        return $this->acp_code;
     }
 
     /**
-     * @param string|null $acp_kod
+     * @param string|null $acp_code
      */
-    public function setAcpKod(?string $acp_kod): void
+    public function setAcpCode(?string $acp_code): void
     {
-        $this->acp_kod = $acp_kod;
+        $this->acp_code = $acp_code;
     }
 
     /**

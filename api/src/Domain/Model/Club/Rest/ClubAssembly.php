@@ -43,7 +43,7 @@ class ClubAssembly
 
         $clubrepr->setClubUid($club->getClubUid());
         $clubrepr->setTitle($club->getTitle());
-        $clubrepr->setAcpCode($club->getAcpKod());
+        $clubrepr->setAcpCode($club->getAcpCode());
 
         $linkArray = array();
 

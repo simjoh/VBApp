@@ -716,8 +716,6 @@ class ParticipantService extends ServiceAbstract
 
         $finnsitabell = GlobalConfig::get($track_uid);
 
-        echo "track_uid: " . $track_uid;
-
         if ($finnsitabell) {
             $track_uid = $finnsitabell;
         }
@@ -726,11 +724,10 @@ class ParticipantService extends ServiceAbstract
             $track_uid = '15689abe-ebdd-459a-8209-5b04815af486';
         }
 
-        try {
-            $this->validateInput($loppserviceRegistrationRepresentation, $track_uid);
-        } catch (BrevetException $brevetException) {
-            throw $brevetException;
-        }
+        // TEST ERROR - Force an error for testing error handling
+   
+        //   throw new BrevetException("TEST ERROR2: Simulated error in ParticipantService for testing error event creation", 999, null);
+        
 
         try {
             $registration = $loppserviceRegistrationRepresentation->registration;
@@ -744,97 +741,151 @@ class ParticipantService extends ServiceAbstract
             }
 
             $registration_uid = $registration['registration_uid'];
+            $person_uid = $participant_to_create['person_uid'];
 
             if (!isset($registration)) {
                 throw new BrevetException("No registration found", 5, null);
             }
 
-            $competitor = $this->competitorService->getCompetitorByUid3($participant_to_create['person_uid'], "");
+            // Check if this person_uid already has a participant on this track
+            if ($this->participantRepository->hasExistingRegistration($person_uid, $track_uid)) {
+                throw new BrevetException("This competitor is already registered for this track with person_uid: " . $person_uid, 5, null);
+            }
+
+            // Check if participant_uid (registration_uid) already exists
+            $existingParticipant = $this->participantRepository->participantFor($registration_uid);
+            if ($existingParticipant) {
+                throw new BrevetException("A participant already exists with registration_uid: " . $registration_uid, 5, null);
+            }
+
+            // Try to find existing competitor by person_uid (which becomes competitor_uid)
+            $competitor = $this->competitorService->getCompetitorByUid3($person_uid, "");
+            
             if (!isset($competitor)) {
-                $competitorc = $this->competitorService->createCompetitorFromLoppservice($participant_to_create['firstname'], $participant_to_create['surname'], "", $participant_to_create['birthdate'], $participant_to_create['person_uid'], $participant_to_create['gender']);
-                 if ($competitorc) {
-                    $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParamsFromLoppservice($contactinformation['email'], $contactinformation['tel'], $adress['adress'], $adress['postal_code'], $adress['city'], $this->countryrepository->countryFor($adress['country_id'])->country_name_sv, $participant_to_create['person_uid'], $adress['country_id']);
-                } 
-                $competitor = $competitorc;
-            }
-            if (isset($competitor)) {
-                $participant = new Participant();
-                $participant->setCompetitorUid($participant_to_create['person_uid']);
-                $participant->setStartnumber($registration['startnumber']);
-                $participant->setParticipantUid($registration_uid);
-                $participant->setFinished(false);
-                $participant->setTrackUid($track->getTrackUid());
-                $participant->setDnf(false);
-                $participant->setDns(false);
-                $participant->setTime(null);
-                $participant->setStarted(false);
-                $participant->setAcpkod("s");
-                $participant->setMedal($medal);
+                // Competitor doesn't exist, create a new one with person_uid as competitor_uid
+                $competitor = $this->competitorService->createCompetitorFromLoppservice(
+                    $participant_to_create['firstname'], 
+                    $participant_to_create['surname'], 
+                    "", 
+                    $participant_to_create['birthdate'], 
+                    $person_uid, 
+                    $participant_to_create['gender']
+                );
+                
+                if (!$competitor) {
+                    throw new BrevetException("Failed to create competitor for person_uid: " . $person_uid, 5, null);
+                }
 
-                if (isset($club)) {
-                    // kolla om klubben finns i databasen annars skapa vi en klubb
+                // Create competitor info for the new competitor
+                $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParamsFromLoppservice(
+                    $contactinformation['email'], 
+                    $contactinformation['tel'], 
+                    $adress['adress'], 
+                    $adress['postal_code'], 
+                    $adress['city'], 
+                    $this->countryrepository->countryFor($adress['country_id'])->country_name_sv, 
+                    $person_uid, 
+                    $adress['country_id']
+                );
+            }
+
+            // Handle club assignment
+            $clubUid = null;
+            if (isset($club) && !empty($club)) {
+                // Try to find existing club by club_uid first
+                $existingClub = null;
+                if (isset($club['club_uid']) && !empty($club['club_uid'])) {
                     $existingClub = $this->clubrepository->getClubByUId($club['club_uid']);
-                    if (!isset($existingClub)) {
-                        $existingClub = $this->clubrepository->getClubByTitle($club['name']);
-                        if (!isset($existingClub)) {
-                            $clubUid = $this->clubrepository->createClub("", $club['name']);
-                            $participant->setClubUid($clubUid);
-                        } else {
-                            $participant->setClubUid($existingClub->getClubUid());
-                        }
-                    } else {
-                        $participant->setClubUid($existingClub->getClubUid());
+                }
+                
+                // If not found by club_uid, try by name
+                if (!isset($existingClub) && isset($club['name']) && !empty($club['name'])) {
+                    $existingClub = $this->clubrepository->getClubByTitle($club['name']);
+                }
+                
+                // If still not found, create new club
+                if (!isset($existingClub)) {
+                    if (isset($club['name']) && !empty($club['name'])) {
+                        $clubUid = $this->clubrepository->createClub("", $club['name']);
                     }
-                }
-
-                $participant->setTrackUid($track->getTrackUid());
-                $participant->setRegisterDateTime(new DateTime($registration['created_at']));
-                $participantcreated = $this->participantRepository->createparticipant($participant);
-                if (isset($participantcreated)) {
-                    $this->participantRepository->createTrackCheckpointsFor($participant, $this->trackRepository->checkpoints($track->getTrackUid()));
-                }
-                if (isset($participantcreated) && isset($competitor)) {
-                    // skapa upp inloggning för cyklisten
-                    $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $participant->getStartnumber(), $registration['ref_nr']);
+                } else {
+                    $clubUid = $existingClub->getClubUid();
                 }
             }
+
+            // Create the participant
+            $participant = new Participant();
+            $participant->setCompetitorUid($person_uid); // Use person_uid as competitor_uid
+            $participant->setStartnumber($registration['startnumber']);
+            $participant->setParticipantUid($registration_uid); // Use registration_uid as participant_uid
+            $participant->setFinished(false);
+            $participant->setTrackUid($track->getTrackUid());
+            $participant->setDnf(false);
+            $participant->setDns(false);
+            $participant->setTime(null);
+            $participant->setStarted(false);
+            $participant->setAcpkod("s");
+            $participant->setMedal($medal ?? false);
+            $participant->setClubUid($clubUid);
+            $participant->setRegisterDateTime(new DateTime($registration['created_at']));
+
+            // Create the participant record
+            $participantcreated = $this->participantRepository->createparticipant($participant);
+            
+            if (!isset($participantcreated)) {
+                throw new BrevetException("Failed to create participant record", 5, null);
+            }
+
+            // Create participant checkpoints
+            $this->participantRepository->createTrackCheckpointsFor($participant, $this->trackRepository->checkpoints($track->getTrackUid()));
+
+            // Create competitor credentials
+            if (isset($competitor)) {
+                $this->competitorService->createCredentialFor(
+                    $competitor->getId(), 
+                    $participant->getParticipantUid(), 
+                    $participant->getStartnumber(), 
+                    $registration['ref_nr']
+                );
+            }
+
             return true;
+            
+        } catch (BrevetException $e) {
+            // Re-throw BrevetException as-is
+            throw $e;
         } catch (Exception $e) {
-            throw new BrevetException($e->getLine() . $e->getFile(), 5, null);
+            throw new BrevetException("Unexpected error: " . $e->getMessage() . " at line " . $e->getLine() . " in " . $e->getFile(), 5, null);
         }
     }
 
     private function validateInput($datatovalidate, $trackuid): bool
     {
-        // Check if registration already exists
-        $participant = $this->participantRepository->participantFor($datatovalidate->registration['registration_uid']);
-        if ($participant) {
-            throw new BrevetException("A participant already exists with uid " . $datatovalidate->registration['registration_uid'], 5, null);
-        }
-
-        // Check if competitor is already registered for this track
-        if ($this->participantRepository->hasExistingRegistration($datatovalidate->participant['person_uid'], $trackuid)) {
-            throw new BrevetException("This competitor is already registered for this track", 5, null);
-        }
-
         if (is_null($trackuid)) {
             throw new BrevetException("Track uid must be set", 5, null);
         }
 
         if (is_null($datatovalidate->registration['registration_uid'])) {
-            return false;
+            throw new BrevetException("Registration uid must be set", 5, null);
         }
 
         if (is_null($datatovalidate->participant)) {
             throw new BrevetException("Participant must be set", 5, null);
-        } else {
-            if (!$datatovalidate->participant['adress']) {
-                throw new BrevetException("Email must be provided", 5, null);
-            }
         }
 
-        if (is_null($datatovalidate->contactinformation)) {
-            return false;
+        if (is_null($datatovalidate->participant['person_uid'])) {
+            throw new BrevetException("Person uid must be set", 5, null);
+        }
+
+        // Check basic participant data
+        if (!isset($datatovalidate->participant['adress']) || !isset($datatovalidate->participant['contactinformation'])) {
+            throw new BrevetException("Address and contact information must be provided", 5, null);
+        }
+
+        // Check contact information
+        $contactInfo = $datatovalidate->participant['contactinformation'];
+        if (!isset($contactInfo['email']) || empty($contactInfo['email'])) {
+            throw new BrevetException("Email must be provided", 5, null);
         }
 
         return true;
@@ -1018,7 +1069,7 @@ class ParticipantService extends ServiceAbstract
 
         // Add the header rows
         $csv->insertOne(['', 'ORGANIZING CLUB', '', '', 'ACP code number', 'DATE', 'DISTANCE', 'INFORMATION', '', '']);
-        $csv->insertOne(['', $club->getTitle() ?? 'Unknown Club', '', '', $club->getAcpKod() ?? 'N/A', $date, $distance . ' km', 'Medal', 'Gender', '']);
+        $csv->insertOne(['', $club->getTitle() ?? 'Unknown Club', '', '', $club->getAcpCode() ?? 'N/A', $date, $distance . ' km', 'Medal', 'Gender', '']);
         $csv->insertOne(['Homologation number', 'LAST NAME', 'FIRST NAME', 'RIDER\'S CLUB', '', 'ACP CODE NUMBER', 'TIME', '(x)', '(F)', 'BIRTH DATE']);
         // Add participant data rows
 
@@ -1100,7 +1151,7 @@ class ParticipantService extends ServiceAbstract
         $csv->insertOne(['Date:', $startDateTime->format('Y-m-d')]);
         $csv->insertOne(['Distance:', $track->getDistance() . ' km']);
         $csv->insertOne(['Organizing Club:', $club ? ($club->getTitle() ?? 'Unknown Club') : 'N/A']);
-        $csv->insertOne(['ACP Code:', $club ? ($club->getAcpKod() ?? 'N/A') : 'N/A']);
+        $csv->insertOne(['ACP Code:', $club ? ($club->getAcpCode() ?? 'N/A') : 'N/A']);
         $csv->insertOne(['Total Participants:', count($participants)]);
         $csv->insertOne([]); // Empty row for spacing
 

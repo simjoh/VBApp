@@ -117,11 +117,11 @@ class ClubRepository extends BaseRepository
     }
 
 
-    public function getClubByAcpKod(string $acpkod)
+    public function getClubByAcpCode(string $acpcode)
     {
         try {
-            $statement = $this->connection->prepare($this->sqls('clubByAcpkod'));
-            $statement->bindParam(':acpkod', $acpkod);
+            $statement = $this->connection->prepare($this->sqls('clubByAcpCode'));
+            $statement->bindParam(':acpcode', $acpcode);
             $statement->execute();
             $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Club\Club::class, null);
 
@@ -134,20 +134,17 @@ class ClubRepository extends BaseRepository
             echo "Error: " . $e->getMessage();
         }
         return array();
-
     }
 
-    public function createClub(?string $acp_kod, ?string $title): ?string
+    public function createClub(?string $acp_code, ?string $title): ?string
     {
         try {
             $club_uid = Uuid::uuid4();
             $stmt = $this->connection->prepare($this->sqls('createClub'));
             $stmt->bindParam(':club_uid', $club_uid);
-            $stmt->bindParam(':acp_kod', $acp_kod);
+            $stmt->bindParam(':acp_code', $acp_code);
             $stmt->bindParam(':title', $title);
             $stmt->execute();
-
-
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
@@ -159,18 +156,18 @@ class ClubRepository extends BaseRepository
     {
         try {
             $club_uid = $club->getClubUid();
-            $acpkod = $club->getAcpKod();
+            $acpcode = $club->getAcpCode();
             $title = $club->getTitle();
             
             // Debug logging
             error_log("REPO DEBUG: Updating club " . $club_uid);
-            error_log("REPO DEBUG: ACP kod value: " . ($club->getAcpKod() ?? 'null'));
+            error_log("REPO DEBUG: ACP code value: " . ($club->getAcpCode() ?? 'null'));
             error_log("REPO DEBUG: Title: " . $title);
             error_log("REPO DEBUG: SQL: " . $this->sqls('updateClub'));
             
             $stmt = $this->connection->prepare($this->sqls('updateClub'));
             $stmt->bindParam(':club_uid', $club_uid);
-            $stmt->bindParam(':acp_kod', $acpkod);
+            $stmt->bindParam(':acp_code', $acpcode);
             $stmt->bindParam(':title', $title);
             $status = $stmt->execute();
             
@@ -215,9 +212,9 @@ class ClubRepository extends BaseRepository
         $clubsql['clubByTitle'] = 'select * from club e where title=:title;';
         $clubsql['clubByTitleLower'] = 'select * from club e where REPLACE(TRIM(lower(title))," ","")=:title;';
         $clubsql['allClubs'] = 'select * from club;';
-        $clubsql['clubByAcpkod'] = 'select * from club e where acp_kod=:acpkod;';
-        $clubsql['createClub'] = 'INSERT INTO club(club_uid, acp_kod, title) VALUES (:club_uid, :acp_kod, :title)';
-        $clubsql['updateClub'] = 'UPDATE club set acp_kod=:acp_kod, title=:title where club_uid=:club_uid';
+        $clubsql['clubByAcpCode'] = 'select * from club e where acp_code=:acpcode;';
+        $clubsql['createClub'] = 'INSERT INTO club(club_uid, acp_code, title) VALUES (:club_uid, :acp_code, :title)';
+        $clubsql['updateClub'] = 'UPDATE club set acp_code=:acp_code, title=:title where club_uid=:club_uid';
         $clubsql['deleteClub'] = 'DELETE FROM club WHERE club_uid = :club_uid';
         return $clubsql[$type];
     }

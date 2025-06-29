@@ -136,7 +136,7 @@ class CreateParticipantInCyclingAppEventListener
 
             // Log detailed error response
             Log::error("ADDPARTICIPANT API ERROR:", [
-                'registration_uid' => $event->registration_uid,
+                'registration_uid' => (string) $event->registration_uid,
                 'status_code' => $errorCode,
                 'response_headers' => $response->headers(),
                 'response_body_raw' => $rawErrorMessage,
@@ -147,22 +147,60 @@ class CreateParticipantInCyclingAppEventListener
             // Try to decode JSON response for additional details
             $errorMessage = json_decode($rawErrorMessage, true);
             if (json_last_error() === JSON_ERROR_NONE) {
+                // Ensure UUIDs are properly stringified in the log
+                if (isset($errorMessage['response_uid'])) {
+                    $errorMessage['response_uid'] = (string) $errorMessage['response_uid'];
+                }
+                if (isset($errorMessage['registration_uid'])) {
+                    $errorMessage['registration_uid'] = (string) $errorMessage['registration_uid'];
+                }
                 Log::error("ADDPARTICIPANT DECODED ERROR:", $errorMessage);
             }
 
-/*
-            if (!ErrorEvents::where('publishedevent_uid', $errorMessage['response_uid'])->exists()) {
+            // Handle error event creation
+            $responseUidForError = $responseUid->toString(); // Use the response_uid we sent
+            if (is_array($errorMessage) && isset($errorMessage['response_uid'])) {
+                $responseUidForError = $errorMessage['response_uid']; // Use response_uid from error if available
+            }
+
+            // Check if error event already exists for this registration
+            $existingError = ErrorEvents::where('registration_uid', $event->registration_uid)
+                                       ->where('type', 'eventregistration')
+                                       ->first();
+
+            if (!$existingError) {
+                // Create new error event
                 $error = new ErrorEvents();
-                $error->errorevent_uid = Uuid::uuid4();
-                $error->publishedevent_uid = Uuid::uuid4();
+                $error->errorevent_uid = Uuid::uuid4()->toString();
+                $error->publishedevent_uid = $responseUidForError;
                 $error->registration_uid = $event->registration_uid;
                 $error->type = "eventregistration";
+                $error->error_code = $errorCode;
+                $error->error_message = is_array($errorMessage) && isset($errorMessage['message'])
+                    ? $errorMessage['message']
+                    : $rawErrorMessage;
                 $error->save();
+
+                // Convert UUIDs to strings for logging
+                $errorEventUid = $error->errorevent_uid;
+                if (is_object($errorEventUid) && method_exists($errorEventUid, 'toString')) {
+                    $errorEventUid = $errorEventUid->toString();
+                }
+
+                Log::info("Created error event for failed participant transfer", [
+                    'registration_uid' => (string) $event->registration_uid,
+                    'errorevent_uid' => $errorEventUid,
+                    'error_code' => $errorCode
+                ]);
+
+                // Fire the failed transfer event
                 event(new FailedParticipantTransferEvent($event->registration_uid, $error->errorevent_uid));
             } else {
-                $error =ErrorEvents::where('publishedevent_uid', $errorMessage['response_uid'])->get();
-                event(new FailedParticipantTransferEvent($event->registration_uid, $error->errorevent_uid));
-            } */
+                Log::info("Error event already exists for registration_uid: " . $event->registration_uid);
+
+                // Fire the failed transfer event with existing error
+                event(new FailedParticipantTransferEvent($event->registration_uid, $existingError->errorevent_uid));
+            }
         }
     }
 }

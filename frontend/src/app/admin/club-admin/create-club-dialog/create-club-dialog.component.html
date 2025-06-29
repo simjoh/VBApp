@@ -1,5 +1,5 @@
 <div class="p-fluid formgrid grid">
-  <form #clubFormName="ngForm" (ngSubmit)="addClub(clubFormName)" novalidate>
+  <form #clubForm="ngForm" (ngSubmit)="onSubmit(clubForm)" novalidate>
 
     <!-- Club Name Field -->
     <div class="col-12 field">
@@ -56,7 +56,7 @@
         icon="pi pi-check"
         label="Spara"
         type="submit"
-        [disabled]="!clubFormName.valid">
+        [disabled]="!clubForm.valid">
       </p-button>
     </div>
 

@@ -271,7 +271,6 @@ class ParticipantAction
 
     public function addParticipantOntrack2(ServerRequestInterface $request, ResponseInterface $response)
     {
-
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('trackUid');
@@ -279,33 +278,64 @@ class ParticipantAction
         $jsonDecoder->register(new LoppserviceParticipantTranformer());
         $test = json_decode($request->getBody()->getContents(), true);
 
-        $registration = $jsonDecoder->decode($request->getBody()->getContents(), LoppserviceRegistrationRepresentation::class);
-
-        $data = $jsonDecoder->decode($request->getBody()->getContents(), LoppservicePersonRepresentation::class);
-        if (isset($data->club)) {
-            $club = $data->club;
-        }
-
-        if (isset($data->medal)) { 
-            $medal = $data->medal;
-        } else {
-            $medal = false;
-        }
         try {
+            $registration = $jsonDecoder->decode($request->getBody()->getContents(), LoppserviceRegistrationRepresentation::class);
+            $data = $jsonDecoder->decode($request->getBody()->getContents(), LoppservicePersonRepresentation::class);
+            
+            $club = $data->club ?? null;
+            $medal = $data->medal ?? false;
+
             $result = $this->participantService->addParticipantOnTrackFromLoppservice($data, $track_uid, $registration, $club, $medal);
+            
             if ($result) {
-                $response->getBody()->write(json_encode(['valid' => true, 'test' => 'test', 'response_uid' => $data->response_uid, 'registration_uid' => $registration->registration['registration_uid']]));
+                $response->getBody()->write(json_encode([
+                    'valid' => true, 
+                    'response_uid' => $data->response_uid, 
+                    'registration_uid' => $registration->registration['registration_uid'],
+                    'message' => 'Participant successfully created',
+                    'person_uid' => $data->participant['person_uid']
+                ]));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
             } else {
-                $result = false;
-                $response->getBody()->write(json_encode(['valid' => $result, 'response_uid' => $data->response_uid, 'registration_uid' => $registration->registration['registration_uid'], 'message' => 'Could not create participant']));
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(501);
+                $response->getBody()->write(json_encode([
+                    'valid' => false, 
+                    'response_uid' => $data->response_uid, 
+                    'registration_uid' => $registration->registration['registration_uid'], 
+                    'message' => 'Could not create participant - unknown error'
+                ]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
             }
 
+        } catch (BrevetException $e) {
+            // Handle business logic exceptions with appropriate status codes
+            $statusCode = 400; // Bad Request for validation errors
+            if (strpos($e->getMessage(), 'already registered') !== false || 
+                strpos($e->getMessage(), 'already exists') !== false) {
+                $statusCode = 409; // Conflict for duplicate entries
+            } elseif (strpos($e->getMessage(), 'not exists') !== false ||
+                      strpos($e->getMessage(), 'not found') !== false) {
+                $statusCode = 404; // Not Found
+            }
+
+            $response->getBody()->write(json_encode([
+                'valid' => false, 
+                'response_uid' => $data->response_uid ?? null, 
+                'registration_uid' => $registration->registration['registration_uid'] ?? null, 
+                'message' => $e->getMessage(),
+                'error_code' => $e->getCode()
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($statusCode);
+            
         } catch (Exception $e) {
-            $result = false;
-            $response->getBody()->write(json_encode(['valid' => $result, 'response_uid' => $data->response_uid, 'registration_uid' => $registration->registration['registration_uid'], 'message' => $e->getMessage()]));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(501);
+            // Handle unexpected exceptions
+            $response->getBody()->write(json_encode([
+                'valid' => false, 
+                'response_uid' => $data->response_uid ?? null, 
+                'registration_uid' => $registration->registration['registration_uid'] ?? null, 
+                'message' => 'Internal server error: ' . $e->getMessage(),
+                'error_type' => 'unexpected_error'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
 

@@ -1,5 +1,5 @@
 <div class="p-fluid formgrid grid">
-  <form #clubFormName="ngForm" (ngSubmit)="updateClub(clubFormName)" novalidate>
+  <form #clubForm="ngForm" (ngSubmit)="onSubmit(clubForm)" novalidate>
 
     <!-- Club Name Field -->
     <div class="col-12 field">
@@ -12,7 +12,7 @@
         id="title"
         name="title"
         #title="ngModel"
-        [(ngModel)]="clubForm.title"
+        [(ngModel)]="formData.title"
         placeholder="Ange klubbnamn"
         required
         class="w-full"
@@ -34,7 +34,7 @@
         id="acp_code"
         name="acp_code"
         #acp_code="ngModel"
-        [(ngModel)]="clubForm.acp_code"
+        [(ngModel)]="formData.acp_code"
         placeholder="Lämna tomt om ingen ACP-kod"
         class="w-full"
       />
@@ -56,7 +56,7 @@
         icon="pi pi-check"
         label="Uppdatera"
         type="submit"
-        [disabled]="!clubFormName.valid">
+        [disabled]="!clubForm.valid">
       </p-button>
     </div>
 

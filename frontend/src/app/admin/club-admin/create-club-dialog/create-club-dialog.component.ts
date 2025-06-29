@@ -11,47 +11,43 @@ import { ClubRepresentation } from "../../../shared/api/api";
 })
 export class CreateClubDialogComponent implements OnInit {
 
-  clubForm: ClubFormModel;
+  clubForm = {
+    title: "",
+    acp_code: ""
+  };
 
-  constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig) { }
+  constructor(
+    public ref: DynamicDialogRef,
+    public config: DynamicDialogConfig
+  ) { }
 
-  ngOnInit(): void {
-    this.clubForm = this.createObject();
+  ngOnInit() {
   }
 
-  private createObject(): ClubFormModel {
-    return {
-      club_uid: "",
-      title: "",
-      acp_code: ""
-    } as ClubFormModel;
-  }
-
-  addClub(clubForm: NgForm) {
-    if (clubForm.valid) {
-      this.ref.close(this.getClubObject(clubForm));
-    } else {
-      clubForm.dirty;
+  onSubmit(clubForm: NgForm) {
+    if (clubForm.invalid) {
+      return;
     }
+
+    const title = clubForm.controls.title.value;
+    const acpCode = clubForm.controls.acp_code.value;
+
+    const club: ClubRepresentation = {
+      club_uid: "",
+      title: title,
+      acp_code: acpCode && acpCode.trim() !== "" ? acpCode : null,
+      links: []
+    };
+
+    this.ref.close(club);
   }
 
   cancel() {
     this.ref.close(null);
   }
-
-  private getClubObject(clubForm: NgForm) {
-    const acpCode = clubForm.controls.acp_code.value;
-    return {
-      club_uid: "",
-      title: clubForm.controls.title.value,
-      acp_code: acpCode && acpCode.trim() !== "" ? acpCode : null,
-      links: []
-    } as ClubRepresentation;
-  }
 }
 
-export class ClubFormModel {
-  club_uid: string;
+export interface ClubForm {
   title: string;
   acp_code: string;
 }
