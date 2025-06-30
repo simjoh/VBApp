@@ -16,4 +16,9 @@ export class SiteInfoPopoverComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  getDistanceInMeters(distance: string): string {
+    const meters = parseFloat(distance) * 1000;
+    return `${Math.round(meters)} m`;
+  }
+
 }

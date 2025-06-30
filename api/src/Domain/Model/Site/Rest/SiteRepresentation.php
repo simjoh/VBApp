@@ -7,7 +7,7 @@ use JsonSerializable;
 
 class SiteRepresentation implements JsonSerializable
 {
-    private string $site_uid;
+    private string $site_uid = "";
     private string $place = "";
     private string $adress = "";
     private string $location = "";
@@ -15,6 +15,8 @@ class SiteRepresentation implements JsonSerializable
     private string $description = "";
     private string $lat = "";
     private string $lng = "";
+    private string $check_in_distance = "0.90";
+    private string $picture = "";
     private ?array $links = [];
 
 
@@ -99,7 +101,7 @@ class SiteRepresentation implements JsonSerializable
     }
 
     /**
-     * @param Link $link
+     * @param array $link
      */
     public function setLink(array $link): void
     {
@@ -179,9 +181,35 @@ class SiteRepresentation implements JsonSerializable
         $this->picture = $picture;
     }
 
-
-    public function jsonSerialize(): mixed
+    /**
+     * @return string
+     */
+    public function getCheckInDistance(): string
     {
-        return (object)get_object_vars($this);
+        return $this->check_in_distance;
+    }
+
+    /**
+     * @param string $check_in_distance
+     */
+    public function setCheckInDistance(string $check_in_distance): void
+    {
+        $this->check_in_distance = $check_in_distance;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'site_uid' => $this->site_uid,
+            'place' => $this->place,
+            'adress' => $this->adress,
+            'location' => $this->location,
+            'description' => $this->description,
+            'lat' => $this->lat,
+            'lng' => $this->lng,
+            'image' => $this->image,
+            'check_in_distance' => $this->check_in_distance,
+            'links' => $this->links
+        ];
     }
 }

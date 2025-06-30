@@ -1,39 +1,48 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
-import {UploadService} from "../../../core/upload.service";
 import {NgForm} from "@angular/forms";
-import {FileUpload} from "primeng/fileupload";
-import {SiteFormModel} from "../create-site-dialog/create-site-dialog.component";
-import {SiteRepresentation, User} from "../../../shared/api/api";
-import {environment} from "../../../../environments/environment";
+import {SiteRepresentation} from "../../../shared/api/api";
+import {UploadService} from "../../../core/upload.service";
+import { FileUpload } from 'primeng/fileupload';
 
 @Component({
   selector: 'brevet-edit-site-dialog',
   templateUrl: './edit-site-dialog.component.html',
-  styleUrls: ['./edit-site-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./edit-site-dialog.component.scss']
 })
 export class EditSiteDialogComponent implements OnInit {
-
-  @ViewChild('primeFileUploadw') primeFileUpload: FileUpload;
-
-  uploadedFiles: any[] = [];
+  @ViewChild('primeFileUpload') primeFileUpload: FileUpload;
 
   siteform: SiteRepresentation;
+  uploadedFiles: any[] = [];
 
-  constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig, private uploadService: UploadService) { }
+  constructor(
+    private ref: DynamicDialogRef,
+    private config: DynamicDialogConfig,
+    private uploadService: UploadService
+  ) {
+  }
 
   ngOnInit(): void {
-    this.siteform = this.config.data.user;
+    // Initialize form data
+    this.siteform = this.config.data;
 
-    // Handle coordinate data that might be objects
+    // Convert check-in distance from km to meters
+    if (this.siteform?.check_in_distance) {
+      const valueInKm = parseFloat(this.siteform.check_in_distance);
+      if (!isNaN(valueInKm)) {
+        const valueInMeters = valueInKm * 1000;
+        this.siteform.check_in_distance = valueInMeters.toString();
+      }
+    }
+
+    // Handle coordinate data
     if (this.siteform) {
       this.normalizeCoordinates();
     }
   }
 
   private normalizeCoordinates(): void {
-    // At this point we know siteform exists due to the check in ngOnInit
     const site = this.siteform as SiteRepresentation;
 
     // Convert coordinate objects to strings if necessary
@@ -60,11 +69,15 @@ export class EditSiteDialogComponent implements OnInit {
     }
   }
 
-  addEvent(siteForm: NgForm) {
-    if (siteForm.valid){
+  addEvent(form: NgForm) {
+    if (form.valid) {
+      // Convert meters to kilometers before saving
+      const valueInMeters = parseFloat(this.siteform.check_in_distance);
+      if (!isNaN(valueInMeters)) {
+        const valueInKm = valueInMeters / 1000;
+        this.siteform.check_in_distance = valueInKm.toFixed(3);
+      }
       this.ref.close(this.siteform);
-    } else {
-      siteForm.dirty
     }
   }
 
@@ -72,20 +85,13 @@ export class EditSiteDialogComponent implements OnInit {
     this.ref.close(null);
   }
 
-  myUploader(event) {
-    this.siteform.image = environment.pictureurl + "/" + event.files[0].name;
-    console.log("onUpload() START");
+  myUploader(event: any) {
     for(let file of event.files) {
-      let progress = this.uploadService.upload(environment.backend_url + "site/upload" , new Set(event.files));
-      console.log("FILE TO BE UPLOADED: ", file);
-    this.primeFileUpload.onProgress.emit({ originalEvent: null, progress: 100 });
       this.uploadedFiles.push(file);
     }
-    // this.messageService.add({severity: 'info', summary: 'File Uploaded', detail: ''});
   }
 
   progressReport($event: any) {
     this.primeFileUpload.progress = $event;
   }
-
 }

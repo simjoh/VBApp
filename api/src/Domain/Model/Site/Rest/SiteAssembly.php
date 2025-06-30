@@ -34,22 +34,50 @@ class SiteAssembly
 
     public function toRepresentation(Site $s, array $permissions): SiteRepresentation
     {
-
-
         $siteRepresentation = new SiteRepresentation();
         $siteRepresentation->setPlace($s->getPlace());
         $siteRepresentation->setSiteUid($s->getSiteUid());
-
         $siteRepresentation->setAdress($s->getAdress());
-
-
         if (!empty($user))
             $siteRepresentation->setLocation(!empty($s->getLocation()) == true ? $s->getLocation() : "");
         $siteRepresentation->setDescription($s->getDescription());
         $siteRepresentation->setImage($s->getPicture() == null ? "" : $this->settings['path'] . "uploads/" . $s->getPicture());
-
         $siteRepresentation->setLat($s->getLat() == null ? "" : strval($s->getLat()));
         $siteRepresentation->setLng($s->getLng() == null ? "" : strval($s->getLng()));
+        $siteRepresentation->setCheckInDistance(strval($s->getCheckInDistance()));
+        // bygg på med lite länkar
+        $linkArray = array();
+        foreach ($permissions as $x => $site) {
+            if ($site->hasWritePermission()) {
+                array_push($linkArray, new Link("relation.site.update", 'PUT', $this->settings['path'] . 'site/' . $s->getSiteUid()));
+                if ($this->siterepository->siteInUse($s->getSiteUid()) == false) {
+                    array_push($linkArray, new Link("relation.site.delete", 'DELETE', $this->settings['path'] . 'site/' . $s->getSiteUid()));
+                }
+
+                array_push($linkArray, new Link("self", 'GET', $this->settings['path'] . 'site/' . $s->getSiteUid()));
+                break;
+            }
+            if ($site->hasReadPermission()) {
+                array_push($linkArray, new Link("self", 'GET', $this->settings['path'] . 'site/' . $s->getSiteUid()));
+            };
+        }
+        $siteRepresentation->setLink($linkArray);
+        return $siteRepresentation;
+    }
+
+    public function toSiteRepresentation(Site $s, array $permissions, $user = null): SiteRepresentation
+    {
+        $siteRepresentation = new SiteRepresentation();
+        $siteRepresentation->setPlace($s->getPlace());
+        $siteRepresentation->setSiteUid($s->getSiteUid());
+        $siteRepresentation->setAdress($s->getAdress());
+        if (!empty($user))
+            $siteRepresentation->setLocation(!empty($s->getLocation()) == true ? $s->getLocation() : "");
+        $siteRepresentation->setDescription($s->getDescription());
+        $siteRepresentation->setImage($s->getPicture() == null ? "" : $this->settings['path'] . "uploads/" . $s->getPicture());
+        $siteRepresentation->setLat($s->getLat() == null ? "" : strval($s->getLat()));
+        $siteRepresentation->setLng($s->getLng() == null ? "" : strval($s->getLng()));
+        $siteRepresentation->setCheckInDistance(strval($s->getCheckInDistance()));
         // bygg på med lite länkar
         $linkArray = array();
         foreach ($permissions as $x => $site) {
@@ -75,7 +103,8 @@ class SiteAssembly
         return new Site($site->getSiteUid(), $site->getPlace(),
             $site->getAdress(), $site->getDescription()
             , $site->getLocation(), new DecimalNumber($site->getLat())
-            , new DecimalNumber($site->getLng()), substr($site->getImage(), strrpos($site->getImage(), '/') + 1));
+            , new DecimalNumber($site->getLng()), substr($site->getImage(), strrpos($site->getImage(), '/') + 1),
+            new DecimalNumber($site->getCheckInDistance()));
     }
 
 

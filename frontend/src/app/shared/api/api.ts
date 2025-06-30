@@ -14,6 +14,7 @@ export interface Site{
   lat?: string;
   lng?: string;
   picture?: string;
+  check_in_distance?: string;
   links?: [];
 }
 
@@ -98,6 +99,7 @@ export interface  SiteRepresentation {
   description: string;
   lat: string;
   lng: string;
+  check_in_distance: string;
   links: [];
 }
 

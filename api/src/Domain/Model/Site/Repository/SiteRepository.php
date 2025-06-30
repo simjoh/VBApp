@@ -36,46 +36,54 @@ class SiteRepository extends BaseRepository
             $sites = [];
 
             foreach ($data as $x => $row) {
-                // fixa lat long
-                $site = new Site($row["site_uid"], $row["place"],
-                    $row["adress"], $row['description'],
+                $site = new Site(
+                    $row["site_uid"], 
+                    $row["place"],
+                    $row["adress"], 
+                    $row['description'],
                     is_null($row["location"]) ? "" : $row["location"],
-                    is_null($row["lat"]) ? new DecimalNumber("0") : new DecimalNumber(strval($row["lat"])), is_null($row["lng"]) ? new DecimalNumber("0") : new DecimalNumber($row["lng"]), is_null($row["picture"]) ? "" : $row["picture"]);
+                    is_null($row["lat"]) ? new DecimalNumber("0") : new DecimalNumber(strval($row["lat"])), 
+                    is_null($row["lng"]) ? new DecimalNumber("0") : new DecimalNumber(strval($row["lng"])), 
+                    is_null($row["picture"]) ? "" : $row["picture"],
+                    empty($row["check_in_distance"]) ? new DecimalNumber("0.90") : new DecimalNumber(strval($row["check_in_distance"]))
+                );
                 array_push($sites, $site);
             }
             return $sites;
-
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
-
         return null;
     }
 
     public function siteFor(string $siteUid): ?Site
     {
         try {
-
             $statement = $this->connection->prepare($this->sqls('getSiteByUid'));
             $statement->bindParam(':site_uid', $siteUid);
             $statement->execute();
             $data = $statement->fetch();
             if (!empty($data)) {
-                return new Site($data["site_uid"], $data["place"], $data["adress"], $data['description'], $data["location"],
+                return new Site(
+                    $data["site_uid"], 
+                    $data["place"], 
+                    $data["adress"], 
+                    $data['description'], 
+                    $data["location"],
                     empty($data["lat"]) ? new DecimalNumber("0") : new DecimalNumber(strval($data["lat"])),
-                    empty($data["lng"]) ? new DecimalNumber("0") : new DecimalNumber(strval($data["lng"])), is_null($data["picture"]) ? "" : $data["picture"]);
+                    empty($data["lng"]) ? new DecimalNumber("0") : new DecimalNumber(strval($data["lng"])), 
+                    is_null($data["picture"]) ? "" : $data["picture"],
+                    empty($data["check_in_distance"]) ? new DecimalNumber("0.90") : new DecimalNumber(strval($data["check_in_distance"]))
+                );
             }
-
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
-
         return null;
     }
 
     public function updateSite(Site $site): ?Site
     {
-
         $site_uid = $site->getSiteUid();
         $adress = $site->getAdress();
         $place = $site->getPlace();
@@ -83,6 +91,7 @@ class SiteRepository extends BaseRepository
         $lat = $site->getLat()->toPrecision(7);
         $lng = $site->getLng()->toPrecision(7);
         $description = $site->getDescription();
+        $check_in_distance = $site->getCheckInDistance()->toPrecision(3);
         try {
             $statement = $this->connection->prepare($this->sqls('updateSite'));
             $statement->bindParam(':site_uid', $site_uid);
@@ -90,11 +99,11 @@ class SiteRepository extends BaseRepository
             $statement->bindParam(':description', $description);
             $statement->bindParam(':place', $place);
             $statement->bindParam(':picture', $logo);
-            $statement->bindParam('lat', $lat);
-            $statement->bindParam('lng', $lng);
+            $statement->bindParam(':lat', $lat);
+            $statement->bindParam(':lng', $lng);
+            $statement->bindParam(':check_in_distance', $check_in_distance);
             $statement->execute();
         } catch (PDOException $e) {
-
             echo 'Kunde inte uppdatera site: ' . $e->getMessage();
         }
 
@@ -104,7 +113,6 @@ class SiteRepository extends BaseRepository
     public function existsByPlaceAndAdress(string $place, string $adress): ?Site
     {
         try {
-
             $statement = $this->connection->prepare($this->sqls('existsByPlaceAndAdress'));
             $statement->bindParam(':place', $place);
             $statement->bindParam(':adress', $adress);
@@ -112,10 +120,17 @@ class SiteRepository extends BaseRepository
             $data = $statement->fetch();
 
             if (!empty($data)) {
-
-                return new Site($data["site_uid"], $data["place"], $data["adress"], $data['description'], $data["location"],
+                return new Site(
+                    $data["site_uid"], 
+                    $data["place"], 
+                    $data["adress"], 
+                    $data['description'], 
+                    $data["location"],
                     empty($data["lat"]) ? new DecimalNumber("0") : new DecimalNumber(strval($data["lat"])),
-                    empty($data["lng"]) ? new DecimalNumber("0") : new DecimalNumber(strval($data["lng"])), is_null($data["picture"]) ? "" : $data["picture"]);
+                    empty($data["lng"]) ? new DecimalNumber("0") : new DecimalNumber(strval($data["lng"])), 
+                    is_null($data["picture"]) ? "" : $data["picture"],
+                    empty($data["check_in_distance"]) ? new DecimalNumber("0.90") : new DecimalNumber(strval($data["check_in_distance"]))
+                );
             }
         } catch (PDOException $e) {
             echo 'Kunde inte läsa upp site: ' . $e->getMessage();
@@ -123,20 +138,26 @@ class SiteRepository extends BaseRepository
         return null;
     }
 
-
     public function existsByPlaceAndAdress2(string $place, string $adress): ?Site
     {
         try {
-
             $statement = $this->connection->prepare($this->sqls('existsByPlaceAndAdress2'));
             $statement->bindParam(':place', $place);
             $statement->bindParam(':adress', $adress);
             $statement->execute();
             $data = $statement->fetch();
             if ($statement->rowCount() > 0) {
-                return new Site($data["site_uid"], $data["place"], $data["adress"], $data['description'], $data["location"],
+                return new Site(
+                    $data["site_uid"], 
+                    $data["place"], 
+                    $data["adress"], 
+                    $data['description'], 
+                    $data["location"],
                     empty($data["lat"]) ? new DecimalNumber("0") : new DecimalNumber(strval($data["lat"])),
-                    empty($data["lng"]) ? new DecimalNumber("0") : new DecimalNumber(strval($data["lng"])), is_null($data["picture"]) ? "" : $data["picture"]);
+                    empty($data["lng"]) ? new DecimalNumber("0") : new DecimalNumber(strval($data["lng"])), 
+                    is_null($data["picture"]) ? "" : $data["picture"],
+                    empty($data["check_in_distance"]) ? new DecimalNumber("0.90") : new DecimalNumber(strval($data["check_in_distance"]))
+                );
             }
         } catch (PDOException $e) {
             echo 'Kunde inte läsa upp site: ' . $e->getMessage();
@@ -147,18 +168,14 @@ class SiteRepository extends BaseRepository
     public function createSite(Site $siteToCreate): ?Site
     {
         try {
-
-
             $site_uid = Uuid::uuid4();
-
-
             $adress = $siteToCreate->getAdress();
             $place = $siteToCreate->getPlace();
-            // $location = $siteToCreate->getLocation();
             $description = $siteToCreate->getDescription();
             $image = $siteToCreate->getPicture();
             $lat = $siteToCreate->getLat()->toPrecision(7);
             $lng = $siteToCreate->getLng()->toPrecision(7);
+            $check_in_distance = $siteToCreate->getCheckInDistance()->toPrecision(3);
             $stmt = $this->connection->prepare($this->sqls('createSite'));
             $stmt->bindParam(':site_uid', $site_uid);
             $stmt->bindParam(':adress', $adress);
@@ -169,13 +186,13 @@ class SiteRepository extends BaseRepository
             $stmt->bindParam(':lat', $lat);
             $stmt->bindParam(':lng', $lng);
             $stmt->bindParam(':picture', $image);
+            $stmt->bindParam(':check_in_distance', $check_in_distance);
             $stmt->execute();
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
 
         $siteToCreate->setSiteUid($site_uid);
-
         return $siteToCreate;
     }
 
@@ -210,11 +227,11 @@ class SiteRepository extends BaseRepository
     {
         $sitesqls['allSites'] = 'select * from site s;';
         $sitesqls['getSiteByUid'] = 'select * from site s where s.site_uid = :site_uid;';
-        $sitesqls['updateSite'] = "UPDATE site SET  place=:place, adress=:adress , description=:description , picture=:picture ,lat=:lat , lng=:lng WHERE site_uid=:site_uid";
-        $sitesqls['deleteSite'] = 'delete from site  where site_uid = :site_uid';
-        $sitesqls['createSite'] = "INSERT INTO site(site_uid, place, adress, description, location, lat, lng, picture) VALUES (:site_uid, :place, :adress, :description ,:location, :lat, :lng, :picture)";
-        $sitesqls['existsByPlaceAndAdress'] = 'select *  from site e where e.place=:place and e.adress=:adress;';
-        $sitesqls['existsByPlaceAndAdress2'] = 'select *  from site e where REPLACE(TRIM(lower(e.place))," ","")=:place and REPLACE(TRIM(lower(e.adress))," ","")=:adress;';
+        $sitesqls['updateSite'] = "UPDATE site SET place=:place, adress=:adress, description=:description, picture=:picture, lat=:lat, lng=:lng, check_in_distance=:check_in_distance WHERE site_uid=:site_uid";
+        $sitesqls['deleteSite'] = 'delete from site where site_uid = :site_uid';
+        $sitesqls['createSite'] = "INSERT INTO site(site_uid, place, adress, description, location, lat, lng, picture, check_in_distance) VALUES (:site_uid, :place, :adress, :description, :location, :lat, :lng, :picture, :check_in_distance)";
+        $sitesqls['existsByPlaceAndAdress'] = 'select * from site e where e.place=:place and e.adress=:adress;';
+        $sitesqls['existsByPlaceAndAdress2'] = 'select * from site e where REPLACE(TRIM(lower(e.place))," ","")=:place and REPLACE(TRIM(lower(e.adress))," ","")=:adress;';
         $sitesqls['siteInUse'] = 'select 1 from checkpoint WHERE site_uid=:site_uid limit 1;';
         return $sitesqls[$type];
 

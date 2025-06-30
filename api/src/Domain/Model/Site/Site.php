@@ -16,9 +16,10 @@ class Site implements JsonSerializable
     private string $picture;
     private DecimalNumber $lat;
     private DecimalNumber $lng;
+    private DecimalNumber $check_in_distance;
 
 
-    public function __construct(string $site_uid, string $place, $adress, string $description, $location, DecimalNumber $lat, DecimalNumber $lng, string $picture)
+    public function __construct(string $site_uid, string $place, $adress, string $description, $location, DecimalNumber $lat, DecimalNumber $lng, string $picture, ?DecimalNumber $check_in_distance = null)
     {
 
         $this->site_uid = $site_uid;
@@ -29,6 +30,7 @@ class Site implements JsonSerializable
         $this->lat = $lat;
         $this->lng = $lng;
         $this->picture = $picture;
+        $this->check_in_distance = $check_in_distance ?? new DecimalNumber('0.90');
     }
 
     /**
@@ -136,9 +138,35 @@ class Site implements JsonSerializable
         $this->site_uid = $site_uid;
     }
 
-    public function jsonSerialize(): mixed
+    /**
+     * @return DecimalNumber
+     */
+    public function getCheckInDistance(): DecimalNumber
     {
-        return (object)get_object_vars($this);
+        return $this->check_in_distance;
+    }
+
+    /**
+     * @param DecimalNumber $check_in_distance
+     */
+    public function setCheckInDistance(DecimalNumber $check_in_distance): void
+    {
+        $this->check_in_distance = $check_in_distance;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'site_uid' => $this->site_uid,
+            'place' => $this->place,
+            'adress' => $this->adress,
+            'location' => $this->location,
+            'description' => $this->description,
+            'lat' => strval($this->lat),
+            'lng' => strval($this->lng),
+            'picture' => $this->picture,
+            'check_in_distance' => strval($this->check_in_distance)
+        ];
     }
 
 }

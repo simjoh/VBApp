@@ -165,7 +165,8 @@ CREATE TABLE `site`
     `lat`         decimal(10, 8) DEFAULT NULL,
     `lng`         decimal(11, 8) DEFAULT NULL,
     `location`    point          DEFAULT NULL,
-    `picture`     varchar(100)   DEFAULT NULL
+    `picture`     varchar(100)   DEFAULT NULL,
+    `check_in_distance` decimal(6,3) DEFAULT 0.900
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `track`
@@ -677,11 +678,4 @@ CREATE TABLE `organizers` (
   `website` varchar(255) DEFAULT NULL,
   `logo_svg` text DEFAULT NULL,
   `contact_person_name` varchar(100) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT 1,
-  `club_uid` char(36) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `organizers_organization_name_index` (`organization_name`(768))
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `

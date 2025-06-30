@@ -65,12 +65,8 @@ export class SiteListComponent implements OnInit {
   }
 
   editProduct(site: string) {
-
     const editref = this.dialogService.open(EditSiteDialogComponent, {
-      data: {
-        user: site,
-        id: '51gF3'
-      },
+      data: site,
       header: 'Redigera Kontrollplats',
     });
 
@@ -81,9 +77,7 @@ export class SiteListComponent implements OnInit {
       } else {
         editref.destroy();
       }
-
     }));
-
   }
 
   deleteProduct(site: Site) {

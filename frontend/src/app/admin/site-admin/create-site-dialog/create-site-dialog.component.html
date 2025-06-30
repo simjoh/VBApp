@@ -89,6 +89,31 @@
       </small>
     </div>
 
+    <!-- Check-in Distance -->
+    <div class="col-12 md:col-6 field">
+      <label for="check_in_distance" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-map-marker mr-2"></i>
+        Incheckning avstånd (meter)
+      </label>
+      <input
+        pInputText
+        type="number"
+        step="1"
+        min="1"
+        id="check_in_distance"
+        name="check_in_distance"
+        #check_in_distance="ngModel"
+        [(ngModel)]="siteform.check_in_distance"
+        placeholder="Ex: 900"
+        required
+        class="w-full"
+        [class.ng-invalid]="check_in_distance.invalid && (check_in_distance.dirty || check_in_distance.touched)"
+      />
+      <small *ngIf="check_in_distance.invalid && (check_in_distance.dirty || check_in_distance.touched)" class="p-error block mt-1">
+        Incheckning avstånd krävs (i meter)
+      </small>
+    </div>
+
     <!-- Description -->
     <div class="col-12 field">
       <label for="description" class="block mb-2 font-medium text-gray-900">

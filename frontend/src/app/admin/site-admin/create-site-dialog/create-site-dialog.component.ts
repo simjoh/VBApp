@@ -18,8 +18,16 @@ export class CreateSiteDialogComponent implements OnInit {
   uploadedFiles: any[] = [];
 
   siteform: SiteFormModel;
+  selectedUnit: string = 'm';
+  private originalValue: number = 900;
 
-  constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig, private uploadService: UploadService) { }
+  constructor(
+    private ref: DynamicDialogRef,
+    private config: DynamicDialogConfig,
+    private uploadService: UploadService
+  ) {
+    this.siteform = this.createObject();
+  }
 
   ngOnInit(): void {
     this.siteform = this.createObject();
@@ -27,36 +35,40 @@ export class CreateSiteDialogComponent implements OnInit {
 
   private createObject(): SiteFormModel{
     return {
+      site_uid: "",
       event_uid: "",
       place: "",
       adress: "",
       lat: "",
       lng: "",
       description: "",
-      picture: ""
+      picture: "",
+      check_in_distance: "900"
     } as unknown as SiteFormModel;
-
   }
 
+  onUnitChange(event: any) {
+    const value = parseFloat(this.siteform.check_in_distance);
+    if (isNaN(value)) return;
 
-  addEvent(siteForm: NgForm) {
-    if (siteForm.valid){
-      this.ref.close(this.getUserObject(siteForm));
-    } else {
-      siteForm.dirty
+    if (event.value === 'km' && this.selectedUnit === 'm') {
+      // Convert from m to km
+      this.siteform.check_in_distance = (value / 1000).toFixed(3);
+    } else if (event.value === 'm' && this.selectedUnit === 'km') {
+      // Convert from km to m
+      this.siteform.check_in_distance = Math.round(value * 1000).toString();
     }
   }
 
-
-  private getUserObject(siteForm: NgForm) {
-    return {
-      site_uid: "",
-      image: this.siteform.image,
-      description: this.siteform.description,
-      lat:  this.siteform.lat,
-      lng:  this.siteform.lng,
-      place: this.siteform.place,
-      adress: this.siteform.adress
+  addEvent(form: NgForm) {
+    if (form.valid) {
+      // Convert meters to kilometers before saving
+      const valueInMeters = parseFloat(this.siteform.check_in_distance);
+      if (!isNaN(valueInMeters)) {
+        const valueInKm = valueInMeters / 1000;
+        this.siteform.check_in_distance = valueInKm.toFixed(3);
+      }
+      this.ref.close(this.siteform);
     }
   }
 
@@ -86,6 +98,7 @@ this.primeFileUpload.onProgress.emit({ originalEvent: null, progress: 100 });
 }
 
 export class SiteFormModel extends NgForm{
+  site_uid: string;
   event_uid: string;
   image: string;
   lat: string;
@@ -93,4 +106,5 @@ export class SiteFormModel extends NgForm{
   description: string;
   place: string;
   adress: string;
+  check_in_distance: string;
 }
