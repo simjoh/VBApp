@@ -343,21 +343,52 @@ class RegistrationController extends Controller
 
     private function validateRegistrationRequest(Request $request): array
     {
+        $event = Event::where('event_uid', $request['uid'])->first();
+        $isMSR = $event && $event->event_type === 'MSR';
 
-        return  $request->validate([
+        // Convert string month to integer
+        if (isset($request['month'])) {
+            $request->merge(['month' => intval($request['month'])]);
+        }
+
+        $messages = $isMSR ? [
+            'country.integer' => 'Please select a country from the list',
+            'country.exists' => 'Please select a valid country from the list',
+            'year.integer' => 'Please select a valid year',
+            'year.between' => 'Age must be at least 10 years old',
+            'month.integer' => 'Please select a valid month',
+            'month.between' => 'Month must be between 1 and 12',
+            'day.integer' => 'Please select a valid day',
+            'day.between' => 'Day must be between 1 and 31',
+            'email.regex' => 'Please enter a valid email address',
+            'email-confirm.regex' => 'Please enter a valid confirmation email address'
+        ] : [
+            'country.integer' => 'Vänligen välj ett land från listan',
+            'country.exists' => 'Vänligen välj ett giltigt land från listan',
+            'year.integer' => 'Vänligen välj ett giltigt år',
+            'year.between' => 'Du måste vara minst 10 år gammal',
+            'month.integer' => 'Vänligen välj en giltig månad',
+            'month.between' => 'Månad måste vara mellan 1 och 12',
+            'day.integer' => 'Vänligen välj en giltig dag',
+            'day.between' => 'Dag måste vara mellan 1 och 31',
+            'email.regex' => 'Vänligen ange en giltig e-postadress',
+            'email-confirm.regex' => 'Vänligen ange en giltig bekräftelse-e-postadress'
+        ];
+
+        return $request->validate([
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
-            'country' => 'required',
+            'country' => 'required|integer|exists:countries,country_id',
             'tel' => 'required|string|max:100',
             'street-address' => 'required|string|max:100',
             'postal-code' => 'required|string|max:100',
             'city' => 'required|string|max:100',
             'email' => 'required|regex:/(.+)@(.+)\.(.+)/i',
             'email-confirm' => 'required|regex:/(.+)@(.+)\.(.+)/i',
-            'year' => 'required',
-            'month' => 'required',
-            'day' => 'required'
-        ]);
+            'year' => 'required|integer|between:1950,' . date('Y', strtotime('-10 year')),
+            'month' => 'required|integer|between:1,12',
+            'day' => 'required|integer|between:1,31'
+        ], $messages);
     }
 
     private function isRegistrationOpen(Event $event): bool

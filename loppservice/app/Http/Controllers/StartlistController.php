@@ -16,7 +16,6 @@ class StartlistController extends Controller
         $use_stripe = env("USE_STRIPE_PAYMENT_INTEGRATION");
         $event = Event::where('event_uid', $request['eventuid'])->get()->first();
 
-        ;
         if($event->eventconfiguration->use_stripe_payment) {
             $startlist = DB::table('registrations')
                 ->join('orders', 'orders.registration_uid', '=', 'registrations.registration_uid')
@@ -24,25 +23,58 @@ class StartlistController extends Controller
                 ->join('adress', 'adress.person_person_uid', '=', 'person.person_uid')
                 ->join('countries', 'countries.country_id', '=', 'adress.country_id')
                 ->join('clubs', 'clubs.club_uid', '=', 'registrations.club_uid')
-                ->select('registrations.*', 'person.*', 'adress.*', 'countries.*', 'clubs.name AS club_name')
-                ->where('course_uid', $course_uid)->where('reservation', 0)
-                ->where('payment_status', 'paid')->orderBy("surname")->distinct()
+                ->select(
+                    'registrations.registration_uid',
+                    'registrations.course_uid',
+                    'registrations.startnumber',
+                    'registrations.additional_information',
+                    'person.firstname',
+                    'person.surname',
+                    'person.birthdate',
+                    'adress.city',
+                    'countries.country_name_en',
+                    'countries.country_name_sv',
+                    'countries.country_code',
+                    'countries.flag_url_svg',
+                    'countries.flag_url_png',
+                    'clubs.name AS club_name'
+                )
+                ->where('registrations.course_uid', $course_uid)
+                ->where('registrations.reservation', 0)
+                ->where('orders.payment_status', 'paid')
+                ->orderBy('registrations.startnumber')
+                ->distinct()
                 ->get();
-
         } else {
             $startlist = DB::table('registrations')
                 ->join('person', 'person.person_uid', '=', 'registrations.person_uid')
                 ->join('adress', 'adress.person_person_uid', '=', 'person.person_uid')
                 ->join('countries', 'countries.country_id', '=', 'adress.country_id')
                 ->join('clubs', 'clubs.club_uid', '=', 'registrations.club_uid')
-                ->select('registrations.*', 'person.*', 'adress.*', 'countries.*', 'clubs.name AS club_name')
-                ->where('course_uid', $course_uid)->where('reservation', 0)->orderBy("surname")->distinct()
+                ->select(
+                    'registrations.registration_uid',
+                    'registrations.course_uid',
+                    'registrations.startnumber',
+                    'registrations.additional_information',
+                    'person.firstname',
+                    'person.surname',
+                    'person.birthdate',
+                    'adress.city',
+                    'countries.country_name_en',
+                    'countries.country_name_sv',
+                    'countries.country_code',
+                    'countries.flag_url_svg',
+                    'countries.flag_url_png',
+                    'clubs.name AS club_name'
+                )
+                ->where('registrations.course_uid', $course_uid)
+                ->where('registrations.reservation', 0)
+                ->orderBy('registrations.startnumber')
+                ->distinct()
                 ->get();
-
         }
 
         if ($event->event_type === 'BRM' || $event->event_type === 'BP') {
-
             return view('startlist.brmshow', ['startlista' => $startlist, 'countries' => Country::all(), 'clubs' => Club::all(), 'event' => $event]);
         } else {
             return view('startlist.show', ['startlista' => $startlist, 'countries' => Country::all(), 'clubs' => Club::all()]);
