@@ -44,29 +44,25 @@
             <fa-icon [icon]="faBroadcast"></fa-icon>
             <span class="ml-2">Publicera/Ångra publicera resultat</span>
           </button>
-          <!-- Publish button - shown when track is unpublished -->
+          <!-- Publish button - shown when track is active (unpublished) -->
           <button
-            *ngIf="currentTrackRepresentation && hasPublishLink()"
+            *ngIf="currentTrackRepresentation && currentTrackRepresentation.active === 1"
             pButton
             pRipple
-            [disabled]="($participant | async)?.length === 0"
             (click)="publishCurrentTrack()"
             [attr.data-track-uid]="currentTrackRepresentation?.track_uid"
-            class="publish-btn p-button-success"
-            [pTooltip]="($participant | async)?.length === 0 ? 'Inga deltagare på banan' : ''">
+            class="publish-btn p-button-success">
             <fa-icon [icon]="faBroadcast" [styles]="{'color': '#ffffff'}"></fa-icon>
             <span class="ml-2">Publicera resultat</span>
           </button>
-          <!-- Unpublish button - shown when track is published -->
+          <!-- Unpublish button - shown when track is inactive (published) -->
           <button
-            *ngIf="currentTrackRepresentation && hasUnpublishLink()"
+            *ngIf="currentTrackRepresentation && currentTrackRepresentation.active === 0"
             pButton
             pRipple
-            [disabled]="($participant | async)?.length === 0"
             (click)="publishCurrentTrack()"
             [attr.data-track-uid]="currentTrackRepresentation?.track_uid"
-            class="unpublish-btn p-button-danger"
-            [pTooltip]="($participant | async)?.length === 0 ? 'Inga deltagare på banan' : ''">
+            class="unpublish-btn p-button-danger">
             <fa-icon [icon]="faBroadcast" [styles]="{'color': '#ffffff'}"></fa-icon>
             <span class="ml-2">Ångra publicera</span>
           </button>
@@ -77,8 +73,8 @@
             label="Exportera homologation"
             (click)="exportHomologation()"
             class="p-button-success"
-            [disabled]="!participantComponentService.getCurrentTrackUid() || !hasUnpublishLink()"
-            [pTooltip]="!hasUnpublishLink() ? 'Banan måste vara publicerad först' : ''">
+            [disabled]="!participantComponentService.getCurrentTrackUid() || currentTrackRepresentation?.active === 1"
+            [pTooltip]="currentTrackRepresentation?.active === 1 ? 'Banan måste vara publicerad först' : ''">
           </button>
         </div>
       </div>

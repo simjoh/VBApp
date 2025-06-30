@@ -14,15 +14,33 @@ import {RusaPlannerResponseRepresentation, RusaTimeRepresentation} from './api/r
 export class TrackService {
 
 
-  $currentTrackSubject = new BehaviorSubject("");
+  $currentTrackSubject = new BehaviorSubject<string | null>(null);
   $currentTrack = this.$currentTrackSubject.asObservable().pipe(
     map((val) => {
       return val;
     })
   );
 
+  // Add a new subject for track representation
+  private currentTrackRepresentationSubject = new BehaviorSubject<TrackRepresentation | null>(null);
+  currentTrackRepresentation$ = this.currentTrackRepresentationSubject.asObservable();
+
   constructor(private httpClient: HttpClient, private linkService: LinkService) { }
 
+  private normalizeTrackData(track: TrackRepresentation): TrackRepresentation {
+    if (track) {
+      // Convert active to number (1 or 0)
+      if (typeof track.active === 'boolean') {
+        track.active = track.active ? 1 : 0;
+      } else if (typeof track.active === 'string') {
+        track.active = track.active === 'true' ? 1 : track.active === 'false' ? 0 : Number(track.active);
+      } else {
+        track.active = Number(track.active);
+      }
+      console.log('Normalized track active state:', track.active);
+    }
+    return track;
+  }
 
   allTracks$ = this.getAllTracks();
 
@@ -46,10 +64,10 @@ export class TrackService {
     return this.httpClient.get<Array<TrackRepresentation>>(environment.backend_url + path).pipe(
       take(1),
       map((tracks: Array<TrackRepresentation>) => {
-        return tracks;
+        return tracks.map(track => this.normalizeTrackData(track));
       }),
       tap((tracks: Array<TrackRepresentation>) => {
-        console.log(tracks);
+        console.log('Normalized tracks:', tracks);
       }),
       shareReplay(1)
     ) as Observable<Array<TrackRepresentation>>;
@@ -68,33 +86,75 @@ export class TrackService {
       })
   }
 
-  async  publishresultaction(link: Link): Promise<any>{
+  async publishresultaction(link: Link): Promise<TrackRepresentation> {
     if (!link) {
       throw new Error('Link not found - cannot perform publish action');
     }
     console.log('Making PUT request to:', link.url, 'with method:', link.method);
-    return await  this.httpClient.put(link.url,{},  {})
-      .pipe(
+
+    try {
+      // First make the publish/unpublish request
+      await this.httpClient.put(link.url, {}, {}).pipe(
         catchError(err => {
           console.error('PUT request failed:', err);
-          return throwError(err);
+          return throwError(() => err);
         })
-      ).toPromise().then((res) => {
-        console.log('PUT request successful:', res);
-        return res
-      });
+      ).toPromise();
+
+      // Extract track_uid from the URL
+      const match = link.url.match(/\/track\/([^/?]+)/);
+      if (!match) {
+        throw new Error('Could not extract track ID from URL');
+      }
+      const trackUid = match[1];
+
+      // Then fetch the updated track data
+      return await this.getTrack(trackUid).pipe(
+        take(1),
+        map(track => {
+          console.log('Track fetched after publish action:', track);
+          return track;
+        })
+      ).toPromise();
+    } catch (error) {
+      console.error('Error in publish action:', error);
+      throw error;
+    }
   }
 
   public deletelinkExists(track: TrackRepresentation): boolean {
      return this.linkService.exists(track.links,'relation.track.delete' , 'DELETE');
   }
 
-  public currentTrack(trackUid: string){
+  public currentTrack(trackUid: string | null) {
+    // Don't make API calls for null/empty track IDs
+    if (!trackUid || trackUid === '') {
+      this.$currentTrackSubject.next(null);
+      this.currentTrackRepresentationSubject.next(null);
+      return;
+    }
+
     this.$currentTrackSubject.next(trackUid);
+    this.getTrack(trackUid).subscribe({
+      next: (track) => {
+        this.currentTrackRepresentationSubject.next(track);
+      },
+      error: (error) => {
+        console.error('Error loading track:', error);
+        // Reset state on error
+        this.$currentTrackSubject.next(null);
+        this.currentTrackRepresentationSubject.next(null);
+      }
+    });
   }
 
-  public getCurrentTrackUid(): string {
-    return this.$currentTrackSubject.getValue();
+  public getCurrentTrackUid(): string | null {
+    const trackUid = this.$currentTrackSubject.getValue();
+    return trackUid && trackUid !== '' ? trackUid : null;
+  }
+
+  public getCurrentTrackRepresentation(): TrackRepresentation | null {
+    return this.currentTrackRepresentationSubject.getValue();
   }
 
   publishReultLinkExists(track: TrackRepresentation) {
@@ -102,8 +162,7 @@ export class TrackService {
   }
 
 
-  async undopublishresult(trackRepresentation: TrackRepresentation) {
-    // Try the old format first since we can see it in the links
+  async undopublishresult(trackRepresentation: TrackRepresentation): Promise<TrackRepresentation> {
     const link = this.linkService.findByRel(trackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT);
     console.log('Undopublish link found:', link);
     if (!link) {
@@ -114,8 +173,7 @@ export class TrackService {
     return result;
   }
 
-  async publishresult(trackRepresentation: TrackRepresentation) {
-    // Try the old format first since we can see it in the links
+  async publishresult(trackRepresentation: TrackRepresentation): Promise<TrackRepresentation> {
     const link = this.linkService.findByRel(trackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
     console.log('Publish link found:', link);
     if (!link) {
@@ -143,11 +201,22 @@ export class TrackService {
   }
 
   public getTrack(trackUid: string): Observable<TrackRepresentation> {
+    if (!trackUid || trackUid === '') {
+      return throwError(() => new Error('Invalid track ID'));
+    }
+
     const path = 'track/' + trackUid;
     return this.httpClient.get<TrackRepresentation>(environment.backend_url + path).pipe(
       take(1),
       map((track: TrackRepresentation) => {
-        return track;
+        const normalizedTrack = this.normalizeTrackData(track);
+        this.currentTrackRepresentationSubject.next(normalizedTrack);
+        return normalizedTrack;
+      }),
+      catchError((error) => {
+        console.error('Error fetching track:', error);
+        this.currentTrackRepresentationSubject.next(null);
+        return throwError(() => error);
       })
     );
   }

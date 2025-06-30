@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, Output, EventEmitter, ChangeDetectorRef} from '@angular/core';
 import {TracktableComponentService} from "./tracktable-component.service";
 import {TrackRepresentation} from "../../api/api";
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -29,7 +29,12 @@ export class TrackTableComponent implements OnInit, OnChanges {
   @Input() readonly : boolean;
   @Input() tracks: TrackRepresentation[];
 
-  constructor(private tracktablecomponentService: TracktableComponentService,public dialogService: DialogService, private link: LinkService) { }
+  constructor(
+    private tracktablecomponentService: TracktableComponentService,
+    public dialogService: DialogService,
+    private link: LinkService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
   //  this.tracktablecomponentService.initiateTracks(this.tracks);
@@ -103,11 +108,12 @@ export class TrackTableComponent implements OnInit, OnChanges {
 
       console.log('Publishing track - API call successful, reloading...');
 
-      // Add a delay to ensure the backend transaction is fully committed
+      // Add a minimal delay to ensure the backend transaction is committed
       setTimeout(() => {
         console.log('Reloading data after publish action...');
         this.reload.emit(trackRepresentation.track_uid);
-      }, 300);
+        this.cdr.detectChanges(); // Force change detection
+      }, 100);
 
     } catch (error) {
       console.error('Error publishing/unpublishing track:', error);

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef} from '@angular/core';
 import {ParticipantComponentService} from "../participant-component.service";
 import {map, startWith} from "rxjs/operators";
 import {ParticipantInformationRepresentation, ParticipantRepresentation, TrackRepresentation} from "../../../shared/api/api";
@@ -54,7 +54,8 @@ export class ParticipantTableComponent implements OnInit {
     private competitorInfoService: CompetitorInfoService,
     private messageService: MessageService,
     private trackService: TrackService,
-    private linkService: LinkService
+    private linkService: LinkService,
+    private cdr: ChangeDetectorRef
   ) {
   }
 
@@ -64,17 +65,11 @@ export class ParticipantTableComponent implements OnInit {
     ).subscribe(data => this.participantComponentService.reload());
     this.$serachDisabledSubject.next(true);
 
-    // Subscribe to track changes
-    this.participantComponentService.$currentTrackUid.subscribe(trackUid => {
-      console.log('Current track UID:', trackUid);
-      if (trackUid) {
-        this.trackService.getTrack(trackUid).subscribe(track => {
-          console.log('Loaded track:', track);
-          this.currentTrackRepresentation = track;
-        });
-      } else {
-        this.currentTrackRepresentation = null;
-      }
+    // Subscribe to track representation changes
+    this.trackService.currentTrackRepresentation$.subscribe(track => {
+      console.log('Track representation updated:', track);
+      this.currentTrackRepresentation = track;
+      this.cdr.detectChanges(); // Force change detection
     });
   }
 
@@ -377,68 +372,57 @@ export class ParticipantTableComponent implements OnInit {
       if (publishButton) publishButton.disabled = true;
       if (unpublishButton) unpublishButton.disabled = true;
 
-      // Check which links are available
-      const hasPublishLink = this.hasPublishLink();
-      const hasUnpublishLink = this.hasUnpublishLink();
+      try {
+        // Check which action to perform based on current state
+        // active=1 means unpublished, active=0 means published
+        const isCurrentlyPublished = this.currentTrackRepresentation.active === 0;
+        let updatedTrack: TrackRepresentation;
 
-      // Decide action based on available links
-      if (hasPublishLink && !hasUnpublishLink) {
-        // Track is inactive (unpublished), we should publish it
-        await this.trackService.publishresult(this.currentTrackRepresentation);
-      } else if (!hasPublishLink && hasUnpublishLink) {
-        // Track is active (published), we should unpublish it
-        await this.trackService.undopublishresult(this.currentTrackRepresentation);
-      } else if (hasPublishLink && hasUnpublishLink) {
-        // Both links exist - this shouldn't happen, but let's handle it
-        console.error('Both publish and unpublish links exist - inconsistent state');
-        // Default to publish since we have a publish link
-        await this.trackService.publishresult(this.currentTrackRepresentation);
-      } else {
-        // No relevant links exist
-        throw new Error('No publish or unpublish links available for this track');
-      }
+        if (isCurrentlyPublished) {
+          // Track is published (active=0), so we should unpublish it
+          // We send publish=true to set active=1 (unpublished)
+          updatedTrack = await this.trackService.publishresult(this.currentTrackRepresentation);
+        } else {
+          // Track is unpublished (active=1), so we should publish it
+          // We send publish=false to set active=0 (published)
+          updatedTrack = await this.trackService.undopublishresult(this.currentTrackRepresentation);
+        }
 
-      console.log('Publishing track - API call successful, reloading...');
+        console.log('Publishing track - API call successful:', updatedTrack);
 
-      // Add a delay to ensure the backend transaction is fully committed
-      setTimeout(() => {
-        console.log('Reloading data after publish action...');
-        // Reload the track to get updated links
-        this.trackService.getTrack(trackUid).subscribe(track => {
-          console.log('Track reloaded:', track);
-          this.currentTrackRepresentation = track;
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Track publish status updated'
-          });
-          // Also reload the participant list
-          this.participantComponentService.reload();
+        // Update the current track representation with the response
+        this.currentTrackRepresentation = updatedTrack;
+
+        // Show success message
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: updatedTrack.active === 0 ? 'Track published successfully' : 'Track unpublished successfully'
         });
-      }, 300);
 
+        // Also reload the participant list
+        this.participantComponentService.reload();
+        this.cdr.detectChanges(); // Force change detection
+
+      } catch (error) {
+        console.error('Error publishing/unpublishing track:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to update track publish status'
+        });
+      } finally {
+        // Re-enable buttons after operation
+        if (publishButton) publishButton.disabled = false;
+        if (unpublishButton) unpublishButton.disabled = false;
+      }
     } catch (error) {
-      console.error('Error publishing/unpublishing track:', error);
+      console.error('Error in publish operation:', error);
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
-        detail: 'Failed to update track publish status'
+        detail: 'An unexpected error occurred'
       });
-      // Still reload to refresh the state even on error
-      const trackUid = this.currentTrackRepresentation.track_uid;
-      this.trackService.getTrack(trackUid).subscribe(track => {
-        this.currentTrackRepresentation = track;
-      });
-    } finally {
-      // Re-enable buttons after operation
-      setTimeout(() => {
-        const trackUid = this.currentTrackRepresentation.track_uid;
-        const publishButton = document.querySelector(`[data-track-uid="${trackUid}"].publish-btn`) as HTMLButtonElement;
-        const unpublishButton = document.querySelector(`[data-track-uid="${trackUid}"].unpublish-btn`) as HTMLButtonElement;
-
-        if (publishButton) publishButton.disabled = false;
-        if (unpublishButton) unpublishButton.disabled = false;
-      }, 200);
     }
   }
 }

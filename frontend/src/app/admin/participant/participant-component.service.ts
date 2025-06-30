@@ -7,7 +7,7 @@ import {
   TrackRepresentation
 } from "../../shared/api/api";
 import {TrackService} from "../../shared/track-service";
-import {map, mergeMap, startWith, take} from "rxjs/operators";
+import {map, mergeMap, startWith, take, catchError} from "rxjs/operators";
 import { ParticipantService } from 'src/app/shared/participant.service';
 
 @Injectable()
@@ -34,16 +34,30 @@ export class ParticipantComponentService {
 
   $participantsfortrack = combineLatest(([this.$reloadparticipants.pipe(startWith('timer start')), this.trackService.$currentTrack])).pipe(
    mergeMap(([checkin ,part]) => {
-     if (part === ""){
-       return [] as ParticipantInformationRepresentation[];
+     if (!part || part === "") {
+       return of([] as ParticipantInformationRepresentation[]);
      }
-     return this.participantService.participantsForTrackExtended(part).pipe(
-       map((participants) => {
-         return participants;
+     // First get the track data to ensure we have the latest links
+     return this.trackService.getTrack(part).pipe(
+       catchError(error => {
+         console.error('Error loading track:', error);
+         return of([] as ParticipantInformationRepresentation[]);
+       }),
+       mergeMap(track => {
+         // Then get the participants
+         return this.participantService.participantsForTrackExtended(part).pipe(
+           map((participants) => {
+             return participants;
+           }),
+           catchError(error => {
+             console.error('Error loading participants:', error);
+             return of([] as ParticipantInformationRepresentation[]);
+           })
+         );
        })
-     ) as Observable<ParticipantInformationRepresentation[]>;
+     );
    })
-    )as Observable<ParticipantInformationRepresentation[]>;
+  ) as Observable<ParticipantInformationRepresentation[]>;
 
 
   // $participantsfortrack = this.trackService.$currentTrack.pipe(

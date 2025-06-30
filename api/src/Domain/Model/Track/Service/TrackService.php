@@ -77,11 +77,12 @@ class TrackService extends ServiceAbstract
         $permissions = $this->getPermissions($currentuserUid);
         $track = $this->trackRepository->getTrackByUid($trackUid);
 
-
-//        print_r($track);
+        // If track is not found, throw an exception
+        if ($track === null) {
+            throw new BrevetException("Track not found with ID: " . $trackUid, 404);
+        }
 
         $isracePassed = $this->trackRepository->isRacePassed($trackUid);
-
         
         error_log("Final active status: " . var_export($track->isActive(), true));
         return $this->trackAssembly->toRepresentation($track, $permissions, $currentuserUid);
@@ -450,20 +451,20 @@ class TrackService extends ServiceAbstract
         $connection->beginTransaction();
         
         try {
-            // Use the $publish parameter to determine what to do
-            if ($publish === true || $publish === "true") {
-                // Publishing results - set track as active
-                error_log("Setting track as active (publish=true)");
-                $this->trackRepository->setInactive($track_uid, 1);
-            } else {
-                // Unpublishing results - set track as inactive
-                error_log("Setting track as inactive (publish=false)");
-                $this->trackRepository->setInactive($track_uid, 0);
-            }
+            // When publishing (publish=true), set active=0 (published)
+            // When unpublishing (publish=false), set active=1 (unpublished)
+            $newActiveState = ($publish === true || $publish === "true") ? 0 : 1;
+            error_log("Setting track active state to: " . $newActiveState);
+            
+            $this->trackRepository->setInactive($track_uid, $newActiveState);
 
             // Commit the transaction
             $connection->commit();
             error_log("Transaction committed successfully");
+            
+            // Return the updated track representation
+            $permissions = $this->getPermissions($currentuserUid);
+            return $this->trackAssembly->toRepresentation($this->trackRepository->getTrackByUid($track_uid), $permissions, $currentuserUid);
             
         } catch (\Exception $e) {
             // Rollback the transaction on any error

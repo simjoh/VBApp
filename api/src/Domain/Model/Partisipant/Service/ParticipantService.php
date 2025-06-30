@@ -1031,6 +1031,7 @@ class ParticipantService extends ServiceAbstract
         $date = $startDateTime->format('Y-m-d');
         $distance = $track->getDistance();
 
+
         // Get participants data using resultOnTrack
         $participants = $this->resultRepository->resultOnTrack($track_uid);
 
@@ -1072,6 +1073,7 @@ class ParticipantService extends ServiceAbstract
         $csv->insertOne(['', $club->getTitle() ?? 'Unknown Club', '', '', $club->getAcpCode() ?? 'N/A', $date, $distance . ' km', 'Medal', 'Gender', '']);
         $csv->insertOne(['Homologation number', 'LAST NAME', 'FIRST NAME', 'RIDER\'S CLUB', '', 'ACP CODE NUMBER', 'TIME', '(x)', '(F)', 'BIRTH DATE']);
         // Add participant data rows
+
 
 
         foreach ($participants as $participant) {

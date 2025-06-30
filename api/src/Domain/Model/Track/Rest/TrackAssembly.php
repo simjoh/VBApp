@@ -74,12 +74,12 @@ class TrackAssembly
             array_push($linkArray, new Link("relation.track.delete", 'DELETE', $this->settings['path'] .'track/' . $track->getTrackUid()));
         }
 
-        if(count($participants) > 0 & $participants != null & $track->isActive() == false){
-            array_push($linkArray, new Link("relation.track.publisresults", 'PUT', $this->settings['path'] .'publishresults/track/' . $track->getTrackUid() . "?publish=true"));
-        }
+        array_push($linkArray, new Link("relation.track.publisresults", 'PUT', $this->settings['path'] .'publishresults/track/' . $track->getTrackUid() . "?publish=true"));
+        array_push($linkArray, new Link("relation.track.undopublisresults", 'PUT', $this->settings['path'] .'publishresults/track/' . $track->getTrackUid(). "?publish=false"));
+        array_push($linkArray, new Link("relation.track.exportstartlist", 'GET', $this->settings['path'] .'participants/track/' . $track->getTrackUid() . '/startlist/export'));
 
-        if($track->isActive() == true &&  count($participants) > 0){
-            array_push($linkArray, new Link("relation.track.undopublisresults", 'PUT', $this->settings['path'] .'publishresults/track/' . $track->getTrackUid(). "?publish=false"));
+        if($track->isActive() == false) {
+            array_push($linkArray, new Link("relation.track.exporthomologation", 'GET', $this->settings['path'] .'participants/track/' . $track->getTrackUid() . '/report/export'));
         }
 
         array_push($linkArray, new Link("relation.track.tracktrack", 'GET', $this->settings['path'] . 'tracker/track/' . $track->getTrackUid()));
