@@ -6,12 +6,12 @@ import {PermissionAdminComponent} from "./permission-admin/permission-admin.comp
 
 const routes: Routes = [
   {
-    path: 'user',
+    path: '',
     component: UserAdminComponent,
     children: [
       { path: 'brevet-user-list', component:  UserListComponent},
       { path: 'brevet-permissions', component:  PermissionAdminComponent},
-      { path: '**', redirectTo: 'brevet-user-list'},
+      { path: '', redirectTo: 'brevet-user-list', pathMatch: 'full'},
     ]
   }];
 

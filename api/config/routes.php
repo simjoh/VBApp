@@ -1,6 +1,7 @@
 <?php
 
 use App\Middleware\ApiKeyValidatorMiddleware;
+use App\Middleware\TokenMiddleware;
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
 
@@ -128,6 +129,8 @@ return function (App $app) {
 
         // Ingångar för statistik
         // ingång för dashboard
+        $app->get('/participants/stats', \App\Action\Participant\ParticipantAction::class . ':getParticipantStats');
+        $app->get('/participants/top-tracks', \App\Action\Participant\ParticipantAction::class . ':getTopTracks');
 
         // Deltagare på olika banor och event
         $app->get('/participants/event/{eventUid}', \App\Action\Participant\ParticipantAction::class. ':participantOnEvent');

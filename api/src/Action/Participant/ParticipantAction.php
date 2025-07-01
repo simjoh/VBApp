@@ -589,6 +589,25 @@ class ParticipantAction
             ->withBody($stream);
     }
 
+    public function getParticipantStats(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $date = date('Y-m-d');  // Use current date
+        error_log("Getting stats for date: " . $date);
+        $stats = $this->participantService->getParticipantStats($date);
+        
+        $response->getBody()->write(json_encode($stats));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+    public function getTopTracks(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        error_log("Getting top tracks");
+        $tracks = $this->participantService->getTopTracks();
+        error_log("Top tracks result: " . json_encode($tracks));
+        $response->getBody()->write(json_encode($tracks));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
     function moveUploadedFile($directory, UploadedFile $uploadedFile)
     {
         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);

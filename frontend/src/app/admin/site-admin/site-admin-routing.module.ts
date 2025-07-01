@@ -6,11 +6,11 @@ import { SiteListComponent } from './site-list/site-list.component';
 
 const routes: Routes = [
   {
-    path: 'sites',
+    path: '',
     component: SiteAdminComponent,
     children: [
       { path: 'brevet-site-list', component:  SiteListComponent},
-      { path: '**', redirectTo: 'brevet-site-list'},
+      { path: '', redirectTo: 'brevet-site-list', pathMatch: 'full'},
     ]
   }];
 

@@ -12,7 +12,10 @@ import {CheckboxModule} from "primeng/checkbox";
 import {EventAdminModule} from "./event-admin/event-admin.module";
 import { AdminStartComponent } from './admin-start/admin-start.component';
 import {UserAdminModule} from "./user-admin/user-admin.module";
-
+import { CardModule } from 'primeng/card';
+import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @NgModule({
   declarations: [
@@ -30,6 +33,10 @@ import {UserAdminModule} from "./user-admin/user-admin.module";
     EventAdminModule,
     AdminRoutingModule,
     UserAdminModule,
+    CardModule,
+    TableModule,
+    TagModule,
+    ProgressSpinnerModule
   ],
     exports: [AdminComponent]
 })

@@ -7,6 +7,45 @@ import {BehaviorSubject, Observable, throwError} from "rxjs";
 import {ParticipantInformationRepresentation, ParticipantRepresentation, RandonneurCheckPointRepresentation} from "./api/api";
 import {HttpMethod} from "../core/HttpMethod";
 
+export interface ParticipantStats {
+  daily: {
+    countparticipants: number;
+    started: number;
+    completed: number;
+    dnf: number;
+    dns: number;
+  };
+  weekly: {
+    countparticipants: number;
+    started: number;
+    completed: number;
+    dnf: number;
+    dns: number;
+  };
+  yearly: {
+    countparticipants: number;
+    started: number;
+    completed: number;
+    dnf: number;
+    dns: number;
+  };
+  latest_registration: {
+    participant_uid: string;
+    name: string;
+    club: string;
+    track: string;
+    registration_time: string;
+  } | null;
+}
+
+export interface TopTrack {
+  track_name: string;
+  participant_count: number;
+  first_registration: string;
+  last_registration: string;
+  organizer_name: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -240,6 +279,14 @@ export class ParticipantService {
         return throwError(err);
       })
     ).toPromise();
+  }
+
+  getParticipantStats(): Observable<ParticipantStats> {
+    return this.httpClient.get<ParticipantStats>('/api/participants/stats');
+  }
+
+  getTopTracks(timeRange: string = 'all'): Observable<TopTrack[]> {
+    return this.httpClient.get<TopTrack[]>(`/api/participants/top-tracks?timeRange=${timeRange}`);
   }
 
 }

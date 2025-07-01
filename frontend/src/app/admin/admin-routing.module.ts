@@ -3,12 +3,17 @@ import { RouterModule, Routes } from '@angular/router';
 import {AdminComponent} from "./admin.component";
 import {AuthenticatedGuard} from "../core/auth/authenticated.guard";
 import {AdminStartComponent} from "./admin-start/admin-start.component";
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 const routes: Routes = [{
   path: 'admin',
   component: AdminComponent,
   canActivate: [AuthenticatedGuard],
   children: [
+    {
+      path: 'dashboard',
+      component: DashboardComponent
+    },
     {
       path: 'participant',
       loadChildren: () => import('./participant/participant.module').then(m => m.ParticipantModule),
@@ -38,13 +43,7 @@ const routes: Routes = [{
       loadChildren: () => import('./organizer-admin/organizer-admin.module').then(m => m.OrganizerAdminModule),
     },
     { path: 'brevet-admin-start', component: AdminStartComponent },
-    // { path: 'brevet-site-admin', component: SiteAdminComponent},
-    // { path: 'brevet-kontroller-combiner', component: KontrollerCombinerComponent},
-    // // { path: 'brevet-user-admin', component: UserAdminComponent },
-    // { path: 'brevet-dashboard', component: DashboardComponent },
-    // { path: 'brevet-site-admin', component: SiteAdminComponent},
-    // { path: 'brevet-event-admin', component: EventAdminComponent},
-    // { path: '**', redirectTo: 'brevet-admin-start'},
+    { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
   ]
 }
 ];

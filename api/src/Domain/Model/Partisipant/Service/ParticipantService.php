@@ -32,6 +32,8 @@ use App\common\GlobalConfig;
 use League\Csv\Writer;
 use App\Domain\Model\Result\Repository\ResultRepository;
 use App\Domain\Model\Organizer\Repository\OrganizerRepository;
+use PDO;
+use PDOException;
 
 class ParticipantService extends ServiceAbstract
 {
@@ -53,6 +55,7 @@ class ParticipantService extends ServiceAbstract
     private $settings;
     private $resultRepository;
     private $organizerRepository;
+    private $connection;
 
     public function __construct(
         ContainerInterface             $c,
@@ -71,7 +74,8 @@ class ParticipantService extends ServiceAbstract
         RandonneurService $randonneurService,
         CountryRepository $countryRepository,
         ResultRepository $resultRepository,
-        OrganizerRepository $organizerRepository
+        OrganizerRepository $organizerRepository,
+        PDO $connection
     ) {
         $this->trackRepository = $trackRepository;
         $this->participantRepository = $participantRepository;
@@ -90,6 +94,7 @@ class ParticipantService extends ServiceAbstract
         $this->countryrepository = $countryRepository;
         $this->resultRepository = $resultRepository;
         $this->organizerRepository = $organizerRepository;
+        $this->connection = $connection;
     }
 
 
@@ -1226,5 +1231,231 @@ class ParticipantService extends ServiceAbstract
             'filename' => $filename,
             'content' => $csv->toString()
         ];
+    }
+
+    public function getParticipantStats(string $date): array
+    {
+        try {
+            // Get daily stats
+            $dailyStats = $this->getDailyStats($date);
+            
+            // Get weekly stats (last 7 days including today)
+            $weeklyStats = $this->getWeeklyStats($date);
+
+            // Get yearly stats
+            $yearlyStats = $this->getYearlyStats($date);
+
+            // Get latest registration
+            $latestRegistration = $this->getLatestRegistration();
+            
+            return [
+                'daily' => $dailyStats,
+                'weekly' => $weeklyStats,
+                'yearly' => $yearlyStats,
+                'latest_registration' => $latestRegistration
+            ];
+        } catch (PDOException $e) {
+            error_log("Error getting participant stats: " . $e->getMessage());
+            return [
+                'daily' => [
+                    'countparticipants' => 0,
+                    'started' => 0,
+                    'completed' => 0,
+                    'dnf' => 0,
+                    'dns' => 0
+                ],
+                'weekly' => [
+                    'countparticipants' => 0,
+                    'started' => 0,
+                    'completed' => 0,
+                    'dnf' => 0,
+                    'dns' => 0
+                ],
+                'yearly' => [
+                    'countparticipants' => 0,
+                    'started' => 0,
+                    'completed' => 0,
+                    'dnf' => 0,
+                    'dns' => 0
+                ],
+                'latest_registration' => null
+            ];
+        }
+    }
+
+    private function getDailyStats(string $date): array
+    {
+        $sql = "SELECT 
+                COUNT(*) as countparticipants,
+                COALESCE(SUM(p.started), 0) as started,
+                COALESCE(SUM(p.finished), 0) as completed,
+                COALESCE(SUM(p.dnf), 0) as dnf,
+                COALESCE(SUM(p.dns), 0) as dns
+            FROM participant p
+            JOIN track t ON t.track_uid = p.track_uid
+            WHERE DATE(p.register_date_time) = DATE(:date)";
+
+        error_log("Daily stats query for date: " . $date);
+        error_log("SQL: " . $sql);
+        
+        $statement = $this->connection->prepare($sql);
+        $statement->bindParam(':date', $date);
+        $statement->execute();
+        
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        error_log("Daily stats result: " . json_encode($result));
+        
+        return $result ?: [
+            'countparticipants' => 0,
+            'started' => 0,
+            'completed' => 0,
+            'dnf' => 0,
+            'dns' => 0
+        ];
+    }
+
+    private function getWeeklyStats(string $date): array
+    {
+        $sql = "SELECT 
+                COUNT(*) as countparticipants,
+                COALESCE(SUM(p.started), 0) as started,
+                COALESCE(SUM(p.finished), 0) as completed,
+                COALESCE(SUM(p.dnf), 0) as dnf,
+                COALESCE(SUM(p.dns), 0) as dns
+            FROM participant p
+            JOIN track t ON t.track_uid = p.track_uid
+            WHERE p.register_date_time >= DATE_SUB(:date, INTERVAL 6 DAY)
+            AND p.register_date_time < DATE_ADD(DATE(:date), INTERVAL 1 DAY)";
+
+        error_log("Weekly stats query for date: " . $date);
+        error_log("SQL: " . $sql);
+        
+        $statement = $this->connection->prepare($sql);
+        $statement->bindParam(':date', $date);
+        $statement->execute();
+        
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        error_log("Weekly stats result: " . json_encode($result));
+        
+        return $result ?: [
+            'countparticipants' => 0,
+            'started' => 0,
+            'completed' => 0,
+            'dnf' => 0,
+            'dns' => 0
+        ];
+    }
+
+    private function getYearlyStats(string $date): array
+    {
+        $sql = "SELECT 
+                COUNT(*) as countparticipants,
+                COALESCE(SUM(p.started), 0) as started,
+                COALESCE(SUM(p.finished), 0) as completed,
+                COALESCE(SUM(p.dnf), 0) as dnf,
+                COALESCE(SUM(p.dns), 0) as dns
+            FROM participant p
+            JOIN track t ON t.track_uid = p.track_uid
+            WHERE YEAR(p.register_date_time) = YEAR(:date)";
+
+        error_log("Yearly stats query for date: " . $date);
+        error_log("SQL: " . $sql);
+        
+        $statement = $this->connection->prepare($sql);
+        $statement->bindParam(':date', $date);
+        $statement->execute();
+        
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        error_log("Yearly stats result: " . json_encode($result));
+        
+        return $result ?: [
+            'countparticipants' => 0,
+            'started' => 0,
+            'completed' => 0,
+            'dnf' => 0,
+            'dns' => 0
+        ];
+    }
+
+    private function getLatestRegistration(): ?array
+    {
+        $sql = "SELECT 
+                p.*,
+                c.given_name,
+                c.family_name,
+                cl.title as club_name,
+                t.title as track_name
+            FROM participant p
+            JOIN track t ON t.track_uid = p.track_uid
+            LEFT JOIN competitors c ON c.competitor_uid = p.competitor_uid
+            LEFT JOIN club cl ON cl.club_uid = p.club_uid
+            ORDER BY p.register_date_time DESC
+            LIMIT 1";
+
+        $statement = $this->connection->prepare($sql);
+        $statement->execute();
+        
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$result) {
+            return null;
+        }
+
+        return [
+            'participant_uid' => $result['participant_uid'],
+            'name' => $result['given_name'] . ' ' . $result['family_name'],
+            'club' => $result['club_name'] ?? 'No Club',
+            'track' => $result['track_name'],
+            'registration_time' => $result['register_date_time']
+        ];
+    }
+
+    public function getTopTracks(): array
+    {
+        try {
+            $sql = "WITH recent_registrations AS (
+                SELECT 
+                    t.track_uid,
+                    t.title as track_name,
+                    COUNT(DISTINCT p.participant_uid) as total_participants,
+                    COUNT(DISTINCT CASE WHEN p.register_date_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN p.participant_uid END) as recent_registrations,
+                    MIN(CASE WHEN p.register_date_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN p.register_date_time END) as recent_first_registration,
+                    MAX(CASE WHEN p.register_date_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN p.register_date_time END) as recent_last_registration,
+                    o.organization_name as organizer_name,
+                    t.active
+                FROM track t
+                LEFT JOIN participant p ON t.track_uid = p.track_uid
+                LEFT JOIN organizers o ON t.organizer_id = o.id
+                GROUP BY t.track_uid, t.title, o.organization_name, t.active
+            )
+            SELECT 
+                track_name,
+                total_participants as participant_count,
+                recent_registrations as registrations_last_30_days,
+                recent_first_registration as first_registration,
+                recent_last_registration as last_registration,
+                organizer_name,
+                active
+            FROM recent_registrations 
+            WHERE recent_registrations > 0
+            ORDER BY total_participants DESC
+            LIMIT 5";
+
+            error_log("Executing top tracks query: " . $sql);
+            
+            $statement = $this->connection->prepare($sql);
+            $statement->execute();
+            
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Log the raw result
+            error_log("Raw top tracks result: " . json_encode($result));
+            
+            return $result;
+            
+        } catch (\Exception $e) {
+            error_log("Error in getTopTracks: " . $e->getMessage());
+            return [];
+        }
     }
 }

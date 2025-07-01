@@ -5,11 +5,11 @@ import {EventListComponent} from "./event-list/event-list.component";
 
 const routes: Routes = [
   {
-    path: 'events',
+    path: '',
     component: EventAdminComponent,
     children: [
       { path: 'brevet-event-list', component:  EventListComponent},
-      { path: '**', redirectTo: 'brevet-event-list'},
+      { path: '', redirectTo: 'brevet-event-list', pathMatch: 'full'},
     ]
   }];
 

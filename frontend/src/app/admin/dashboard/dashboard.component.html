@@ -1,5 +1,177 @@
 <div class="container">
-<div class="alert alert-danger" role="alert">
-  Inte implementerad ännu
+  <ng-container *ngIf="stats$ | async as stats">
+    <!-- Statistics Cards -->
+    <div class="grid" style="max-width: 1200px; margin-left: 0;">
+      <!-- Events and Tracks Row -->
+      <div class="col-12">
+        <div class="grid">
+          <div class="col-12 md:col-6">
+            <div class="surface-0 shadow-2 p-3 border-1 border-50 border-round">
+              <div class="flex justify-content-between mb-3">
+                <div>
+                  <span class="block text-500 font-medium mb-3">Totalt antal evenemang</span>
+                  <div class="text-900 font-medium text-xl">{{ stats.totalEvents }}</div>
+                </div>
+                <div class="flex align-items-center justify-content-center bg-blue-100 border-round" style="width:2.5rem;height:2.5rem">
+                  <i class="pi pi-calendar text-blue-500 text-xl"></i>
+                </div>
+              </div>
+              <span class="text-500">Aktiva: {{ stats.activeEvents }}</span>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-6">
+            <div class="surface-0 shadow-2 p-3 border-1 border-50 border-round">
+              <div class="flex justify-content-between mb-3">
+                <div>
+                  <span class="block text-500 font-medium mb-3">Totalt antal banor</span>
+                  <div class="text-900 font-medium text-xl">{{ stats.totalTracks }}</div>
+                </div>
+                <div class="flex align-items-center justify-content-center bg-orange-100 border-round" style="width:2.5rem;height:2.5rem">
+                  <i class="pi pi-map text-orange-500 text-xl"></i>
+                </div>
+              </div>
+              <span class="text-500">Aktiva: {{ stats.activeTracks }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Cards Row -->
+      <div class="col-12">
+        <div class="grid">
+          <div class="col-12 md:col-6 lg:col-3">
+            <div class="surface-0 shadow-2 p-3 border-1 border-50 border-round">
+              <div class="flex justify-content-between mb-3">
+                <div>
+                  <span class="block text-500 font-medium mb-3">Registered</span>
+                  <div class="text-900 font-medium text-xl">{{ stats.total }}</div>
+                </div>
+                <div class="flex align-items-center justify-content-center bg-blue-100 border-round" style="width:2.5rem;height:2.5rem">
+                  <i class="pi pi-users text-blue-500 text-xl"></i>
+                </div>
+              </div>
+              <div class="flex align-items-center justify-content-between">
+                <span class="text-500">Last 7 days: {{ stats.weeklyStats?.countparticipants }}</span>
+                <span class="text-500 font-medium">Today</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-6 lg:col-3">
+            <div class="surface-0 shadow-2 p-3 border-1 border-50 border-round">
+              <div class="flex justify-content-between mb-3">
+                <div>
+                  <span class="block text-500 font-medium mb-3">Finished</span>
+                  <div class="text-900 font-medium text-xl">{{ stats.finished }}</div>
+                </div>
+                <div class="flex align-items-center justify-content-center bg-green-100 border-round" style="width:2.5rem;height:2.5rem">
+                  <i class="pi pi-check-circle text-green-500 text-xl"></i>
+                </div>
+              </div>
+              <div class="flex flex-column">
+                <div class="flex align-items-center justify-content-between mb-2">
+                  <span class="text-500">Last 7 days: {{ stats.weeklyStats?.completed }}</span>
+                  <span class="text-500 font-medium">Today</span>
+                </div>
+                <span class="text-500">This year: {{ stats.yearlyStats?.completed }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 md:col-6 lg:col-3">
+            <div class="surface-0 shadow-2 p-3 border-1 border-50 border-round">
+              <div class="flex justify-content-between mb-3">
+                <div>
+                  <span class="block text-500 font-medium mb-3">DNS</span>
+                  <div class="text-900 font-medium text-xl">{{ stats.dns }}</div>
+                </div>
+                <div class="flex align-items-center justify-content-center bg-red-100 border-round" style="width:2.5rem;height:2.5rem">
+                  <i class="pi pi-ban text-red-500 text-xl"></i>
+                </div>
+              </div>
+              <div class="flex flex-column">
+                <div class="flex align-items-center justify-content-between mb-2">
+                  <span class="text-500">Last 7 days: {{ stats.weeklyStats?.dns }}</span>
+                  <span class="text-500 font-medium">Today</span>
+                </div>
+                <span class="text-500">This year: {{ stats.yearlyStats?.dns }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Latest Registration Card -->
+          <div class="col-12 md:col-6 lg:col-3">
+            <div class="surface-card shadow-2 p-3 border-round">
+              <div class="flex justify-content-between mb-3">
+                <div>
+                  <span class="block text-500 font-medium mb-3">Latest Registration</span>
+                  <div class="text-900 font-medium text-xl" *ngIf="stats.latestRegistration">
+                    {{ stats.latestRegistration?.name }}
+                  </div>
+                  <div class="text-600" *ngIf="stats.latestRegistration">
+                    {{ stats.latestRegistration?.club }}
+                  </div>
+                  <div class="text-600" *ngIf="stats.latestRegistration">
+                    {{ stats.latestRegistration?.track }}
+                  </div>
+                  <div class="text-500" *ngIf="stats.latestRegistration">
+                    {{ stats.latestRegistration?.registration_time | date:'short' }}
+                  </div>
+                  <div class="text-700" *ngIf="!stats.latestRegistration">
+                    No registrations yet
+                  </div>
+                </div>
+                <div class="flex align-items-center justify-content-center bg-blue-100 border-round" [style.width.rem]="2.5" [style.height.rem]="2.5">
+                  <i class="pi pi-user-plus text-blue-500 text-xl"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top 5 Tracks Section -->
+      <div class="col-12 md:col-8">
+        <div class="surface-0 shadow-2 p-3 border-1 border-50 border-round">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="text-xl font-medium">Topp 5 populära banor</span>
+            <span class="text-500">Last 30 Days</span>
+          </div>
+          <ng-container *ngIf="(stats$ | async)?.topTracks as topTracks">
+            <ul class="list-none p-0 m-0" *ngIf="topTracks.length > 0; else noTracks">
+              <li *ngFor="let track of topTracks; let i = index"
+                  class="flex justify-content-between align-items-center py-2"
+                  [ngClass]="{'border-top-1 border-50': i > 0}">
+                <div class="flex align-items-center">
+                  <span class="text-primary font-medium mr-2">{{i + 1}}.</span>
+                  <div>
+                    <span class="font-medium">{{track.track_name}}</span>
+                    <div class="text-500 text-sm">
+                      <i class="pi pi-calendar mr-1"></i>
+                      Registrations: {{track.first_registration | date:'d MMM'}} - {{track.last_registration | date:'d MMM yyyy'}}
+                    </div>
+                    <div class="text-600 text-sm">
+                      <i class="pi pi-building mr-1"></i>{{track.organizer_name || 'No organizer'}}
+                    </div>
+                  </div>
+                </div>
+                <span class="flex align-items-center">
+                  <i class="pi pi-users mr-2 text-primary"></i>
+                  <span class="font-medium">{{track.participant_count}}</span>
+                </span>
+              </li>
+            </ul>
+            <ng-template #noTracks>
+              <p class="text-gray-500 m-0">
+                <i class="pi pi-info-circle mr-2"></i>Inga banor med deltagare de senaste 30 dagarna
+              </p>
+            </ng-template>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </ng-container>
 </div>
-</div>
+
+
