@@ -1,104 +1,156 @@
 <ng-container *ngIf="$checkpoints | async as checkpoints">
-  <p-table [value]="checkpoints" styleClass="p-datatable-sm p-datatable-striped"
-           responsiveLayout="scroll">
-    <ng-template pTemplate="header">
-      <tr>
-        <th class="lg:w-1">Logga</th>
-        <th class="lg:w-auto address-column">Adress</th>
-        <th class="lg:w-2">Ort</th>
-        <th class="lg:w-1">Distans</th>
-        <th class="lg:w-1 timestamp-column">Incheckningar</th>
-        <th class="lg:w-1 timestamp-column">Utcheckningar</th>
-        <th class="lg:w-4 actions-column">Åtgärd</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-check>
-      <tr>
-        <td>
-          <p-image
-            width="40"
-            height="40"
-            [src]="check.checkpoint.site.image"
-            alt="Checkpoint Image"
-            [preview]="false"
-            imageClass="border-round">
-            <ng-template pTemplate="placeholder">
-              <div class="flex align-items-center justify-content-center w-full h-full">
-                <i class="pi pi-image text-primary-500" style="font-size: 1.5rem"></i>
-              </div>
-            </ng-template>
-          </p-image>
-        </td>
-        <td>{{check.checkpoint.site.adress}}</td>
-        <td>{{check.checkpoint.site.place}}</td>
-        <td>{{check.checkpoint.distance}}</td>
-        <td>
-          <div style="display: grid; grid-template-columns: auto 32px; align-items: center;">
-            <div *ngIf="check.stamptime"
-                 [title]="getPrettyTooltip(check.stamptime)"
-                 class="timestamp-cell">{{check.stamptime | dateTimePrettyPrint}}</div>
-            <div *ngIf="!check.stamptime">-</div>
-            <div *ngIf="check.stamptime" class="text-center">
-              <button
-                    pButton
-                    pRipple
-                    icon="pi pi-pencil"
-                    class="p-button-rounded p-button-text p-button-sm edit-icon-button"
-                    (click)="editCheckpointTime(check)"
-                    pTooltip="Ändra tid"
-                    tooltipPosition="top">
-              </button>
+  <div class="card p-0">
+    <p-table
+      [value]="checkpoints"
+      styleClass="p-datatable-sm"
+      [tableStyle]="{'min-width': '60rem', 'width': '100%'}"
+      [scrollable]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 60px">
+            <div class="flex align-items-center">
+              <span>Logga</span>
             </div>
-          </div>
-        </td>
-        <td>
-          <div style="display: grid; grid-template-columns: auto 32px; align-items: center;">
-            <div *ngIf="check.checkouttime"
-                 [title]="getPrettyTooltip(check.checkouttime)"
-                 class="timestamp-cell">{{check.checkouttime | dateTimePrettyPrint}}</div>
-            <div *ngIf="!check.checkouttime">-</div>
-            <div *ngIf="check.checkouttime" class="text-center">
-              <button
-                    pButton
-                    pRipple
-                    icon="pi pi-pencil"
-                    class="p-button-rounded p-button-text p-button-sm edit-icon-button"
-                    (click)="editCheckoutTime(check)"
-                    pTooltip="Ändra tid"
-                    tooltipPosition="top">
-              </button>
+          </th>
+          <th style="width: 30%">
+            <div class="flex align-items-center">
+              <span>Adress</span>
             </div>
-          </div>
-        </td>
-        <td class="actions-cell">
-          <div class="action-buttons-container">
-            <button pButton
-                  [disabled]="$dim | async"
-                  (click)="checkin(check)"
-                  label="{{check.stamptime ? 'Ångra': 'Checka in'}}"
-                  type="button"
-                  class="p-button-secondary">
-            </button>
+          </th>
+          <th style="width: 15%">
+            <div class="flex align-items-center">
+              <span>Ort</span>
+            </div>
+          </th>
+          <th style="width: 80px">
+            <div class="flex align-items-center">
+              <span>Distans</span>
+            </div>
+          </th>
+          <th style="width: 20%">
+            <div class="flex align-items-center">
+              <span>Incheckningar</span>
+            </div>
+          </th>
+          <th style="width: 20%">
+            <div class="flex align-items-center">
+              <span>Utcheckningar</span>
+            </div>
+          </th>
+          <th style="width: 15%">
+            <div class="flex align-items-center justify-content-center">
+              <span>Åtgärd</span>
+            </div>
+          </th>
+        </tr>
+      </ng-template>
 
-            <button pButton
-                  [disabled]="($dim | async) || (!participantcheckpoint.hasCheckoutLink(check) && !participantcheckpoint.hasRollbackCheckoutLink(check))"
-                  (click)="checkout(check)"
-                  label="{{check.checkouttime ? 'Ångra checkout': 'Checka ut'}}"
-                  type="button"
-                  class="p-button-secondary">
-            </button>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="7" class="text-center p-2">
-          <i class="pi pi-map-marker text-primary-600 align-middle" style="font-size: 0.875rem; line-height: 1"></i>
-          <span class="text-600 align-middle ml-1">Välj en bana för att se deltagare</span>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+      <ng-template pTemplate="body" let-check>
+        <tr>
+          <td class="text-center">
+            <p-image
+              width="32"
+              height="32"
+              [src]="check.checkpoint.site.image"
+              alt="Checkpoint Image"
+              [preview]="false"
+              imageClass="border-round shadow-1">
+              <ng-template pTemplate="placeholder">
+                <div class="flex align-items-center justify-content-center w-full h-full surface-200 border-round">
+                  <i class="pi pi-image text-600" style="font-size: 1rem"></i>
+                </div>
+              </ng-template>
+            </p-image>
+          </td>
+          <td>
+            <div class="flex align-items-center gap-2">
+              <i class="pi pi-map-marker text-primary"></i>
+              <span class="font-medium">{{check.checkpoint.site.adress}}</span>
+            </div>
+          </td>
+          <td>
+            <span class="font-medium">{{check.checkpoint.site.place}}</span>
+          </td>
+          <td class="text-right">
+            <span class="font-medium">{{check.checkpoint.distance}} km</span>
+          </td>
+          <td>
+            <div class="flex align-items-center justify-content-between">
+              <div class="flex align-items-center gap-2">
+                <i class="pi pi-clock text-primary" *ngIf="check.stamptime"></i>
+                <span [class.font-medium]="check.stamptime" [title]="getPrettyTooltip(check.stamptime)">
+                  {{check.stamptime ? (check.stamptime | dateTimePrettyPrint) : '-'}}
+                </span>
+              </div>
+              <button
+                *ngIf="check.stamptime"
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-text p-button-sm"
+                (click)="editCheckpointTime(check)"
+                pTooltip="Ändra tid"
+                tooltipPosition="top">
+              </button>
+            </div>
+          </td>
+          <td>
+            <div class="flex align-items-center justify-content-between">
+              <div class="flex align-items-center gap-2">
+                <i class="pi pi-clock text-primary" *ngIf="check.checkouttime"></i>
+                <span [class.font-medium]="check.checkouttime" [title]="getPrettyTooltip(check.checkouttime)">
+                  {{check.checkouttime ? (check.checkouttime | dateTimePrettyPrint) : '-'}}
+                </span>
+              </div>
+              <button
+                *ngIf="check.checkouttime"
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-text p-button-sm"
+                (click)="editCheckoutTime(check)"
+                pTooltip="Ändra tid"
+                tooltipPosition="top">
+              </button>
+            </div>
+          </td>
+          <td>
+            <div class="flex justify-content-center gap-2">
+              <button pButton
+                pRipple
+                [disabled]="$dim | async"
+                (click)="checkin(check)"
+                [icon]="check.stamptime ? 'pi pi-undo' : 'pi pi-sign-in'"
+                [label]="check.stamptime ? 'Ångra': 'Checka in'"
+                type="button"
+                class="p-button-outlined p-button-secondary p-button-sm">
+              </button>
+
+              <button pButton
+                pRipple
+                [disabled]="($dim | async) || (!participantcheckpoint.hasCheckoutLink(check) && !participantcheckpoint.hasRollbackCheckoutLink(check))"
+                (click)="checkout(check)"
+                [icon]="check.checkouttime ? 'pi pi-undo' : 'pi pi-sign-out'"
+                [label]="check.checkouttime ? 'Ångra checkout': 'Checka ut'"
+                type="button"
+                class="p-button-outlined p-button-secondary p-button-sm">
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7">
+            <div class="flex flex-column align-items-center gap-3 py-5">
+              <i class="pi pi-map-marker text-primary" style="font-size: 2rem"></i>
+              <span class="text-700">Välj en bana för att se kontrollpunkter</span>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </ng-container>
 

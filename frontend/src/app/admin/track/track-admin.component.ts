@@ -1,4 +1,5 @@
-import {ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 import {MenuItem} from "primeng/api";
 import {TrackAdminComponentService} from "./track-admin-component.service";
 
@@ -8,17 +9,18 @@ import {TrackAdminComponentService} from "./track-admin-component.service";
   styleUrls: ['./track-admin.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [TrackAdminComponentService]
-
 })
 export class TrackAdminComponent implements OnInit {
 
   designTabs = [];
   tabs = [];
 
-  constructor(private tra: TrackAdminComponentService) { }
+  constructor(
+    private router: Router,
+    private tra: TrackAdminComponentService
+  ) { }
 
   ngOnInit(): void {
-
     this.tra.init();
 
     this.tabs = [{
@@ -42,4 +44,26 @@ export class TrackAdminComponent implements OnInit {
     ] as MenuItem[];
   }
 
+  isActive(tab: string): boolean {
+    const currentUrl = this.router.url;
+    switch (tab) {
+      case 'list':
+        return currentUrl.includes('brevet-track-list');
+      case 'builder':
+        return currentUrl.includes('brevet-track-builder');
+      default:
+        return false;
+    }
+  }
+
+  navigateToTab(tab: string): void {
+    switch (tab) {
+      case 'list':
+        this.router.navigate(['/admin/banor/brevet-track-list']);
+        break;
+      case 'builder':
+        this.router.navigate(['/admin/banor/brevet-track-builder']);
+        break;
+    }
+  }
 }

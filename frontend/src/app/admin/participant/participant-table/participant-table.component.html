@@ -1,84 +1,95 @@
-<div class="card">
+<div class="card shadow-2">
+  <!-- Table Header -->
+  <div class="flex flex-column md:flex-row justify-content-between align-items-center gap-3 p-3 border-bottom-1 surface-border">
+    <!-- Search -->
+    <div class="flex align-items-center w-full md:w-auto">
+      <span class="p-input-icon-left flex-auto">
+        <i class="pi pi-search"></i>
+        <input
+          [disabled]="$searchDisabled | async"
+          pInputText
+          type="text"
+          (input)="dt1.filterGlobal($event.target.value, 'contains')"
+          placeholder="Sök deltagare..."
+          class="w-full"/>
+      </span>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-wrap gap-2 justify-content-center md:justify-content-end w-full md:w-auto">
+      <button
+        pButton
+        pRipple
+        icon="pi pi-download"
+        label="Exportera startlista"
+        (click)="exportStartList()"
+        class="p-button-outlined p-button-info"
+        [disabled]="!participantComponentService.getCurrentTrackUid()">
+      </button>
+
+      <!-- Publish/Unpublish Buttons -->
+      <button
+        *ngIf="!currentTrackRepresentation"
+        pButton
+        pRipple
+        disabled
+        class="p-button-outlined p-button-secondary"
+        pTooltip="Välj en bana först">
+        <fa-icon [icon]="faBroadcast"></fa-icon>
+        <span class="ml-2">Publicera/Ångra publicera resultat</span>
+      </button>
+
+      <button
+        *ngIf="currentTrackRepresentation && currentTrackRepresentation.active === 1"
+        pButton
+        pRipple
+        (click)="publishCurrentTrack()"
+        [attr.data-track-uid]="currentTrackRepresentation?.track_uid"
+        class="p-button-outlined p-button-success">
+        <fa-icon [icon]="faBroadcast"></fa-icon>
+        <span class="ml-2">Publicera resultat</span>
+      </button>
+
+      <button
+        *ngIf="currentTrackRepresentation && currentTrackRepresentation.active === 0"
+        pButton
+        pRipple
+        (click)="publishCurrentTrack()"
+        [attr.data-track-uid]="currentTrackRepresentation?.track_uid"
+        class="p-button-outlined p-button-danger">
+        <fa-icon [icon]="faBroadcast"></fa-icon>
+        <span class="ml-2">Ångra publicera</span>
+      </button>
+
+      <button
+        pButton
+        pRipple
+        icon="pi pi-download"
+        label="Exportera homologation"
+        (click)="exportHomologation()"
+        class="p-button-outlined p-button-success"
+        [disabled]="!participantComponentService.getCurrentTrackUid() || currentTrackRepresentation?.active === 1"
+        [pTooltip]="currentTrackRepresentation?.active === 1 ? 'Banan måste vara publicerad först' : ''">
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
   <p-table
     #dt1
-    [globalFilterFields]="['participant.startnumber', 'competitorRepresentation.given_name', 'competitorRepresentation.family_name', 'clubRepresentation.title']"
     [value]="$participant | async"
+    [globalFilterFields]="['participant.startnumber', 'competitorRepresentation.given_name', 'competitorRepresentation.family_name', 'clubRepresentation.title']"
     dataKey="participant.participant_uid"
-    [tableStyle]="{'width': '100%'}"
-    styleClass="p-datatable-customers p-datatable-striped p-datatable-sm p-datatable-gridlines shadow-2"
+    [tableStyle]="{'min-width': '60rem'}"
     [rowHover]="true"
-    responsiveLayout="scroll"
-    [scrollable]="true"
-    scrollHeight="flex">
-    <ng-template pTemplate="caption">
-      <div class="flex flex-wrap justify-content-between align-items-center gap-3 p-3">
-        <span class="p-input-icon-left flex-auto sm:flex-none">
-          <i class="pi pi-search"></i>
-          <input
-            [disabled]="$searchDisabled | async"
-            pInputText
-            type="text"
-            (input)="dt1.filterGlobal($event.target.value, 'contains')"
-            placeholder="Sök deltagare..."
-            class="w-full sm:w-auto"
-            style="padding-left: 2.5rem"/>
-        </span>
-        <div class="flex gap-2">
-          <button
-            pButton
-            pRipple
-            icon="pi pi-download"
-            label="Exportera startlista"
-            (click)="exportStartList()"
-            class="p-button-info"
-            [disabled]="!participantComponentService.getCurrentTrackUid()">
-          </button>
-          <!-- Neutral state button - only shown when no track selected -->
-          <button
-            *ngIf="!currentTrackRepresentation"
-            pButton
-            pRipple
-            disabled
-            class="p-button-secondary"
-            pTooltip="Välj en bana först">
-            <fa-icon [icon]="faBroadcast"></fa-icon>
-            <span class="ml-2">Publicera/Ångra publicera resultat</span>
-          </button>
-          <!-- Publish button - shown when track is active (unpublished) -->
-          <button
-            *ngIf="currentTrackRepresentation && currentTrackRepresentation.active === 1"
-            pButton
-            pRipple
-            (click)="publishCurrentTrack()"
-            [attr.data-track-uid]="currentTrackRepresentation?.track_uid"
-            class="publish-btn p-button-success">
-            <fa-icon [icon]="faBroadcast" [styles]="{'color': '#ffffff'}"></fa-icon>
-            <span class="ml-2">Publicera resultat</span>
-          </button>
-          <!-- Unpublish button - shown when track is inactive (published) -->
-          <button
-            *ngIf="currentTrackRepresentation && currentTrackRepresentation.active === 0"
-            pButton
-            pRipple
-            (click)="publishCurrentTrack()"
-            [attr.data-track-uid]="currentTrackRepresentation?.track_uid"
-            class="unpublish-btn p-button-danger">
-            <fa-icon [icon]="faBroadcast" [styles]="{'color': '#ffffff'}"></fa-icon>
-            <span class="ml-2">Ångra publicera</span>
-          </button>
-          <button
-            pButton
-            pRipple
-            icon="pi pi-download"
-            label="Exportera homologation"
-            (click)="exportHomologation()"
-            class="p-button-success"
-            [disabled]="!participantComponentService.getCurrentTrackUid() || currentTrackRepresentation?.active === 1"
-            [pTooltip]="currentTrackRepresentation?.active === 1 ? 'Banan måste vara publicerad först' : ''">
-          </button>
-        </div>
-      </div>
-    </ng-template>
+    [rows]="10"
+    [paginator]="true"
+    [rowsPerPageOptions]="[10,25,50]"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Visar {first} till {last} av {totalRecords} deltagare"
+    [filterDelay]="0"
+    styleClass="p-datatable-sm">
+
     <ng-template pTemplate="header">
       <tr>
         <th style="width: 3rem"></th>
@@ -111,8 +122,9 @@
         </th>
       </tr>
     </ng-template>
+
     <ng-template pTemplate="body" let-participant let-expanded="expanded">
-      <tr class="p-selectable-row">
+      <tr>
         <td>
           <button
             (click)="currentparticipant(participant.participant)"
@@ -127,36 +139,43 @@
         <td>
           <div class="flex align-items-center gap-2">
             <i class="pi pi-id-card text-primary"></i>
-            <span>{{participant.participant.startnumber}}</span>
+            <span class="font-medium">{{participant.participant.startnumber}}</span>
           </div>
         </td>
         <td>
           <div class="flex align-items-center gap-2">
-            <i class="pi pi-user text-primary-600"></i>
-            <span>{{participant.competitorRepresentation.family_name}}</span>
+            <span class="font-medium">{{participant.competitorRepresentation.family_name}}</span>
           </div>
         </td>
         <td>
           <div class="flex align-items-center gap-2">
-            <i class="pi pi-user text-primary-600"></i>
-            <span>{{participant.competitorRepresentation.given_name}}</span>
+            <span class="font-medium">{{participant.competitorRepresentation.given_name}}</span>
           </div>
         </td>
         <td>
           <div class="flex align-items-center gap-2">
-            <i class="pi pi-users text-primary-600"></i>
+            <i class="pi pi-users text-primary"></i>
             <span>{{participant.clubRepresentation.title}}</span>
           </div>
         </td>
         <td>
           <div class="flex justify-content-end gap-2">
             <button
+              pButton
+              pRipple
+              icon="pi pi-pencil"
+              (click)="editCompetitorInfo(participant)"
+              class="p-button-rounded p-button-text p-button-info"
+              pTooltip="Redigera"
+              tooltipPosition="top">
+            </button>
+            <button
               [disabled]="!isPossibleToDelete(participant.participant)"
               (click)="remove(participant.participant)"
               pButton
               pRipple
               icon="pi pi-trash"
-              class="p-button-rounded p-button-danger p-button-text"
+              class="p-button-rounded p-button-text p-button-danger"
               pTooltip="Ta bort"
               tooltipPosition="top">
             </button>
@@ -164,99 +183,96 @@
         </td>
       </tr>
     </ng-template>
+
     <ng-template pTemplate="rowexpansion" let-track>
       <tr>
-        <td colspan="6" style="padding: 0; background: var(--surface-ground)">
-          <div class="w-full">
-            <div class="p-3">
-              <div class="grid">
-                <div class="col-12 md:col-2">
-                  <strong>Adress:</strong>
-                  <div>{{track.competitorInforepresentation.adress}}</div>
-                </div>
-                <div class="col-12 md:col-2">
-                  <strong>Ort:</strong>
-                  <div>{{track.competitorInforepresentation.place}}</div>
-                </div>
-                <div class="col-12 md:col-2">
-                  <strong>Land:</strong>
-                  <div>{{track.competitorInforepresentation.country}}</div>
-                </div>
-                <div class="col-12 md:col-2">
-                  <strong>Telefon:</strong>
-                  <div>{{track.competitorInforepresentation.phone}}</div>
-                </div>
-                <div class="col-12 md:col-3">
-                  <strong>Email:</strong>
-                  <div>{{track.competitorInforepresentation.email}}</div>
-                </div>
-                <div class="col-12 md:col-1">
-                  <button
-                    pButton
-                    pRipple
-                    icon="pi pi-pencil"
-                    (click)="editCompetitorInfo(track)"
-                    class="p-button-rounded p-button-text p-button-info"
-                    pTooltip="Redigera kontaktinfo"
-                    tooltipPosition="top">
-                  </button>
-                </div>
+        <td colspan="6">
+          <div class="surface-ground p-4">
+            <!-- Contact Information -->
+            <div class="grid">
+              <div class="col-12 md:col-2">
+                <div class="text-500 font-medium mb-2">Adress</div>
+                <div class="text-900">{{track.competitorInforepresentation.adress}}</div>
               </div>
-              <div class="flex justify-content-between align-items-center mt-3">
-                <div class="flex gap-2">
-                  <p-tag
-                    *ngIf="track.participant.time"
-                    (click)="editTotalTime(track.participant)"
-                    icon="pi pi-pencil"
-                    severity="success"
-                    value="Sluttid: {{track.participant.time}}">
-                  </p-tag>
-                  <p-tag
-                    *ngIf="track.participant.time"
-                    (click)="editbrevenr(track.participant)"
-                    icon="pi pi-pencil"
-                    severity="info"
-                    value="brevetnr: {{track.participant.brevenr}}">
-                  </p-tag>
-                </div>
-                <span class="p-buttonset">
-                                    <button
-                    pButton
-                    pRipple
-                    [disabled]="!track.participant.started || track.participant.finished"
-                    (click)="dnf(track.participant)"
-                    type="button"
-                    label="{{textDnfButton(track.participant.started, track.participant.dnf)}}"
-                    class="p-button-danger">
-                  </button>
+              <div class="col-12 md:col-2">
+                <div class="text-500 font-medium mb-2">Ort</div>
+                <div class="text-900">{{track.competitorInforepresentation.place}}</div>
+              </div>
+              <div class="col-12 md:col-2">
+                <div class="text-500 font-medium mb-2">Land</div>
+                <div class="text-900">{{track.competitorInforepresentation.country}}</div>
+              </div>
+              <div class="col-12 md:col-2">
+                <div class="text-500 font-medium mb-2">Telefon</div>
+                <div class="text-900">{{track.competitorInforepresentation.phone}}</div>
+              </div>
+              <div class="col-12 md:col-4">
+                <div class="text-500 font-medium mb-2">Email</div>
+                <div class="text-900">{{track.competitorInforepresentation.email}}</div>
+              </div>
+            </div>
 
-                  <button
-                    pButton
-                    [disabled]="track.participant.started"
-                    (click)="dns(track.participant)"
-                    pRipple
-                    type="button"
-                    label="{{textDnsButton(track.participant.started, track.participant.dns)}}"
-                    class="p-button-secondary">
-                  </button>
+            <!-- Participant Status and Actions -->
+            <div class="flex justify-content-between align-items-center mt-4 mb-4">
+              <!-- Time and Brevet Tags -->
+              <div class="flex gap-2">
+                <p-tag
+                  *ngIf="track.participant.time"
+                  (click)="editTotalTime(track.participant)"
+                  icon="pi pi-clock"
+                  severity="success"
+                  [style]="{'cursor': 'pointer'}"
+                  value="Sluttid: {{track.participant.time}}">
+                </p-tag>
+                <p-tag
+                  *ngIf="track.participant.brevenr"
+                  (click)="editbrevenr(track.participant)"
+                  icon="pi pi-id-card"
+                  severity="info"
+                  [style]="{'cursor': 'pointer'}"
+                  value="Brevetnr: {{track.participant.brevenr}}">
+                </p-tag>
+              </div>
 
-                </span>
+              <!-- DNF/DNS Buttons -->
+              <div class="flex gap-2">
+                <button
+                  pButton
+                  pRipple
+                  [disabled]="!track.participant.started || track.participant.finished"
+                  (click)="dnf(track.participant)"
+                  type="button"
+                  label="{{textDnfButton(track.participant.started, track.participant.dnf)}}"
+                  class="p-button-outlined p-button-danger">
+                </button>
+
+                <button
+                  pButton
+                  [disabled]="track.participant.started"
+                  (click)="dns(track.participant)"
+                  pRipple
+                  type="button"
+                  label="{{textDnsButton(track.participant.started, track.participant.dns)}}"
+                  class="p-button-outlined p-button-secondary">
+                </button>
               </div>
-              <div class="mt-3">
-                <brevet-participant-checkpoint-table [participant]="track.participant"></brevet-participant-checkpoint-table>
-              </div>
+            </div>
+
+            <!-- Checkpoints Table -->
+            <div class="mt-3">
+              <brevet-participant-checkpoint-table [participant]="track.participant"></brevet-participant-checkpoint-table>
             </div>
           </div>
         </td>
       </tr>
     </ng-template>
+
     <ng-template pTemplate="emptymessage">
       <tr>
-        <td colspan="6" class="text-center p-6">
-          <div class="align-items-center">
-            <i class="pi pi-users text-primary" style="font-size: 3rem"></i>
-            <span class="pl-3  font-bold text-xl mt-3">Välj en bana för att se deltagare</span>
-
+        <td colspan="6" class="text-center p-4">
+          <div class="flex flex-column align-items-center">
+            <i class="pi pi-search text-primary" style="font-size: 2rem"></i>
+            <span class="text-700 mt-2">Inga deltagare hittades</span>
           </div>
         </td>
       </tr>

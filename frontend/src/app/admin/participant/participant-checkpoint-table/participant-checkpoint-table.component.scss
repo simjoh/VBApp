@@ -10,9 +10,127 @@
     ::ng-deep {
         /* Set table width to 80% and align it to the left */
         .p-datatable {
-            width: 80% !important;
-            margin: 0 !important;  /* Left-aligned instead of centered */
+            width: 100% !important;
+            margin: 0 !important;
+
+            .p-datatable-wrapper {
+                border-radius: 6px;
+                overflow: hidden;
+            }
+
+            // Header styles
+            .p-datatable-thead > tr > th {
+                background: var(--surface-ground) !important;
+                color: var(--text-color-secondary) !important;
+                font-weight: 600;
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                border: none;
+                border-bottom: 1px solid var(--surface-border);
+                white-space: nowrap;
+
+                .flex {
+                    min-height: 1.5rem;
+                }
+            }
+
+            // Body styles
+            .p-datatable-tbody > tr {
+                background: var(--surface-card);
+                transition: background-color 0.2s;
+
+                &:hover {
+                    background: var(--surface-hover);
+                }
+
+                > td {
+                    padding: 0.75rem 1rem;
+                    border: none;
+                    border-bottom: 1px solid var(--surface-border);
+                    color: var(--text-color);
+                    vertical-align: middle;
+
+                    &.text-right {
+                        text-align: right;
+                    }
+
+                    &.text-center {
+                        text-align: center;
+                    }
+
+                    .font-medium {
+                        color: var(--text-color);
+                    }
+
+                    // Action buttons container
+                    .flex.justify-content-center {
+                        gap: 0.5rem;
+
+                        .p-button {
+                            min-width: 110px;
+                        }
+                    }
+                }
+
+                &:last-child > td {
+                    border-bottom: none;
+                }
+            }
+
+            // Empty message styles
+            .p-datatable-tbody tr.p-datatable-emptymessage > td {
+                padding: 2rem !important;
+                text-align: center;
+                color: var(--text-color-secondary);
+            }
         }
+
+        // Button styles
+        .p-button {
+            &.p-button-sm {
+                padding: 0.4rem 0.75rem;
+                font-size: 0.875rem;
+
+                &.p-button-icon-only {
+                    padding: 0.4rem;
+                }
+
+                .p-button-icon {
+                    font-size: 0.875rem;
+                }
+            }
+
+            &.p-button-outlined {
+                &:not(:disabled):hover {
+                    background: var(--surface-hover);
+                }
+            }
+
+            &.p-button-rounded.p-button-text {
+                width: 2rem;
+                height: 2rem;
+                padding: 0;
+
+                &:hover {
+                    background: var(--surface-hover);
+                }
+
+                .pi {
+                    font-size: 1rem;
+                }
+            }
+        }
+
+        // Image styles
+        .p-image {
+            img {
+                object-fit: cover;
+            }
+        }
+    }
+}
 
 .p-button.p-button-icon-only.p-button-rounded {
     border-radius: 50%;
@@ -195,7 +313,4 @@
       background-color: var(--surface-300) !important;
     }
   }
-}
-
-    }
 }

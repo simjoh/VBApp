@@ -1,16 +1,151 @@
 :host {
+    display: block;
+    width: 100%;
+
     ::ng-deep {
+        .card {
+            padding: 0;
+            margin-bottom: 0;
+            border-radius: 6px;
+            background: var(--surface-card);
+            border: 1px solid var(--surface-border);
+        }
 
+        .p-datatable {
+            .p-datatable-wrapper {
+                border-radius: 6px;
+                overflow: hidden;
+            }
 
-.p-button.p-button-icon-only.p-button-rounded {
-    border-radius: 50%;
-    height: 2.000rem;
-}
+            // Header styles
+            .p-datatable-thead > tr > th {
+                background: var(--surface-ground) !important;
+                color: var(--text-color-secondary) !important;
+                font-weight: 600;
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                border: none;
+                border-bottom: 1px solid var(--surface-border);
+                white-space: nowrap;
 
-.p-button.p-button-icon-only {
-    width: 2.000rem;
-    padding: 0.5rem 0;
-}
+                .flex {
+                    min-height: 1.5rem;
+                }
+            }
 
+            // Body styles
+            .p-datatable-tbody > tr {
+                background: var(--surface-card);
+                transition: background-color 0.2s;
+
+                &:hover {
+                    background: var(--surface-hover);
+                }
+
+                > td {
+                    padding: 0.75rem 1rem;
+                    border: none;
+                    border-bottom: 1px solid var(--surface-border);
+                    color: var(--text-color);
+                    vertical-align: middle;
+
+                    .font-medium {
+                        color: var(--text-color);
+                    }
+
+                    // Expanded row content
+                    &[colspan="7"] {
+                        background: var(--surface-ground);
+                        padding: 0;
+
+                        > div {
+                            background: var(--surface-ground);
+                        }
+                    }
+                }
+
+                &:last-child > td {
+                    border-bottom: none;
+                }
+            }
+
+            // Empty message styles
+            .p-datatable-tbody tr.p-datatable-emptymessage > td {
+                padding: 3rem !important;
+                text-align: center;
+                color: var(--text-color-secondary);
+            }
+
+            // Caption styles
+            .p-datatable-header {
+                background: transparent;
+                border: none;
+                padding: 1rem;
+            }
+        }
+
+        // Button styles
+        .p-button {
+            &.p-button-sm {
+                padding: 0.4rem 0.75rem;
+                font-size: 0.875rem;
+
+                &.p-button-icon-only {
+                    width: 2rem;
+                    height: 2rem;
+                    padding: 0;
+                }
+
+                &.p-button-rounded {
+                    &.p-button-text {
+                        &:hover {
+                            background: var(--surface-hover);
+                        }
+
+                        .pi {
+                            font-size: 1rem;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Tag styles
+        .p-tag {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 6px;
+
+            &.p-tag-success {
+                background: var(--green-100);
+                color: var(--green-900);
+            }
+
+            &.p-tag-danger {
+                background: var(--red-100);
+                color: var(--red-900);
+            }
+
+            &.p-tag-info {
+                background: var(--blue-100);
+                color: var(--blue-900);
+            }
+        }
+
+        // Search input styles
+        .p-input-icon-left {
+            > .p-inputtext {
+                padding-left: 2.5rem;
+                min-width: 240px;
+            }
+
+            > i {
+                left: 0.75rem;
+                color: var(--text-color-secondary);
+            }
+        }
     }
 }

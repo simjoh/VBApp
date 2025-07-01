@@ -1,11 +1,51 @@
-<div class="mt-2 sm:col-12 lg:col-8">
-  <h4 class="flex align-items-center">
-    <i class="pi pi-users mr-2" style="font-size: 1.5rem; color: var(--primary-color)"></i>
-    <span style="font-size: 1.5rem; font-weight: 600">Deltagare</span>
-  </h4>
-  <p-tabMenu styleClass="mr-2" [model]="designTabs"></p-tabMenu>
-  <div class="mt-4 ml-2">
-    <router-outlet></router-outlet>
+<div class="container-fluid px-4">
+  <!-- Header Card -->
+  <div class="grid justify-content-center mb-3">
+    <div class="col-12 md:col-8 lg:col-6">
+      <p-card styleClass="text-center">
+        <div class="flex align-items-center justify-content-center mb-3">
+          <i class="pi pi-users mr-2" style="font-size: 2rem; color: var(--primary-color)"></i>
+          <h2 class="m-0">Hantera Deltagare</h2>
+        </div>
+        <p>Hantera deltagare, registreringar och resultat för evenemang</p>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Action Cards Grid -->
+  <div class="grid justify-content-center">
+    <div class="col-12 md:col-8 lg:col-6">
+      <div class="grid">
+        <!-- Participant List -->
+        <div class="col-12 sm:col-6">
+          <p-card [styleClass]="'cursor-pointer hover:shadow-5' + (isActive('list') ? ' border-primary border-3' : '')" (click)="navigateToTab('list')">
+            <div class="flex align-items-center justify-content-center flex-column text-center p-2">
+              <i class="pi pi-list text-3xl mb-2" [ngStyle]="{'color': isActive('list') ? 'var(--primary-color)' : 'var(--text-color)'}"></i>
+              <h3 class="m-2" [ngStyle]="{'color': isActive('list') ? 'var(--primary-color)' : 'inherit'}">Deltagarlista</h3>
+              <p class="m-0">Visa och hantera alla deltagare</p>
+            </div>
+          </p-card>
+        </div>
+
+        <!-- Upload Participants -->
+        <div class="col-12 sm:col-6">
+          <p-card [styleClass]="'cursor-pointer hover:shadow-5' + (isActive('upload') ? ' border-primary border-3' : '')" (click)="navigateToTab('upload')">
+            <div class="flex align-items-center justify-content-center flex-column text-center p-2">
+              <i class="pi pi-upload text-3xl mb-2" [ngStyle]="{'color': isActive('upload') ? 'var(--primary-color)' : 'var(--text-color)'}"></i>
+              <h3 class="m-2" [ngStyle]="{'color': isActive('upload') ? 'var(--primary-color)' : 'inherit'}">Ladda upp</h3>
+              <p class="m-0">Importera deltagare från fil</p>
+            </div>
+          </p-card>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Area -->
+  <div class="grid justify-content-center mt-4">
+    <div class="col-12 md:col-8 lg:col-6">
+      <router-outlet></router-outlet>
+    </div>
   </div>
 </div>
 

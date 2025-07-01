@@ -48,7 +48,7 @@ export class ParticipantTableComponent implements OnInit {
   faBroadcast = faTowerBroadcast;
 
   constructor(
-    private participantComponentService: ParticipantComponentService,
+    public participantComponentService: ParticipantComponentService,
     private dialogService: DialogService,
     private http: HttpClient,
     private competitorInfoService: CompetitorInfoService,

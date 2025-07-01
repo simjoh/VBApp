@@ -1,4 +1,5 @@
-import {ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 import {MenuItem} from 'primeng/api';
 import {ParticipantComponentService} from "../participant-component.service";
 
@@ -13,10 +14,12 @@ export class ParticipantComponent implements OnInit {
 
   designTabs = [];
 
-  constructor() { }
+  constructor(
+    private router: Router,
+    private participantService: ParticipantComponentService
+  ) { }
 
   ngOnInit(): void {
-
     this.designTabs = [
       {
         label: "Lista",
@@ -26,4 +29,26 @@ export class ParticipantComponent implements OnInit {
     ] as MenuItem[];
   }
 
+  navigateToTab(tab: string): void {
+    switch (tab) {
+      case 'list':
+        this.router.navigate(['/admin/participant/brevet-participant-list']);
+        break;
+      case 'upload':
+        this.router.navigate(['/admin/participant/brevet-participant-upload']);
+        break;
+    }
+  }
+
+  isActive(tab: string): boolean {
+    const currentUrl = this.router.url;
+    switch (tab) {
+      case 'list':
+        return currentUrl.includes('brevet-participant-list');
+      case 'upload':
+        return currentUrl.includes('brevet-participant-upload');
+      default:
+        return false;
+    }
+  }
 }

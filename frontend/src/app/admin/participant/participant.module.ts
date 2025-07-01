@@ -21,6 +21,7 @@ import { EditBrevenrDialogComponent } from './edit-brevenr-dialog/edit-brevenr-d
 import { EditCheckpointTimeDialogComponent } from './edit-checkpoint-time-dialog/edit-checkpoint-time-dialog.component';
 import { EditCompetitorInfoDialogComponent } from './edit-competitor-info-dialog/edit-competitor-info-dialog.component';
 import { CalendarModule } from 'primeng/calendar';
+import { CardModule } from 'primeng/card';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { CalendarModule } from 'primeng/calendar';
     ReactiveFormsModule,
     DropdownModule,
     SharedModule,
-    CalendarModule
+    CalendarModule,
+    CardModule
   ],
   exports: []
 })
