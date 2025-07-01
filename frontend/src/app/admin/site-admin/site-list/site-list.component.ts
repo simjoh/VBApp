@@ -26,7 +26,7 @@ export class SiteListComponent implements OnInit {
   selectedImageUrl = '';
   imagePreviewTitle = '';
 
-  $sites = this.siteService.siteWithAdd$.pipe(
+  sites$ = this.siteService.siteWithAdd$.pipe(
     map((s:Array<Site>) => {
       return s;
     })
@@ -64,16 +64,16 @@ export class SiteListComponent implements OnInit {
     });
   }
 
-  editProduct(site: string) {
+  editSite(site: Site) {
     const editref = this.dialogService.open(EditSiteDialogComponent, {
       data: site,
       header: 'Redigera Kontrollplats',
     });
 
-    editref.onClose.pipe(take(1)).subscribe(((user: SiteRepresentation) => {
-      if (user) {
-        console.log(user);
-        this.siteService.updateUser(user);
+    editref.onClose.pipe(take(1)).subscribe(((updatedSite: Site) => {
+      if (updatedSite) {
+        console.log(updatedSite);
+        this.siteService.updateUser(updatedSite);
       } else {
         editref.destroy();
       }

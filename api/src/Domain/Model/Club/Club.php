@@ -8,39 +8,23 @@ class Club
 {
 
     private ?string $club_uid = null;
-    private ?string $acp_code = null;
     private ?string $title = null;
+    private ?string $acp_kod = null;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getClubUid(): string
+    public function getClubUid(): ?string
     {
         return $this->club_uid;
     }
 
     /**
-     * @param string $club_uid
+     * @param string|null $club_uid
      */
-    public function setClubUid(string $club_uid): void
+    public function setClubUid(?string $club_uid): void
     {
         $this->club_uid = $club_uid;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getAcpCode(): ?string
-    {
-        return $this->acp_code;
-    }
-
-    /**
-     * @param string|null $acp_code
-     */
-    public function setAcpCode(?string $acp_code): void
-    {
-        $this->acp_code = $acp_code;
     }
 
     /**
@@ -57,6 +41,22 @@ class Club
     public function setTitle(?string $title): void
     {
         $this->title = $title;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAcpKod(): ?string
+    {
+        return $this->acp_kod;
+    }
+
+    /**
+     * @param string|null $acp_kod
+     */
+    public function setAcpKod(?string $acp_kod): void
+    {
+        $this->acp_kod = $acp_kod;
     }
 
 }

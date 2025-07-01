@@ -1,5 +1,5 @@
 <div class="p-fluid formgrid grid">
-  <form #clubForm="ngForm" (ngSubmit)="onSubmit(clubForm)" novalidate>
+  <form [formGroup]="clubForm" (ngSubmit)="onSubmit()" novalidate>
 
     <!-- Club Name Field -->
     <div class="col-12 field">
@@ -10,31 +10,26 @@
       <input
         pInputText
         id="title"
-        name="title"
-        #title="ngModel"
-        [(ngModel)]="formData.title"
+        formControlName="title"
         placeholder="Ange klubbnamn"
-        required
         class="w-full"
-        [class.ng-invalid]="title.invalid && (title.dirty || title.touched)"
+        [class.ng-invalid]="clubForm.get('title').invalid && (clubForm.get('title').dirty || clubForm.get('title').touched)"
       />
-      <small *ngIf="title.invalid && (title.dirty || title.touched)" class="p-error block mt-1">
+      <small *ngIf="clubForm.get('title').invalid && (clubForm.get('title').dirty || clubForm.get('title').touched)" class="p-error block mt-1">
         Klubbnamn krävs
       </small>
     </div>
 
-    <!-- ACP Code Field -->
+    <!-- ACP Kod Field -->
     <div class="col-12 field">
-      <label for="acp_code" class="block mb-2 font-medium text-gray-900">
+      <label for="acp_kod" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-id-card mr-2"></i>
         ACP-kod (Valfritt)
       </label>
       <input
         pInputText
-        id="acp_code"
-        name="acp_code"
-        #acp_code="ngModel"
-        [(ngModel)]="formData.acp_code"
+        id="acp_kod"
+        formControlName="acp_kod"
         placeholder="Lämna tomt om ingen ACP-kod"
         class="w-full"
       />

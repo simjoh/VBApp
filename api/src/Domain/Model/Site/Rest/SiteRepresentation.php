@@ -11,7 +11,7 @@ class SiteRepresentation implements JsonSerializable
     private string $place = "";
     private string $adress = "";
     private string $location = "";
-    private string $image = "";
+    private ?string $image = "";
     private string $description = "";
     private string $lat = "";
     private string $lng = "";

@@ -1,10 +1,23 @@
-<div class="mt-2 sm:col-12 lg:col-8">
-  <h4 class="flex align-items-center">
-    <i class="pi pi-users mr-2" style="font-size: 1.5rem; color: var(--primary-color)"></i>
-    <span style="font-size: 1.5rem; font-weight: 600">Klubbar</span>
-  </h4>
-  <p-tabMenu styleClass="mr-2" [model]="designTabs"></p-tabMenu>
-  <div class="mt-4 ml-2">
-    <router-outlet></router-outlet>
+<div class="container-fluid px-4">
+  <!-- Header Card -->
+  <div class="grid justify-content-center mb-3">
+    <div class="col-12 md:col-8 lg:col-6">
+      <p-card styleClass="text-center">
+        <div class="flex align-items-center justify-content-center mb-3">
+          <i class="pi pi-building mr-2" style="font-size: 2rem; color: var(--primary-color)"></i>
+          <h2 class="m-0">Hantera Klubbar</h2>
+        </div>
+        <p>Hantera och organisera alla klubbar</p>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Content Area -->
+  <div class="grid justify-content-center">
+    <div class="col-12 md:col-8 lg:col-6">
+      <p-card>
+        <brevet-club-list></brevet-club-list>
+      </p-card>
+    </div>
   </div>
 </div>

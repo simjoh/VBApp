@@ -1,15 +1,17 @@
-
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {SiteAdminRoutingModule} from "./site-admin-routing.module";
-import {NgModule} from "@angular/core";
-import { SharedModule } from 'src/app/shared/shared.module';
-import {SiteAdminComponent} from "./site-admin.component";
-import {SiteListComponent} from "./site-list/site-list.component";
-import {SiteInfoPopoverComponent} from "./site-info-popover/site-info-popover.component";
-import {CreateSiteDialogComponent} from "./create-site-dialog/create-site-dialog.component";
+import { FormsModule } from '@angular/forms';
+import { SiteAdminRoutingModule } from './site-admin-routing.module';
+import { SiteAdminComponent } from './site-admin.component';
+import { SiteListComponent } from './site-list/site-list.component';
+import { SiteInfoPopoverComponent } from './site-info-popover/site-info-popover.component';
+import { CreateSiteDialogComponent } from './create-site-dialog/create-site-dialog.component';
 import { EditSiteDialogComponent } from './edit-site-dialog/edit-site-dialog.component';
-
-
+import { SharedModule } from '../../shared/shared.module';
+import { CardModule } from 'primeng/card';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 
 @NgModule({
   declarations: [
@@ -20,9 +22,14 @@ import { EditSiteDialogComponent } from './edit-site-dialog/edit-site-dialog.com
     EditSiteDialogComponent
   ],
   imports: [
+    CommonModule,
+    FormsModule,
     SharedModule,
-    SiteAdminRoutingModule
-  ],
-  exports: []
+    SiteAdminRoutingModule,
+    CardModule,
+    DialogModule,
+    ButtonModule,
+    InputTextModule
+  ]
 })
 export class SiteAdminModule { }

@@ -30,15 +30,16 @@ export class ClubListComponent implements OnInit {
   filteredClubs$ = combineLatest([this.clubs$, this.filterTrigger]).pipe(
     map(([clubs]) => {
       if (this.showOnlyWithAcpCode) {
-        const filtered = clubs.filter(club =>
-          club.acp_code &&
-          club.acp_code !== '0' &&
-          club.acp_code !== null &&
-          club.acp_code.trim() !== ''
+        return clubs.filter(club =>
+          club.acp_kod &&
+          club.acp_kod !== '0' &&
+          club.acp_kod.trim() !== ''
         );
-        return filtered;
       }
-      return clubs;
+      return clubs.map(club => ({
+        ...club,
+        acp_kod: club.acp_kod?.trim() || null
+      }));
     })
   );
 

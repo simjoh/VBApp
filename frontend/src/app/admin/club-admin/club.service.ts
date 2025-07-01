@@ -65,7 +65,9 @@ export class ClubService {
   constructor(private httpClient: HttpClient) { }
 
   async newClub(newClub: ClubRepresentation) {
+    console.log('Creating new club with data:', newClub);
     const club = await this.addClub(newClub);
+    console.log('Successfully created club:', club);
     this.clubInsertedSubject.next(club);
   }
 
@@ -74,7 +76,7 @@ export class ClubService {
       map((clubs: Array<ClubRepresentation>) => {
         return clubs.sort((a, b) => (a.title > b.title) ? 1 : -1);
       }),
-      tap(clubs => console.log("All clubs", clubs)),
+      tap(clubs => console.log("Fetched all clubs:", clubs)),
       shareReplay(1)
     );
   }
@@ -84,16 +86,18 @@ export class ClubService {
       map((club: ClubRepresentation) => {
         return club;
       }),
-      tap(club => console.log(club))
+      tap(club => console.log("Fetched club details:", club))
     ) as Observable<ClubRepresentation>
   }
 
   async addClub(club: ClubRepresentation) {
+    console.log('Sending create club request with data:', club);
     return await this.httpClient.post<ClubRepresentation>(environment.backend_url + "club/createclub", club).pipe(
-      map((club: ClubRepresentation) => {
-        return club;
+      map((response: ClubRepresentation) => {
+        console.log('Received create club response:', response);
+        return response;
       }),
-      tap(club => console.log(club))
+      tap(club => console.log("Created club:", club))
     ).toPromise();
   }
 
@@ -115,12 +119,14 @@ export class ClubService {
   }
 
   public updateClub(clubUid: string, club: ClubRepresentation) {
+    console.log('Sending update club request with data:', club);
     return this.httpClient.put<ClubRepresentation>(environment.backend_url + "club/" + clubUid, club as ClubRepresentation).pipe(
-      map((club: ClubRepresentation) => {
-        this.clubReloadAction.next(club)
-        return club;
+      map((response: ClubRepresentation) => {
+        console.log('Received update club response:', response);
+        this.clubReloadAction.next(response)
+        return response;
       }),
-      tap(club => console.log(club))
+      tap(club => console.log("Updated club:", club))
     ).toPromise()
   }
 

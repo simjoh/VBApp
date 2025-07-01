@@ -1,175 +1,152 @@
-<ng-container *ngIf="$sites | async as users">
-  <p-table
-    #dt
-    [value]="users"
-    [(selection)]="selectedCustomers"
-    dataKey="id"
-    [tableStyle]="{'min-width': '60rem'}"
-    styleClass="p-datatable-customers p-datatable-striped p-datatable-sm p-datatable-gridlines shadow-2"
-    [rowHover]="true"
-    [rows]="10"
-    [showCurrentPageReport]="true"
-    [rowsPerPageOptions]="[10,25,50,100,200,300]"
-    [loading]="loading"
-    [paginator]="true"
-    [paginatorTemplate]="paginatorTemplate"
-    currentPageReportTemplate="Visar {first} till {last} av {totalRecords} poster"
-    [filterDelay]="0"
-    [globalFilterFields]="['place','adress']"
-    responsiveLayout="scroll"
-    [scrollable]="true"
-    scrollHeight="flex">
-    <ng-template pTemplate="caption">
-      <div class="flex flex-wrap justify-content-between align-items-center gap-3 p-3">
-        <div class="flex align-items-center gap-2">
-          <span class="p-input-icon-left flex-auto sm:flex-none">
+<div class="card">
+  <ng-container *ngIf="sites$ | async as sites">
+    <p-table
+      #dt
+      [value]="sites"
+      dataKey="id"
+      [tableStyle]="{'min-width': '60rem', 'width': '100%'}"
+      styleClass="p-datatable-sm"
+      [rowHover]="true"
+      [scrollable]="true"
+      scrollHeight="flex"
+      [sortField]="'title'"
+      [sortOrder]="1"
+      [globalFilterFields]="['title', 'place', 'adress']">
+      <ng-template pTemplate="caption">
+        <div class="flex justify-content-between align-items-center px-3">
+          <span class="p-input-icon-left">
             <i class="pi pi-search"></i>
             <input
               pInputText
               #filter
               (input)="dt.filterGlobal($event.target.value, 'contains')"
               placeholder="Sök platser..."
-              class="w-full sm:w-auto"
-              style="padding-left: 2.5rem"/>
+              class="p-inputtext-sm"/>
           </span>
-        </div>
-        <div class="flex align-items-center gap-2">
-          <button
-            pButton
-            pRipple
-            label="Ny Plats"
-            icon="pi pi-plus"
-            class="p-button-success"
-            (click)="openNew()">
-          </button>
-          <button
-            pButton
-            pRipple
-            icon="pi pi-refresh"
-            class="p-button-text p-button-rounded"
-            (click)="dt.reset()">
-          </button>
-        </div>
-      </div>
-    </ng-template>
-    <ng-template pTemplate="header">
-      <tr>
-        <th pSortableColumn="place" class="min-w-200">
           <div class="flex align-items-center gap-2">
-            <span>Plats</span>
+            <button
+              pButton
+              pRipple
+              label="Ny Plats"
+              icon="pi pi-plus"
+              class="p-button-success p-button-sm"
+              (click)="openNew()">
+            </button>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="title">
+            NAMN
+            <p-sortIcon field="title"></p-sortIcon>
+          </th>
+          <th pSortableColumn="place">
+            PLATS
             <p-sortIcon field="place"></p-sortIcon>
-            <p-columnFilter type="text" field="place" display="menu" [showMatchModes]="true" [showOperator]="false"></p-columnFilter>
-          </div>
-        </th>
-        <th pSortableColumn="adress" class="min-w-200">
-          <div class="flex align-items-center gap-2">
-            <span>Adress</span>
+          </th>
+          <th pSortableColumn="adress">
+            ADRESS
             <p-sortIcon field="adress"></p-sortIcon>
-            <p-columnFilter type="text" field="adress" display="menu"></p-columnFilter>
-          </div>
-        </th>
-        <th class="min-w-150">
-          <div class="flex align-items-center justify-content-center">
-            <span>Bild</span>
-          </div>
-        </th>
-        <th class="min-w-150">
-          <div class="text-right">Åtgärder</div>
-        </th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-site>
-      <tr class="p-selectable-row">
-        <td>
-          <div class="flex align-items-center gap-2">
-            <i class="pi pi-map-marker text-primary"></i>
-            <span class="font-semibold">{{site.place}}</span>
-          </div>
-        </td>
-        <td>
-          <div class="flex align-items-center gap-2">
-            <i class="pi pi-home text-primary-600"></i>
-            <span>{{site.adress}}</span>
-          </div>
-        </td>
-                <td>
-          <div class="flex align-items-center justify-content-center">
-            <ng-container *ngIf="site.image && site.image.trim() !== ''; else noImage">
-              <div class="image-preview-container cursor-pointer" (click)="showImagePreview(site.image, site.place)">
+          </th>
+          <th>
+            LOGGA
+          </th>
+          <th pSortableColumn="active">
+            STATUS
+            <p-sortIcon field="active"></p-sortIcon>
+          </th>
+          <th style="width: 5rem">ÅTGÄRDER</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-site>
+        <tr>
+          <td>
+            <div class="flex align-items-center gap-2">
+              <i class="pi pi-map-marker text-primary"></i>
+              <span>{{site.title}}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex align-items-center gap-2">
+              <i class="pi pi-map text-primary"></i>
+              <span>{{site.place}}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex align-items-center gap-2">
+              <i class="pi pi-home text-primary"></i>
+              <span>{{site.adress}}</span>
+            </div>
+          </td>
+          <td>
+            <div class="flex align-items-center justify-content-center">
+              <div
+                class="relative border-round shadow-2 overflow-hidden"
+                style="width: 32px; height: 32px;">
                 <img
+                  *ngIf="site.image"
                   [src]="site.image"
-                  [alt]="site.place"
-                  class="site-image shadow-2 border-round-xl object-fit-cover transition-all transition-duration-200"
-                  style="width: 40px; height: 40px;"
-                  pTooltip="Klicka för större bild"
+                  [alt]="site.place || 'Site image'"
+                  class="cursor-pointer w-full h-full"
+                  style="object-fit: cover;"
+                  (error)="site.image = ''"
+                  (click)="showImagePreview(site.image, site.place)"
+                  pTooltip="Click to view image"
                   tooltipPosition="top">
-                <div class="image-overlay border-round-xl flex align-items-center justify-content-center">
-                  <i class="pi pi-search-plus text-white"></i>
+                <div
+                  *ngIf="!site.image"
+                  class="flex align-items-center justify-content-center w-full h-full bg-gray-100">
+                  <i class="pi pi-image text-500" style="font-size: 1rem"></i>
                 </div>
               </div>
-            </ng-container>
-            <ng-template #noImage>
-              <div class="no-image-placeholder border-round-xl flex align-items-center justify-content-center">
-                <i class="pi pi-image text-400"></i>
-              </div>
-            </ng-template>
-          </div>
-        </td>
-        <td>
-          <div class="flex justify-content-end gap-2">
-            <brevet-site-info-popover [site]="site" class="scale-50"></brevet-site-info-popover>
-            <button
-              pButton
-              pRipple
-              icon="pi pi-pencil"
-              class="p-button-rounded p-button-success p-button-text scale-50"
-              (click)="editProduct(site)"
-              pTooltip="Redigera Plats"
-              tooltipPosition="top">
-            </button>
-            <button
-              pButton
-              pRipple
-              icon="pi pi-trash"
-              class="p-button-rounded p-button-danger p-button-text scale-50"
-              [disabled]="!canDelete(site)"
-              (click)="deleteProduct(site)"
-              pTooltip="Ta bort Plats"
-              tooltipPosition="top">
-            </button>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="4" class="text-center p-6">
-          <div class="flex flex-column align-items-center">
-            <i class="pi pi-map text-primary" style="font-size: 3rem"></i>
-            <span class="font-bold text-xl mt-3">Inga Platser Hittades</span>
-            <span class="text-600 mt-2">Börja med att lägga till en ny plats.</span>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template #paginatorTemplate let-state>
-      <div class="flex align-items-center justify-content-between gap-3 px-3">
-        <p-paginator
-          [rows]="state.rows"
-          [first]="state.first"
-          [totalRecords]="state.totalRecords"
-          [rowsPerPageOptions]="state.rowsPerPageOptions"
-          (onPageChange)="dt.onPageChange($event)"
-          [showCurrentPageReport]="true"
-          currentPageReportTemplate="Visar {first} till {last} av {totalRecords} platser"
-          [showFirstLastIcon]="true"
-          styleClass="flex-auto">
-        </p-paginator>
-      </div>
-    </ng-template>
-  </p-table>
-  <p-confirmDialog [style]="{width: '450px'}" [baseZIndex]="10000" styleClass="shadow-7"></p-confirmDialog>
-</ng-container>
+            </div>
+          </td>
+          <td>
+            <span [class]="'status-tag ' + (site.check_in_distance ? 'status-active' : 'status-inactive')">
+              {{site.check_in_distance ? 'Aktiv' : 'Inaktiv'}}
+            </span>
+          </td>
+          <td>
+            <div class="flex justify-content-center gap-2">
+              <button
+                pButton
+                pRipple
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-primary p-button-text p-button-sm"
+                (click)="editSite(site)"
+                pTooltip="Redigera"
+                tooltipPosition="top">
+              </button>
+              <button
+                pButton
+                pRipple
+                icon="pi pi-trash"
+                class="p-button-rounded p-button-danger p-button-text p-button-sm"
+                [disabled]="!canDelete(site)"
+                (click)="deleteSite(site.site_uid)"
+                pTooltip="Ta bort"
+                tooltipPosition="top">
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">
+            <div class="flex flex-column align-items-center gap-3 py-5">
+              <i class="pi pi-map-marker text-primary" style="font-size: 2rem"></i>
+              <span class="text-900 font-medium text-xl">Inga Platser Hittades</span>
+              <span class="text-700">Det finns inga platser att visa.</span>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <p-confirmDialog [style]="{width: '450px'}" [baseZIndex]="10000"></p-confirmDialog>
+  </ng-container>
+</div>
 
 <!-- Image Preview Dialog -->
 <p-dialog
@@ -190,3 +167,28 @@
       style="max-width: 80vw; max-height: 70vh; object-fit: contain;">
   </div>
 </p-dialog>
+
+<style>
+.status-tag {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-active {
+  background-color: #E7F7E7;
+  color: #1B801B;
+}
+
+.status-completed {
+  background-color: #EEF2FF;
+  color: #4338CA;
+}
+
+.status-inactive {
+  background-color: #FEE2E2;
+  color: #DC2626;
+}
+</style>

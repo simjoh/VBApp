@@ -6,6 +6,7 @@ use App\common\Repository\BaseRepository;
 use PDO;
 use PDOException;
 use Ramsey\Uuid\Uuid;
+use App\common\Exceptions\BrevetException;
 
 class ClubRepository extends BaseRepository
 {
@@ -136,51 +137,50 @@ class ClubRepository extends BaseRepository
         return array();
     }
 
-    public function createClub(?string $acp_code, ?string $title): ?string
+    public function createClub(Club $club): void
     {
         try {
-            $club_uid = Uuid::uuid4();
-            $stmt = $this->connection->prepare($this->sqls('createClub'));
-            $stmt->bindParam(':club_uid', $club_uid);
-            $stmt->bindParam(':acp_code', $acp_code);
-            $stmt->bindParam(':title', $title);
-            $stmt->execute();
+            error_log("Creating club in database with ACP kod: " . $club->getAcpKod(), 0);
+            $statement = $this->connection->prepare($this->sqls('createClub'));
+            $club_uid = $club->getClubUid();
+            $title = $club->getTitle();
+            $acp_kod = $club->getAcpKod();
+            
+            error_log("Bound parameters - club_uid: $club_uid, title: $title, acp_kod: $acp_kod", 0);
+            
+            $statement->bindParam(':club_uid', $club_uid);
+            $statement->bindParam(':title', $title);
+            $statement->bindParam(':acp_kod', $acp_kod);
+            
+            $statement->execute();
+            error_log("Club created successfully in database", 0);
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            error_log("Error creating club in database: " . $e->getMessage(), 0);
+            throw new BrevetException("Det gick inte att skapa klubben: " . $e->getMessage());
         }
-        return $club_uid;
     }
 
 
-    public function updateClub(Club $club): ?Club
+    public function updateClub(Club $club): void
     {
         try {
+            error_log("Updating club in database with ACP kod: " . $club->getAcpKod(), 0);
+            $statement = $this->connection->prepare($this->sqls('updateClub'));
             $club_uid = $club->getClubUid();
-            $acpcode = $club->getAcpCode();
             $title = $club->getTitle();
+            $acp_kod = $club->getAcpKod();
             
-            // Debug logging
-            error_log("REPO DEBUG: Updating club " . $club_uid);
-            error_log("REPO DEBUG: ACP code value: " . ($club->getAcpCode() ?? 'null'));
-            error_log("REPO DEBUG: Title: " . $title);
-            error_log("REPO DEBUG: SQL: " . $this->sqls('updateClub'));
+            error_log("Bound parameters - club_uid: $club_uid, title: $title, acp_kod: $acp_kod", 0);
             
-            $stmt = $this->connection->prepare($this->sqls('updateClub'));
-            $stmt->bindParam(':club_uid', $club_uid);
-            $stmt->bindParam(':acp_code', $acpcode);
-            $stmt->bindParam(':title', $title);
-            $status = $stmt->execute();
+            $statement->bindParam(':club_uid', $club_uid);
+            $statement->bindParam(':title', $title);
+            $statement->bindParam(':acp_kod', $acp_kod);
             
-            error_log("REPO DEBUG: SQL execution status: " . ($status ? 'true' : 'false'));
-
-            if($status){
-                return $club;
-            } else {
-                throw new PDOException("Failed to update club in database");
-            }
+            $statement->execute();
+            error_log("Club updated successfully in database", 0);
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
-            throw $e; // Re-throw to let the service handle the transaction rollback
+            error_log("Error updating club in database: " . $e->getMessage(), 0);
+            throw new BrevetException("Det gick inte att uppdatera klubben: " . $e->getMessage());
         }
     }
 
@@ -206,15 +206,15 @@ class ClubRepository extends BaseRepository
         return $this->connection;
     }
 
-    public function sqls($type)
+    public function sqls($type): string
     {
         $clubsql['clubByUID'] = 'select * from club e where club_uid=:club_uid;';
         $clubsql['clubByTitle'] = 'select * from club e where title=:title;';
         $clubsql['clubByTitleLower'] = 'select * from club e where REPLACE(TRIM(lower(title))," ","")=:title;';
         $clubsql['allClubs'] = 'select * from club;';
-        $clubsql['clubByAcpCode'] = 'select * from club e where acp_code=:acpcode;';
-        $clubsql['createClub'] = 'INSERT INTO club(club_uid, acp_code, title) VALUES (:club_uid, :acp_code, :title)';
-        $clubsql['updateClub'] = 'UPDATE club set acp_code=:acp_code, title=:title where club_uid=:club_uid';
+        $clubsql['clubByAcpCode'] = 'select * from club e where acp_kod=:acpcode;';
+        $clubsql['createClub'] = 'INSERT INTO club(club_uid, acp_kod, title) VALUES (:club_uid, :acp_kod, :title)';
+        $clubsql['updateClub'] = 'UPDATE club set acp_kod=:acp_kod, title=:title where club_uid=:club_uid';
         $clubsql['deleteClub'] = 'DELETE FROM club WHERE club_uid = :club_uid';
         return $clubsql[$type];
     }
