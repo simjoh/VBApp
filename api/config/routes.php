@@ -189,6 +189,11 @@ return function (App $app) {
         // Test email endpoint
         $app->post('/test/email', \App\Action\Test\TestEmailAction::class);
 
+        // Database migrations
+        $app->group('/infra', function ($group) {
+            $group->get('/migrations/{action}', \App\Action\Migration\MigrationAction::class);
+        });
+
         // Competitor info management
         $app->get('/competitor/{competitorUid}/info', \App\Action\Competitor\CompetitorInfoAction::class . ':getCompetitorInfo');
         $app->put('/competitor/{competitorUid}/info', \App\Action\Competitor\CompetitorInfoAction::class . ':updateCompetitorInfo');

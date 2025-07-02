@@ -1,0 +1,95 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+
+use App\common\Database\MigrationManager;
+
+// Load environment variables
+if (file_exists(__DIR__ . '/.env_dev')) {
+    $env = parse_ini_file(__DIR__ . '/.env_dev');
+    foreach ($env as $key => $value) {
+        $_ENV[$key] = $value;
+    }
+}
+
+// Database configuration - use environment variables
+$dbConfig = [
+    'host' => $_ENV['DB_HOST'] ?? '192.168.1.221',
+    'port' => $_ENV['DB_PORT'] ?? '3310',
+    'database' => $_ENV['DB_DATABASE'] ?? 'vasterbottenbrevet_se',
+    'username' => $_ENV['DB_USERNAME'] ?? 'root',
+    'password' => $_ENV['DB_PASSWORD'] ?? 'secret',
+];
+
+// Command line arguments
+$command = $argv[1] ?? 'help';
+$options = array_slice($argv, 2);
+
+try {
+    // Create database connection
+    $dsn = "mysql:host={$dbConfig['host']};port={$dbConfig['port']};dbname={$dbConfig['database']};charset=utf8mb4";
+    $pdo = new PDO($dsn, $dbConfig['username'], $dbConfig['password'], [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ]);
+
+    // Create migration manager
+    $migrationManager = new MigrationManager($pdo);
+
+    // Execute command
+    switch ($command) {
+        case 'migrate':
+            echo "Running migrations...\n";
+            $result = $migrationManager->migrate();
+            exit($result['success'] ? 0 : 1);
+
+        case 'migrate:status':
+            $migrationManager->status();
+            break;
+
+        case 'migrate:rollback':
+            $steps = isset($options[0]) ? (int)$options[0] : 1;
+            echo "Rolling back {$steps} batch(es)...\n";
+            $result = $migrationManager->rollback($steps);
+            exit($result['success'] ? 0 : 1);
+
+        case 'migrate:init':
+            echo "Initializing migrations table...\n";
+            $migrationManager->initialize();
+            echo "✓ Initialization complete\n";
+            break;
+
+        case 'migrate:create':
+            if (empty($options)) {
+                echo "Error: Migration name is required\n";
+                echo "Usage: php artisan migrate:create <migration_name>\n";
+                exit(1);
+            }
+            $name = $options[0];
+            $migrationManager->createMigration($name);
+            break;
+
+        case 'help':
+        default:
+            echo "VBApp Artisan - Database Management Tool\n\n";
+            echo "Usage: php artisan <command> [options]\n\n";
+            echo "Available Commands:\n";
+            echo "  migrate                    Run all pending migrations\n";
+            echo "  migrate:status             Show migration status\n";
+            echo "  migrate:rollback [steps]   Rollback last batch (default: 1)\n";
+            echo "  migrate:init               Initialize migrations table\n";
+            echo "  migrate:create <name>      Create a new migration file\n";
+            echo "  help                       Show this help message\n\n";
+            echo "Examples:\n";
+            echo "  php artisan migrate\n";
+            echo "  php artisan migrate:status\n";
+            echo "  php artisan migrate:rollback 3\n";
+            echo "  php artisan migrate:create add_user_table\n";
+            break;
+    }
+
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+    exit(1);
+} 

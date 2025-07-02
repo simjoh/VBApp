@@ -151,6 +151,18 @@ return [
             $container->get(EmailService::class),
             $container
         );
+    },
+
+    \App\common\Database\MigrationManager::class => function(ContainerInterface $container) {
+        return new \App\common\Database\MigrationManager(
+            $container->get(PDO::class)
+        );
+    },
+
+    \App\Action\Migration\MigrationAction::class => function(ContainerInterface $container) {
+        return new \App\Action\Migration\MigrationAction(
+            $container->get(\App\common\Database\MigrationManager::class)
+        );
     }
 
 ];
