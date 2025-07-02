@@ -24,6 +24,7 @@ class Participant
     private  $register_date_time;
     private ?string $dns_timestamp = null;
     private ?string $dnf_timestamp = null;
+    private ?string $finished_timestamp = null;
 
 
 
@@ -284,5 +285,20 @@ class Participant
         $this->dnf_timestamp = $dnf_timestamp;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getFinishedTimestamp(): ?string
+    {
+        return $this->finished_timestamp;
+    }
+
+    /**
+     * @param string|null $finished_timestamp
+     */
+    public function setFinishedTimestamp(?string $finished_timestamp): void
+    {
+        $this->finished_timestamp = $finished_timestamp;
+    }
 
 }

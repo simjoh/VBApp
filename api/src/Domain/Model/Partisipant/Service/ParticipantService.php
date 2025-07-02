@@ -536,6 +536,7 @@ class ParticipantService extends ServiceAbstract
             $this->participantRepository->updateParticipant($participant);
         } else if ($isEnd) {
             $participant->setFinished(true);
+            $participant->setFinishedTimestamp(date('Y-m-d H:i:s'));
             $this->participantRepository->updateParticipant($participant);
         }
 
@@ -656,6 +657,7 @@ class ParticipantService extends ServiceAbstract
             $participant->setDns(false);
 
             $participant->setFinished(true);
+            $participant->setFinishedTimestamp(date('Y-m-d H:i:s'));
             $participant->setTime(Util::calculateSecondsBetween($track->getStartDateTime()));
             $this->participantRepository->updateParticipant($participant);
             return $this->randonneurservice->getChecpointsForRandonneurForAdmin($participant, $track);
@@ -1292,46 +1294,32 @@ class ParticipantService extends ServiceAbstract
     private function getDailyStats(string $date): array
     {
         $sql = "SELECT 
-                COUNT(*) as countparticipants,
-                COALESCE(SUM(p.started), 0) as started,
-                COALESCE(SUM(p.finished), 0) as completed,
-                COALESCE(SUM(p.dnf), 0) as dnf,
-                COALESCE(SUM(p.dns), 0) as dns
+                COUNT(DISTINCT CASE WHEN DATE(p.register_date_time) = DATE(:date) THEN p.participant_uid END) as countparticipants,
+                COALESCE(SUM(CASE WHEN DATE(p.register_date_time) = DATE(:date) AND p.started = 1 THEN 1 ELSE 0 END), 0) as started,
+                COALESCE(SUM(CASE WHEN DATE(p.finished_timestamp) = DATE(:date) THEN 1 ELSE 0 END), 0) as completed,
+                COALESCE(SUM(CASE WHEN DATE(p.dnf_timestamp) = DATE(:date) THEN 1 ELSE 0 END), 0) as dnf,
+                COALESCE(SUM(CASE WHEN DATE(p.dns_timestamp) = DATE(:date) THEN 1 ELSE 0 END), 0) as dns
             FROM participant p
-            JOIN track t ON t.track_uid = p.track_uid
-            WHERE DATE(p.register_date_time) = DATE(:date)";
+            JOIN track t ON t.track_uid = p.track_uid";
 
         error_log("Daily stats query for date: " . $date);
         error_log("SQL: " . $sql);
-        
-        $statement = $this->connection->prepare($sql);
-        $statement->bindParam(':date', $date);
-        $statement->execute();
-        
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
-        error_log("Daily stats result: " . json_encode($result));
-        
-        return $result ?: [
-            'countparticipants' => 0,
-            'started' => 0,
-            'completed' => 0,
-            'dnf' => 0,
-            'dns' => 0
-        ];
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute(['date' => $date]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     private function getWeeklyStats(string $date): array
     {
         $sql = "SELECT 
-                COUNT(*) as countparticipants,
-                COALESCE(SUM(p.started), 0) as started,
-                COALESCE(SUM(p.finished), 0) as completed,
-                COALESCE(SUM(p.dnf), 0) as dnf,
-                COALESCE(SUM(p.dns), 0) as dns
+                COUNT(DISTINCT CASE WHEN p.register_date_time >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.register_date_time < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN p.participant_uid END) as countparticipants,
+                COALESCE(SUM(CASE WHEN p.register_date_time >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.register_date_time < DATE_ADD(DATE(:date), INTERVAL 1 DAY) AND p.started = 1 THEN 1 ELSE 0 END), 0) as started,
+                COALESCE(SUM(CASE WHEN p.finished_timestamp >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.finished_timestamp < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN 1 ELSE 0 END), 0) as completed,
+                COALESCE(SUM(CASE WHEN p.dnf_timestamp >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.dnf_timestamp < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN 1 ELSE 0 END), 0) as dnf,
+                COALESCE(SUM(CASE WHEN p.dns_timestamp >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.dns_timestamp < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN 1 ELSE 0 END), 0) as dns
             FROM participant p
-            JOIN track t ON t.track_uid = p.track_uid
-            WHERE p.register_date_time >= DATE_SUB(:date, INTERVAL 6 DAY)
-            AND p.register_date_time < DATE_ADD(DATE(:date), INTERVAL 1 DAY)";
+            JOIN track t ON t.track_uid = p.track_uid";
 
         error_log("Weekly stats query for date: " . $date);
         error_log("SQL: " . $sql);
@@ -1355,14 +1343,13 @@ class ParticipantService extends ServiceAbstract
     private function getYearlyStats(string $date): array
     {
         $sql = "SELECT 
-                COUNT(*) as countparticipants,
-                COALESCE(SUM(p.started), 0) as started,
-                COALESCE(SUM(p.finished), 0) as completed,
-                COALESCE(SUM(p.dnf), 0) as dnf,
-                COALESCE(SUM(p.dns), 0) as dns
+                COUNT(DISTINCT CASE WHEN YEAR(p.register_date_time) = YEAR(:date) THEN p.participant_uid END) as countparticipants,
+                COALESCE(SUM(CASE WHEN YEAR(p.register_date_time) = YEAR(:date) AND p.started = 1 THEN 1 ELSE 0 END), 0) as started,
+                COALESCE(SUM(CASE WHEN YEAR(p.finished_timestamp) = YEAR(:date) THEN 1 ELSE 0 END), 0) as completed,
+                COALESCE(SUM(CASE WHEN YEAR(p.dnf_timestamp) = YEAR(:date) THEN 1 ELSE 0 END), 0) as dnf,
+                COALESCE(SUM(CASE WHEN YEAR(p.dns_timestamp) = YEAR(:date) THEN 1 ELSE 0 END), 0) as dns
             FROM participant p
-            JOIN track t ON t.track_uid = p.track_uid
-            WHERE YEAR(p.register_date_time) = YEAR(:date)";
+            JOIN track t ON t.track_uid = p.track_uid";
 
         error_log("Yearly stats query for date: " . $date);
         error_log("SQL: " . $sql);

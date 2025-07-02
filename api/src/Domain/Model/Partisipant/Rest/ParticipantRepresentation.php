@@ -22,6 +22,7 @@ class ParticipantRepresentation implements JsonSerializable
     private ?string $brevenr;
     private ?string $dns_timestamp;
     private ?string $dnf_timestamp;
+    private ?string $finished_timestamp;
     private array $links = [];
     /**
      * @return string
@@ -264,6 +265,22 @@ class ParticipantRepresentation implements JsonSerializable
     public function setDnfTimestamp(?string $dnf_timestamp): void
     {
         $this->dnf_timestamp = $dnf_timestamp;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFinishedTimestamp(): ?string
+    {
+        return $this->finished_timestamp;
+    }
+
+    /**
+     * @param string|null $finished_timestamp
+     */
+    public function setFinishedTimestamp(?string $finished_timestamp): void
+    {
+        $this->finished_timestamp = $finished_timestamp;
     }
 
     public function jsonSerialize(): mixed

@@ -291,6 +291,7 @@ class VolonteerService extends ServiceAbstract
             $participant->setDnf(false);
             $participant->setDns(false);
             $participant->setFinished(true);
+            $participant->setFinishedTimestamp(date('Y-m-d H:i:s'));
             // beräkna tiden från första incheckning till nu och sätt tiden
             $participant->setTime(Util::calculateSecondsBetween($track->getStartDateTime()));
             $this->participantrepository->updateParticipant($participant);

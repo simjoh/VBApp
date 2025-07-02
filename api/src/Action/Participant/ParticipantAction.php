@@ -591,7 +591,8 @@ class ParticipantAction
 
     public function getParticipantStats(ServerRequestInterface $request, ResponseInterface $response)
     {
-        $date = date('Y-m-d');  // Use current date
+        $params = $request->getQueryParams();
+        $date = isset($params['date']) && !empty($params['date']) ? $params['date'] : date('Y-m-d');  // Use current date if not provided
         error_log("Getting stats for date: " . $date);
         $stats = $this->participantService->getParticipantStats($date);
         

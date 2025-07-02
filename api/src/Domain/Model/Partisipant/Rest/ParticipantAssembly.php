@@ -50,6 +50,7 @@ class ParticipantAssembly
         $participantrepresentation->setFinished($participant->isFinished());
         $participantrepresentation->setDnsTimestamp($participant->getDnsTimestamp());
         $participantrepresentation->setDnfTimestamp($participant->getDnfTimestamp());
+        $participantrepresentation->setFinishedTimestamp($participant->getFinishedTimestamp());
 
         $linkArray = array();
 //        foreach ($permissions as $x =>  $site) {
