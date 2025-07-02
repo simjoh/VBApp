@@ -14,6 +14,10 @@ class User implements JsonSerializable
     private string $token;
     private  $roles = array();
     private string $password = '';
+    private ?\DateTime $createdAt = null;
+    private ?\DateTime $updatedAt = null;
+    private bool $confirmed = false;
+    private ?\DateTime $confirmedAt = null;
 
 
     public function __construct()
@@ -130,7 +134,71 @@ class User implements JsonSerializable
         $this->username = $username;
     }
 
-    public function jsonSerialize(): string {
+    /**
+     * @return \DateTime|null
+     */
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime|null $createdAt
+     */
+    public function setCreatedAt(?\DateTime $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @param \DateTime|null $updatedAt
+     */
+    public function setUpdatedAt(?\DateTime $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isConfirmed(): bool
+    {
+        return $this->confirmed;
+    }
+
+    /**
+     * @param bool $confirmed
+     */
+    public function setConfirmed(bool $confirmed): void
+    {
+        $this->confirmed = $confirmed;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getConfirmedAt(): ?\DateTime
+    {
+        return $this->confirmedAt;
+    }
+
+    /**
+     * @param \DateTime|null $confirmedAt
+     */
+    public function setConfirmedAt(?\DateTime $confirmedAt): void
+    {
+        $this->confirmedAt = $confirmedAt;
+    }
+
+    public function jsonSerialize(): mixed {
         return (object) get_object_vars($this);
     }
 }

@@ -51,7 +51,21 @@ class UserRepository extends BaseRepository
         $user->setUsername($userdetails['user_name']);
         $user->setToken('');
         $user->setRoles(array($userdetails['role_name']));
-       // $user->setRoles($roleArray);
+        
+        // Set timestamp and confirmation fields
+        if (isset($userdetails['created_at'])) {
+            $user->setCreatedAt(new \DateTime($userdetails['created_at']));
+        }
+        if (isset($userdetails['updated_at'])) {
+            $user->setUpdatedAt(new \DateTime($userdetails['updated_at']));
+        }
+        if (isset($userdetails['confirmed'])) {
+            $user->setConfirmed((bool)$userdetails['confirmed']);
+        }
+        if (isset($userdetails['confirmed_at']) && $userdetails['confirmed_at']) {
+            $user->setConfirmedAt(new \DateTime($userdetails['confirmed_at']));
+        }
+        
         return $user;
     }
 
@@ -72,6 +86,20 @@ class UserRepository extends BaseRepository
             $user->setFamilyname($row['family_name']);
             $user->setUsername($row['user_name']);
             $user->setToken('');
+            
+            // Set timestamp and confirmation fields
+            if (isset($row['created_at'])) {
+                $user->setCreatedAt(new \DateTime($row['created_at']));
+            }
+            if (isset($row['updated_at'])) {
+                $user->setUpdatedAt(new \DateTime($row['updated_at']));
+            }
+            if (isset($row['confirmed'])) {
+                $user->setConfirmed((bool)$row['confirmed']);
+            }
+            if (isset($row['confirmed_at']) && $row['confirmed_at']) {
+                $user->setConfirmedAt(new \DateTime($row['confirmed_at']));
+            }
 
             $user_roles_stmt = $this->connection->prepare($this->sqls('roles'));
             $user_roles_stmt->bindParam(':user_uid', $row['user_uid']);
@@ -106,6 +134,20 @@ class UserRepository extends BaseRepository
         $user->setFamilyname($data['family_name']);
         $user->setUsername($data['user_name']);
         $user->setToken('');
+        
+        // Set timestamp and confirmation fields
+        if (isset($data['created_at'])) {
+            $user->setCreatedAt(new \DateTime($data['created_at']));
+        }
+        if (isset($data['updated_at'])) {
+            $user->setUpdatedAt(new \DateTime($data['updated_at']));
+        }
+        if (isset($data['confirmed'])) {
+            $user->setConfirmed((bool)$data['confirmed']);
+        }
+        if (isset($data['confirmed_at']) && $data['confirmed_at']) {
+            $user->setConfirmedAt(new \DateTime($data['confirmed_at']));
+        }
 
         $user_roles_stmt = $this->connection->prepare($this->sqls('roles'));
         $user_roles_stmt->bindParam(':user_uid', $data['user_uid']);
@@ -165,9 +207,13 @@ class UserRepository extends BaseRepository
             $setPassword = ', password=:password';
         }
         try {
-            $sql = "UPDATE users SET given_name=:givenname, family_name=:familyname, user_name=:username{$setPassword} WHERE user_uid=:user_uid";
+            // Only update updated_at timestamp, leave created_at unchanged
+            $sql = "UPDATE users SET given_name=:givenname, family_name=:familyname, user_name=:username{$setPassword}, updated_at=CURRENT_TIMESTAMP WHERE user_uid=:user_uid";
             $statement = $this->connection->prepare($sql);
             $statement->execute($data);
+            
+            // Set the updated timestamp in the object
+            $userParsed->setUpdatedAt(new \DateTime());
         } catch (PDOException $e) {
             echo 'Kunde inte uppdatera användare: ' . $e->getMessage();
         }
@@ -182,7 +228,7 @@ class UserRepository extends BaseRepository
             $givenname = $userTocreate->getGivenname();
             $username = $userTocreate->getUsername();
             $password = $userTocreate->getPassword() ? sha1($userTocreate->getPassword()) : sha1("test");
-            $roleid = 1;
+            
             $stmt = $this->connection->prepare($this->sqls('createUser'));
             $stmt->bindParam(':user_uid', $user_uid);
             $stmt->bindParam(':family_name',$familyname );
@@ -190,13 +236,19 @@ class UserRepository extends BaseRepository
             $stmt->bindParam(':given_name', $givenname);
             $stmt->bindParam(':password', $password);
             $stmt->execute();
+            
+            // Set the timestamps - both created_at and updated_at are set when creating
+            $userTocreate->setId($user_uid);
+            $userTocreate->setCreatedAt(new \DateTime());
+            $userTocreate->setUpdatedAt(new \DateTime());
+            $userTocreate->setConfirmed(false);
+            
         }
         catch(PDOException $e)
              {
                  echo "Error: " . $e->getMessage();
               }
 
-              $userTocreate->setId($user_uid);
               return $userTocreate;
     }
 
@@ -212,19 +264,53 @@ class UserRepository extends BaseRepository
         }
     }
 
+    public function confirmUser($user_uid): bool {
+        try {
+            $stmt = $this->connection->prepare($this->sqls('confirmUser'));
+            $stmt->bindParam(':user_uid', $user_uid);
+            $stmt->execute();
+            return $stmt->rowCount() > 0;
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }
+
+    public function confirmUserAndReturn($user_uid): ?User {
+        try {
+            $stmt = $this->connection->prepare($this->sqls('confirmUser'));
+            $stmt->bindParam(':user_uid', $user_uid);
+            $stmt->execute();
+            
+            if ($stmt->rowCount() > 0) {
+                // Return the updated user
+                return $this->getUserById($user_uid);
+            }
+            return null;
+        }
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+            return null;
+        }
+    }
+
 
     public function sqls($type): string
     {
         $usersqls['login'] = 'select * from users where user_name = :user_name and password = :password';
-        $usersqls['login2'] = 'select * from users s inner join user_role r on r.user_uid = s.user_uid inner join roles ru on ru.role_id = r.role_id  where s.user_name = :user_name and password = :password';
+        $usersqls['login2'] = 'select s.*, ru.role_name, ru.role_id from users s inner join user_role r on r.user_uid = s.user_uid inner join roles ru on ru.role_id = r.role_id  where s.user_name = :user_name and password = :password';
         $usersqls['allUsers'] = 'select * from users s;';
         $usersqls['getUserById'] = 'select * from users s where s.user_uid = :user_uid;';
-        $usersqls['updateUser']  = "UPDATE users SET given_name=:givenname, family_name=:familyname, user_name=:username WHERE user_uid=:user_uid";
-        $usersqls['createUser']  = "INSERT INTO users(user_uid, user_name, given_name, family_name, password) VALUES (:user_uid, :user_name, :given_name, :family_name, :password)";
+        $usersqls['updateUser']  = "UPDATE users SET given_name=:givenname, family_name=:familyname, user_name=:username, updated_at=CURRENT_TIMESTAMP WHERE user_uid=:user_uid";
+        $usersqls['createUser']  = "INSERT INTO users(user_uid, user_name, given_name, family_name, password, created_at, updated_at, confirmed) VALUES (:user_uid, :user_name, :given_name, :family_name, :password, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)";
         $usersqls['deleteUser'] = 'delete from users  where user_uid = :user_uid';
         $usersqls['roles'] = 'select distinct(r.role_name) , r.role_id from user_role ur inner join roles r on r.role_id = ur.role_id  where ur.user_uid = :user_uid';
         $usersqls['isRole'] = 'select role_id from roles s where s.role_id = :role_id;';
         $usersqls['userRoles'] = 'select role_id from user_role s where s.role_id = :role_id;';
+        $usersqls['confirmUser'] = 'UPDATE users SET confirmed=1, confirmed_at=CURRENT_TIMESTAMP WHERE user_uid=:user_uid';
         return $usersqls[$type];
     }
 }
