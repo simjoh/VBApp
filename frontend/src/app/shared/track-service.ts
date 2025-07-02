@@ -37,7 +37,7 @@ export class TrackService {
       } else {
         track.active = Number(track.active);
       }
-      console.log('Normalized track active state:', track.active);
+      // console.log('Normalized track active state:', track.active);
     }
     return track;
   }
@@ -158,12 +158,13 @@ export class TrackService {
   }
 
   publishReultLinkExists(track: TrackRepresentation) {
-    return this.linkService.exists(track.links, 'relation.track.publisresults', HttpMethod.PUT );
+    // Check for publish link (when track is unpublished)
+    return this.linkService.exists(track.links, 'relation.track.undopublisresults', HttpMethod.PUT);
   }
 
 
   async undopublishresult(trackRepresentation: TrackRepresentation): Promise<TrackRepresentation> {
-    const link = this.linkService.findByRel(trackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT);
+    const link = this.linkService.findByRel(trackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
     console.log('Undopublish link found:', link);
     if (!link) {
       throw new Error('Undopublish link not found - track may already be unpublished');
@@ -174,7 +175,7 @@ export class TrackService {
   }
 
   async publishresult(trackRepresentation: TrackRepresentation): Promise<TrackRepresentation> {
-    const link = this.linkService.findByRel(trackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
+    const link = this.linkService.findByRel(trackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT);
     console.log('Publish link found:', link);
     if (!link) {
       throw new Error('Publish link not found - track may already be published');

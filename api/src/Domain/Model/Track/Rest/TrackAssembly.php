@@ -74,8 +74,12 @@ class TrackAssembly
             array_push($linkArray, new Link("relation.track.delete", 'DELETE', $this->settings['path'] .'track/' . $track->getTrackUid()));
         }
 
-        array_push($linkArray, new Link("relation.track.publisresults", 'PUT', $this->settings['path'] .'publishresults/track/' . $track->getTrackUid() . "?publish=true"));
-        array_push($linkArray, new Link("relation.track.undopublisresults", 'PUT', $this->settings['path'] .'publishresults/track/' . $track->getTrackUid(). "?publish=false"));
+        if ($track->isActive()) {
+            array_push($linkArray, new Link("relation.track.undopublisresults", 'PUT', $this->settings['path'] .'publishresults/track/' . $track->getTrackUid(). "?publish=false"));
+        } else {
+            array_push($linkArray, new Link("relation.track.publisresults", 'PUT', $this->settings['path'] .'publishresults/track/' . $track->getTrackUid() . "?publish=true"));
+        }
+
         array_push($linkArray, new Link("relation.track.exportstartlist", 'GET', $this->settings['path'] .'participants/track/' . $track->getTrackUid() . '/startlist/export'));
 
         if($track->isActive() == false) {

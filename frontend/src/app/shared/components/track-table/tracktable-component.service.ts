@@ -42,22 +42,19 @@ publishReultLinkExists(track: TrackRepresentation){
 
   async publishResults(trackRepresentation: TrackRepresentation) {
     try {
-      // Check which links are available
-      const hasPublishLink = this.trackService.publishReultLinkExists(trackRepresentation);
-      const hasUnpublishLink = this.linkService.exists(trackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT);
+      // Check which link is available (only one should exist at a time)
+      const hasPublishLink = this.linkService.exists(trackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT);
+      const hasUnpublishLink = this.linkService.exists(trackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
+      console.log('hasPublishLink', hasPublishLink);
+      console.log('hasUnpublishLink', hasUnpublishLink);
 
-      // Decide action based on available links
-      if (hasPublishLink && !hasUnpublishLink) {
-        // Track is inactive (unpublished), we should publish it
+      // Decide action based on available link
+      if (hasPublishLink) {
+        // Track is unpublished, we should publish it
         return await this.trackService.publishresult(trackRepresentation);
-      } else if (!hasPublishLink && hasUnpublishLink) {
-        // Track is active (published), we should unpublish it
+      } else if (hasUnpublishLink) {
+        // Track is published, we should unpublish it
         return await this.trackService.undopublishresult(trackRepresentation);
-      } else if (hasPublishLink && hasUnpublishLink) {
-        // Both links exist - this shouldn't happen, but let's handle it
-        console.error('Both publish and unpublish links exist - inconsistent state');
-        // Default to publish since we have a publish link
-        return await this.trackService.publishresult(trackRepresentation);
       } else {
         // No relevant links exist
         throw new Error('No publish or unpublish links available for this track');

@@ -40,23 +40,23 @@
       </button>
 
       <button
-        *ngIf="currentTrackRepresentation && currentTrackRepresentation.active === 1"
+        *ngIf="currentTrackRepresentation && hasPublishLink()"
         pButton
         pRipple
         (click)="publishCurrentTrack()"
         [attr.data-track-uid]="currentTrackRepresentation?.track_uid"
-        class="p-button-outlined p-button-success">
+        class="publish-btn p-button-outlined p-button-success">
         <fa-icon [icon]="faBroadcast"></fa-icon>
         <span class="ml-2">Publicera resultat</span>
       </button>
 
       <button
-        *ngIf="currentTrackRepresentation && currentTrackRepresentation.active === 0"
+        *ngIf="currentTrackRepresentation && hasUnpublishLink()"
         pButton
         pRipple
         (click)="publishCurrentTrack()"
         [attr.data-track-uid]="currentTrackRepresentation?.track_uid"
-        class="p-button-outlined p-button-danger">
+        class="unpublish-btn p-button-outlined p-button-danger">
         <fa-icon [icon]="faBroadcast"></fa-icon>
         <span class="ml-2">Ångra publicera</span>
       </button>
@@ -68,8 +68,8 @@
         label="Exportera homologation"
         (click)="exportHomologation()"
         class="p-button-outlined p-button-success"
-        [disabled]="!participantComponentService.getCurrentTrackUid() || currentTrackRepresentation?.active === 1"
-        [pTooltip]="currentTrackRepresentation?.active === 1 ? 'Banan måste vara publicerad först' : ''">
+        [disabled]="!participantComponentService.getCurrentTrackUid() || hasPublishLink()"
+        [pTooltip]="hasPublishLink() ? 'Banan måste vara publicerad först' : ''">
       </button>
     </div>
   </div>

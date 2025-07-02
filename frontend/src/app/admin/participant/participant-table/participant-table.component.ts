@@ -323,7 +323,8 @@ export class ParticipantTableComponent implements OnInit {
       console.log('No track representation or links available');
       return false;
     }
-    const hasLink = this.linkService.exists(this.currentTrackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
+    // Check for undopublisresults link (means we can publish)
+    const hasLink = this.linkService.exists(this.currentTrackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT);
     console.log('Has publish link:', hasLink);
     return hasLink;
   }
@@ -339,7 +340,8 @@ export class ParticipantTableComponent implements OnInit {
       console.log('No track representation or links available');
       return false;
     }
-    const hasLink = this.linkService.exists(this.currentTrackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT);
+    // Check for publisresults link (means we can unpublish)
+    const hasLink = this.linkService.exists(this.currentTrackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
     console.log('Has unpublish link:', hasLink);
     return hasLink;
   }
@@ -348,7 +350,8 @@ export class ParticipantTableComponent implements OnInit {
     if (!this.currentTrackRepresentation || !this.currentTrackRepresentation.links) {
       return false;
     }
-    return this.linkService.exists(this.currentTrackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT);
+    // Track is published if it has the publisresults link (can be unpublished)
+    return this.linkService.exists(this.currentTrackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
   }
 
   async publishCurrentTrack(): Promise<void> {
@@ -360,7 +363,6 @@ export class ParticipantTableComponent implements OnInit {
     try {
       console.log('Publishing track - before API call:', {
         trackUid: this.currentTrackRepresentation.track_uid,
-        active: this.currentTrackRepresentation.active,
         links: this.currentTrackRepresentation.links?.map((l: any) => ({ rel: l.rel, method: l.method }))
       });
 
@@ -373,19 +375,17 @@ export class ParticipantTableComponent implements OnInit {
       if (unpublishButton) unpublishButton.disabled = true;
 
       try {
-        // Check which action to perform based on current state
-        // active=1 means unpublished, active=0 means published
-        const isCurrentlyPublished = this.currentTrackRepresentation.active === 0;
         let updatedTrack: TrackRepresentation;
 
-        if (isCurrentlyPublished) {
-          // Track is published (active=0), so we should unpublish it
-          // We send publish=true to set active=1 (unpublished)
+        // Check which action to perform based on available links
+        if (this.hasPublishLink()) {
+          // Track is unpublished, we should publish it
           updatedTrack = await this.trackService.publishresult(this.currentTrackRepresentation);
-        } else {
-          // Track is unpublished (active=1), so we should publish it
-          // We send publish=false to set active=0 (published)
+        } else if (this.hasUnpublishLink()) {
+          // Track is published, we should unpublish it
           updatedTrack = await this.trackService.undopublishresult(this.currentTrackRepresentation);
+        } else {
+          throw new Error('No publish or unpublish links available');
         }
 
         console.log('Publishing track - API call successful:', updatedTrack);
@@ -397,7 +397,7 @@ export class ParticipantTableComponent implements OnInit {
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
-          detail: updatedTrack.active === 0 ? 'Track published successfully' : 'Track unpublished successfully'
+          detail: this.hasUnpublishLink() ? 'Track published successfully' : 'Track unpublished successfully'
         });
 
         // Also reload the participant list

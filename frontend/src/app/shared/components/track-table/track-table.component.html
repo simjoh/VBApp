@@ -63,6 +63,7 @@
             <div class="flex align-items-center gap-2">
               <i class="pi pi-map text-primary"></i>
               <span class="font-semibold">{{track.trackRepresentation.title}}</span>
+              <span style="color: red; font-weight: bold;">active: {{ track.trackRepresentation.active }}</span>
             </div>
           </td>
           <td class="hide">
@@ -112,7 +113,7 @@
                 tooltipPosition="top">
               </button>
               <button
-                [hidden]="track.trackMetricsRepresentation.countParticipants == 0 || !isTrackUnpublished(track.trackRepresentation)"
+                *ngIf="track.trackRepresentation.active === true"
                 (click)="publish(track.trackRepresentation)"
                 [attr.data-track-uid]="track.trackRepresentation.track_uid"
                 class="publish-btn"
@@ -124,7 +125,7 @@
                 <fa-icon [icon]="faBroadcast" [styles]="{'color': '#198754'}"></fa-icon>
               </button>
               <button
-                [hidden]="track.trackMetricsRepresentation.countParticipants == 0 || !isTrackPublished(track.trackRepresentation)"
+                *ngIf="track.trackRepresentation.active === false"
                 (click)="publish(track.trackRepresentation)"
                 [attr.data-track-uid]="track.trackRepresentation.track_uid"
                 class="unpublish-btn"
