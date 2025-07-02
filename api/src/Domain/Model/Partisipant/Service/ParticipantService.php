@@ -219,7 +219,7 @@ class ParticipantService extends ServiceAbstract
         if (isset($club) && $club->getClubUid() !== null) {
             $club = $this->clubrepository->getClubByUId($club->getClubUid());
         } else {
-            $club_uid = $this->clubrepository->createClub($club->getAcpCode(), $club->getTitle());
+            $club_uid = $this->createClubAndReturnUid($club->getAcpKod(), $club->getTitle());
             $club = $this->clubrepository->getClubByUId($club_uid);
         }
 
@@ -333,7 +333,7 @@ class ParticipantService extends ServiceAbstract
                 $existingClub = $this->clubrepository->getClubByTitle($record[4]);
 
                 if (!isset($existingClub)) {
-                    $clubUid = $this->clubrepository->createClub("", $record[4]);
+                    $clubUid = $this->createClubAndReturnUid("", $record[4]);
                     $participant->setClubUid($clubUid);
                 } else {
                     $participant->setClubUid($existingClub->getClubUid());
@@ -808,12 +808,18 @@ class ParticipantService extends ServiceAbstract
                     $existingClub = $this->clubrepository->getClubByTitle($club['name']);
                 }
                 
-                // If still not found, create new club
-                if (!isset($existingClub)) {
-                    if (isset($club['name']) && !empty($club['name'])) {
-                        $clubUid = $this->clubrepository->createClub("", $club['name']);
-                    }
-                } else {
+                // If still not found, try to fetch from loppservice and create with same UID
+                if (!isset($existingClub) && isset($club['club_uid']) && !empty($club['club_uid'])) {
+                    $clubUid = $this->syncClubFromLoppservice($club['club_uid'], $club['name'] ?? '');
+                }
+                
+                // If still not found, create new club with new UUID
+                if (!isset($existingClub) && !isset($clubUid) && isset($club['name']) && !empty($club['name'])) {
+                    $clubUid = $this->createClubAndReturnUid("", $club['name']);
+                }
+                
+                // Use existing club UID if found
+                if (isset($existingClub)) {
                     $clubUid = $existingClub->getClubUid();
                 }
             }
@@ -1075,7 +1081,7 @@ class ParticipantService extends ServiceAbstract
 
         // Add the header rows
         $csv->insertOne(['', 'ORGANIZING CLUB', '', '', 'ACP code number', 'DATE', 'DISTANCE', 'INFORMATION', '', '']);
-        $csv->insertOne(['', $club->getTitle() ?? 'Unknown Club', '', '', $club->getAcpCode() ?? 'N/A', $date, $distance . ' km', 'Medal', 'Gender', '']);
+        $csv->insertOne(['', $club->getTitle() ?? 'Unknown Club', '', '', $club->getAcpKod() ?? 'N/A', $date, $distance . ' km', 'Medal', 'Gender', '']);
         $csv->insertOne(['Homologation number', 'LAST NAME', 'FIRST NAME', 'RIDER\'S CLUB', '', 'ACP CODE NUMBER', 'TIME', '(x)', '(F)', 'BIRTH DATE']);
         // Add participant data rows
 
@@ -1158,7 +1164,7 @@ class ParticipantService extends ServiceAbstract
         $csv->insertOne(['Date:', $startDateTime->format('Y-m-d')]);
         $csv->insertOne(['Distance:', $track->getDistance() . ' km']);
         $csv->insertOne(['Organizing Club:', $club ? ($club->getTitle() ?? 'Unknown Club') : 'N/A']);
-        $csv->insertOne(['ACP Code:', $club ? ($club->getAcpCode() ?? 'N/A') : 'N/A']);
+        $csv->insertOne(['ACP Code:', $club ? ($club->getAcpKod() ?? 'N/A') : 'N/A']);
         $csv->insertOne(['Total Participants:', count($participants)]);
         $csv->insertOne([]); // Empty row for spacing
 
@@ -1456,6 +1462,51 @@ class ParticipantService extends ServiceAbstract
         } catch (\Exception $e) {
             error_log("Error in getTopTracks: " . $e->getMessage());
             return [];
+        }
+    }
+
+    /**
+     * Create a club and return its UID
+     * 
+     * @param string $acpKod The ACP code for the club
+     * @param string $title The title/name of the club
+     * @return string The club UID
+     */
+    private function createClubAndReturnUid(string $acpKod, string $title): string
+    {
+        $club = new \App\Domain\Model\Club\Club();
+        $club->setClubUid(\Ramsey\Uuid\Uuid::uuid4()->toString());
+        $club->setTitle($title);
+        $club->setAcpKod($acpKod);
+        
+        $this->clubrepository->createClub($club);
+        
+        return $club->getClubUid();
+    }
+
+    /**
+     * Sync a club from loppservice to the app database with the same UID
+     * 
+     * @param string $clubUid The club UID from loppservice
+     * @param string $clubName The club name from loppservice
+     * @return string|null The club UID if successful, null otherwise
+     */
+    private function syncClubFromLoppservice(string $clubUid, string $clubName = ''): ?string
+    {
+        try {
+            // Create club in app database with same UID as loppservice
+            $club = new \App\Domain\Model\Club\Club();
+            $club->setClubUid($clubUid);
+            $club->setTitle($clubName ?: 'Unknown Club');
+            $club->setAcpKod("");
+            
+            $this->clubrepository->createClub($club);
+            return $clubUid;
+            
+        } catch (\Exception $e) {
+            // Log error but don't fail the registration
+            error_log("Failed to sync club from loppservice: " . $e->getMessage());
+            return null;
         }
     }
 }
