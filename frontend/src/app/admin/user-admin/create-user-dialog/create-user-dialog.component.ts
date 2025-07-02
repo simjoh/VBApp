@@ -35,6 +35,15 @@ export class CreateUserDialogComponent implements OnInit {
     this.ref.close(null);
   }
 
+  generatePassword() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
+    let password = '';
+    for (let i = 0; i < 12; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    this.userForm.password = password;
+  }
+
   private getUserObject(form: NgForm): User {
 
     let roles = Array<any>();
@@ -86,7 +95,8 @@ export class CreateUserDialogComponent implements OnInit {
       username: form.controls.username.value,
       token: "",
       roles: roles,
-      userInfoRepresentation: userinfo
+      userInfoRepresentation: userinfo,
+      password: form.controls.password?.value || this.userForm.password || ''
     } as unknown as User;
 
 
@@ -109,6 +119,7 @@ export class CreateUserDialogComponent implements OnInit {
       developer: false,
       phone: "",
       email: "",
+      password: ""
     } as UserFormModel;
 
   }
@@ -126,4 +137,5 @@ export class UserFormModel {
   developer: false;
   phone;
   email;
+  password;
 }

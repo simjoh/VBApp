@@ -69,6 +69,9 @@ class UserAssembly
         $user->setGivenname($site->getGivenname());
         $user->setFamilyname($site->getFamilyname());
         $user->setUsername($site->getUsername());
+        if ($site->getPassword()) {
+            $user->setPassword($site->getPassword());
+        }
         return $user;
     }
 

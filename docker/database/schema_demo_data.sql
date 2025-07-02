@@ -158,12 +158,12 @@ INSERT INTO `track_checkpoint`(`track_uid`, `checkpoint_uid`) VALUES ('c9dd3c38-
 
 -- Deltagare på en viss bana
 -- BRM200
-INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `startnumber`, `finished`, `acpkod`, `club_uid`, `time`, `dns`, `dnf`, `register_date_time`) VALUES ('b3f68992-c5c7-4c31-bad5-78a93b53f28f','8a5a0649-6aee-4b64-803e-4f083f746d2d','2922a6e9-9e32-4832-9575-b3d2eb3011b9',1018,false,113072,'e990365b-00a8-4615-a648-c7b6797ce13a',null,false,false, CURRENT_TIMESTAMP());
-INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `startnumber`, `finished`, `acpkod`, `club_uid`, `time`, `dns`, `dnf`, `register_date_time`) VALUES ('162b49ea-1e8c-4047-8fd6-e4d96920a054','8a5a0649-6aee-4b64-803e-4f083f746d2d','593edcab-5dcb-4916-829d-08ac536770ad',2018,false,'113036','31f10de0-33c4-49da-a8fe-4cc2354604bc',null,false,false, CURRENT_TIMESTAMP());
+INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `startnumber`, `finished`, `acpkod`, `club_uid`, `time`, `dns`, `dnf`, `register_date_time`, `dns_timestamp`, `dnf_timestamp`, `finished_timestamp`) VALUES ('b3f68992-c5c7-4c31-bad5-78a93b53f28f','8a5a0649-6aee-4b64-803e-4f083f746d2d','2922a6e9-9e32-4832-9575-b3d2eb3011b9',1018,false,113072,'e990365b-00a8-4615-a648-c7b6797ce13a',null,false,false, CURRENT_TIMESTAMP(), NULL, NULL, NULL);
+INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `startnumber`, `finished`, `acpkod`, `club_uid`, `time`, `dns`, `dnf`, `register_date_time`, `dns_timestamp`, `dnf_timestamp`, `finished_timestamp`) VALUES ('162b49ea-1e8c-4047-8fd6-e4d96920a054','8a5a0649-6aee-4b64-803e-4f083f746d2d','593edcab-5dcb-4916-829d-08ac536770ad',2018,false,'113036','31f10de0-33c4-49da-a8fe-4cc2354604bc',null,false,false, CURRENT_TIMESTAMP(), NULL, NULL, NULL);
 -- BRM300
-INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `startnumber`, `finished`, `acpkod`, `club_uid`, `time`, `dns`, `dnf`, `register_date_time`) VALUES ('e6957ddc-f9fd-444f-861f-f0f22cc363b1','0c9648fd-1664-4526-aaa4-059a01fc079c','593edcab-5dcb-4916-829d-08ac536770ad',2018,false,'113036','427b5419-ebad-4a31-bd84-ed26718a32be',null,false,false,CURRENT_TIMESTAMP());
+INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `startnumber`, `finished`, `acpkod`, `club_uid`, `time`, `dns`, `dnf`, `register_date_time`, `dns_timestamp`, `dnf_timestamp`, `finished_timestamp`) VALUES ('e6957ddc-f9fd-444f-861f-f0f22cc363b1','0c9648fd-1664-4526-aaa4-059a01fc079c','593edcab-5dcb-4916-829d-08ac536770ad',2018,false,'113036','427b5419-ebad-4a31-bd84-ed26718a32be',null,false,false,CURRENT_TIMESTAMP(), NULL, NULL, NULL);
 -- Månskensbrevet
-INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `startnumber`, `finished`, `acpkod`, `club_uid`, `time`, `dns`, `dnf`,`register_date_time`) VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81259','bf31d141-32c3-4cc9-b497-36d82b060221','2922a6e9-9e32-4832-9575-b3d2eb3011b9',1020,false,113072,'be80dc3b-3ff7-414f-ad7f-41db57e90221',null,false,false, CURRENT_TIMESTAMP());
+INSERT INTO `participant`(`participant_uid`, `track_uid`, `competitor_uid`, `startnumber`, `finished`, `acpkod`, `club_uid`, `time`, `dns`, `dnf`, `register_date_time`, `dns_timestamp`, `dnf_timestamp`, `finished_timestamp`) VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81259','bf31d141-32c3-4cc9-b497-36d82b060221','2922a6e9-9e32-4832-9575-b3d2eb3011b9',1020,false,113072,'be80dc3b-3ff7-414f-ad7f-41db57e90221',null,false,false, CURRENT_TIMESTAMP(), NULL, NULL, NULL);
 
 -- Koppla till kontroll
 -- BRM200
@@ -176,8 +176,64 @@ INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passe
 INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`,`volonteer_checkin`,lat, lng) VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81259','6b86551e-e9b6-46f1-b411-3196e0f0f4e3',false,null,false,null, null);
 INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`,`volonteer_checkin`,lat, lng) VALUES ('e8f9557e-4b96-41a0-b6c7-be6c45d81259','c0a8e4a4-a37a-4e9d-b59e-112519b4abc0',false,null,false,null, null);
 
+-- Additional participant checkpoints for new participants
+-- Västerbottenbrevet 300K participants
+INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`, `volonteer_checkin`, lat, lng) VALUES 
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890','a1b2c3d4-e5f6-7890-abcd-ef1234567890',true,'2024-08-07 09:30:00',true,20.3128832, 64.7042688),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890','b2c3d4e5-f6g7-8901-bcde-f23456789012',true,'2024-08-07 12:15:00',true,20.3128832, 65.7042688),
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890','c3d4e5f6-g7h8-9012-cdef-345678901234',true,'2024-08-07 15:45:00',true,20.3128832, 66.7042688),
+
+('d4e5f6g7-h8i9-0123-defg-456789012345','a1b2c3d4-e5f6-7890-abcd-ef1234567890',true,'2024-08-07 10:00:00',true,20.3128832, 64.7042688),
+('d4e5f6g7-h8i9-0123-defg-456789012345','b2c3d4e5-f6g7-8901-bcde-f23456789012',true,'2024-08-07 13:00:00',true,20.3128832, 65.7042688),
+('d4e5f6g7-h8i9-0123-defg-456789012345','c3d4e5f6-g7h8-9012-cdef-345678901234',true,'2024-08-07 16:30:00',true,20.3128832, 66.7042688),
+
+('e5f6g7h8-i9j0-1234-efgh-567890123456','a1b2c3d4-e5f6-7890-abcd-ef1234567890',true,'2024-08-07 09:45:00',true,20.3128832, 64.7042688),
+('e5f6g7h8-i9j0-1234-efgh-567890123456','b2c3d4e5-f6g7-8901-bcde-f23456789012',true,'2024-08-07 12:30:00',true,20.3128832, 65.7042688),
+('e5f6g7h8-i9j0-1234-efgh-567890123456','c3d4e5f6-g7h8-9012-cdef-345678901234',true,'2024-08-07 16:00:00',true,20.3128832, 66.7042688);
+
+-- Västerbottenbrevet 600K participants
+INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`, `volonteer_checkin`, lat, lng) VALUES 
+('f6g7h8i9-j0k1-2345-fghi-678901234567','a1b2c3d4-e5f6-7890-abcd-ef1234567890',true,'2024-08-07 09:00:00',true,20.3128832, 64.7042688),
+('f6g7h8i9-j0k1-2345-fghi-678901234567','b2c3d4e5-f6g7-8901-bcde-f23456789012',true,'2024-08-07 11:30:00',true,20.3128832, 65.7042688),
+('f6g7h8i9-j0k1-2345-fghi-678901234567','c3d4e5f6-g7h8-9012-cdef-345678901234',true,'2024-08-07 14:00:00',true,20.3128832, 66.7042688),
+('f6g7h8i9-j0k1-2345-fghi-678901234567','d4e5f6g7-h8i9-0123-defg-456789012345',true,'2024-08-07 16:30:00',true,20.3128832, 67.7042688),
+('f6g7h8i9-j0k1-2345-fghi-678901234567','e5f6g7h8-i9j0-1234-efgh-567890123456',true,'2024-08-07 19:00:00',true,20.3128832, 68.7042688),
+('f6g7h8i9-j0k1-2345-fghi-678901234567','f6g7h8i9-j0k1-2345-fghi-678901234567',true,'2024-08-07 21:30:00',true,20.3128832, 69.7042688),
+
+('h8i9j0k1-l2m3-4567-hijk-890123456789','a1b2c3d4-e5f6-7890-abcd-ef1234567890',true,'2024-08-07 08:30:00',true,20.3128832, 64.7042688),
+('h8i9j0k1-l2m3-4567-hijk-890123456789','b2c3d4e5-f6g7-8901-bcde-f23456789012',true,'2024-08-07 11:00:00',true,20.3128832, 65.7042688),
+('h8i9j0k1-l2m3-4567-hijk-890123456789','c3d4e5f6-g7h8-9012-cdef-345678901234',true,'2024-08-07 13:30:00',true,20.3128832, 66.7042688),
+('h8i9j0k1-l2m3-4567-hijk-890123456789','d4e5f6g7-h8i9-0123-defg-456789012345',true,'2024-08-07 16:00:00',true,20.3128832, 67.7042688),
+('h8i9j0k1-l2m3-4567-hijk-890123456789','e5f6g7h8-i9j0-1234-efgh-567890123456',true,'2024-08-07 18:30:00',true,20.3128832, 68.7042688),
+('h8i9j0k1-l2m3-4567-hijk-890123456789','f6g7h8i9-j0k1-2345-fghi-678901234567',true,'2024-08-07 21:00:00',true,20.3128832, 69.7042688);
+
+-- Norrlandsbrevet 200K participants
+INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`, `volonteer_checkin`, lat, lng) VALUES 
+('i9j0k1l2-m3n4-5678-ijkl-901234567890','a1b2c3d4-e5f6-7890-abcd-ef1234567890',true,'2024-06-15 11:00:00',true,20.3128832, 64.7042688),
+('i9j0k1l2-m3n4-5678-ijkl-901234567890','b2c3d4e5-f6g7-8901-bcde-f23456789012',true,'2024-06-15 13:30:00',true,20.3128832, 65.7042688),
+
+('j0k1l2m3-n4o5-6789-jklm-012345678901','a1b2c3d4-e5f6-7890-abcd-ef1234567890',true,'2024-06-15 10:30:00',true,20.3128832, 64.7042688),
+('j0k1l2m3-n4o5-6789-jklm-012345678901','b2c3d4e5-f6g7-8901-bcde-f23456789012',true,'2024-06-15 13:00:00',true,20.3128832, 65.7042688);
+
+-- Sommarbrevets 150K participants
+INSERT INTO `participant_checkpoint`(`participant_uid`, `checkpoint_uid`, `passed`, `passeded_date_time`, `volonteer_checkin`, lat, lng) VALUES 
+('l2m3n4o5-p6q7-8901-lmno-234567890123','a1b2c3d4-e5f6-7890-abcd-ef1234567890',true,'2024-07-22 11:30:00',true,20.3128832, 64.7042688),
+
+('m3n4o5p6-q7r8-9012-mnop-345678901234','a1b2c3d4-e5f6-7890-abcd-ef1234567890',true,'2024-07-22 12:00:00',true,20.3128832, 64.7042688);
+
 -- Fixa inloggning
 INSERT INTO `competitor_credential`(`credential_uid`, `competitor_uid`, `participant_uid`, `user_name`, `password`) VALUES ('8cdee576-1de3-454e-90f9-33d7c2c070ce','2922a6e9-9e32-4832-9575-b3d2eb3011b9','b3f68992-c5c7-4c31-bad5-78a93b53f28f','100',sha1('test'));
+
+-- Additional competitor credentials
+INSERT INTO `competitor_credential`(`credential_uid`, `competitor_uid`, `participant_uid`, `user_name`, `password`) VALUES 
+('a1b2c3d4-e5f6-7890-abcd-ef1234567891','a1b2c3d4-e5f6-7890-abcd-ef1234567890','a1b2c3d4-e5f6-7890-abcd-ef1234567890','400',sha1('test3')),
+('b2c3d4e5-f6g7-8901-bcde-f23456789013','b2c3d4e5-f6g7-8901-bcde-f23456789012','b2c3d4e5-f6g7-8901-bcde-f23456789012','500',sha1('test4')),
+('c3d4e5f6-g7h8-9012-cdef-345678901235','c3d4e5f6-g7h8-9012-cdef-345678901234','c3d4e5f6-g7h8-9012-cdef-345678901234','600',sha1('test5')),
+('d4e5f6g7-h8i9-0123-defg-456789012346','d4e5f6g7-h8i9-0123-defg-456789012345','d4e5f6g7-h8i9-0123-defg-456789012345','700',sha1('test6')),
+('e5f6g7h8-i9j0-1234-efgh-567890123457','e5f6g7h8-i9j0-1234-efgh-567890123456','e5f6g7h8-i9j0-1234-efgh-567890123456','800',sha1('test7')),
+('f6g7h8i9-j0k1-2345-fghi-678901234568','f6g7h8i9-j0k1-2345-fghi-678901234567','f6g7h8i9-j0k1-2345-fghi-678901234567','900',sha1('test8')),
+('g7h8i9j0-k1l2-3456-ghij-789012345679','g7h8i9j0-k1l2-3456-ghij-789012345678','g7h8i9j0-k1l2-3456-ghij-789012345678','1000',sha1('test9')),
+('h8i9j0k1-l2m3-4567-hijk-890123456790','h8i9j0k1-l2m3-4567-hijk-890123456789','h8i9j0k1-l2m3-4567-hijk-890123456789','1100',sha1('test10'));
 
 
 -- Klubbar

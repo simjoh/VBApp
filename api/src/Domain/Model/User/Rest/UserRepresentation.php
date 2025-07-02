@@ -15,6 +15,7 @@ class UserRepresentation implements \JsonSerializable
     private ?Link $link;
     private $links = array();
     private UserInfoRepresentation $userInfoRepresentation;
+    private ?string $password = null;
 
 
 
@@ -147,6 +148,15 @@ class UserRepresentation implements \JsonSerializable
         $this->userInfoRepresentation = $userInfoRepresentation;
     }
 
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(?string $password): void
+    {
+        $this->password = $password;
+    }
 
     public function jsonSerialize(): mixed
     {

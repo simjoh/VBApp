@@ -153,40 +153,43 @@ class UserRepository extends BaseRepository
 
     public function updateUser($id ,User $userParsed): User
     {
-
         $data = [
             'givenname' => $userParsed->getGivenname(),
             'familyname' => $userParsed->getFamilyname(),
             'username' => $userParsed->getUsername(),
             'user_uid' => $id,  // Use the ID parameter instead of trying to get it from the User object
         ];
+        $setPassword = '';
+        if ($userParsed->getPassword()) {
+            $data['password'] = sha1($userParsed->getPassword());
+            $setPassword = ', password=:password';
+        }
         try {
-            $statement = $this->connection->prepare($this->sqls('updateUser'));
+            $sql = "UPDATE users SET given_name=:givenname, family_name=:familyname, user_name=:username{$setPassword} WHERE user_uid=:user_uid";
+            $statement = $this->connection->prepare($sql);
             $statement->execute($data);
         } catch (PDOException $e) {
             echo 'Kunde inte uppdatera användare: ' . $e->getMessage();
         }
-
-        // Set the ID on the user object before returning it
         $userParsed->setId($id);
         return $userParsed;
     }
 
     public function createUser(User $userTocreate): User {
         try {
-        $user_uid = Uuid::uuid4();
-        $familyname = $userTocreate->getFamilyname();
-        $givenname = $userTocreate->getGivenname();
-        $username = $userTocreate->getUsername();
-        $password = sha1("test");
-        $roleid = 1;
-        $stmt = $this->connection->prepare($this->sqls('createUser'));
-        $stmt->bindParam(':user_uid', $user_uid);
-        $stmt->bindParam(':family_name',$familyname );
-        $stmt->bindParam(':user_name', $username);
-        $stmt->bindParam(':given_name', $givenname);
-        $stmt->bindParam(':password', $password);
-        $stmt->execute();
+            $user_uid = Uuid::uuid4();
+            $familyname = $userTocreate->getFamilyname();
+            $givenname = $userTocreate->getGivenname();
+            $username = $userTocreate->getUsername();
+            $password = $userTocreate->getPassword() ? sha1($userTocreate->getPassword()) : sha1("test");
+            $roleid = 1;
+            $stmt = $this->connection->prepare($this->sqls('createUser'));
+            $stmt->bindParam(':user_uid', $user_uid);
+            $stmt->bindParam(':family_name',$familyname );
+            $stmt->bindParam(':user_name', $username);
+            $stmt->bindParam(':given_name', $givenname);
+            $stmt->bindParam(':password', $password);
+            $stmt->execute();
         }
         catch(PDOException $e)
              {

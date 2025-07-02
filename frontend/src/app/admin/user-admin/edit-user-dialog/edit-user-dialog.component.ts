@@ -41,6 +41,15 @@ export class EditUserDialogComponent implements OnInit {
     }, 100);
   }
 
+  generatePassword() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
+    let password = '';
+    for (let i = 0; i < 12; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    this.userForm.password = password;
+  }
+
   updateUser(contactForm: NgForm) {
     if (contactForm.valid){
       this.ref.close(this.getUserObject(contactForm));
@@ -115,7 +124,8 @@ export class EditUserDialogComponent implements OnInit {
       username: form.controls.username.value,
       token: this.originalUser.token,
       roles: roles,
-      userInfoRepresentation: userinfo
+      userInfoRepresentation: userinfo,
+      password: form.controls.password?.value || this.userForm.password || ''
     } as unknown as User;
   }
 
@@ -155,6 +165,7 @@ export class EditUserDialogComponent implements OnInit {
       developer: false,
       phone: user.userInfoRepresentation?.phone || (user as any).phone || (user as any).userInfoRepresentation?.phone || "",
       email: user.userInfoRepresentation?.email || (user as any).email || (user as any).userInfoRepresentation?.email || "",
+      password: ''
     } as UserFormModel;
 
     console.log('Edit dialog - Created user form:', userForm);
@@ -215,6 +226,7 @@ export class EditUserDialogComponent implements OnInit {
       developer: false,
       phone: "",
       email: "",
+      password: ""
     } as UserFormModel;
   }
 }
@@ -231,4 +243,5 @@ export class UserFormModel {
   developer: boolean;
   phone;
   email;
+  password;
 }

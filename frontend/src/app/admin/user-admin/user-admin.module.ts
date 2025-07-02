@@ -6,21 +6,46 @@ import { EditUserDialogComponent } from './edit-user-dialog/edit-user-dialog.com
 import { SharedModule } from 'src/app/shared/shared.module';
 import { UserInfoPopoverComponent } from './user-info-popover/user-info-popover.component';
 import { PermissionAdminComponent } from './permission-admin/permission-admin.component';
-import { CheckboxModule } from 'primeng/checkbox';
+import { UserAdminComponent } from './user-admin.component';
 
+// PrimeNG Imports
+import { TableModule } from 'primeng/table';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { RippleModule } from 'primeng/ripple';
+import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @NgModule({
   declarations: [
+    UserAdminComponent,
     CreateUserDialogComponent,
     EditUserDialogComponent,
     UserInfoPopoverComponent,
     PermissionAdminComponent
   ],
-  exports: [CreateUserDialogComponent, EditUserDialogComponent, UserInfoPopoverComponent],
+  exports: [
+    UserAdminComponent,
+    CreateUserDialogComponent,
+    EditUserDialogComponent,
+    UserInfoPopoverComponent
+  ],
   imports: [
     CommonModule,
     SharedModule,
     UserAdminRoutingModule,
+    // PrimeNG Modules
+    TableModule,
+    CardModule,
+    ButtonModule,
+    InputTextModule,
+    RippleModule,
+    TooltipModule,
+    ConfirmDialogModule,
+    ToastModule,
     CheckboxModule
   ]
 })

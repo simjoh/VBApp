@@ -13,6 +13,7 @@ class User implements JsonSerializable
     private string $username ="";
     private string $token;
     private  $roles = array();
+    private string $password = '';
 
 
     public function __construct()
@@ -64,6 +65,23 @@ class User implements JsonSerializable
     {
          $this->token = $token;
     }
+
+    /**
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param string $password
+     */
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
     /**
      * @return array
      */

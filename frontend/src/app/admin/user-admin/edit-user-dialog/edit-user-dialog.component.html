@@ -75,6 +75,26 @@
       </small>
     </div>
 
+    <!-- Password Field -->
+    <div class="col-12 field">
+      <label for="password" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-key mr-2"></i>
+        Lösenord
+      </label>
+      <div class="flex align-items-center gap-2">
+        <input
+          pInputText
+          id="password"
+          name="password"
+          type="text"
+          [(ngModel)]="userForm.password"
+          placeholder="Ange eller generera lösenord"
+          class="w-full"
+        />
+        <button pButton type="button" icon="pi pi-refresh" class="p-button-sm p-button-secondary" (click)="generatePassword()" pTooltip="Generera lösenord"></button>
+      </div>
+    </div>
+
     <!-- Contact Information Section -->
     <div class="col-12">
       <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">

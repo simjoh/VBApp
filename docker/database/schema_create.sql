@@ -100,20 +100,30 @@ CREATE TABLE `event_tracks`
 
 CREATE TABLE `participant`
 (
-    `participant_uid`    char(36) NOT NULL,
-    `track_uid`          char(36) NOT NULL,
-    `competitor_uid`     char(36) NOT NULL,
-    `startnumber`        int(10) UNSIGNED NOT NULL,
+    `participant_uid`     varchar(36) NOT NULL,
+    `track_uid`          varchar(36) NOT NULL,
+    `competitor_uid`     varchar(36) NOT NULL,
+    `startnumber`        int(10) UNSIGNED DEFAULT NULL,
     `finished`           tinyint(1) DEFAULT 0,
-    `acpkod`             int(10) UNSIGNED DEFAULT NULL,
-    `club_uid`           char(36) DEFAULT NULL,
-    `time`               char(36) DEFAULT NULL,
-    `dns`                tinyint(1) DEFAULT 0,
-    `dnf`                tinyint(1) DEFAULT 0,
-    `started`            tinyint(1) DEFAULT 0,
-    `medal`              tinyint(1) DEFAULT 0,
-    `brevenr`            int(10) UNSIGNED DEFAULT NULL,
-    `register_date_time` datetime DEFAULT NULL
+    `acpkod`            varchar(36) DEFAULT NULL,
+    `club_uid`          varchar(36) DEFAULT NULL,
+    `dns`               tinyint(1) DEFAULT 0,
+    `time`              int(10) UNSIGNED DEFAULT NULL,
+    `dnf`               tinyint(1) DEFAULT 0,
+    `started`           tinyint(1) DEFAULT 0,
+    `medal`             tinyint(1) DEFAULT 0,
+    `brevenr`           int(10) UNSIGNED DEFAULT NULL,
+    `register_date_time` datetime DEFAULT NULL,
+    `dns_timestamp`     datetime DEFAULT NULL COMMENT 'Timestamp when participant did not start (DNS)',
+    `dnf_timestamp`     datetime DEFAULT NULL COMMENT 'Timestamp when participant did not finish (DNF)',
+    `finished_timestamp` datetime DEFAULT NULL COMMENT 'Timestamp when participant finished',
+    PRIMARY KEY (`participant_uid`),
+    KEY `fk_participant_track_idx` (`track_uid`),
+    KEY `fk_participant_competitor_idx` (`competitor_uid`),
+    KEY `fk_participant_club_idx` (`club_uid`),
+    CONSTRAINT `fk_participant_club` FOREIGN KEY (`club_uid`) REFERENCES `club` (`club_uid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+    CONSTRAINT `fk_participant_competitor` FOREIGN KEY (`competitor_uid`) REFERENCES `competitors` (`competitor_uid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+    CONSTRAINT `fk_participant_track` FOREIGN KEY (`track_uid`) REFERENCES `track` (`track_uid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `participant_checkpoint`
