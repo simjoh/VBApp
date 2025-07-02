@@ -20,6 +20,8 @@ class ParticipantRepresentation implements JsonSerializable
     private bool $dnf;
     private bool $started;
     private ?string $brevenr;
+    private ?string $dns_timestamp;
+    private ?string $dnf_timestamp;
     private array $links = [];
     /**
      * @return string
@@ -230,6 +232,38 @@ class ParticipantRepresentation implements JsonSerializable
     public function setStarted(bool $started): void
     {
         $this->started = $started;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDnsTimestamp(): ?string
+    {
+        return $this->dns_timestamp;
+    }
+
+    /**
+     * @param string|null $dns_timestamp
+     */
+    public function setDnsTimestamp(?string $dns_timestamp): void
+    {
+        $this->dns_timestamp = $dns_timestamp;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDnfTimestamp(): ?string
+    {
+        return $this->dnf_timestamp;
+    }
+
+    /**
+     * @param string|null $dnf_timestamp
+     */
+    public function setDnfTimestamp(?string $dnf_timestamp): void
+    {
+        $this->dnf_timestamp = $dnf_timestamp;
     }
 
     public function jsonSerialize(): mixed

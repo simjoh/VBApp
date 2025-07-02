@@ -368,10 +368,7 @@ class EventService extends ServiceAbstract
         $eventGroupDTO->active = $event->isActive();
         $eventGroupDTO->canceled = $event->isCanceled();
         $eventGroupDTO->completed = $event->isCompleted();
-        
-        // Initialize empty event_uids array - LoppService will manage this
         $eventGroupDTO->event_uids = [];
-
         return $eventGroupDTO;
     }
     
@@ -391,13 +388,9 @@ class EventService extends ServiceAbstract
         $eventGroupDTO->active = $event->isActive();
         $eventGroupDTO->canceled = $event->isCanceled();
         $eventGroupDTO->completed = $event->isCompleted();
-        
-        // Keep existing event_uids - don't modify them during updates
-        // LoppService manages the event_uids relationship separately
         if (!isset($eventGroupDTO->event_uids) || !is_array($eventGroupDTO->event_uids)) {
             $eventGroupDTO->event_uids = [];
         }
-        
         return $eventGroupDTO;
     }
     

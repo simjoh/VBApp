@@ -23,9 +23,11 @@ export class CreateEventDialogComponent implements OnInit {
   ngOnInit(): void {
    this.eventForm = this.createObject();
 
+    // Set default status to "Aktiv" (Active)
     this.eventStatus = this.categories[0];
 
-
+    // Initialize the form with the default status
+    this.updateFormStatus(this.eventStatus);
   }
 
   private createObject(): EventFormModel{
@@ -33,9 +35,12 @@ export class CreateEventDialogComponent implements OnInit {
       event_uid: "",
       title: "",
       startdate: null,
-      endddate: null
+      endddate: null,
+      active: true,  // Default to active
+      canceled: false,
+      completed: false,
+      description: ""
     } as unknown as EventFormModel;
-
   }
 
   addEvent(eventForm: NgForm) {
@@ -57,34 +62,32 @@ export class CreateEventDialogComponent implements OnInit {
         title: eventForm.controls.title.value,
         startdate: this.datepipe.transform(eventForm.controls.startdate.value, 'yyyy-MM-dd'),
         enddate: this.datepipe.transform(eventForm.controls.endddate.value, 'yyyy-MM-dd'),
-        active: false,
-        canceled: false,
-        completed: false,
+        active: this.eventForm.active,
+        canceled: this.eventForm.canceled,
+        completed: this.eventForm.completed,
         description: eventForm.controls.description.value
       } as EventRepresentation
   }
 
   changeStatus(event: any) {
+    // Use the event.value which contains the selected category
+    const selectedStatus = event.value;
+    this.updateFormStatus(selectedStatus);
+  }
 
-    if (this.eventStatus.key === "A") {
+  private updateFormStatus(selectedStatus: any) {
+    if (selectedStatus.key === "A") {
       this.eventForm.active = true;
       this.eventForm.completed = false;
       this.eventForm.canceled = false;
-      this.eventStatus = this.categories[0];
-    }
-
-    if (this.eventStatus.key === "U") {
+    } else if (selectedStatus.key === "U") {
       this.eventForm.active = false;
       this.eventForm.completed = true;
       this.eventForm.canceled = false;
-      this.eventStatus = this.categories[2];
-    }
-
-    if (this.eventStatus.key === "I") {
+    } else if (selectedStatus.key === "I") {
       this.eventForm.active = false;
       this.eventForm.completed = false;
       this.eventForm.canceled = true;
-      this.eventStatus = this.categories[1];
     }
   }
 }

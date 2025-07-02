@@ -171,6 +171,8 @@ export interface ParticipantRepresentation {
   dnf: boolean;
   started: boolean;
   brevenr: string;
+  dns_timestamp?: string;
+  dnf_timestamp?: string;
   links: [];
 }
 

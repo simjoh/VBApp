@@ -229,12 +229,22 @@ class LoppServiceEventGroupRestClient
     public function createEventGroup(EventGroupDTO $eventGroup): ?EventGroupDTO
     {
         try {
+            // Debug log the request data
+            error_log("LoppService createEventGroup request data: " . json_encode($eventGroup->toArray()));
+            
             $response = $this->client->request('POST', $this->baseUrl . '/api/integration/event-group', [
                 'json' => $eventGroup->toArray()
             ]);
             $data = json_decode($response->getBody()->getContents(), true);
             return EventGroupDTO::fromArray($data['data'] ?? []);
         } catch (RequestException $e) {
+            // Log the full error details
+            error_log("LoppService createEventGroup error: " . $e->getMessage());
+            if ($e->hasResponse()) {
+                $responseBody = $e->getResponse()->getBody()->getContents();
+                error_log("LoppService response body: " . $responseBody);
+                error_log("LoppService response status: " . $e->getResponse()->getStatusCode());
+            }
             $this->handleException($e);
             return null;
         }

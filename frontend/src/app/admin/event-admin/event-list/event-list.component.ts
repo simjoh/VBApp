@@ -16,8 +16,8 @@ import {EditEventDialogComponent} from "../edit-event-dialog/edit-event-dialog.c
   selector: 'brevet-event-list',
   templateUrl: './event-list.component.html',
   styleUrls: ['./event-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
-
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [DialogService, ConfirmationService]
 })
 export class EventListComponent implements OnInit {
 
@@ -66,7 +66,8 @@ export class EventListComponent implements OnInit {
 
   }
 
-  editProduct(user_uid: any) {
+  editEvent(event: EventRepresentation) {
+    console.log('Edit button clicked for event:', event);
 
     let width;
     if ( this.deviceDetector.isDesktop()){
@@ -75,9 +76,11 @@ export class EventListComponent implements OnInit {
       width = "95%"
     }
 
+    console.log('Opening edit dialog with width:', width);
+
     const editref = this.dialogService.open(EditEventDialogComponent, {
       data: {
-        event: user_uid,
+        event: event,
         id: '51gF3'
       },
       header: 'Redigera Evenemang',
@@ -86,18 +89,22 @@ export class EventListComponent implements OnInit {
       contentStyle: { 'overflow': 'visible' }
     });
 
+    console.log('Dialog opened, setting up close handler');
+
     editref.onClose.pipe(take(1)).subscribe(((event: EventRepresentation) => {
+      console.log('Dialog closed with result:', event);
       if (event) {
-        console.log(event);
+        console.log('Updating event:', event);
         this.eventService.updateEvent(event.event_uid, event);
       } else {
+        console.log('Dialog cancelled, destroying reference');
         editref.destroy();
       }
 
     }));
   }
 
-  deleteProduct(event_uid: any) {
+  deleteEvent(event_uid: any) {
     this.confirmationService.confirm({
       message: 'Är du säker på att du vill ta bort ' + event_uid + '?',
       header: 'Bekräfta',

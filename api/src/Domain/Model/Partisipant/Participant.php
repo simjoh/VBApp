@@ -22,6 +22,8 @@ class Participant
 
     private ?string $brevenr = null;
     private  $register_date_time;
+    private ?string $dns_timestamp = null;
+    private ?string $dnf_timestamp = null;
 
 
 
@@ -248,6 +250,38 @@ class Participant
     public function setMedal(?bool $medal): void
     {
         $this->medal = $medal;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDnsTimestamp(): ?string
+    {
+        return $this->dns_timestamp;
+    }
+
+    /**
+     * @param string|null $dns_timestamp
+     */
+    public function setDnsTimestamp(?string $dns_timestamp): void
+    {
+        $this->dns_timestamp = $dns_timestamp;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDnfTimestamp(): ?string
+    {
+        return $this->dnf_timestamp;
+    }
+
+    /**
+     * @param string|null $dnf_timestamp
+     */
+    public function setDnfTimestamp(?string $dnf_timestamp): void
+    {
+        $this->dnf_timestamp = $dnf_timestamp;
     }
 
 

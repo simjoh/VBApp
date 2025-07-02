@@ -12,7 +12,7 @@ class Event
     private ?bool $active;
     private ?bool $canceled;
     private ?bool $completed;
-    private ?string $description = "";
+    private ?string $description = null;
 
 //    /**
 //     * @param string $event_uid
@@ -150,17 +150,17 @@ class Event
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
     /**
-     * @param string $description
+     * @param string|null $description
      */
-    public function setDescription(string $description): void
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
     }

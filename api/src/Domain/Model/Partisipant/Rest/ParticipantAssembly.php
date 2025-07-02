@@ -48,6 +48,8 @@ class ParticipantAssembly
         $participantrepresentation->setStarted($participant->isStarted());
         $participantrepresentation->setBrevenr($participant->getBrevenr());
         $participantrepresentation->setFinished($participant->isFinished());
+        $participantrepresentation->setDnsTimestamp($participant->getDnsTimestamp());
+        $participantrepresentation->setDnfTimestamp($participant->getDnfTimestamp());
 
         $linkArray = array();
 //        foreach ($permissions as $x =>  $site) {

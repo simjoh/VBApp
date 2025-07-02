@@ -77,9 +77,10 @@
               [inputId]="category.key"
               name="category"
               [value]="category"
-              [(ngModel)]="city"
+              [(ngModel)]="eventStatus"
               [disabled]="category.key === 'R'"
-              (onClick)="changeStatus($event)">
+              (onChange)="changeStatus($event)"
+              (ngModelChange)="onRadioChange()">
             </p-radioButton>
             <label [for]="category.key" class="ml-2 font-medium">{{category.name}}</label>
           </div>

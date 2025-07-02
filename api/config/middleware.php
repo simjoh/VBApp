@@ -18,8 +18,8 @@ return function (App $app) {
     // Add the Slim built-in routing middleware
     $app->addRoutingMiddleware();
 
-    $app->add(BasePathMiddleware::class);
-
+    // Configure BasePathMiddleware to handle /api/ base path
+    $app->add(new BasePathMiddleware($app, '/api'));
 
 //    // Catch exceptions and errors
 //    $app->add(ErrorMiddleware::class);

@@ -171,7 +171,7 @@ class VolonteerService extends ServiceAbstract
             }
         }
 
-        return $this->participantrepository->setDnf($participant_uid, $checkpoint_uid);
+        return $this->participantrepository->setDnf($participant_uid);
     }
 
     public function rollbackRandonneurDnf(?string $track_uid, ?string $participant_uid, ?string $checkpoint_uid): bool
@@ -188,7 +188,7 @@ class VolonteerService extends ServiceAbstract
             throw new BrevetException("Cannot find participant", 5, null);
         }
 
-        return $this->participantrepository->rollbackDnf($participant_uid, $checkpoint_uid);
+        return $this->participantrepository->rollbackDnf($participant_uid);
     }
 
     public function stampRandonneur(?string $track_uid, ?string $participant_uid, ?string $checkpoint_uid): bool

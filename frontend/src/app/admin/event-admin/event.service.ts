@@ -98,8 +98,14 @@ export class EventService {
 	}
 
 	public updateEvent(eventuid: string, event: EventRepresentation) {
+		console.log('EventService.updateEvent called with:', {
+			eventuid: eventuid,
+			event: event
+		});
+
 		return this.httpClient.put<EventRepresentation>(environment.backend_url + "event/" + eventuid, event as EventRepresentation).pipe(
 			map((event: EventRepresentation) => {
+				console.log('EventService.updateEvent response:', event);
 				this.eventReloadAction.next(event)
 				return event;
 			}),

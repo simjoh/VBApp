@@ -13,9 +13,7 @@ export class EditEventDialogComponent implements OnInit {
 
   eventForm: EventRepresentation;
 
-  city: any;
-
-
+  eventStatus: any;
 
   categories: any[] = [{name: 'Aktiv', key: 'A'}, {name: 'Inställd', key: 'I'}, {name: 'Utförd', key: 'U'}];
 
@@ -23,20 +21,32 @@ export class EditEventDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.city = this.categories[1];
     this.eventForm = this.config.data.event;
+    console.log('EditEventDialog ngOnInit - initial event data:', {
+      event_uid: this.eventForm.event_uid,
+      title: this.eventForm.title,
+      active: this.eventForm.active,
+      canceled: this.eventForm.canceled,
+      completed: this.eventForm.completed
+    });
 
+    // Set the correct initial status based on the event data
     if (this.eventForm.active === true) {
-      this.city = this.categories[0];
+      this.eventStatus = this.categories[0]; // Aktiv
+      console.log('Setting initial status to Aktiv');
+    } else if (this.eventForm.completed === true) {
+      this.eventStatus = this.categories[2]; // Utförd
+      console.log('Setting initial status to Utförd');
+    } else if (this.eventForm.canceled === true) {
+      this.eventStatus = this.categories[1]; // Inställd
+      console.log('Setting initial status to Inställd');
+    } else {
+      // Default to Aktiv if no status is set
+      this.eventStatus = this.categories[0];
+      console.log('Setting initial status to default (Aktiv)');
     }
 
-    if (this.eventForm.completed === true) {
-      this.city = this.categories[2];
-    }
-
-    if (this.eventForm.canceled === true) {
-      this.city = this.categories[1];
-    }
+    console.log('Initial eventStatus value:', this.eventStatus);
   }
 
 
@@ -49,6 +59,17 @@ export class EditEventDialogComponent implements OnInit {
       if (this.eventForm.enddate instanceof Date) {
         this.eventForm.enddate = this.formatDateForBackend(this.eventForm.enddate);
       }
+
+      console.log('Submitting event form with data:', {
+        event_uid: this.eventForm.event_uid,
+        title: this.eventForm.title,
+        startdate: this.eventForm.startdate,
+        enddate: this.eventForm.enddate,
+        active: this.eventForm.active,
+        canceled: this.eventForm.canceled,
+        completed: this.eventForm.completed,
+        description: this.eventForm.description
+      });
 
       this.ref.close(this.eventForm);
     } else {
@@ -71,26 +92,39 @@ export class EditEventDialogComponent implements OnInit {
   }
 
   changeStatus(event: any) {
+    console.log('changeStatus called with event:', event);
+    console.log('event.value:', event.value);
 
-    if (this.city.key === "A") {
+    // Use the event.value which contains the selected category
+    const selectedCategory = event.value;
+    console.log('selectedCategory:', selectedCategory);
+
+    // Reset all status fields first
+    this.eventForm.active = false;
+    this.eventForm.completed = false;
+    this.eventForm.canceled = false;
+
+    // Set the correct status based on selection
+    if (selectedCategory && selectedCategory.key === "A") {
       this.eventForm.active = true;
-      this.eventForm.completed = false;
-      this.eventForm.canceled = false;
-      this.city = this.categories[0];
-    }
-
-    if (this.city.key === "U") {
-      this.eventForm.active = false;
+    } else if (selectedCategory && selectedCategory.key === "U") {
       this.eventForm.completed = true;
-      this.eventForm.canceled = false;
-      this.city = this.categories[2];
+    } else if (selectedCategory && selectedCategory.key === "I") {
+      this.eventForm.canceled = true;
     }
 
-    if (this.city.key === "I") {
-      this.eventForm.active = false;
-      this.eventForm.completed = false;
-      this.eventForm.canceled = true;
-      this.city = this.categories[1];
+    console.log('Updated eventForm status:', {
+      active: this.eventForm.active,
+      completed: this.eventForm.completed,
+      canceled: this.eventForm.canceled
+    });
+  }
+
+  // Alternative method to handle radio button changes
+  onRadioChange() {
+    console.log('onRadioChange called - eventStatus value:', this.eventStatus);
+    if (this.eventStatus) {
+      this.changeStatus({ value: this.eventStatus });
     }
   }
 }

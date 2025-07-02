@@ -10,9 +10,12 @@ import { EditEventDialogComponent } from './edit-event-dialog/edit-event-dialog.
 import { SharedModule } from '../../shared/shared.module';
 import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { CalendarModule } from 'primeng/calendar';
 
 @NgModule({
   declarations: [
@@ -29,9 +32,12 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     EventAdminRoutingModule,
     CardModule,
     DialogModule,
+    DynamicDialogModule,
     ButtonModule,
     InputTextModule,
-    RadioButtonModule
+    InputTextareaModule,
+    RadioButtonModule,
+    CalendarModule
   ]
 })
 export class EventAdminModule { }
