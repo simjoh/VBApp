@@ -92,6 +92,11 @@ class UserRepository extends BaseRepository
             $user->setUsername($row['user_name']);
             $user->setToken('');
             
+            // Set organizer_id if it exists
+            if (isset($row['organizer_id'])) {
+                $user->setOrganizerId($row['organizer_id']);
+            }
+            
             // Set timestamp and confirmation fields
             if (isset($row['created_at'])) {
                 $user->setCreatedAt(new \DateTime($row['created_at']));
@@ -118,7 +123,6 @@ class UserRepository extends BaseRepository
                 }
                 $user->setRoles($roleArray);
             }
-
             array_push($users, $user);
         }
         return $users;
@@ -139,6 +143,11 @@ class UserRepository extends BaseRepository
         $user->setFamilyname($data['family_name']);
         $user->setUsername($data['user_name']);
         $user->setToken('');
+        
+        // Set organizer_id if it exists
+        if (isset($data['organizer_id'])) {
+            $user->setOrganizerId($data['organizer_id']);
+        }
         
         // Set timestamp and confirmation fields
         if (isset($data['created_at'])) {
@@ -205,15 +214,20 @@ class UserRepository extends BaseRepository
             'familyname' => $userParsed->getFamilyname(),
             'username' => $userParsed->getUsername(),
             'user_uid' => $id,  // Use the ID parameter instead of trying to get it from the User object
+            'organizer_id' => $userParsed->getOrganizerId(),
         ];
         $setPassword = '';
         if ($userParsed->getPassword()) {
             $data['password'] = sha1($userParsed->getPassword());
             $setPassword = ', password=:password';
         }
+        $setOrganizer = '';
+        if ($userParsed->getOrganizerId() !== null) {
+            $setOrganizer = ', organizer_id=:organizer_id';
+        }
         try {
             // Only update updated_at timestamp, leave created_at unchanged
-            $sql = "UPDATE users SET given_name=:givenname, family_name=:familyname, user_name=:username{$setPassword}, updated_at=CURRENT_TIMESTAMP WHERE user_uid=:user_uid";
+            $sql = "UPDATE users SET given_name=:givenname, family_name=:familyname, user_name=:username{$setPassword}{$setOrganizer}, updated_at=CURRENT_TIMESTAMP WHERE user_uid=:user_uid";
             $statement = $this->connection->prepare($sql);
             $statement->execute($data);
             
@@ -233,6 +247,7 @@ class UserRepository extends BaseRepository
             $givenname = $userTocreate->getGivenname();
             $username = $userTocreate->getUsername();
             $password = $userTocreate->getPassword() ? sha1($userTocreate->getPassword()) : sha1("test");
+            $organizer_id = $userTocreate->getOrganizerId();
             
             $stmt = $this->connection->prepare($this->sqls('createUser'));
             $stmt->bindParam(':user_uid', $user_uid);
@@ -240,6 +255,7 @@ class UserRepository extends BaseRepository
             $stmt->bindParam(':user_name', $username);
             $stmt->bindParam(':given_name', $givenname);
             $stmt->bindParam(':password', $password);
+            $stmt->bindParam(':organizer_id', $organizer_id);
             $stmt->execute();
             
             // Set the timestamps - both created_at and updated_at are set when creating
@@ -309,8 +325,8 @@ class UserRepository extends BaseRepository
         $usersqls['login2'] = 'select s.*, ru.role_name, ru.role_id from users s inner join user_role r on r.user_uid = s.user_uid inner join roles ru on ru.role_id = r.role_id  where s.user_name = :user_name and password = :password';
         $usersqls['allUsers'] = 'select * from users s;';
         $usersqls['getUserById'] = 'select * from users s where s.user_uid = :user_uid;';
-        $usersqls['updateUser']  = "UPDATE users SET given_name=:givenname, family_name=:familyname, user_name=:username, updated_at=CURRENT_TIMESTAMP WHERE user_uid=:user_uid";
-        $usersqls['createUser']  = "INSERT INTO users(user_uid, user_name, given_name, family_name, password, created_at, updated_at, confirmed) VALUES (:user_uid, :user_name, :given_name, :family_name, :password, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)";
+        $usersqls['updateUser']  = "UPDATE users SET given_name=:givenname, family_name=:familyname, user_name=:username, organizer_id=:organizer_id, updated_at=CURRENT_TIMESTAMP WHERE user_uid=:user_uid";
+        $usersqls['createUser']  = "INSERT INTO users(user_uid, user_name, given_name, family_name, password, organizer_id, created_at, updated_at, confirmed) VALUES (:user_uid, :user_name, :given_name, :family_name, :password, :organizer_id, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)";
         $usersqls['deleteUser'] = 'delete from users  where user_uid = :user_uid';
         $usersqls['roles'] = 'select distinct(r.role_name) , r.role_id from user_role ur inner join roles r on r.role_id = ur.role_id  where ur.user_uid = :user_uid';
         $usersqls['isRole'] = 'select role_id from roles s where s.role_id = :role_id;';

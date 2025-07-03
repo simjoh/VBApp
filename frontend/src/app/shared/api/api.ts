@@ -41,6 +41,7 @@ export interface User {
   token: string;
   roles: string[];
   userInfoRepresentation: UserInfoRepresentation;
+  organizer_id?: number;
 }
 
 export interface UserRepresentation {

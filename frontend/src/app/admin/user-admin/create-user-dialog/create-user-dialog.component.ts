@@ -96,7 +96,8 @@ export class CreateUserDialogComponent implements OnInit {
       token: "",
       roles: roles,
       userInfoRepresentation: userinfo,
-      password: form.controls.password?.value || this.userForm.password || ''
+      password: form.controls.password?.value || this.userForm.password || '',
+      organizer_id: form.controls.organizer_id?.value || this.userForm.organizer_id
     } as unknown as User;
 
 
@@ -106,6 +107,25 @@ export class CreateUserDialogComponent implements OnInit {
   }
 
   private createObject(): UserFormModel{
+
+    // Get current user from localStorage
+    const currentUser = JSON.parse(localStorage.getItem('activeUser') || '{}');
+    const isSuperUser = currentUser.roles?.includes('SUPERUSER');
+
+    console.log('Create user dialog - Current user:', currentUser);
+    console.log('Create user dialog - Current user roles:', currentUser.roles);
+    console.log('Create user dialog - Is superuser:', isSuperUser);
+    console.log('Create user dialog - Current user organizer_id:', currentUser.organizer_id);
+    console.log('Create user dialog - Raw localStorage activeUser:', localStorage.getItem('activeUser'));
+
+    // Preselect organizer_id if user is not superuser and has an organizer_id
+    let preselectedOrganizerId: number | undefined = undefined;
+    if (!isSuperUser && currentUser.organizer_id) {
+      preselectedOrganizerId = currentUser.organizer_id;
+      console.log('Create user dialog - Preselecting organizer_id:', preselectedOrganizerId);
+    } else {
+      console.log('Create user dialog - Not preselecting organizer_id. isSuperUser:', isSuperUser, 'has organizer_id:', !!currentUser.organizer_id);
+    }
 
     return {
       user_uid: "",
@@ -119,7 +139,8 @@ export class CreateUserDialogComponent implements OnInit {
       developer: false,
       phone: "",
       email: "",
-      password: ""
+      password: "",
+      organizer_id: preselectedOrganizerId
     } as UserFormModel;
 
   }
@@ -138,4 +159,5 @@ export class UserFormModel {
   phone;
   email;
   password;
+  organizer_id?: number;
 }

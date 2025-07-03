@@ -216,6 +216,20 @@ class User implements JsonSerializable
     }
 
     public function jsonSerialize(): mixed {
-        return (object) get_object_vars($this);
+        $data = [
+            'id' => $this->id,
+            'givenname' => $this->givenname,
+            'familyname' => $this->familyname,
+            'username' => $this->username,
+            'token' => $this->token,
+            'roles' => $this->roles,
+            'password' => $this->password,
+            'createdAt' => $this->createdAt,
+            'updatedAt' => $this->updatedAt,
+            'confirmed' => $this->confirmed,
+            'confirmedAt' => $this->confirmedAt,
+            'organizer_id' => $this->organizerId  // Use snake_case for frontend compatibility
+        ];
+        return (object) $data;
     }
 }

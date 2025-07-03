@@ -1,4 +1,5 @@
-import { Component, OnInit, Output, EventEmitter, Input, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, ChangeDetectionStrategy, ChangeDetectorRef, forwardRef } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -18,9 +19,16 @@ export interface Organizer {
   selector: 'brevet-organizer-selector',
   templateUrl: './organizer-selector.component.html',
   styleUrls: ['./organizer-selector.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => OrganizerSelectorComponent),
+      multi: true
+    }
+  ]
 })
-export class OrganizerSelectorComponent implements OnInit {
+export class OrganizerSelectorComponent implements OnInit, ControlValueAccessor {
   @Input() selectedOrganizerId: number | null = null;
   @Input() placeholder: string = 'Välj arrangör';
   @Input() disabled: boolean = false;
@@ -37,6 +45,10 @@ export class OrganizerSelectorComponent implements OnInit {
   loading: boolean = false;
   error: string | null = null;
 
+  // ControlValueAccessor properties
+  private onChange = (value: number | null) => {};
+  private onTouched = () => {};
+
   constructor(
     private organizerService: OrganizerService,
     private cdr: ChangeDetectorRef
@@ -44,6 +56,26 @@ export class OrganizerSelectorComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadOrganizers();
+  }
+
+  // ControlValueAccessor implementation
+  writeValue(value: number | null): void {
+    this.selectedOrganizerId = value;
+    this.updateSelectedOrganizer();
+    this.cdr.markForCheck();
+  }
+
+  registerOnChange(fn: (value: number | null) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+    this.cdr.markForCheck();
   }
 
   private loadOrganizers(): void {
@@ -102,6 +134,11 @@ export class OrganizerSelectorComponent implements OnInit {
     const organizerId = event.value;
     this.selectedOrganizerId = organizerId;
     this.selectedOrganizer = this.organizers.find(org => org.id === organizerId) || null;
+
+    // Call ControlValueAccessor callbacks
+    this.onChange(organizerId);
+    this.onTouched();
+
     this.organizerChange.emit(organizerId);
 
     // Find the original organizer object from the service to emit

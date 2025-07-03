@@ -40,6 +40,7 @@ class UserAssembly
         $userRepresentation->setGivenname($s->getGivenname());
         $userRepresentation->setFamilyname($s->getFamilyname());
         $userRepresentation->setRoles($s->getRoles());
+        $userRepresentation->setOrganizerId($s->getOrganizerId());
 
         $userinfo = $this->userinforepository->userinfoFor($s->getId());
         if(isset($userinfo)){
@@ -69,6 +70,7 @@ class UserAssembly
         $user->setGivenname($site->getGivenname());
         $user->setFamilyname($site->getFamilyname());
         $user->setUsername($site->getUsername());
+        $user->setOrganizerId($site->getOrganizerId());
         if ($site->getPassword()) {
             $user->setPassword($site->getPassword());
         }

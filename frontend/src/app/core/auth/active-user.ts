@@ -3,5 +3,6 @@ export class ActiveUser {
   id?: string;
   roles: string[];
   startnumber?: number;
-  trackuid?: string
+  trackuid?: string;
+  organizer_id?: number;
 }

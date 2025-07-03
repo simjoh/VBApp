@@ -65,6 +65,7 @@ class LoginAction extends BaseAction
            $jwt = $generator->generate(['id' => $user->getId(), 'roles' => $this->getRoles($user->getRoles()), 'organizer_id' => $user->getOrganizerId(), 'iat' => time(), 'exp' => time() + 86400]);
            $user->setToken($jwt);
            $ser = new CleanJsonSerializer();
+           
            $response->getBody()->write($ser->serialize($user));
            return $response->withStatus(200)->withHeader('Content-type','application/json;charset=utf-8');
        }

@@ -48,6 +48,8 @@ export class AuthService {
           .pipe(
             map(response => {
               console.log('loginUser: HTTP response received', response);
+              console.log('loginUser: Response organizer_id:', response.organizer_id);
+              console.log('loginUser: Full response object:', JSON.stringify(response, null, 2));
               localStorage.setItem('loggedInUser', JSON.stringify(response.token));
               this.authenticatedService.changeStatus(true);
               return response;
@@ -79,7 +81,8 @@ export class AuthService {
       roles: values,
       id: data.id,
       startnumber: data.startnumber,
-      trackuid: data.trackuid
+      trackuid: data.trackuid,
+      organizer_id: data.organizer_id || data.organizerId
     } as ActiveUser
     localStorage.setItem('activeUser', JSON.stringify(activeUser));
     this.authSubjet.next(activeUser)

@@ -136,6 +136,35 @@
       />
     </div>
 
+    <!-- Organizer Section -->
+    <div class="col-12">
+      <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
+        <i class="pi pi-users mr-2 text-blue-600"></i>
+        Arrangör
+      </h4>
+    </div>
+
+    <!-- Organizer Field -->
+    <div class="col-12 field">
+      <label for="organizer_id" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-users mr-2"></i>
+        Välj arrangör
+      </label>
+      <brevet-organizer-selector
+        [(ngModel)]="userForm.organizer_id"
+        name="organizer_id"
+        placeholder="Välj arrangör (valfritt)"
+        [showPreview]="true"
+        class="w-full">
+      </brevet-organizer-selector>
+      <small class="text-gray-500 block mt-1">
+        Välj en arrangör som användaren ska kopplas till (valfritt)
+        <span *ngIf="userForm.organizer_id" class="text-blue-600 font-medium">
+          - Förvald arrangör baserat på din inloggning
+        </span>
+      </small>
+    </div>
+
     <!-- Permissions Section -->
     <div class="col-12">
       <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">

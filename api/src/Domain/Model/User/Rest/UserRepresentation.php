@@ -12,10 +12,11 @@ class UserRepresentation implements \JsonSerializable
     private string $familyname;
     private string $username;
     private  $roles = array();
-    private ?Link $link;
+    private ?Link $link = null;
     private $links = array();
-    private UserInfoRepresentation $userInfoRepresentation;
+    private ?UserInfoRepresentation $userInfoRepresentation = null;
     private ?string $password = null;
+    private ?int $organizer_id = null;
 
 
 
@@ -133,17 +134,17 @@ class UserRepresentation implements \JsonSerializable
     }
 
     /**
-     * @return UserInfoRepresentation
+     * @return UserInfoRepresentation|null
      */
-    public function getUserInfoRepresentation(): UserInfoRepresentation
+    public function getUserInfoRepresentation(): ?UserInfoRepresentation
     {
         return $this->userInfoRepresentation;
     }
 
     /**
-     * @param UserInfoRepresentation $userInfoRepresentation
+     * @param UserInfoRepresentation|null $userInfoRepresentation
      */
-    public function setUserInfoRepresentation(UserInfoRepresentation $userInfoRepresentation): void
+    public function setUserInfoRepresentation(?UserInfoRepresentation $userInfoRepresentation): void
     {
         $this->userInfoRepresentation = $userInfoRepresentation;
     }
@@ -158,8 +159,36 @@ class UserRepresentation implements \JsonSerializable
         $this->password = $password;
     }
 
+    /**
+     * @return int|null
+     */
+    public function getOrganizerId(): ?int
+    {
+        return $this->organizer_id;
+    }
+
+    /**
+     * @param int|null $organizer_id
+     */
+    public function setOrganizerId(?int $organizer_id): void
+    {
+        $this->organizer_id = $organizer_id;
+    }
+
     public function jsonSerialize(): mixed
     {
-        return (object) get_object_vars($this);
+        $data = [
+            'user_uid' => $this->user_uid,
+            'givenname' => $this->givenname,
+            'familyname' => $this->familyname,
+            'username' => $this->username,
+            'roles' => $this->roles,
+            'link' => $this->link,
+            'links' => $this->links,
+            'userInfoRepresentation' => $this->userInfoRepresentation,
+            'password' => $this->password,
+            'organizer_id' => $this->organizer_id  // Use snake_case for frontend compatibility
+        ];
+        return (object) $data;
     }
 }
