@@ -52,6 +52,11 @@ class UserRepository extends BaseRepository
         $user->setToken('');
         $user->setRoles(array($userdetails['role_name']));
         
+        // Set organizer_id if it exists
+        if (isset($userdetails['organizer_id'])) {
+            $user->setOrganizerId($userdetails['organizer_id']);
+        }
+        
         // Set timestamp and confirmation fields
         if (isset($userdetails['created_at'])) {
             $user->setCreatedAt(new \DateTime($userdetails['created_at']));

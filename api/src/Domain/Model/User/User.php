@@ -18,6 +18,7 @@ class User implements JsonSerializable
     private ?\DateTime $updatedAt = null;
     private bool $confirmed = false;
     private ?\DateTime $confirmedAt = null;
+    private ?int $organizerId = null;
 
 
     public function __construct()
@@ -196,6 +197,22 @@ class User implements JsonSerializable
     public function setConfirmedAt(?\DateTime $confirmedAt): void
     {
         $this->confirmedAt = $confirmedAt;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getOrganizerId(): ?int
+    {
+        return $this->organizerId;
+    }
+
+    /**
+     * @param int|null $organizerId
+     */
+    public function setOrganizerId(?int $organizerId): void
+    {
+        $this->organizerId = $organizerId;
     }
 
     public function jsonSerialize(): mixed {

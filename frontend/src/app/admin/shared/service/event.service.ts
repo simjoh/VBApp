@@ -117,7 +117,7 @@ export class EventService {
       return false;
     }
     const exists = this.linkService.exists(event.links, 'relation.event.delete', 'DELETE');
-    console.log('Delete link exists for event:', event.title, exists);
+
     return exists;
   }
 

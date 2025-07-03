@@ -2,6 +2,8 @@
 
 use App\Middleware\ApiKeyValidatorMiddleware;
 use App\Middleware\TokenMiddleware;
+use App\Middleware\UserContextMiddleware;
+use App\Middleware\UserContextCleanupMiddleware;
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
 
@@ -16,8 +18,8 @@ return function (App $app) {
 
     $app->get('/ping', \App\Action\Ping\PingAction::class)->setName('ping');
 
-
-     //$app->get('/bla/bla/bla', \App\Action\HomeAction::class)->setName('home');
+    // Example route to demonstrate UserContext usage
+    $app->get('/example/context', \App\Action\Example\ExampleAction::class)->setName('example-context');
 
     //lägg till ingång för att kunna generera resultat på vb.se
     // Hämtar vyn för en resultat på ett event för ett event och år.
@@ -200,7 +202,10 @@ return function (App $app) {
         $app->post('/competitor/{competitorUid}/info', \App\Action\Competitor\CompetitorInfoAction::class . ':createCompetitorInfo');
         $app->patch('/competitor/{competitorUid}/info/params', \App\Action\Competitor\CompetitorInfoAction::class . ':updateCompetitorInfoParams');
 
-    })->add(\App\Middleware\JwtTokenValidatorMiddleware::class)->add(\App\Middleware\PermissionvalidatorMiddleWare::class);
+    })->add(\App\Middleware\PermissionvalidatorMiddleWare::class)
+      ->add(\App\Middleware\JwtTokenValidatorMiddleware::class)
+      ->add(UserContextMiddleware::class)
+      ->add(UserContextCleanupMiddleware::class);
 
     };
 

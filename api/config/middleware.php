@@ -12,6 +12,9 @@ return function (App $app) {
     // Add CORS middleware first
     $app->add(\App\Middleware\CorsMiddleware::class);
 
+    // Add UserContext cleanup middleware (should be one of the first to ensure cleanup)
+    $app->add(\App\Middleware\UserContextCleanupMiddleware::class);
+
     // Parse json, form data and xml
     $app->addBodyParsingMiddleware();
 
@@ -20,6 +23,9 @@ return function (App $app) {
 
     // Configure BasePathMiddleware to handle /api/ base path
     $app->add(new BasePathMiddleware($app, '/api'));
+
+    // Add UserContext middleware (after BasePathMiddleware but before routes)
+    $app->add(\App\Middleware\UserContextMiddleware::class);
 
 //    // Catch exceptions and errors
 //    $app->add(ErrorMiddleware::class);

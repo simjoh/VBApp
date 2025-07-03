@@ -50,7 +50,7 @@ class LoginAction extends BaseAction
            }
            $signer = new HS256($this->key);
            $generator = new Generator($signer);
-           $jwt = $generator->generate(['id' => $competitor->getId(), 'roles' => $this->getRoles($competitor->getRoles()), 'organizer_id' => null, 'iat' => time(), 'exp' => time() + 345600]);
+           $jwt = $generator->generate(['id' => $competitor->getId(), 'roles' => $this->getRoles($competitor->getRoles()), 'iat' => time(), 'exp' => time() + 345600]);
            $competitor->setToken($jwt);
            $ser = new CleanJsonSerializer();
 
@@ -62,7 +62,7 @@ class LoginAction extends BaseAction
            $generator = new Generator($signer);
 
            // byt till roleid
-           $jwt = $generator->generate(['id' => $user->getId(), 'roles' => $this->getRoles($user->getRoles()), 'iat' => time(), 'exp' => time() + 86400]);
+           $jwt = $generator->generate(['id' => $user->getId(), 'roles' => $this->getRoles($user->getRoles()), 'organizer_id' => $user->getOrganizerId(), 'iat' => time(), 'exp' => time() + 86400]);
            $user->setToken($jwt);
            $ser = new CleanJsonSerializer();
            $response->getBody()->write($ser->serialize($user));
