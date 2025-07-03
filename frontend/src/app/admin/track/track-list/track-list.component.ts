@@ -14,14 +14,19 @@ export class TrackListComponent implements OnInit {
 
   $eventsandtrack = this.trackadmincomponentservice.$eventsAndTrack;
 
-  constructor(private trackadmincomponentservice: TrackAdminComponentService,private cd: ChangeDetectorRef) { }
+  constructor(private trackadmincomponentservice: TrackAdminComponentService, private cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.trackadmincomponentservice.init();
   }
 
   isPossibleToDelete(event: EventRepresentation) {
-    return this.trackadmincomponentservice.deletelinkExists(event);
+    const result = this.trackadmincomponentservice.deletelinkExists(event);
+    // Force change detection update
+    setTimeout(() => {
+      this.cd.markForCheck();
+    });
+    return result;
   }
 
   remove(event: EventRepresentation) {

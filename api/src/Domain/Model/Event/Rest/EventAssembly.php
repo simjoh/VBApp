@@ -52,8 +52,8 @@ class EventAssembly
         $participantsarray = array();
         $linkArray = array();
         foreach ($permissions as $x =>  $site) {
-            if($site->hasWritePermission()){
-                array_push($linkArray, new Link("relation.event.update", 'PUT', $this->settings['path'] .'user/' . $event->getEventUid()));
+          //  if($site->hasWritePermission()){
+                array_push($linkArray, new Link("relation.event.update", 'PUT', $this->settings['path'] .'event/' . $event->getEventUid()));
                 // ett event får inte tas bort om deltagare är tillagda
               $tracks =  $this->trackRepository->tracksbyEvent($event->getEventUid());
               foreach ($tracks as $track){
@@ -63,11 +63,11 @@ class EventAssembly
                   }
               }
                 if(count($participantsarray) == 0 && count($tracks) == 0){
-                    array_push($linkArray, new Link("relation.event.delete", 'DELETE', $this->settings['path'] .'user/' . $event->getEventUid()));
+                    array_push($linkArray, new Link("relation.event.delete", 'DELETE', $this->settings['path'] .'event/' . $event->getEventUid()));
                 }
 
-                break;
-            }
+              //  break;
+           // }
 
             if($site->hasReadPermission()){
                 array_push($linkArray, new Link("self", 'GET', $this->settings['path'] . 'user/' . $event->getEventUid()));

@@ -1,0 +1,10 @@
+// Global button styles
+button {
+  &[disabled] {
+    background: transparent !important;
+    border-color: #e5e7eb !important;
+    color: #9ca3af !important;
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+  }
+}

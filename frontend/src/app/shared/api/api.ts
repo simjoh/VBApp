@@ -15,7 +15,7 @@ export interface Site{
   lng?: string;
   picture?: string;
   check_in_distance?: string;
-  links?: [];
+  links?: Link[];
 }
 
 export interface Event {
@@ -27,7 +27,7 @@ export interface Event {
   canceled: boolean;
   completed: boolean;
   description: string;
-  links: [];
+  links: Link[];
 }
 
 
@@ -79,7 +79,7 @@ export interface EventRepresentation {
   canceled: boolean;
   completed: boolean;
   description: string;
-  links: [];
+  links: Link[];
 }
 
 export interface RandonneurCheckPointRepresentation {
@@ -100,7 +100,7 @@ export interface  SiteRepresentation {
   lat: string;
   lng: string;
   check_in_distance: string;
-  links: [];
+  links: Link[];
 }
 
 export interface CheckpointRepresentation {
@@ -128,13 +128,13 @@ export interface ParticipantToPassCheckpointRepresentation {
   has_checkouted: boolean;
   volonteer_checkin: boolean;
   dnf: boolean;
-  link: [];
+  link: Link[];
 }
 
 export interface TrackRepresentation {
   title: string;
   descriptions: string;
-  checkpoints: [];
+  checkpoints: any[];
   linktotrack: string;
   heightdifference: string;
   distance: string;
@@ -142,7 +142,7 @@ export interface TrackRepresentation {
   event_uid: string;
   start_date_time: string;
   active: number;
-  links: [];
+  links: Link[];
 }
 
 export interface EventInformationRepresentation {
@@ -173,7 +173,7 @@ export interface ParticipantRepresentation {
   brevenr: string;
   dns_timestamp?: string;
   dnf_timestamp?: string;
-  links: [];
+  links: Link[];
 }
 
 export interface CompetitorRepresentation {
@@ -194,7 +194,7 @@ export interface ClubRepresentation {
   club_uid: string;
   title: string;
   acp_kod: string;
-  links: [];
+  links: Link[];
 }
 
 

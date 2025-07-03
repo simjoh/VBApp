@@ -88,7 +88,8 @@ return [
     \App\Domain\Model\Organizer\Rest\OrganizerAssembly::class => function(ContainerInterface $container) {
         return new \App\Domain\Model\Organizer\Rest\OrganizerAssembly(
             $container->get(\App\Domain\Permission\PermissionRepository::class),
-            $container
+            $container,
+            $container->get(PDO::class)
         );
     },
 

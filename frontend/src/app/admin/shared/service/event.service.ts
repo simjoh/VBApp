@@ -113,7 +113,12 @@ export class EventService {
   }
 
   public deletelinkExists(event: EventRepresentation): boolean {
-    return this.linkService.exists(event.links, 'relation.event.delete', 'DELETE');
+    if (!event || !event.links) {
+      return false;
+    }
+    const exists = this.linkService.exists(event.links, 'relation.event.delete', 'DELETE');
+    console.log('Delete link exists for event:', event.title, exists);
+    return exists;
   }
 
   deepCopyProperties(obj: any): any {
