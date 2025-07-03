@@ -1094,6 +1094,7 @@ class ParticipantService extends ServiceAbstract
 
             // Get participant object to access competitor_uid
             $participantObj = $this->participantRepository->participantFor($participant['participant_uid']);
+            $clubforparticipant = $this->clubrepository->getClubByUid($participantObj->getClubUid());
 
             // Skip participants with DNS or DNF status
             if ($participantObj->isDns() || $participantObj->isDnf()) {
@@ -1107,7 +1108,8 @@ class ParticipantService extends ServiceAbstract
                 $participant['efternamn'], // Last name
                 $participant['fornamn'], // First name
                 $participant['klubb'], // Rider's club
-                '', // Empty column
+                '',
+                $clubforparticipant->getAcpKod() ?? '', // Empty column
                 $participant['brevenr'] == 0 ? '' : $participant['brevenr'], // ACP code number
                 $participant['tid'] ?? '', // Time
                 $participant['medal'] ? 'x' : '', // Medal (x)
