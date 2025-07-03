@@ -225,12 +225,12 @@
                   value="Sluttid: {{track.participant.time}}">
                 </p-tag>
                 <p-tag
-                  *ngIf="track.participant.brevenr"
+                *ngIf="track.participant.time"
                   (click)="editbrevenr(track.participant)"
                   icon="pi pi-id-card"
                   severity="info"
                   [style]="{'cursor': 'pointer'}"
-                  value="Brevetnr: {{track.participant.brevenr}}">
+                  value="Homolg.nr: {{track.participant.brevenr}}">
                 </p-tag>
               </div>
 

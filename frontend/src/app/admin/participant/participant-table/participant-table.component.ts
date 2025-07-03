@@ -168,7 +168,7 @@ export class ParticipantTableComponent implements OnInit {
       data: {
         brevenr: participant.brevenr
       },
-      header: 'Lägg till brevenr',
+      header: 'Lägg till homolg.nr.',
     });
 
     ref.onClose.subscribe((brevenr: string) => {

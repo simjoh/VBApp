@@ -34,12 +34,12 @@
           </th>
           <th style="width: 15%">
             <div class="flex align-items-center gap-2">
-              <span>Mer</span>
+              <span>Cyklistens vy</span>
             </div>
           </th>
           <th style="width: 15%">
             <div class="flex align-items-center gap-2">
-              <span>Länk till trackingsida</span>
+              <span>Trackingsida</span>
             </div>
           </th>
           <th style="width: 10%">
@@ -81,7 +81,7 @@
           <td>
             <div class="flex align-items-center gap-2">
               <i class="pi pi-arrows-h text-primary-600"></i>
-              <span>{{track.trackRepresentation.distance}}</span>
+              <span>{{track.trackRepresentation.distance | number: '1.0-0'}}</span>
             </div>
           </td>
           <td>
@@ -111,30 +111,6 @@
                 class="p-button-rounded p-button-danger p-button-text"
                 pTooltip="Ta bort"
                 tooltipPosition="top">
-              </button>
-              <button
-                *ngIf="track.trackRepresentation.active === true"
-                (click)="publish(track.trackRepresentation)"
-                [attr.data-track-uid]="track.trackRepresentation.track_uid"
-                class="publish-btn"
-                pButton
-                pRipple
-                class="p-button-rounded p-button-success p-button-text"
-                pTooltip="Publicera resultat"
-                tooltipPosition="top">
-                <fa-icon [icon]="faBroadcast" [styles]="{'color': '#198754'}"></fa-icon>
-              </button>
-              <button
-                *ngIf="track.trackRepresentation.active === false"
-                (click)="publish(track.trackRepresentation)"
-                [attr.data-track-uid]="track.trackRepresentation.track_uid"
-                class="unpublish-btn"
-                pButton
-                pRipple
-                class="p-button-rounded p-button-danger p-button-text"
-                pTooltip="Ångra publicera resultat"
-                tooltipPosition="top">
-                <fa-icon [icon]="faBroadcast"></fa-icon>
               </button>
             </div>
           </td>
