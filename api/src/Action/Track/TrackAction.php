@@ -52,7 +52,12 @@ class TrackAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $response->getBody()->write((string)json_encode( $this->trackService->getTrackByTrackUid($route->getArgument('trackUid'),$currentuserUid)));
-        return  $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        return  $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->withHeader('Pragma', 'no-cache')
+            ->withHeader('Expires', '0')
+            ->withStatus(200);
     }
 
     public function tracksForEvent(ServerRequestInterface $request, ResponseInterface $response){
@@ -124,6 +129,50 @@ class TrackAction
 
         $response->getBody()->write((string)json_encode($created),JSON_UNESCAPED_SLASHES);
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+    }
+
+    public function updateTrackAndEvent(ServerRequestInterface $request, ResponseInterface $response){
+        $requestData = json_decode($request->getBody());
+        
+        // Extract track representation and additional form data
+        $trackData = $requestData->trackData ?? $requestData;
+        $formData = $requestData->formData ?? null;
+        
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $trackUid = $route->getArgument('trackUid');
+        
+        // Get existing track to preserve event_uid and other required fields
+        $existingTrack = $this->trackService->getTrackByUid($trackUid);
+        if (!$existingTrack) {
+            throw new \Exception("Track not found with UID: " . $trackUid);
+        }
+        
+        // Create TrackRepresentation manually
+        $trackrepresentation = new \App\Domain\Model\Track\Rest\TrackRepresentation();
+        $trackrepresentation->setTrackUid($trackUid);
+        $trackrepresentation->setTitle($trackData->title ?? $existingTrack->getTitle());
+        $trackrepresentation->setDescriptions($trackData->description ?? $existingTrack->getDescription());
+        $trackrepresentation->setLinktotrack($trackData->link ?? $existingTrack->getLink());
+        $trackrepresentation->setDistance((string)($trackData->distance ?? $existingTrack->getDistance()));
+        $trackrepresentation->setStartDateTime($trackData->start_date_time ?? $existingTrack->getStartDateTime());
+        $trackrepresentation->setActive($trackData->active ?? $existingTrack->isActive());
+        $trackrepresentation->setOrganizerId($trackData->organizer_id ?? $existingTrack->getOrganizerId());
+        $trackrepresentation->setHeightdifference($existingTrack->getHeightdifference() ?: '0');
+        $trackrepresentation->setEventUid($existingTrack->getEventUid());
+        
+        // Extract checkpoint data if provided
+        $checkpointData = $requestData->checkpointData ?? null;
+        
+        $updatedTrack = $this->trackService->updateTrackAndEvent($trackrepresentation, $request->getAttribute('currentuserUid'), $formData, $checkpointData);
+        
+        $response->getBody()->write((string)json_encode($updatedTrack),JSON_UNESCAPED_SLASHES);
+        return  $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->withHeader('Pragma', 'no-cache')
+            ->withHeader('Expires', '0')
+            ->withStatus(200);
     }
 
     public function addCheckpointsToTrack(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface 

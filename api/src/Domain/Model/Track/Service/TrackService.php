@@ -593,6 +593,131 @@ class TrackService extends ServiceAbstract
         }
     }
 
+    public function getTrackByUid(string $trackUid): ?Track
+    {
+        return $this->trackRepository->getTrackByUid($trackUid);
+    }
+
+    public function updateTrackAndEvent(TrackRepresentation $trackrepresentation, string $currentuserUid, $formData = null, $checkpointData = null): TrackRepresentation
+    {
+        $permissions = $this->getPermissions($currentuserUid);
+        
+        // Get the existing track to preserve important data
+        $existingTrack = $this->trackRepository->getTrackByUid($trackrepresentation->getTrackUid());
+        if (!$existingTrack) {
+            throw new BrevetException("Track not found with UID: " . $trackrepresentation->getTrackUid(), 404);
+        }
+        
+        // Handle checkpoints if provided
+        if ($checkpointData && isset($checkpointData->rusaplannercontrols)) {
+            // Check if there are participants on this track
+            $participants = $this->participantRepository->participantsOnTrack($existingTrack->getTrackUid());
+            $hasParticipants = !empty($participants);
+            
+            if ($hasParticipants) {
+                // Check if any participants have started (have stamps on checkpoints)
+                $hasStartedParticipants = false;
+                foreach ($participants as $participant) {
+                    if ($participant->isStarted() || $participant->isFinished() || $participant->isDnf() || $participant->isDns()) {
+                        $hasStartedParticipants = true;
+                        break;
+                    }
+                }
+                
+                if ($hasStartedParticipants) {
+                    throw new BrevetException("Cannot update checkpoints for track with participants who have already started. Please remove participants first.", 9, null);
+                }
+            }
+            
+            // Delete existing checkpoints first
+            $this->deleteExistingCheckpoints($existingTrack);
+            
+            // Create new checkpoints
+            $checkpoints = array();
+            foreach ($checkpointData->rusaplannercontrols as $checkpointInput) {
+                $checkpoint = new Checkpoint();
+                $checkpoint->setSiteUid($checkpointInput->siteRepresentation->site_uid);
+                $checkpoint->setDistance($checkpointInput->rusaControlRepresentation->CONTROL_DISTANCE_KM);
+                $open = date('Y-m-d H:i:s', strtotime($checkpointInput->rusaControlRepresentation->OPEN));
+                $close = date('Y-m-d H:i:s', strtotime($checkpointInput->rusaControlRepresentation->CLOSE));
+                $checkpoint->setOpens($open);
+                $checkpoint->setClosing($close);
+                array_push($checkpoints, $this->checkpointRepository->createCheckpoint(null, $checkpoint));
+            }
+
+            $checkUids = array();
+            foreach ($checkpoints as $check) {
+                array_push($checkUids, $check->getCheckpointUid());
+            }
+            
+            // Set the new checkpoints in the track representation
+            // Convert to the format expected by TrackAssembly
+            $checkpointArray = array();
+            foreach ($checkUids as $uid) {
+                $checkpointArray[] = array('checkpoint_uid' => $uid);
+            }
+            $trackrepresentation->setCheckpoints($checkpointArray);
+        }
+        
+        // Update the track locally
+        $updatedTrack = $this->trackRepository->updateTrack($this->trackAssembly->totrack($trackrepresentation));
+        
+        // If checkpoints were updated, we need to manually create the track-checkpoint associations
+        if ($checkpointData && isset($checkpointData->rusaplannercontrols)) {
+            $this->createTrackCheckpointAssociations($updatedTrack->getTrackUid(), $trackrepresentation->getCheckpoints());
+            
+            // Update participant checkpoints if participants exist
+            $participants = $this->participantRepository->participantsOnTrack($updatedTrack->getTrackUid());
+            if (!empty($participants)) {
+                $this->updateParticipantCheckpoints($updatedTrack->getTrackUid(), $checkUids);
+            }
+        }
+        
+        // If form data is provided, update the corresponding event in loppservice
+        if ($formData) {
+            $this->updateEventInLoppservice($trackrepresentation, $formData, $updatedTrack);
+        }
+        
+        // Get the updated track with checkpoints loaded
+        $finalTrack = $this->trackRepository->getTrackByUid($updatedTrack->getTrackUid());
+        
+        return $this->trackAssembly->toRepresentation($finalTrack, $permissions, $currentuserUid);
+    }
+
+    private function deleteExistingCheckpoints(Track $track): void
+    {
+        // Store checkpoints for later deletion
+        $checkpointsToDelete = [];
+        foreach ($track->getCheckpoints() as $checkpoint) {
+            $checkpointObj = $this->checkpointRepository->checkpointFor($checkpoint);
+            if ($checkpointObj != null) {
+                $checkpointsToDelete[] = $checkpoint;
+            }
+        }
+
+        // First remove the track-checkpoint associations
+        $this->trackRepository->deleteTrackCheckpoint(array($track->getTrackUid()));
+
+        // Then delete the checkpoints
+        foreach ($checkpointsToDelete as $checkpoint) {
+            $this->checkpointService->deleteCheckpoint($checkpoint);
+        }
+    }
+
+    private function createTrackCheckpointAssociations(string $trackUid, array $checkpoints): void
+    {
+        // Create track-checkpoint associations in the database
+        $query = $this->trackRepository->getConnection()->prepare("INSERT INTO track_checkpoint(track_uid, checkpoint_uid) VALUES (:track_uid, :checkpoint_uid)");
+        
+        foreach ($checkpoints as $checkpoint) {
+            if (isset($checkpoint['checkpoint_uid'])) {
+                $query->bindParam(':track_uid', $trackUid);
+                $query->bindParam(':checkpoint_uid', $checkpoint['checkpoint_uid']);
+                $query->execute();
+            }
+        }
+    }
+
     private function createEventInLoppservice(stdClass $trackrepresentation, $formData, $event, $trackUid = null): bool
     {
         try {
@@ -696,5 +821,112 @@ class TrackService extends ServiceAbstract
         }
     }
 
+    private function updateEventInLoppservice(TrackRepresentation $trackrepresentation, $formData, $track): bool
+    {
+        try {
+            // Import the LoppService Event REST Client
+            $loppServiceClient = new \App\common\Rest\Client\LoppServiceEventRestClient($this->settings);
+
+            // Create EventDTO object
+            $eventDTO = new \App\common\Rest\DTO\EventDTO();
+            
+            // Use track data for basic event info
+            $eventDTO->title = $formData->trackname ?? $trackrepresentation->getTitle();
+            $eventDTO->description = $formData->description ?? '';
+            $eventDTO->startdate = $formData->startdate ?? date('Y-m-d', strtotime($trackrepresentation->getStartDateTime()));
+            $eventDTO->enddate = $formData->startdate ?? date('Y-m-d', strtotime($trackrepresentation->getStartDateTime()));
+            $eventDTO->event_type = $formData->event_type ?? 'BRM';
+            $eventDTO->organizer_id = $formData->organizer_id ?? null;
+            
+            // Set event_uid to track_uid to link the systems
+            $eventDTO->event_uid = $track->getTrackUid();
+
+            // Create route details DTO
+            $routeDetailsDTO = new \App\common\Rest\DTO\RouteDetailsDTO();
+            $routeDetailsDTO->distance = $trackrepresentation->getDistance();
+            $routeDetailsDTO->start_time = $formData->starttime ?? date('H:i', strtotime($trackrepresentation->getStartDateTime()));
+            $routeDetailsDTO->name = $formData->trackname ?? $trackrepresentation->getTitle();
+            $routeDetailsDTO->description = $formData->description ?? '';
+            $routeDetailsDTO->track_link = $formData->link ?? $trackrepresentation->getLink();
+            $routeDetailsDTO->start_place = $formData->startLocation ?? '';
+            $routeDetailsDTO->height_difference = $formData->elevation ?? $trackrepresentation->getHeightdifference();
+            
+            $eventDTO->route_detail = $routeDetailsDTO;
+
+            // Create event configuration DTO
+            $eventConfigDTO = new \App\common\Rest\DTO\EventConfigurationDTO();
+            $eventConfigDTO->use_stripe_payment = $formData->stripe_payment ?? false;
+            $eventConfigDTO->max_registrations = $formData->max_participants ?? 300;
+
+            // Set registration dates - always provide defaults if not set
+            if (isset($formData->registration_opens)) {
+                $eventConfigDTO->registration_opens = $formData->registration_opens;
+            } else {
+                // Default: 30 days before event start
+                $eventStartDate = new \DateTime(date('Y-m-d', strtotime($trackrepresentation->getStartDateTime())));
+                $eventStartDate->sub(new \DateInterval('P30D'));
+                $eventConfigDTO->registration_opens = $eventStartDate->format('Y-m-d') . ' 00:00:00';
+            }
+            
+            if (isset($formData->registration_closes)) {
+                $eventConfigDTO->registration_closes = $formData->registration_closes;
+            } else {
+                // Default: 23:59 the day before event starts
+                $eventStartDate = new \DateTime(date('Y-m-d', strtotime($trackrepresentation->getStartDateTime())));
+                $eventStartDate->sub(new \DateInterval('P1D'));
+                $eventConfigDTO->registration_closes = $eventStartDate->format('Y-m-d') . ' 23:59:00';
+            }
+
+            // Create start number configuration DTO
+            $startNumberConfigDTO = new \App\common\Rest\DTO\StartNumberConfigDTO();
+            $beginsAt = $formData->startnumber_begins_at ?? 1001;
+            $maxParticipants = $formData->max_participants ?? 300;
+            $increments = 1; // Fixed increment value
+            
+            $startNumberConfigDTO->begins_at = $beginsAt;
+            $startNumberConfigDTO->ends_at = $beginsAt + $maxParticipants - 1;
+            $startNumberConfigDTO->increments = $increments;
+
+            $eventConfigDTO->startnumberconfig = $startNumberConfigDTO;
+            $eventDTO->eventconfiguration = $eventConfigDTO;
+
+            // Update event in loppservice
+            try {
+                $updatedEvent = $loppServiceClient->updateEvent($track->getTrackUid(), $eventDTO);
+                
+                if ($updatedEvent !== null) {
+                    return true;
+                } else {
+                    error_log("Failed to update event in loppservice");
+                    return false;
+                }
+            } catch (\Exception $e) {
+                error_log("Error updating event in loppservice: " . $e->getMessage());
+                // Don't throw exception for loppservice errors, just log and continue
+                return false;
+            }
+            
+        } catch (\Exception $e) {
+            error_log("Exception in updateEventInLoppservice: " . $e->getMessage());
+            error_log("Loppservice URL being used: " . $this->settings['loppserviceurl']);
+            
+            // Don't throw exception for loppservice errors, just log and continue
+            return false;
+        }
+    }
+
+    private function updateParticipantCheckpoints(string $trackUid, array $newCheckpointUids): void
+    {
+        // Get all participants on this track
+        $participants = $this->participantRepository->participantsOnTrack($trackUid);
+        
+        foreach ($participants as $participant) {
+            // Delete existing participant checkpoints for this participant
+            $this->participantRepository->deleteParticipantCheckpointOnTrackByParticipantUid($participant->getParticipantUid());
+            
+            // Create new participant checkpoints for this participant
+            $this->participantRepository->createTrackCheckpointsFor($participant, $newCheckpointUids);
+        }
+    }
 
 }
