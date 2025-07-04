@@ -14,7 +14,7 @@ skip db-1 and db-2 if trying to conect to db. use .env
 
 when i mention app db i mean vasterbottenbrevet_se
 
-DB_HOST=192.168.1.221
+DB_HOST=192.168.1.194
 DB_PORT=3310
 DB_USERNAME=root
 DB_DATABASE=vasterbottenbrevet_se
@@ -23,7 +23,7 @@ DB_PASSWORD=secret
 
 when i mention loppservice db i mean vasterbottenbrevet_se_db_2
 
-DB_HOST=192.168.1.221
+DB_HOST=192.168.1.194
 DB_PORT=3309
 DB_USERNAME=root
 DB_DATABASE=vasterbottenbrevet_se_db_2

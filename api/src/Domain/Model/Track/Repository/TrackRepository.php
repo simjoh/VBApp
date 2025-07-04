@@ -420,8 +420,23 @@ class TrackRepository extends BaseRepository
         return $tracksqls[$type];
     }
 
-
-
+    /**
+     * Get a track by its title and start date/time (full match).
+     */
+    public function getTrackByTitleAndDate(string $title, string $startDateTime): ?Track
+    {
+        try {
+            $sql = "SELECT * FROM track WHERE title = :title AND start_date_time = :start_date_time LIMIT 1";
+            $statement = $this->connection->prepare($sql);
+            $statement->bindParam(':title', $title);
+            $statement->bindParam(':start_date_time', $startDateTime);
+            $statement->execute();
+            $track = $statement->fetchObject(Track::class);
+            return $track ?: null;
+        } catch (\PDOException $e) {
+            return null;
+        }
+    }
 
 }
 

@@ -236,6 +236,17 @@ class LoppServiceEventRestClient
             return EventDTO::fromArray($data);
         } catch (RequestException $e) {
             $this->handleException($e);
+            
+            // Check if it's an "alreadyexists" error and throw a specific exception
+            if ($e->hasResponse()) {
+                $statusCode = $e->getResponse()->getStatusCode();
+                $body = $e->getResponse()->getBody()->getContents();
+                
+                if ($statusCode === 500 && $body === '"alreadyexists"') {
+                    throw new \Exception('alreadyexists');
+                }
+            }
+            
             return null;
         }
     }

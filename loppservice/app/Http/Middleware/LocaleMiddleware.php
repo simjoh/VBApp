@@ -16,6 +16,7 @@ class LocaleMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        \date_default_timezone_set('Europe/Stockholm');
         if (Session()->has('applocale')) {
             App::setLocale(Session()->get('applocale'));
         } else {

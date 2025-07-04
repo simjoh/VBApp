@@ -36,6 +36,8 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.trackbuildercomponentService.$currentEvent.subscribe(event => {
         this.event = event;
+        // Update button state when event changes
+        this.updateButtonState();
         this.cdr.markForCheck();
       })
     );
@@ -44,6 +46,8 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.trackbuildercomponentService.$organizer.subscribe(organizer => {
         this.organizer = organizer;
+        // Update button state when organizer changes
+        this.updateButtonState();
         this.cdr.markForCheck();
       })
     );
@@ -52,6 +56,8 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.trackbuildercomponentService.$formData.subscribe(formData => {
         this.formData = formData;
+        // Update button state when form data changes
+        this.updateButtonState();
         this.cdr.markForCheck();
       })
     );
@@ -90,6 +96,9 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
         }
       })
     );
+
+    // Initial button state check
+    this.updateButtonState();
   }
 
   ngOnDestroy(): void {
@@ -98,19 +107,97 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
   }
 
   private updateButtonState(): void {
-    // Check if the button should be enabled
-    if (this.track && this.controls && this.controls.length > 0) {
-      // Enable the button if at least one control has a distance >= track distance
-      this.buttonDisabled = !this.controls.some(control => {
-        const controlDistance = control.rusaControlRepresentation ?
-          control.rusaControlRepresentation.CONTROL_DISTANCE_KM :
-          (control.DISTANCE || 0);
+    const hasMandatoryBasicInfo = this.hasAllMandatoryBasicInfo();
+    const hasValidControls = this.hasValidControls();
+    this.buttonDisabled = !hasMandatoryBasicInfo || !hasValidControls;
+  }
 
-        return controlDistance >= this.track.EVENT_DISTANCE_KM;
-      });
-    } else {
-      this.buttonDisabled = true;
-    }
+    /**
+   * Checks if all mandatory basic information fields are filled
+   */
+  private hasAllMandatoryBasicInfo(): boolean {
+    // Check event selection (event_uid)
+    const hasEvent = this.event && this.event.event_uid && this.event.event_uid !== "0";
+
+    // Check track name
+    const hasTrackName = !!(this.formData.trackname && this.formData.trackname.trim());
+
+    // Check distance
+    const hasDistance = !!(this.formData.trackdistance && this.formData.trackdistance > 0);
+
+    // Check event type
+    const hasEventType = !!(this.formData.event_type && this.formData.event_type.trim());
+
+    // Check start date
+    const hasStartDate = !!(this.formData.startdate && this.formData.startdate.trim());
+
+    // Check start time
+    const hasStartTime = !!(this.formData.starttime && this.formData.starttime.trim());
+
+    // All mandatory fields must be present
+    return hasEvent && hasTrackName && hasDistance && hasEventType && hasStartDate && hasStartTime;
+  }
+
+  /**
+   * Public methods to check individual field validation status
+   * These can be used in the template for visual feedback
+   */
+  hasValidEvent(): boolean {
+    return !!(this.event && this.event.event_uid && this.event.event_uid !== "0");
+  }
+
+  hasValidTrackName(): boolean {
+    return !!(this.formData.trackname && this.formData.trackname.trim());
+  }
+
+  hasValidDistance(): boolean {
+    return !!(this.formData.trackdistance && this.formData.trackdistance > 0);
+  }
+
+  hasValidEventType(): boolean {
+    return !!(this.formData.event_type && this.formData.event_type.trim());
+  }
+
+  hasValidStartDate(): boolean {
+    return !!(this.formData.startdate && this.formData.startdate.trim());
+  }
+
+  hasValidStartTime(): boolean {
+    return !!(this.formData.starttime && this.formData.starttime.trim());
+  }
+
+  hasValidOrganizer(): boolean {
+    return !!(this.formData.organizer_id && this.formData.organizer_id > 0);
+  }
+
+  hasValidControls(): boolean {
+    if (!this.track || !this.controls || this.controls.length < 2) return false;
+
+    const distances = this.controls.map(control =>
+      control.rusaControlRepresentation
+        ? control.rusaControlRepresentation.CONTROL_DISTANCE_KM
+        : (control.DISTANCE || 0)
+    );
+
+    const hasStart = distances.includes(0);
+    const hasFinish = distances.includes(this.track.EVENT_DISTANCE_KM);
+
+    return hasStart && hasFinish;
+  }
+
+  /**
+   * Get validation message for the button
+   */
+  getValidationMessage(): string {
+    if (!this.hasValidEvent()) return 'Välj ett arrangemang';
+    if (!this.hasValidTrackName()) return 'Fyll i arrangemangsnnam';
+    if (!this.hasValidDistance()) return 'Välj distans';
+    if (!this.hasValidEventType()) return 'Välj typ av arrangemang';
+    if (!this.hasValidStartDate()) return 'Välj startdatum';
+    if (!this.hasValidStartTime()) return 'Välj starttid';
+    if (!this.hasValidOrganizer()) return 'Välj arrangör';
+    if (!this.hasValidControls()) return 'Det måste finnas minst en start- och en slutkontroll.';
+    return '';
   }
 
   /**

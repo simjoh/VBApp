@@ -21,8 +21,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     libpq-dev \
     libzip-dev \
-    libwebp-dev && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    libwebp-dev \
+    tzdata \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+ENV TZ=Europe/Stockholm
+RUN ln -snf /usr/share/zoneinfo/Europe/Stockholm /etc/localtime && echo "Europe/Stockholm" > /etc/timezone
 
 # Install PHP extensions
 RUN docker-php-ext-install zip bcmath bz2 calendar dba exif gettext iconv intl soap tidy xsl mysqli pgsql pdo pdo_mysql pdo_pgsql && \
@@ -61,6 +65,8 @@ RUN mkdir -p /var/www/html/api/uploads && \
 # Create entrypoint script to fix permissions on container start
 COPY docker/apache/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
+
+RUN echo "date.timezone=Europe/Stockholm" > /usr/local/etc/php/conf.d/timezone.ini
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["apache2-foreground"]

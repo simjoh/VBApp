@@ -19,12 +19,12 @@ class Event extends Model
         return $this->morphTo();
     }
 
-    public function eventconfiguration()
+    public function eventConfiguration()
     {
         return $this->morphOne('App\Models\EventConfiguration', 'eventconfiguration');
     }
 
-    protected $with = ['eventconfiguration'];
+    protected $with = ['eventConfiguration'];
     protected $primaryKey = 'event_uid';
     protected $dateFormat = 'Y-m-d';
     // protected $keyType = "string";

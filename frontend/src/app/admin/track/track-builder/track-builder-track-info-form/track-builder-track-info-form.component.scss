@@ -51,6 +51,17 @@
       color: #374151;
       margin-bottom: 0.25rem;
       line-height: 1.2;
+
+      &.required-field {
+        color: #dc2626;
+        font-weight: 600;
+
+        &::after {
+          content: ' *';
+          color: #dc2626;
+          font-weight: 700;
+        }
+      }
     }
   }
 
@@ -353,6 +364,11 @@
       }
     }
   }
+}
+
+label .required-asterisk {
+  color: #dc2626;
+  font-weight: 700;
 }
 
 

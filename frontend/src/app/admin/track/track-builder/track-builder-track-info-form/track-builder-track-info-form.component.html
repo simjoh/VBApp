@@ -7,7 +7,7 @@
     </h3>
 
             <div class="field-group">
-      <label>Välj event *</label>
+      <label>Välj event <span class="required-asterisk">*</span></label>
       <brevet-event-selector (trackChange)="addEvent($event)"></brevet-event-selector>
     </div>
   </div>
@@ -20,7 +20,7 @@
     </h3>
 
     <div class="field-group">
-      <label>Arrangör</label>
+      <label>Arrangör <span class="required-asterisk">*</span></label>
       <brevet-organizer-selector
         (organizerChange)="onOrganizerChange($event)"
         (organizerObjectChange)="onOrganizerObjectChange($event)"
@@ -40,7 +40,7 @@
 
     <div class="form-grid">
       <div class="field-group">
-        <label>Arrangemangsnnam *</label>
+        <label>Arrangemangsnnam <span class="required-asterisk">*</span></label>
         <input
           (blur)="add()"
           (input)="onTrackNameChange()"
@@ -54,7 +54,7 @@
       </div>
 
       <div class="field-group">
-        <label>Distans (km) *</label>
+        <label>Distans (km) <span class="required-asterisk">*</span></label>
         <p-dropdown
           [options]="distanceOptions"
           [(ngModel)]="selectedDistance"
@@ -71,7 +71,7 @@
 
     <div class="form-grid">
       <div class="field-group">
-        <label>Typ av arrangemang *</label>
+        <label>Typ av arrangemang <span class="required-asterisk">*</span></label>
         <p-dropdown
           [options]="eventTypeOptions"
           [(ngModel)]="selectedEventType"
@@ -103,7 +103,7 @@
 
     <div class="form-grid">
       <div class="field-group">
-        <label>Startdatum *</label>
+        <label>Startdatum <span class="required-asterisk">*</span></label>
         <p-calendar
           [(ngModel)]="model.startdate"
           (onBlur)="add()"
@@ -118,7 +118,7 @@
       </div>
 
       <div class="field-group">
-        <label>Starttid *</label>
+        <label>Starttid <span class="required-asterisk">*</span></label>
         <p-calendar
           [(ngModel)]="model.starttime"
           (onBlur)="add()"

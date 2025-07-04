@@ -431,6 +431,30 @@ class TrackService extends ServiceAbstract
 
         // Finally delete the track itself
         $this->trackRepository->deleteTrack($track_uid);
+
+        // Try to delete corresponding event in loppservice if it exists
+        try {
+            $loppServiceClient = new \App\common\Rest\Client\LoppServiceEventRestClient($this->settings);
+            
+            // Directly try to delete the event - if it doesn't exist, the API will return 404
+            $deleteSuccess = $loppServiceClient->deleteEvent($track_uid);
+            
+            if ($deleteSuccess) {
+                error_log("Successfully deleted event from loppservice: " . $track_uid);
+            } else {
+                // Check if the event exists first to determine if the failure is due to "not found"
+                $existingEvent = $loppServiceClient->getEventById($track_uid);
+                if ($existingEvent === null) {
+                    error_log("Event not found in loppservice (this is OK): " . $track_uid);
+                } else {
+                    error_log("Failed to delete event from loppservice (event exists but deletion failed): " . $track_uid);
+                }
+            }
+        } catch (\Exception $e) {
+            // Log the error but don't fail the main deletion
+            error_log("Error deleting event in loppservice: " . $e->getMessage());
+            error_log("Track deletion completed locally, but loppservice sync failed for track: " . $track_uid);
+        }
     }
 
     public function publishResults(?string $track_uid, $publish, string $currentuserUid)
@@ -498,6 +522,22 @@ class TrackService extends ServiceAbstract
 
     public function createTrackFromPlanner(stdClass $trackrepresentation, string $currentUserUId, $formData = null): TrackRepresentation
     {
+
+
+        // Validate that a track with the same name and date/time doesn't already exist
+        $startDateTime = $trackrepresentation->rusaTrackRepresentation->START_DATE . ' ' . $trackrepresentation->rusaTrackRepresentation->START_TIME;
+        $existingTrack = $this->trackRepository->getTrackByTitleAndDate(
+            $trackrepresentation->rusaTrackRepresentation->TRACK_TITLE,
+            $startDateTime
+        );
+
+        if ($existingTrack !== null) {
+            throw new BrevetException(  
+                "A track with the title '{$trackrepresentation->rusaTrackRepresentation->TRACK_TITLE}' and date '{$trackrepresentation->rusaTrackRepresentation->START_DATE}' already exists.", 
+                9, 
+                null
+            );
+        }
         try {
             $event = $this->eventRepository->eventFor($trackrepresentation->eventRepresentation->event_uid);
 
@@ -542,7 +582,7 @@ class TrackService extends ServiceAbstract
                 if (!$loppserviceSuccess) {
                     // Cleanup: delete the created track and checkpoints
                     $this->deleteTrack($track->getTrackUid(), $currentUserUId);
-                    throw new BrevetException("Failed to create event in loppservice. Track creation cancelled.", 5);
+                    throw new BrevetException("Failed to create event in event calender. Track creation cancelled.", 9, null);
                 }
             }
 
@@ -561,7 +601,10 @@ class TrackService extends ServiceAbstract
 
             // Create EventDTO object instead of stdClass
             $eventDTO = new \App\common\Rest\DTO\EventDTO();
+            
+            // Set event title as-is (no UID or timestamp appended)
             $eventDTO->title = $formData->trackname ?? $trackrepresentation->rusaTrackRepresentation->TRACK_TITLE;
+            
             $eventDTO->description = $formData->description ?? '';
             $eventDTO->startdate = $formData->startdate ?? $trackrepresentation->rusaTrackRepresentation->START_DATE;
             $eventDTO->enddate = $formData->startdate ?? $trackrepresentation->rusaTrackRepresentation->START_DATE; // Same as start date for brevets
@@ -591,13 +634,23 @@ class TrackService extends ServiceAbstract
             $eventConfigDTO->use_stripe_payment = $formData->stripe_payment ?? false;
             $eventConfigDTO->max_registrations = $formData->max_participants ?? 300; // Use form data or default
 
-            // Set registration dates if provided
+            // Set registration dates - always provide defaults if not set
             if (isset($formData->registration_opens)) {
                 $eventConfigDTO->registration_opens = $formData->registration_opens;
+            } else {
+                // Default: 30 days before event start
+                $eventStartDate = new \DateTime($formData->startdate ?? $trackrepresentation->rusaTrackRepresentation->START_DATE);
+                $eventStartDate->sub(new \DateInterval('P30D'));
+                $eventConfigDTO->registration_opens = $eventStartDate->format('Y-m-d') . ' 00:00:00';
             }
             
             if (isset($formData->registration_closes)) {
                 $eventConfigDTO->registration_closes = $formData->registration_closes;
+            } else {
+                // Default: 23:59 the day before event starts
+                $eventStartDate = new \DateTime($formData->startdate ?? $trackrepresentation->rusaTrackRepresentation->START_DATE);
+                $eventStartDate->sub(new \DateInterval('P1D'));
+                $eventConfigDTO->registration_closes = $eventStartDate->format('Y-m-d') . ' 23:59:00';
             }
 
             // Create start number configuration DTO
@@ -614,19 +667,32 @@ class TrackService extends ServiceAbstract
             $eventDTO->eventconfiguration = $eventConfigDTO;
 
             // Create event in loppservice
-            $createdEvent = $loppServiceClient->createEvent($eventDTO);
-            
-            if ($createdEvent !== null) {
-                return true;
-            } else {
-                error_log("Failed to create event in loppservice");
-                return false;
+            try {
+                $createdEvent = $loppServiceClient->createEvent($eventDTO);
+                
+                if ($createdEvent !== null) {
+                    return true;
+                } else {
+                    error_log("Failed to create event in loppservice");
+                    return false;
+                }
+            } catch (\Exception $e) {
+                // Check if it's an "alreadyexists" error
+                if ($e->getMessage() === 'alreadyexists') {
+                    error_log("Event with this title already exists in loppservice");
+                    throw new BrevetException("Ett event med detta namn finns redan i loppservice. Vänligen välj ett annat namn.", 9);
+                }
+                
+                // Re-throw other exceptions
+                throw $e;
             }
             
         } catch (\Exception $e) {
             error_log("Exception in createEventInLoppservice: " . $e->getMessage());
             error_log("Loppservice URL being used: " . $this->settings['loppserviceurl']);
-            return false;
+            
+            // Re-throw the exception to let the calling code handle it
+            throw $e;
         }
     }
 

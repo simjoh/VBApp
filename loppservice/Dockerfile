@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libfreetype6-dev \
     default-mysql-client \
+    tzdata \
     && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -44,6 +45,11 @@ RUN chmod 777 -R /var/www/html/storage/ && \
     chown -R www-data:www-data /var/www/ && \
     a2enmod rewrite
 
+ENV TZ=Europe/Stockholm
+RUN ln -snf /usr/share/zoneinfo/Europe/Stockholm /etc/localtime && echo "Europe/Stockholm" > /etc/timezone
+
+RUN echo "date.timezone=Europe/Stockholm" > /usr/local/etc/php/conf.d/timezone.ini
+
 FROM php:8.2-apache-buster as production
 
 ENV APP_ENV=production
@@ -57,6 +63,7 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libfreetype6-dev \
     default-mysql-client \
+    tzdata \
     && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -82,6 +89,11 @@ RUN chmod 777 -R /var/www/html/storage/ && \
     chmod 777 -R /var/www/html/bootstrap/cache/ && \
     chown -R www-data:www-data /var/www/ && \
     a2enmod rewrite
+
+ENV TZ=Europe/Stockholm
+RUN ln -snf /usr/share/zoneinfo/Europe/Stockholm /etc/localtime && echo "Europe/Stockholm" > /etc/timezone
+
+RUN echo "date.timezone=Europe/Stockholm" > /usr/local/etc/php/conf.d/timezone.ini
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s \

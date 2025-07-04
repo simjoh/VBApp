@@ -12,7 +12,10 @@ services:
     ports:
       - 8090:80
     environment:
-      PMA_HOST: db-2
+      - PMA_HOST=db-2
+      - DB_DATABASE=vasterbottenbrevet_se
+      - DB_USERNAME=root
+      - DB_PASSWORD=secret
     links:
       - db-2
       - app
@@ -35,7 +38,7 @@ services:
       - APP_ENV=dev
       - APP_DEBUG=true
       - DB_CONNECTION=mysql
-      - DB_HOST=192.168.1.221
+      - DB_HOST=192.168.1.194
       - DB_PORT=3309
       - DB_DATABASE=vasterbottenbrevet_se_db_2
       - DB_USERNAME=root

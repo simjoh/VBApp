@@ -1,4 +1,6 @@
 <?php
+// Set the default timezone for all requests
+\date_default_timezone_set('Europe/Stockholm');
 
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;

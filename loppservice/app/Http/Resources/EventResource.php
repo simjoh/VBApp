@@ -24,7 +24,7 @@ class EventResource extends JsonResource
             'organizer_id' => $this->organizer_id,
             'county_id' => $this->county_id,
             'event_group_uid' => $this->event_group_uid,
-            'eventconfiguration' => $this->eventconfiguration,
+            'eventconfiguration' => $this->eventConfiguration,
             'route_detail' => $this->routeDetail,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

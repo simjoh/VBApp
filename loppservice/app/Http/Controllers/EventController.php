@@ -70,8 +70,8 @@ class EventController extends Controller
             $event->setAttribute('formatted_start_date', $startDate->format('j') . ' ' . $months[$startDate->format('m')]);
 
             // Format registration closing date if available
-            if ($event->eventconfiguration && $event->eventconfiguration->registration_closes) {
-                $closingDate = Carbon::parse($event->eventconfiguration->registration_closes);
+            if ($event->eventConfiguration && $event->eventConfiguration->registration_closes) {
+                $closingDate = Carbon::parse($event->eventConfiguration->registration_closes);
                 $event->setAttribute('formatted_closing_date', $closingDate->format('j') . ' ' . $months[$closingDate->format('m')]);
             } else {
                 $event->setAttribute('formatted_closing_date', '10 Maj'); // Default value
@@ -133,7 +133,7 @@ class EventController extends Controller
         $data = $request->json()->all();
 
         // Validate required fields
-        if (!isset($data['title']) || !isset($data['description']) || !isset($data['startdate']) || !isset($data['enddate'])) {
+        if (!isset($data['title']) || !isset($data['startdate']) || !isset($data['enddate'])) {
             return response()->json(['message' => 'Missing required fields'], 400);
         }
 
@@ -155,7 +155,10 @@ class EventController extends Controller
             }
         }
 
-        if (Event::where('title', $data['title'])->exists()) {
+        if (Event::where('title', $data['title'])
+            ->where('startdate', $data['startdate'])
+            ->where('startdate', '>=', now()->format('Y-m-d'))
+            ->exists()) {
             return response()->json("alreadyexists", 500);
         }
 
@@ -163,7 +166,7 @@ class EventController extends Controller
         // Use provided event_uid if available, otherwise generate new UUID
         $event->event_uid = $data['event_uid'] ?? Uuid::uuid4();
         $event->title = $data['title'];
-        $event->description = $data['description'];
+        $event->description = $data['description'] ?? null;
         $event->startdate = $data['startdate'];
         $event->enddate = $data['enddate'];
         $event->completed = false;
@@ -194,9 +197,13 @@ class EventController extends Controller
         if (isset($data['eventconfiguration'])) {
             $config = $data['eventconfiguration'];
 
-            // Set registration_opens if provided
+            // Set registration_opens if provided, otherwise set default
             if (isset($config['registration_opens'])) {
                 $eventconfiguration->registration_opens = $config['registration_opens'];
+            } else {
+                // Default: 30 days before event start
+                $eventStartDate = Carbon::parse($data['startdate']);
+                $eventconfiguration->registration_opens = $eventStartDate->copy()->subDays(30)->format('Y-m-d') . ' 00:00:00';
             }
 
             // Set use_stripe_payment if provided
@@ -241,7 +248,7 @@ class EventController extends Controller
             $eventconfiguration->max_registrations = env('EVENT_DEFAULT_MAX_REGISTRATIONS', 300);
         }
 
-        $event->eventconfiguration()->save($eventconfiguration);
+        $event->eventConfiguration()->save($eventconfiguration);
 
         // Create start number configuration
         $startnumberconfig = new StartNumberConfig();
@@ -414,11 +421,11 @@ class EventController extends Controller
         // Update event configuration
         if (isset($data['eventconfiguration'])) {
             $config = $data['eventconfiguration'];
-            $eventconfig = $event->eventconfiguration;
+            $eventconfig = $event->eventConfiguration;
 
             if (!$eventconfig) {
                 $eventconfig = new EventConfiguration();
-                $event->eventconfiguration()->save($eventconfig);
+                $event->eventConfiguration()->save($eventconfig);
             }
 
             // Update registration_opens if provided
@@ -612,9 +619,9 @@ class EventController extends Controller
         return new EventResource($event);
     }
 
-    public function delete(Request $request): JsonResponse
+    public function delete(string $eventUid): JsonResponse
     {
-        $event = Event::where('event_uid', '=', $request['event_uid'])->first();
+        $event = Event::where('event_uid', '=', $eventUid)->first();
         if ($event) {
             $event->delete();
             return response()->json(['message' => 'Event deleted successfully'], 200);
@@ -623,9 +630,9 @@ class EventController extends Controller
     }
 
 
-    public function eventbyid(Request $request): JsonResponse
+    public function eventbyid(string $eventUid): JsonResponse
     {
-        $event = Event::where('event_uid', '=', $request['event_uid'])->first();
+        $event = Event::where('event_uid', '=', $eventUid)->first();
         if ($event) {
             return response()->json(new EventResource($event), 200);
         }

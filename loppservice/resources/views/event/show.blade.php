@@ -115,54 +115,30 @@
 									Startlista
 								</a>
 								@if(isset($event->eventConfiguration?->use_stripe_payment) && $event->eventConfiguration->use_stripe_payment)
-									<a {{
-										(isset($event->eventConfiguration->registration_closes) &&
-										 isset($event->eventConfiguration->registration_opens) &&
-										 now() <= $event->eventConfiguration->registration_closes &&
-										 now() >= $event->eventConfiguration->registration_opens &&
-										 $event->eventConfiguration->registration_opens != $event->eventConfiguration->registration_closes)
-										? 'href=' . route('register', ['uid' => $event->event_uid, 'event_type' => $event->event_type])
-										: ''
-									}}
-									   class="block w-full text-center {{
-										   (isset($event->eventConfiguration->registration_closes) &&
-											isset($event->eventConfiguration->registration_opens) &&
-											now() <= $event->eventConfiguration->registration_closes &&
-											now() >= $event->eventConfiguration->registration_opens &&
-											$event->eventConfiguration->registration_opens != $event->eventConfiguration->registration_closes)
-										   ? 'bg-[#666666] hover:bg-[#4D4D4D]'
-										   : 'bg-[#bbbbbb] cursor-not-allowed'
-									   }} text-white py-2 rounded text-lg font-bold uppercase flex items-center justify-center mb-1">
-										{{
-											now() > $event->eventConfiguration->registration_closes
-											? 'ANMÄLAN STÄNGD'
-											: 'ANMÄLAN & BETALNING'
-										}}
+									@php
+										$now = \Carbon\Carbon::now();
+										$regOpens = isset($event->eventConfiguration->registration_opens) ? \Carbon\Carbon::parse($event->eventConfiguration->registration_opens) : null;
+										$regCloses = isset($event->eventConfiguration->registration_closes) ? \Carbon\Carbon::parse($event->eventConfiguration->registration_closes) : null;
+										$isRegistrationOpen = $regOpens && $now->gte($regOpens);
+										$isRegistrationClosed = $regCloses && $now->gt($regCloses);
+										$regActive = $isRegistrationOpen && !$isRegistrationClosed;
+									@endphp
+									<a {{ $regActive ? 'href=' . route('register', ['uid' => $event->event_uid, 'event_type' => $event->event_type]) : '' }}
+									   class="block w-full text-center {{ $regActive ? 'bg-[#666666] hover:bg-[#4D4D4D]' : 'bg-[#bbbbbb] cursor-not-allowed' }} text-white py-2 rounded text-lg font-bold uppercase flex items-center justify-center mb-1">
+										{{ $isRegistrationClosed ? 'ANMÄLAN STÄNGD' : 'ANMÄLAN & BETALNING' }}
 									</a>
 								@else
-									<a {{
-										(isset($event->eventConfiguration->registration_closes) &&
-										 isset($event->eventConfiguration->registration_opens) &&
-										 now() <= $event->eventConfiguration->registration_closes &&
-										 now() >= $event->eventConfiguration->registration_opens &&
-										 $event->eventConfiguration->registration_opens != $event->eventConfiguration->registration_closes)
-										? 'href=' . route('register', ['uid' => $event->event_uid, 'event_type' => $event->event_type])
-										: ''
-									}}
-									   class="block w-full text-center {{
-										   (isset($event->eventConfiguration->registration_closes) &&
-											isset($event->eventConfiguration->registration_opens) &&
-											now() <= $event->eventConfiguration->registration_closes &&
-											now() >= $event->eventConfiguration->registration_opens &&
-											$event->eventConfiguration->registration_opens != $event->eventConfiguration->registration_closes)
-										   ? 'bg-[#666666] hover:bg-[#4D4D4D]'
-										   : 'bg-[#bbbbbb] cursor-not-allowed'
-									   }} text-white py-2 rounded text-lg font-bold uppercase flex items-center justify-center">
-										{{
-											now() > $event->eventConfiguration->registration_closes
-											? 'ANMÄLAN STÄNGD'
-											: 'HÄMTA LOGIN'
-										}}
+									@php
+										$now = \Carbon\Carbon::now();
+										$regOpens = isset($event->eventConfiguration->registration_opens) ? \Carbon\Carbon::parse($event->eventConfiguration->registration_opens) : null;
+										$regCloses = isset($event->eventConfiguration->registration_closes) ? \Carbon\Carbon::parse($event->eventConfiguration->registration_closes) : null;
+										$isRegistrationOpen = $regOpens && $now->gte($regOpens);
+										$isRegistrationClosed = $regCloses && $now->gt($regCloses);
+										$regActive = $isRegistrationOpen && !$isRegistrationClosed;
+									@endphp
+									<a {{ $regActive ? 'href=' . route('register', ['uid' => $event->event_uid, 'event_type' => $event->event_type]) : '' }}
+									   class="block w-full text-center {{ $regActive ? 'bg-[#666666] hover:bg-[#4D4D4D]' : 'bg-[#bbbbbb] cursor-not-allowed' }} text-white py-2 rounded text-lg font-bold uppercase flex items-center justify-center">
+										{{ $isRegistrationClosed ? 'ANMÄLAN STÄNGD' : 'HÄMTA LOGIN' }}
 									</a>
 								@endif
 							</div>

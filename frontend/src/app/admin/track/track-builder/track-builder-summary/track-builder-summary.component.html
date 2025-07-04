@@ -228,6 +228,12 @@
 
   <!-- Action Button -->
   <div class="action-section">
+    <!-- Validation Message -->
+    <div class="validation-message" *ngIf="buttonDisabled && !isLoading">
+      <i class="pi pi-exclamation-triangle"></i>
+      <span>{{ getValidationMessage() }}</span>
+    </div>
+
     <button
       class="save-button"
       [disabled]="buttonDisabled || isLoading"

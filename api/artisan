@@ -15,7 +15,7 @@ if (file_exists(__DIR__ . '/.env_dev')) {
 
 // Database configuration - use environment variables
 $dbConfig = [
-    'host' => $_ENV['DB_HOST'] ?? '192.168.1.221',
+    'host' => $_ENV['DB_HOST'] ?? '192.168.1.194',
     'port' => $_ENV['DB_PORT'] ?? '3310',
     'database' => $_ENV['DB_DATABASE'] ?? 'vasterbottenbrevet_se',
     'username' => $_ENV['DB_USERNAME'] ?? 'root',

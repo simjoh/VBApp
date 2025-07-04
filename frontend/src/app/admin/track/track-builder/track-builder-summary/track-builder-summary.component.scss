@@ -303,6 +303,25 @@
     margin-top: 2.1rem;
     text-align: center;
 
+    .validation-message {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 0.7rem 1.05rem;
+      border-radius: 8px;
+      margin-bottom: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 0.53rem;
+      font-size: 0.7rem;
+      font-weight: 500;
+
+      i {
+        font-size: 0.7rem;
+        color: #dc2626;
+      }
+    }
+
     .save-button {
       background: linear-gradient(135deg, #059669 0%, #047857 100%);
       border: none;
