@@ -246,6 +246,69 @@ class CompetitorRepository extends BaseRepository
 
     }
 
+    public function getPasswordByParticipantUid(string $participantUid): ?string
+    {
+        try {
+            $stmt = $this->connection->prepare($this->sqls('get_password_by_participant'));
+            $stmt->bindParam(':participant_uid', $participantUid);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($result && isset($result['password'])) {
+                return $result['password'];
+            }
+            
+            return null;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return null;
+        }
+    }
+
+    public function generateAndStoreRefNrForParticipant(string $participantUid, string $newStartNumber): string
+    {
+        try {
+            // Generate a new reference number (5 digits like in loppservice)
+            $refNr = mt_rand(10000, 99999);
+            
+            // Check if this ref_nr already exists in our database (as password hash)
+            $hashedRefNr = sha1($refNr);
+            $stmt = $this->connection->prepare($this->sqls('check_ref_nr_exists'));
+            $stmt->bindParam(':ref_nr', $hashedRefNr);
+            $stmt->execute();
+            
+            // If it exists, generate a new one
+            while ($stmt->rowCount() > 0) {
+                $refNr = mt_rand(10000, 99999);
+                $hashedRefNr = sha1($refNr);
+                $stmt->bindParam(':ref_nr', $hashedRefNr);
+                $stmt->execute();
+            }
+            
+            // Hash the ref_nr before storing it as password (SHA1 like the original system)
+            $hashedRefNr = sha1($refNr);
+            
+            // Store the hashed ref_nr in the competitor_credential table
+            $stmt = $this->connection->prepare($this->sqls('update_ref_nr_for_participant'));
+            $stmt->bindParam(':participant_uid', $participantUid);
+            $stmt->bindParam(':ref_nr', $hashedRefNr);
+            $stmt->execute();
+            
+            // Also update the user_name to match the new start number
+            $stmt = $this->connection->prepare($this->sqls('update_username_for_participant'));
+            $stmt->bindParam(':participant_uid', $participantUid);
+            $stmt->bindParam(':username', $newStartNumber);
+            $stmt->execute();
+            
+            return $refNr;
+        } catch (PDOException $e) {
+            error_log("Error generating and storing ref_nr: " . $e->getMessage());
+            // Return a fallback ref_nr if there's an error
+            return '99999';
+        }
+    }
+
 
     public function sqls($type)
     {
@@ -253,6 +316,10 @@ class CompetitorRepository extends BaseRepository
         $competitorsqls['competitor_by_uid'] = 'select * from competitors where competitor_uid = :competitor_uid';
         $competitorsqls['participant_credential'] = 'select * from competitor_credential where user_name = :user_name and password = :password';
         $competitorsqls['delete_credential'] = 'delete from competitor_credential where participant_uid=:participant_uid and competitor_uid=:competitor_uid';
+        $competitorsqls['get_password_by_participant'] = 'select password from competitor_credential where participant_uid=:participant_uid';
+        $competitorsqls['check_ref_nr_exists'] = 'select 1 from competitor_credential where password=:ref_nr limit 1';
+        $competitorsqls['update_ref_nr_for_participant'] = 'update competitor_credential set password=:ref_nr where participant_uid=:participant_uid';
+        $competitorsqls['update_username_for_participant'] = 'update competitor_credential set user_name=:username where participant_uid=:participant_uid';
         $competitorsqls['getbynameandbirth'] = 'select * from competitors where given_name=:givenname and family_name=:familyname and birthdate=:birthdate;';
         $competitorsqls['createCompetitor'] = "INSERT INTO competitors(competitor_uid, user_name, given_name, family_name, role_id, password, birthdate, gender) VALUES (:uid, :username, :givenname, :familyname, :role_id, :password , :birthdate, :gender)";
         $competitorsqls['createCompetitorCredential'] = "INSERT INTO competitor_credential(credential_uid, competitor_uid, participant_uid, user_name, password) VALUES (:uid, :competitor_uid, :participant_uid, :user_name, :password)";

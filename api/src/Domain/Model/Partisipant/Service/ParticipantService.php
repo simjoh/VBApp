@@ -32,6 +32,8 @@ use App\common\GlobalConfig;
 use League\Csv\Writer;
 use App\Domain\Model\Result\Repository\ResultRepository;
 use App\Domain\Model\Organizer\Repository\OrganizerRepository;
+use App\common\Service\EmailService;
+use App\Domain\Model\Track\Service\TrackService;
 use PDO;
 use PDOException;
 
@@ -56,6 +58,8 @@ class ParticipantService extends ServiceAbstract
     private $resultRepository;
     private $organizerRepository;
     private $connection;
+    private $emailService;
+    private $trackService;
 
     public function __construct(
         ContainerInterface             $c,
@@ -75,7 +79,9 @@ class ParticipantService extends ServiceAbstract
         CountryRepository $countryRepository,
         ResultRepository $resultRepository,
         OrganizerRepository $organizerRepository,
-        PDO $connection
+        PDO $connection,
+        EmailService $emailService,
+        TrackService $trackService
     ) {
         $this->trackRepository = $trackRepository;
         $this->participantRepository = $participantRepository;
@@ -95,6 +101,8 @@ class ParticipantService extends ServiceAbstract
         $this->resultRepository = $resultRepository;
         $this->organizerRepository = $organizerRepository;
         $this->connection = $connection;
+        $this->emailService = $emailService;
+        $this->trackService = $trackService;
     }
 
 
@@ -1538,13 +1546,22 @@ class ParticipantService extends ServiceAbstract
             throw new BrevetException("A participant with start number " . $participant->getStartnumber() . " already exists on the target track", 9);
         }
         
+        // Store old start number for email notification
+        $oldStartNumber = $participant->getStartnumber();
+        
         // Move the participant to the new track
         $participant->setTrackUid($new_track_uid);
-        $participant->setStartnumber($this->findNextAvailableStartNumber($new_track_uid));
+        $newStartNumber = $this->findNextAvailableStartNumber($new_track_uid);
+        $participant->setStartnumber($newStartNumber);
         
         $updatedParticipant = $this->participantRepository->updateParticipant($participant);
         if (!$updatedParticipant) {
             throw new BrevetException("Failed to update participant", 5);
+        }
+        
+        // Send email notification if start number changed
+        if ($oldStartNumber !== $newStartNumber) {
+            $this->sendStartNumberChangeNotification($participant_uid, $oldStartNumber, $newStartNumber);
         }
         
         // Use the existing moveParticipantToTrack method to handle checkpoint recreation
@@ -1613,6 +1630,9 @@ class ParticipantService extends ServiceAbstract
             throw new BrevetException("Cannot move participant who has already started, finished, DNF, or DNS", 9);
         }
         
+        // Store old start number for email notification
+        $oldStartNumber = $participant->getStartnumber();
+        
         // Automatically find the next available start number (no client control)
         $new_startnumber = $this->findNextAvailableStartNumber($to_track_uid);
         
@@ -1623,6 +1643,11 @@ class ParticipantService extends ServiceAbstract
         $updatedParticipant = $this->participantRepository->updateParticipant($participant);
         if (!$updatedParticipant) {
             throw new BrevetException("Failed to update participant", 5);
+        }
+        
+        // Send email notification if start number changed
+        if ($oldStartNumber !== $new_startnumber) {
+            $this->sendStartNumberChangeNotification($participant_uid, $oldStartNumber, $new_startnumber);
         }
         
         // Use the existing moveParticipantToTrack method to handle checkpoint recreation
@@ -1677,5 +1702,103 @@ class ParticipantService extends ServiceAbstract
         
         // No gaps found, return the next number after the highest
         return (string)$expectedNumber;
+    }
+
+    /**
+     * Send email notification when a participant's start number changes
+     * 
+     * @param string $participant_uid The participant UID
+     * @param string $oldStartNumber The old start number
+     * @param string $newStartNumber The new start number
+     * @return bool Whether the email was sent successfully
+     */
+    private function sendStartNumberChangeNotification(string $participant_uid, string $oldStartNumber, string $newStartNumber): bool
+    {
+        try {
+            // Get participant with all related data
+            $participant = $this->participantRepository->participantFor($participant_uid);
+            if (!$participant) {
+                error_log("Participant not found for email notification: " . $participant_uid);
+                return false;
+            }
+
+            // Get track information
+            $track = $this->trackService->getTrackByUid($participant->getTrackUid());
+            if (!$track) {
+                error_log("Track not found for email notification: " . $participant->getTrackUid());
+                return false;
+            }
+
+            // Get competitor info for email
+            $competitor = $this->competitorService->getCompetitorByUid($participant->getCompetitorUid(), "");
+            if (!$competitor) {
+                error_log("Competitor not found for email notification: " . $participant_uid);
+                return false;
+            }
+
+            $competitorInfo = $this->competitorInfoRepository->getCompetitorInfoByCompetitorUid($competitor->getCompetitorUid());
+            if (!$competitorInfo || !$competitorInfo->getEmail()) {
+                error_log("No email found for participant: " . $participant_uid);
+                return false;
+            }
+
+            // Get organizer information if available
+            $organizer = "Arrangör";
+            if ($track->getOrganizerId()) {
+                $organizerObj = $this->organizerRepository->getOrganizerById($track->getOrganizerId());
+                if ($organizerObj) {
+                    $organizer = $organizerObj->getOrganizationName();
+                }
+            }
+
+            // Generate a new reference number and store it
+            $refNr = $this->competitorService->generateAndStoreRefNrForParticipant($participant->getParticipantUid(), $newStartNumber);
+            
+            // Prepare email data
+            $emailData = [
+                'participant' => $participant,
+                'track' => $track,
+                'organizer' => $organizer,
+                'oldStartNumber' => $oldStartNumber,
+                'newStartNumber' => $newStartNumber,
+                'competitor' => $competitor,
+                'competitorInfo' => $competitorInfo,
+                'refNr' => $refNr
+            ];
+
+            // Send email - check if we're in development (mailhog) or production mode
+            $subject = "Startnummer ändrat - " . $track->getTitle();
+            
+            // Get mail configuration
+            $mailHost = $this->settings['mail']['mail_host'] ?? 'mailhog';
+            $recipientEmail = $competitorInfo->getEmail();
+            
+            // If mailhog is configured, send to mailhog for testing, otherwise send to actual competitor
+            if ($mailHost === 'mailhog') {
+                $recipientEmail = 'receiverinbox@mailhog.local';
+                error_log("Development mode: Start number change email sent to mailhog (would be sent to: " . $competitorInfo->getEmail() . ")");
+            } else {
+                error_log("Production mode: Start number change email sent to competitor: " . $competitorInfo->getEmail());
+            }
+            
+            $success = $this->emailService->sendEmailWithTemplate(
+                $recipientEmail,
+                $subject,
+                'startnumber-changed-email-template.php',
+                $emailData
+            );
+
+            if ($success) {
+                error_log("Start number change notification sent successfully to: " . $competitorInfo->getEmail());
+            } else {
+                error_log("Failed to send start number change notification to: " . $competitorInfo->getEmail());
+            }
+
+            return $success;
+
+        } catch (\Exception $e) {
+            error_log("Error sending start number change notification: " . $e->getMessage());
+            return false;
+        }
     }
 }

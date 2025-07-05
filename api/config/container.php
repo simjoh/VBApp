@@ -164,6 +164,21 @@ return [
         return new \App\Action\Migration\MigrationAction(
             $container->get(\App\common\Database\MigrationManager::class)
         );
+    },
+
+    \App\Domain\Model\Track\Service\TrackService::class => function(ContainerInterface $container) {
+        return new \App\Domain\Model\Track\Service\TrackService(
+            $container,
+            $container->get(\App\Domain\Model\Track\Repository\TrackRepository::class),
+            $container->get(\App\Domain\Model\CheckPoint\Service\CheckpointsService::class),
+            $container->get(\App\Domain\Permission\PermissionRepository::class),
+            $container->get(\App\Domain\Model\Track\Rest\TrackAssembly::class),
+            $container->get(\App\Domain\Model\Site\Repository\SiteRepository::class),
+            $container->get(\App\Domain\Model\Event\Repository\EventRepository::class),
+            $container->get(\App\Domain\Model\CheckPoint\Repository\CheckpointRepository::class),
+            $container->get(\App\Domain\Model\Partisipant\Repository\ParticipantRepository::class),
+            $container->get(\App\Domain\Model\Track\Service\RusaTimeTrackPlannerService::class)
+        );
     }
 
 ];

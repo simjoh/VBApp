@@ -340,6 +340,21 @@ class ParticipantRepository extends BaseRepository
         return null;
     }
 
+    public function participantWithStartNumberExists(string $startnumber): bool
+    {
+        try {
+            $stmt = $this->connection->prepare($this->sqls('participantWithStartNumberExists'));
+            $stmt->bindParam(':startnumber', $startnumber);
+            $stmt->execute();
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            error_log("Error checking if participant with start number exists: " . $e->getMessage());
+            return false;
+        }
+    }
+
+
+
     public function participantHasStampOnAllExceptFinish(string $track_uid, string $finishCheckpoint_uid, string $participant_uid, int $totalcheckpointsfortrack): bool
     {
 
@@ -1032,6 +1047,7 @@ class ParticipantRepository extends BaseRepository
         $eventqls['allParticipantsOnTrack'] = 'select *  from participant e where e.track_uid=:track_uid;';
         $eventqls['allParticipantsForCompetitor'] = 'select *  from participant e where e.competitor_uid=:competitor_uid;';
         $eventqls['participantonTrackWithStartnumber'] = 'select *  from participant e where e.track_uid=:track_uid and startnumber=:startnumber;';
+        $eventqls['participantWithStartNumberExists'] = 'select 1 from participant e where e.startnumber=:startnumber limit 1;';
         $eventqls['participantByTrackAndClub'] = 'select *  from participant e where e.track_uid=:track_uid and club_uid=:club_uid;';
         $eventqls['deleteParticipant'] = 'delete from participant  where participant_uid=:participant_uid;';
         $eventqls['deleteParticipantcheckpointbyparticipantuid'] = 'delete from participant_checkpoint where participant_uid=:participant_uid;';

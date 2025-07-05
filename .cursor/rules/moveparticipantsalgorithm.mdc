@@ -1,4 +1,5 @@
 ---
+description: This rules is helful when dealing with movin participant between tracks 
 alwaysApply: false
 ---
 # Move Participant Endpoints

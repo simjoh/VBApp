@@ -81,4 +81,14 @@ class CompetitorService
     {
         $this->repository->deleteCompetitorCredentialForParticipant($getParticipantUid, $competitor_uid);
     }
+
+    public function getPasswordByParticipantUid(string $participantUid): ?string
+    {
+        return $this->repository->getPasswordByParticipantUid($participantUid);
+    }
+
+    public function generateAndStoreRefNrForParticipant(string $participantUid, string $newStartNumber): string
+    {
+        return $this->repository->generateAndStoreRefNrForParticipant($participantUid, $newStartNumber);
+    }
 }
