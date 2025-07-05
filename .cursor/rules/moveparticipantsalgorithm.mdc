@@ -1,0 +1,271 @@
+---
+alwaysApply: false
+---
+# Move Participant Endpoints
+
+This document describes the functionality to move participants from one track to another, including HATEOAS conflict resolution.
+
+## Overview
+
+The move participant functionality allows administrators to transfer participants from one track to another track. This is useful in cases where:
+
+- Participants registered for the wrong track
+- Track assignments need to be adjusted before the event starts
+- Administrative corrections are needed
+
+The API uses HATEOAS (Hypermedia as the Engine of Application State) to provide discoverable links for conflict resolution.
+
+## Endpoints
+
+### 1. Move Single Participant
+
+**PUT** `/api/participant/{participantUid}/move`
+
+#### Headers Required
+- `Content-Type: application/json`
+- `APIKEY: notsecret_developer_key`
+- `TOKEN: {jwt_token}`
+
+#### Request Body
+```json
+{
+    "new_track_uid": "uuid-of-target-track"
+}
+```
+
+#### Response
+- **200 OK**: Participant moved successfully
+- **400 Bad Request**: Missing or invalid new_track_uid
+- **404 Not Found**: Participant or target track not found
+- **409 Conflict**: Start number already exists on target track (includes HATEOAS links)
+- **422 Unprocessable Entity**: Participant cannot be moved (already started/DNF/DNS)
+
+### 2. Move All Participants
+
+**PUT** `/api/participants/move`
+
+#### Headers Required
+- `Content-Type: application/json`
+- `APIKEY: notsecret_developer_key`
+- `TOKEN: {jwt_token}`
+
+#### Request Body
+```json
+{
+    "from_track_uid": "uuid-of-source-track",
+    "to_track_uid": "uuid-of-target-track"
+}
+```
+
+#### Response
+- **200 OK**: Operation completed with detailed results and HATEOAS links
+- **400 Bad Request**: Missing track UIDs
+- **404 Not Found**: Source or target track not found
+- **409 Conflict**: Source and target tracks are the same
+
+#### Response Format with HATEOAS Links
+```json
+{
+    "success": [
+        {
+            "participant_uid": "uuid",
+            "startnumber": "1001"
+        }
+    ],
+    "failed": [
+        {
+            "participant_uid": "uuid",
+            "reason": "A participant with start number 1001 already exists on the target track",
+            "links": [
+                {
+                    "rel": "resolveStartnumberConflict",
+                    "method": "POST",
+                    "url": "/api/participant/uuid/resolve-startnumber-conflict"
+                }
+            ]
+        }
+    ],
+    "skipped": [
+        {
+            "participant_uid": "uuid",
+            "reason": "Participant has already started, finished, DNF, or DNS"
+        }
+    ]
+}
+```
+
+### 3. Resolve Start Number Conflict
+
+**POST** `/api/participant/{participantUid}/resolve-startnumber-conflict`
+
+#### Headers Required
+- `Content-Type: application/json`
+- `APIKEY: notsecret_developer_key`
+- `TOKEN: {jwt_token}`
+
+#### Request Body
+```json
+{
+    "to_track_uid": "uuid-of-target-track"
+}
+```
+
+**Note**: The system automatically finds the next available start number. No additional parameters are needed.
+
+#### Response
+- **200 OK**: Conflict resolved, participant moved with automatically assigned start number
+- **400 Bad Request**: Missing to_track_uid
+- **404 Not Found**: Participant or target track not found
+- **409 Conflict**: Participant cannot be moved (already started/DNF/DNS)
+
+#### Start Number Assignment Algorithm
+The system uses an intelligent algorithm to find the next available start number:
+
+1. **Sequence Range Detection**: Scans existing start numbers to determine the actual sequence range
+2. **Gap Detection**: Finds the first available gap within the actual sequence
+3. **Sequential Filling**: If participants have numbers 1001, 1003, 1004, assigns 1002
+4. **Higher Number Support**: If participants have numbers 4001, 4003, 4004, assigns 4002
+5. **Next Number**: If no gaps exist (1001, 1002, 1003), assigns 1004
+6. **Default Start**: If no participants exist, starts with 1001
+
+**Examples:**
+- Existing: 1001, 1003, 1004 → Assigns: 1002
+- Existing: 4001, 4003, 4004 → Assigns: 4002  
+- Existing: 1001, 1002, 1003 → Assigns: 1004
+- Existing: 4001, 4002, 4003 → Assigns: 4004
+- Existing: 1001, 1002, 4001, 4002 → Assigns: 1003 (works within appropriate range)
+
+This ensures efficient use of start numbers and maintains sequential ordering regardless of where the sequence begins.
+
+## HATEOAS Implementation
+
+The API uses a REST assembler pattern to automatically add HATEOAS links to responses:
+
+### MoveParticipantResponseAssembly
+- **Location**: `api/src/Domain/Model/Partisipant/Rest/MoveParticipantResponseAssembly.php`
+- **Purpose**: Creates responses with appropriate HATEOAS links for conflict resolution
+- **Methods**:
+  - `toMoveResponse()`: Creates response for bulk move operations
+  - `toSingleMoveResponse()`: Creates response for single participant moves
+
+### Link Structure
+```json
+{
+    "rel": "resolveStartnumberConflict",
+    "method": "POST",
+    "url": "/api/participant/{participantUid}/resolve-startnumber-conflict"
+}
+```
+
+## Validation Rules
+
+All endpoints enforce the following validation rules:
+
+1. **Participant Status**: Participants cannot be moved if they have:
+   - Already started the race
+   - Been marked as DNS (Did Not Start)
+   - Been marked as DNF (Did Not Finish)
+   - Already finished the race
+
+2. **Start Number Conflicts**: Participants cannot be moved if there's already a participant with the same start number on the target track
+
+3. **Track Existence**: Both source and target tracks must exist and have checkpoints
+
+4. **Authentication**: Requires valid JWT token and API key
+
+## Examples
+
+### Move Single Participant
+```bash
+curl -X PUT \
+  -H "Content-Type: application/json" \
+  -H "APIKEY: notsecret_developer_key" \
+  -H "TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -d '{"new_track_uid":"04b9b0c6-9b25-407e-a70f-0e3a79465957"}' \
+  "http://localhost:8090/api/participant/b29dfd5f-5ba5-4292-8d6b-8311defd8acb/move"
+```
+
+### Move All Participants
+```bash
+curl -X PUT \
+  -H "Content-Type: application/json" \
+  -H "APIKEY: notsecret_developer_key" \
+  -H "TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -d '{
+    "from_track_uid": "01b085c5-65c2-48ff-81d5-66864bd6b0c6",
+    "to_track_uid": "04c75225-b563-43b6-aaa8-cbada83dacfd"
+  }' \
+  "http://localhost:8090/api/participants/move"
+```
+
+### Resolve Conflict (Auto-assign start number)
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -H "APIKEY: notsecret_developer_key" \
+  -H "TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -d '{
+    "to_track_uid": "04b9b0c6-9b25-407e-a70f-0e3a79465957"
+  }' \
+  "http://localhost:8090/api/participant/abc123/resolve-startnumber-conflict"
+```
+
+
+
+## Test Scripts
+
+- `curl_move_participant_example.sh` - Test script for single participant moves
+- `curl_move_all_participants_example.sh` - Test script for moving all participants
+- `curl_hateoas_conflict_resolution_example.sh` - Test script demonstrating HATEOAS conflict resolution
+
+## Database Operations
+
+When moving participants, the following operations are performed:
+
+1. **Transaction Safety**: All operations are wrapped in database transactions
+2. **Checkpoint Management**: Participant checkpoint associations are recreated for the new track
+3. **Data Integrity**: Foreign key constraints are respected
+4. **Rollback**: If any operation fails, all changes are rolled back
+
+## Error Handling
+
+- Detailed error messages are returned for debugging
+- Failed operations are logged with stack traces
+- Partial failures in bulk operations are reported individually with HATEOAS links
+- HTTP status codes are properly set for different error conditions
+
+## Implementation Details
+
+### Files Created/Modified
+- `MoveParticipantResponseAssembly.php` - REST assembler for HATEOAS responses
+- `MoveParticipantResponseRepresentation.php` - Response representation class
+- `ParticipantAction.php` - Updated to use assembler
+- `ParticipantService.php` - Added conflict resolution methods
+- `ParticipantRepository.php` - Added bulk move functionality
+- `routes.php` - Added new endpoints
+
+### HATEOAS Workflow
+1. Client attempts to move participant(s)
+2. If conflicts occur, API returns response with HATEOAS links
+3. Client follows links to resolve conflicts
+4. System automatically assigns the next available start number by finding gaps in the sequence
+5. Client can retry move operation or resolve conflicts individually
+
+### Start Number Assignment Algorithm
+The system uses an intelligent algorithm to find the next available start number:
+
+1. **Sequence Range Detection**: Scans existing start numbers to determine the actual sequence range
+2. **Gap Detection**: Finds the first available gap within the actual sequence
+3. **Sequential Filling**: If participants have numbers 1001, 1003, 1004, assigns 1002
+4. **Higher Number Support**: If participants have numbers 4001, 4003, 4004, assigns 4002
+5. **Next Number**: If no gaps exist (1001, 1002, 1003), assigns 1004
+6. **Default Start**: If no participants exist, starts with 1001
+
+**Examples:**
+- Existing: 1001, 1003, 1004 → Assigns: 1002
+- Existing: 4001, 4003, 4004 → Assigns: 4002  
+- Existing: 1001, 1002, 1003 → Assigns: 1004
+- Existing: 4001, 4002, 4003 → Assigns: 4004
+- Existing: 1001, 1002, 4001, 4002 → Assigns: 1003 (works within appropriate range)
+
+This ensures efficient use of start numbers and maintains sequential ordering regardless of where the sequence begins. 

@@ -1034,7 +1034,7 @@ class ParticipantRepository extends BaseRepository
         $eventqls['participantonTrackWithStartnumber'] = 'select *  from participant e where e.track_uid=:track_uid and startnumber=:startnumber;';
         $eventqls['participantByTrackAndClub'] = 'select *  from participant e where e.track_uid=:track_uid and club_uid=:club_uid;';
         $eventqls['deleteParticipant'] = 'delete from participant  where participant_uid=:participant_uid;';
-        $eventqls['deleteParticipantcheckpointbyparticipantuid'] = 'delete from participant  where participant_uid=:participant_uid;';
+        $eventqls['deleteParticipantcheckpointbyparticipantuid'] = 'delete from participant_checkpoint where participant_uid=:participant_uid;';
         $eventqls['updateParticipant'] = "UPDATE participant SET  track_uid=:track_uid , competitor_uid=:competitor_uid , startnumber=:startnumber, finished=:finished, acpkod=:acpcode, club_uid=:club_uid , dns=:dns, dnf=:dnf , started=:started, register_date_time=:register_date_time , time=:times , brevenr=:brevenr, dns_timestamp=:dns_timestamp, dnf_timestamp=:dnf_timestamp, finished_timestamp=:finished_timestamp WHERE participant_uid=:participant_uid";
         $eventqls['updateBrevenr'] = "UPDATE participant SET  brevenr=:brevenr WHERE participant_uid=:participant_uid";
         $eventqls['updateTime'] = "UPDATE participant SET  time=:newtime WHERE participant_uid=:participant_uid and track_uid=:track_uid";
@@ -1091,6 +1091,181 @@ class ParticipantRepository extends BaseRepository
             return $statement->fetchColumn() > 0;
         } catch (PDOException $e) {
             throw new BrevetException("Error checking for existing registration: " . $e->getMessage(), 5, null);
+        }
+    }
+
+    /**
+     * Move a participant from one track to another
+     * This includes updating the participant's track_uid and recreating checkpoint associations
+     */
+    public function moveParticipantToTrack(string $participant_uid, string $new_track_uid): bool
+    {
+        try {
+            // Begin transaction
+            $this->connection->beginTransaction();
+            
+            // Get the participant to verify it exists
+            $participant = $this->participantFor($participant_uid);
+            if (!$participant) {
+                throw new BrevetException("Participant not found with UID: " . $participant_uid, 404);
+            }
+            
+            $old_track_uid = $participant->getTrackUid();
+            
+            // Check if participant has already started (has stamps, DNF, DNS, or finished)
+            if ($participant->isStarted() || $participant->isFinished() || $participant->isDnf() || $participant->isDns()) {
+                throw new BrevetException("Cannot move participant who has already started, finished, DNF, or DNS", 9);
+            }
+            
+            // Delete existing participant checkpoints for this participant first
+            $this->deleteParticipantCheckpointOnTrackByParticipantUid($participant_uid);
+            
+            // Update the participant's track_uid using the existing updateParticipant method
+            $participant->setTrackUid($new_track_uid);
+            $updatedParticipant = $this->updateParticipant($participant);
+            
+            if (!$updatedParticipant) {
+                throw new BrevetException("Failed to update participant track", 5);
+            }
+            
+            // Get checkpoints for the new track
+            $trackCheckpoints = $this->getTrackCheckpoints($new_track_uid);
+            
+            // Create new participant checkpoints for the new track
+            if (!empty($trackCheckpoints)) {
+                $this->createTrackCheckpointsFor($updatedParticipant, $trackCheckpoints);
+            }
+            
+            // Commit transaction
+            $this->connection->commit();
+            
+            return true;
+            
+        } catch (PDOException $e) {
+            // Rollback transaction on error
+            $this->connection->rollBack();
+            throw new BrevetException("Database error while moving participant: " . $e->getMessage(), 5, $e);
+        } catch (BrevetException $e) {
+            // Rollback transaction on BrevetException
+            $this->connection->rollBack();
+            throw $e;
+        }
+    }
+    
+    /**
+     * Get checkpoint UIDs for a track
+     */
+    private function getTrackCheckpoints(string $track_uid): array
+    {
+        try {
+            $stmt = $this->connection->prepare("SELECT tc.checkpoint_uid FROM track_checkpoint tc JOIN checkpoint c ON tc.checkpoint_uid = c.checkpoint_uid WHERE tc.track_uid = :track_uid ORDER BY c.distance");
+            $stmt->bindParam(':track_uid', $track_uid);
+            $stmt->execute();
+            
+            $checkpoints = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $checkpoints[] = $row['checkpoint_uid'];
+            }
+            
+            return $checkpoints;
+        } catch (PDOException $e) {
+            throw new BrevetException("Error fetching track checkpoints: " . $e->getMessage(), 5, $e);
+        }
+    }
+
+    /**
+     * Move all participants from one track to another track
+     * This includes updating all participants' track_uid and recreating checkpoint associations
+     */
+    public function moveAllParticipantsToTrack(string $from_track_uid, string $to_track_uid): array
+    {
+        try {
+            // Begin transaction
+            $this->connection->beginTransaction();
+            
+            // Get all participants on the source track
+            $participants = $this->participantsOnTrack($from_track_uid);
+            if (empty($participants)) {
+                throw new BrevetException("No participants found on source track: " . $from_track_uid, 404);
+            }
+            
+            $results = [
+                'success' => [],
+                'failed' => [],
+                'skipped' => []
+            ];
+            
+            // Validate that the target track exists
+            $targetTrackCheckpoints = $this->getTrackCheckpoints($to_track_uid);
+            if (empty($targetTrackCheckpoints)) {
+                throw new BrevetException("Target track not found or has no checkpoints: " . $to_track_uid, 404);
+            }
+            
+            foreach ($participants as $participant) {
+                try {
+                    // Check if participant can be moved (not started, DNF, DNS, or finished)
+                    if ($participant->isStarted() || $participant->isFinished() || $participant->isDnf() || $participant->isDns()) {
+                        $results['skipped'][] = [
+                            'participant_uid' => $participant->getParticipantUid(),
+                            'reason' => 'Participant has already started, finished, DNF, or DNS'
+                        ];
+                        continue;
+                    }
+                    
+                    // Check if there's already a participant with the same start number on the target track
+                    $existingParticipant = $this->participantOntRackAndStartNumber($to_track_uid, $participant->getStartnumber());
+                    if ($existingParticipant) {
+                        $results['failed'][] = [
+                            'participant_uid' => $participant->getParticipantUid(),
+                            'reason' => 'A participant with start number ' . $participant->getStartnumber() . ' already exists on the target track'
+                        ];
+                        continue;
+                    }
+                    
+                    // Delete existing participant checkpoints for this participant
+                    $this->deleteParticipantCheckpointOnTrackByParticipantUid($participant->getParticipantUid());
+                    
+                    // Update the participant's track_uid using the existing updateParticipant method
+                    $participant->setTrackUid($to_track_uid);
+                    $updatedParticipant = $this->updateParticipant($participant);
+                    
+                    if (!$updatedParticipant) {
+                        $results['failed'][] = [
+                            'participant_uid' => $participant->getParticipantUid(),
+                            'reason' => 'Failed to update participant track'
+                        ];
+                        continue;
+                    }
+                    
+                    // Create new participant checkpoints for the new track
+                    $this->createTrackCheckpointsFor($updatedParticipant, $targetTrackCheckpoints);
+                    
+                    $results['success'][] = [
+                        'participant_uid' => $participant->getParticipantUid(),
+                        'startnumber' => $participant->getStartnumber()
+                    ];
+                    
+                } catch (\Exception $e) {
+                    $results['failed'][] = [
+                        'participant_uid' => $participant->getParticipantUid(),
+                        'reason' => 'Error: ' . $e->getMessage()
+                    ];
+                }
+            }
+            
+            // Commit transaction
+            $this->connection->commit();
+            
+            return $results;
+            
+        } catch (PDOException $e) {
+            // Rollback transaction on error
+            $this->connection->rollBack();
+            throw new BrevetException("Database error while moving participants: " . $e->getMessage(), 5, $e);
+        } catch (BrevetException $e) {
+            // Rollback transaction on BrevetException
+            $this->connection->rollBack();
+            throw $e;
         }
     }
 

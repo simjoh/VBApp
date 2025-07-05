@@ -148,7 +148,11 @@ return function (App $app) {
         $app->put('/participant/{uid}/setdns', \App\Action\Participant\ParticipantAction::class . ':markasDNS');
         $app->put('/participant/{uid}/rollbackdnf', \App\Action\Participant\ParticipantAction::class  . ':rollbackDNF');
         $app->put('/participant/{uid}/rollbackdns', \App\Action\Participant\ParticipantAction::class  . ':rollbackDNS');
+        $app->put('/participant/{uid}/move', \App\Action\Participant\ParticipantAction::class . ':moveParticipantToTrack');
 
+        $app->put('/participants/move', \App\Action\Participant\ParticipantAction::class . ':moveAllParticipantsToTrack');
+
+        $app->post('/participant/{uid}/resolve-startnumber-conflict', \App\Action\Participant\ParticipantAction::class . ':resolveStartnumberConflict');
 
         $app->get('/participants/event/{eventUid}/track/{trackUid}', \App\Action\Participant\ParticipantAction::class. ':participantOnEventAndTrack');
         $app->get('/participants/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':participantsOnTrack');

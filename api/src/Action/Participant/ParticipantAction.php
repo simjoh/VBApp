@@ -24,6 +24,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use App\Domain\Model\Partisipant\Rest\MoveParticipantResponseAssembly;
+use App\Domain\Model\Partisipant\Rest\MoveParticipantResponseRepresentation;
 
 class ParticipantAction
 {
@@ -31,11 +33,14 @@ class ParticipantAction
     private $participantService;
     private $settings;
     private $trackService;
+    private $container;
+    
     public function __construct(ContainerInterface $c, ParticipantService $participantService, TrackService $trackService)
     {
         $this->participantService = $participantService;
         $this->settings = $c->get('settings');
         $this->trackService = $trackService;
+        $this->container = $c;
     }
 
     public function participants(ServerRequestInterface $request, ResponseInterface $response)
@@ -609,6 +614,99 @@ class ParticipantAction
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    public function moveParticipantToTrack(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $currentuserUid = $request->getAttribute('currentuserUid');
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_uid = $route->getArgument('uid');
+        
+        // Get the new track UID from the request body
+        $requestData = json_decode($request->getBody()->getContents(), true);
+        $new_track_uid = $requestData['new_track_uid'] ?? null;
+        
+        if (!$new_track_uid) {
+            $errorResponse = ['error' => 'new_track_uid is required in request body'];
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+        
+        try {
+            $result = $this->participantService->moveParticipantToTrack($participant_uid, $new_track_uid, $currentuserUid);
+            
+            if ($result) {
+                $response->getBody()->write(json_encode($result), JSON_UNESCAPED_SLASHES);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            } else {
+                $errorResponse = ['error' => 'Failed to move participant'];
+                $response->getBody()->write(json_encode($errorResponse));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+            }
+            
+        } catch (\App\common\Exceptions\BrevetException $e) {
+            error_log('BrevetException in moveParticipantToTrack: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            
+            // Use the assembler to create response with HATEOAS links for conflicts
+            $moveResponseAssembly = new MoveParticipantResponseAssembly($this->container);
+            $responseRepresentation = $moveResponseAssembly->toSingleMoveResponse($participant_uid, $e->getMessage(), $new_track_uid);
+            
+            $status = $e->getCode();
+            if (!is_int($status) || $status < 100 || $status > 599) {
+                $status = 400;
+            }
+            
+            $response->getBody()->write(json_encode($responseRepresentation), JSON_UNESCAPED_SLASHES);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
+        } catch (\Exception $e) {
+            error_log('Exception in moveParticipantToTrack: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            $errorResponse = ['error' => 'An unexpected error occurred: ' . $e->getMessage()];
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    public function moveAllParticipantsToTrack(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $currentuserUid = $request->getAttribute('currentuserUid');
+        
+        // Get the track UIDs from the request body
+        $requestData = json_decode($request->getBody()->getContents(), true);
+        $from_track_uid = $requestData['from_track_uid'] ?? null;
+        $to_track_uid = $requestData['to_track_uid'] ?? null;
+        
+        if (!$from_track_uid || !$to_track_uid) {
+            $errorResponse = ['error' => 'Both from_track_uid and to_track_uid are required in request body'];
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+        
+        try {
+            $results = $this->participantService->moveAllParticipantsToTrack($from_track_uid, $to_track_uid, $currentuserUid);
+            
+            // Use the assembler to create response with HATEOAS links
+            $moveResponseAssembly = new MoveParticipantResponseAssembly($this->container);
+            $responseRepresentation = $moveResponseAssembly->toMoveResponse($results);
+            
+            $response->getBody()->write(json_encode($responseRepresentation), JSON_UNESCAPED_SLASHES);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            
+        } catch (\App\common\Exceptions\BrevetException $e) {
+            error_log('BrevetException in moveAllParticipantsToTrack: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            $errorResponse = ['error' => $e->getMessage()];
+            $status = $e->getCode();
+            if (!is_int($status) || $status < 100 || $status > 599) {
+                $status = 400;
+            }
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
+        } catch (\Exception $e) {
+            error_log('Exception in moveAllParticipantsToTrack: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            $errorResponse = ['error' => 'An unexpected error occurred: ' . $e->getMessage()];
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
     function moveUploadedFile($directory, UploadedFile $uploadedFile)
     {
         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
@@ -617,5 +715,52 @@ class ParticipantAction
         $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
 
         return $filename;
+    }
+
+    public function resolveStartnumberConflict(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $currentuserUid = $request->getAttribute('currentuserUid');
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $participant_uid = $route->getArgument('uid');
+        
+        // Get the target track UID from the request body
+        $requestData = json_decode($request->getBody()->getContents(), true);
+        $to_track_uid = $requestData['to_track_uid'] ?? null;
+        
+        if (!$to_track_uid) {
+            $errorResponse = ['error' => 'to_track_uid is required in request body'];
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+        
+        try {
+            // The system now automatically assigns the start number - no client control
+            $result = $this->participantService->resolveStartnumberConflict($participant_uid, $to_track_uid, $currentuserUid);
+            
+            if ($result) {
+                $response->getBody()->write(json_encode($result), JSON_UNESCAPED_SLASHES);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            } else {
+                $errorResponse = ['error' => 'Failed to resolve start number conflict'];
+                $response->getBody()->write(json_encode($errorResponse));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+            }
+            
+        } catch (\App\common\Exceptions\BrevetException $e) {
+            error_log('BrevetException in resolveStartnumberConflict: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            $errorResponse = ['error' => $e->getMessage()];
+            $status = $e->getCode();
+            if (!is_int($status) || $status < 100 || $status > 599) {
+                $status = 400;
+            }
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
+        } catch (\Exception $e) {
+            error_log('Exception in resolveStartnumberConflict: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            $errorResponse = ['error' => 'An unexpected error occurred: ' . $e->getMessage()];
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
     }
 }

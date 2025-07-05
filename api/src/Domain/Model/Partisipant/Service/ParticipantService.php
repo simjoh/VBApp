@@ -1498,4 +1498,184 @@ class ParticipantService extends ServiceAbstract
             return null;
         }
     }
+
+    /**
+     * Move a participant from one track to another
+     * This includes validation and updating participant checkpoints
+     */
+    public function moveParticipantToTrack(string $participant_uid, string $new_track_uid, string $currentUserUid): ?ParticipantRepresentation
+    {
+        // Get permissions
+        $permissions = $this->getPermissions($currentUserUid);
+        
+        // Get the participant to verify it exists
+        $participant = $this->participantRepository->participantFor($participant_uid);
+        if (!$participant) {
+            throw new BrevetException("Participant not found with UID: " . $participant_uid, 404);
+        }
+        
+        $old_track_uid = $participant->getTrackUid();
+        
+        // Validate that the new track exists
+        $newTrack = $this->trackRepository->getTrackByUid($new_track_uid);
+        if (!$newTrack) {
+            throw new BrevetException("Target track not found with UID: " . $new_track_uid, 404);
+        }
+        
+        // Check if participant has already started (has stamps, DNF, DNS, or finished)
+        if ($participant->isStarted() || $participant->isFinished() || $participant->isDnf() || $participant->isDns()) {
+            throw new BrevetException("Cannot move participant who has already started, finished, DNF, or DNS", 9);
+        }
+        
+        // Check if the participant is already on the target track
+        if ($old_track_uid === $new_track_uid) {
+            throw new BrevetException("Participant is already on the target track", 9);
+        }
+        
+        // Check if there's already a participant with the same start number on the target track
+        $existingParticipant = $this->participantRepository->participantOntRackAndStartNumber($new_track_uid, $participant->getStartnumber());
+        if ($existingParticipant) {
+            throw new BrevetException("A participant with start number " . $participant->getStartnumber() . " already exists on the target track", 9);
+        }
+        
+        // Move the participant to the new track
+        $participant->setTrackUid($new_track_uid);
+        $participant->setStartnumber($this->findNextAvailableStartNumber($new_track_uid));
+        
+        $updatedParticipant = $this->participantRepository->updateParticipant($participant);
+        if (!$updatedParticipant) {
+            throw new BrevetException("Failed to update participant", 5);
+        }
+        
+        // Use the existing moveParticipantToTrack method to handle checkpoint recreation
+        $success = $this->participantRepository->moveParticipantToTrack($participant_uid, $new_track_uid);
+        if (!$success) {
+            throw new BrevetException("Failed to move participant checkpoints", 5);
+        }
+        
+        return $this->participantassembly->toRepresentation($updatedParticipant, $permissions, $currentUserUid);
+    }
+
+    /**
+     * Move all participants from one track to another track
+     * This includes validation and updating participant checkpoints
+     */
+    public function moveAllParticipantsToTrack(string $from_track_uid, string $to_track_uid, string $currentUserUid): array
+    {
+        // Get permissions
+        $permissions = $this->getPermissions($currentUserUid);
+        
+        // Validate that the source track exists
+        $sourceTrack = $this->trackRepository->getTrackByUid($from_track_uid);
+        if (!$sourceTrack) {
+            throw new BrevetException("Source track not found with UID: " . $from_track_uid, 404);
+        }
+        
+        // Validate that the target track exists
+        $targetTrack = $this->trackRepository->getTrackByUid($to_track_uid);
+        if (!$targetTrack) {
+            throw new BrevetException("Target track not found with UID: " . $to_track_uid, 404);
+        }
+        
+        // Check if the tracks are the same
+        if ($from_track_uid === $to_track_uid) {
+            throw new BrevetException("Source and target tracks are the same", 9);
+        }
+        
+        // Move all participants using the repository method
+        $results = $this->participantRepository->moveAllParticipantsToTrack($from_track_uid, $to_track_uid);
+        
+        return $results;
+    }
+
+    /**
+     * Resolve start number conflict by moving a participant to a new track with an automatically assigned start number
+     */
+    public function resolveStartnumberConflict(string $participant_uid, string $to_track_uid, string $currentUserUid): ?ParticipantRepresentation
+    {
+        // Get permissions
+        $permissions = $this->getPermissions($currentUserUid);
+        
+        // Get the participant to verify it exists
+        $participant = $this->participantRepository->participantFor($participant_uid);
+        if (!$participant) {
+            throw new BrevetException("Participant not found with UID: " . $participant_uid, 404);
+        }
+        
+        // Validate that the target track exists
+        $targetTrack = $this->trackRepository->getTrackByUid($to_track_uid);
+        if (!$targetTrack) {
+            throw new BrevetException("Target track not found with UID: " . $to_track_uid, 404);
+        }
+        
+        // Check if participant can be moved (not started, DNF, DNS, or finished)
+        if ($participant->isStarted() || $participant->isFinished() || $participant->isDnf() || $participant->isDns()) {
+            throw new BrevetException("Cannot move participant who has already started, finished, DNF, or DNS", 9);
+        }
+        
+        // Automatically find the next available start number (no client control)
+        $new_startnumber = $this->findNextAvailableStartNumber($to_track_uid);
+        
+        // Move the participant with the automatically assigned start number
+        $participant->setTrackUid($to_track_uid);
+        $participant->setStartnumber($new_startnumber);
+        
+        $updatedParticipant = $this->participantRepository->updateParticipant($participant);
+        if (!$updatedParticipant) {
+            throw new BrevetException("Failed to update participant", 5);
+        }
+        
+        // Use the existing moveParticipantToTrack method to handle checkpoint recreation
+        $success = $this->participantRepository->moveParticipantToTrack($participant_uid, $to_track_uid);
+        if (!$success) {
+            throw new BrevetException("Failed to move participant checkpoints", 5);
+        }
+        
+        return $this->participantassembly->toRepresentation($updatedParticipant, $permissions, $currentUserUid);
+    }
+    
+    /**
+     * Find the next available start number on a track by finding gaps in the sequence
+     * If there are gaps (e.g., 1001, 1003, 1004), it will return 1002
+     * If no gaps, it will return the next number after the highest
+     * Handles cases where start numbers begin at higher values (e.g., 4001, 4002, 4003)
+     */
+    private function findNextAvailableStartNumber(string $track_uid): string
+    {
+        $participants = $this->participantRepository->participantsOnTrack($track_uid);
+        $usedStartNumbers = [];
+        
+        foreach ($participants as $participant) {
+            $usedStartNumbers[] = (int)$participant->getStartnumber();
+        }
+        
+        if (empty($usedStartNumbers)) {
+            return "1001"; // Default start number if no participants exist
+        }
+        
+        // Sort the used start numbers
+        sort($usedStartNumbers);
+        
+        // Find the actual sequence range
+        $minNumber = $usedStartNumbers[0];
+        $maxNumber = $usedStartNumbers[count($usedStartNumbers) - 1];
+        
+        // If the sequence starts at a higher number (e.g., 4001), work within that range
+        // Otherwise, start from 1001 as the minimum
+        $sequenceStart = max(1001, $minNumber);
+        
+        // Find the first gap in the sequence starting from the sequence start
+        $expectedNumber = $sequenceStart;
+        
+        foreach ($usedStartNumbers as $usedNumber) {
+            if ($usedNumber > $expectedNumber) {
+                // Found a gap, return the expected number
+                return (string)$expectedNumber;
+            }
+            $expectedNumber = $usedNumber + 1;
+        }
+        
+        // No gaps found, return the next number after the highest
+        return (string)$expectedNumber;
+    }
 }
