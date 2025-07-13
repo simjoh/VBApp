@@ -849,6 +849,7 @@ class ParticipantService extends ServiceAbstract
             $participant->setMedal($medal ?? false);
             $participant->setClubUid($clubUid);
             $participant->setRegisterDateTime(new DateTime($registration['created_at']));
+            $participant->setAdditionalInformation($registration['additional_information'] ?? null);
 
             // Create the participant record
             $participantcreated = $this->participantRepository->createparticipant($participant);
@@ -1195,7 +1196,8 @@ class ParticipantService extends ServiceAbstract
             'Country',
             'Registration Date',
             'Medal',
-            'Status'
+            'Status',
+            'Additional Information'
         ]);
 
         // Add participant data
@@ -1241,7 +1243,8 @@ class ParticipantService extends ServiceAbstract
                 $competitorInfo ? $competitorInfo->getCountry() : '',
                 $participant->getRegisterDateTime(),
                 $participant->getMedal() ? 'Ja' : 'Nej',
-                $status
+                $status,
+                $participant->getAdditionalInformation() ?? ''
             ]);
         }
 

@@ -408,6 +408,7 @@ class ParticipantRepository extends BaseRepository
             $dns_timestamp = $participanttoCreate->getDnsTimestamp();
             $dnf_timestamp = $participanttoCreate->getDnfTimestamp();
             $finished_timestamp = $participanttoCreate->getFinishedTimestamp();
+            $additional_information = $participanttoCreate->getAdditionalInformation();
             $stmt = $this->connection->prepare($this->sqls('createParticipant'));
             $stmt->bindParam(':participant_uid', $participant_uid);
             $stmt->bindParam(':track_uid', $track_uid);
@@ -425,6 +426,7 @@ class ParticipantRepository extends BaseRepository
             $stmt->bindParam(':dns_timestamp', $dns_timestamp);
             $stmt->bindParam(':dnf_timestamp', $dnf_timestamp);
             $stmt->bindParam(':finished_timestamp', $finished_timestamp);
+            $stmt->bindParam(':additional_information', $additional_information);
             $stmt->execute();
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
@@ -453,6 +455,7 @@ class ParticipantRepository extends BaseRepository
         $dns_timestamp = $participantToUpdate->getDnsTimestamp();
         $dnf_timestamp = $participantToUpdate->getDnfTimestamp();
         $finished_timestamp = $participantToUpdate->getFinishedTimestamp();
+        $additional_information = $participantToUpdate->getAdditionalInformation();
         try {
             $stmt = $this->connection->prepare($this->sqls('updateParticipant'));
             $stmt->bindParam(':participant_uid', $participant_uid);
@@ -471,6 +474,7 @@ class ParticipantRepository extends BaseRepository
             $stmt->bindParam(':dns_timestamp', $dns_timestamp);
             $stmt->bindParam(':dnf_timestamp', $dnf_timestamp);
             $stmt->bindParam(':finished_timestamp', $finished_timestamp);
+            $stmt->bindParam(':additional_information', $additional_information);
 
 
             $status = $stmt->execute();
@@ -1051,10 +1055,10 @@ class ParticipantRepository extends BaseRepository
         $eventqls['participantByTrackAndClub'] = 'select *  from participant e where e.track_uid=:track_uid and club_uid=:club_uid;';
         $eventqls['deleteParticipant'] = 'delete from participant  where participant_uid=:participant_uid;';
         $eventqls['deleteParticipantcheckpointbyparticipantuid'] = 'delete from participant_checkpoint where participant_uid=:participant_uid;';
-        $eventqls['updateParticipant'] = "UPDATE participant SET  track_uid=:track_uid , competitor_uid=:competitor_uid , startnumber=:startnumber, finished=:finished, acpkod=:acpcode, club_uid=:club_uid , dns=:dns, dnf=:dnf , started=:started, register_date_time=:register_date_time , time=:times , brevenr=:brevenr, dns_timestamp=:dns_timestamp, dnf_timestamp=:dnf_timestamp, finished_timestamp=:finished_timestamp WHERE participant_uid=:participant_uid";
+        $eventqls['updateParticipant'] = "UPDATE participant SET  track_uid=:track_uid , competitor_uid=:competitor_uid , startnumber=:startnumber, finished=:finished, acpkod=:acpcode, club_uid=:club_uid , dns=:dns, dnf=:dnf , started=:started, register_date_time=:register_date_time , time=:times , brevenr=:brevenr, dns_timestamp=:dns_timestamp, dnf_timestamp=:dnf_timestamp, finished_timestamp=:finished_timestamp, additional_information=:additional_information WHERE participant_uid=:participant_uid";
         $eventqls['updateBrevenr'] = "UPDATE participant SET  brevenr=:brevenr WHERE participant_uid=:participant_uid";
         $eventqls['updateTime'] = "UPDATE participant SET  time=:newtime WHERE participant_uid=:participant_uid and track_uid=:track_uid";
-        $eventqls['createParticipant'] = 'INSERT INTO participant(participant_uid, track_uid, competitor_uid, startnumber, finished,  acpkod, club_uid , time ,dns, dnf, medal, brevenr,register_date_time, dns_timestamp, dnf_timestamp, finished_timestamp) VALUES (:participant_uid, :track_uid,:competitor_uid,:startnumber,:finished , :acpcode, :club_uid, :time, :dns, :dnf, :medal, :brevenr, :register_date_time, :dns_timestamp, :dnf_timestamp, :finished_timestamp)';
+        $eventqls['createParticipant'] = 'INSERT INTO participant(participant_uid, track_uid, competitor_uid, startnumber, finished,  acpkod, club_uid , time ,dns, dnf, medal, brevenr,register_date_time, dns_timestamp, dnf_timestamp, finished_timestamp, additional_information) VALUES (:participant_uid, :track_uid,:competitor_uid,:startnumber,:finished , :acpcode, :club_uid, :time, :dns, :dnf, :medal, :brevenr, :register_date_time, :dns_timestamp, :dnf_timestamp, :finished_timestamp, :additional_information)';
         $eventqls['participantByTrackAndCompetitorUid'] = 'select *  from participant e where e.track_uid=:track_uid and competitor_uid=:competitor_uid;';
         $eventqls['stampOnCheckpoint'] = 'INSERT INTO participant_checkpoint(participant_uid ,checkpoint_uid, passed, passeded_date_time, lat, lng) VALUES (:participant_uid ,:checkpoint_uid, :passed,:passed_date_time,:lat,:lng)';
         $eventqls['createParticipantCheckpoint'] = 'INSERT INTO participant_checkpoint(participant_uid ,checkpoint_uid, passed, passeded_date_time, lat, lng) VALUES (:participant_uid ,:checkpoint_uid, :passed,:passed_date_time,:lat,:lng)';

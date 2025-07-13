@@ -25,6 +25,7 @@ class Participant
     private ?string $dns_timestamp = null;
     private ?string $dnf_timestamp = null;
     private ?string $finished_timestamp = null;
+    private ?string $additional_information = null;
 
 
 
@@ -301,4 +302,19 @@ class Participant
         $this->finished_timestamp = $finished_timestamp;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getAdditionalInformation(): ?string
+    {
+        return $this->additional_information;
+    }
+
+    /**
+     * @param string|null $additional_information
+     */
+    public function setAdditionalInformation(?string $additional_information): void
+    {
+        $this->additional_information = $additional_information;
+    }
 }
