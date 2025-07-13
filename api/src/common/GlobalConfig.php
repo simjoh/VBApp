@@ -17,8 +17,6 @@ class GlobalConfig
         '747be5e5-c8b3-47dc-87ba-a6db4476702a' => 'b1c3db9e-0790-4d51-bbb4-fba53e1f40ef', // BRM 600 MOSJØEN 	2025-07-05
         'ecc0fccc-ced8-493d-b671-e3379e2f5743' => '15689abe-ebdd-459a-8209-5b04815af486', // BP 100 GRANÖ GRAVEL 2025-05-31
         '539e737d-8606-41b6-93e4-a81b7a0e901f' => '93e95dd1-1339-4402-8f14-edb6ad42f6b5', // BP 100 BÖNHAMN 2025-05-17
-        '47654042-4dc1-42b2-945e-53d7ac035e96' => 'f29e8bcb-f9ad-4a1d-b398-6048554cdfbf', // BRM 600 Två Älvar 2025-07-05 använd samma id på den under för gardering
-        'd3107051-7788-4f2e-b63e-9d0e244d452a' => 'f29e8bcb-f9ad-4a1d-b398-6048554cdfbf', // BRM 600 Två Älvar 2025-07-05 använd samma som ovan
         '3d9e0a18-86bd-4e5b-95ad-9f86b81729c7' => 'e54ffabb-466d-43ab-a662-1519ff9ec9e4', // BRM 300 LYCKSELE 2025-05-24
         'd22534a2-bd9c-4463-ab98-d3dc7c765f32' => '5f7f684f-46b0-49f5-8db5-f3e65bdf13d2', // BRM 400 Åmliden 2025-06-07
         '2a8cb207-c9a9-4edf-874d-0fdeff0c302d' => 'dff10e9e-0e37-4092-877a-f8b9306ad054', // BRM 200 BOTSMARK 2025-05-10
@@ -45,7 +43,8 @@ class GlobalConfig
 '442553ec-d323-4bb3-8126-c7d266c9b852' => '22f43ddd-ae30-4b45-9e76-55f2670f688e', // BP 130 VÄSTERBOTTEN BREVET 2025-06-28
 'ca84c085-15bd-4024-ac9d-cb32ec7cf237' => '2586fc7e-00c7-4dc7-9491-6666e8cf3a7d', // BP 200 VÄSTERBOTTEN BREVET 2025-06-28
 '4cf47163-a5fb-408f-b6a3-a0a788c63406' => '93532f2a-ff08-4af3-ba26-d0babe8511a8', // BP 300 VÄSTERBOTTEN BREVET 2025-06-28
-'a0197755-ea3e-4605-8fa1-1dd5c746f452' => '05851816-58ff-442c-8d29-3588244d13ad' // MSR 2025 
+'a0197755-ea3e-4605-8fa1-1dd5c746f452' => '05851816-58ff-442c-8d29-3588244d13ad', // MSR 2025 
+'47654042-4dc1-42b2-945e-53d7ac035e96' => '149ab80e-9ff3-4cbb-b665-a5cd2c228cbd' // BRM 600K TVÅ ÄLVAR 2025-07-05
     ];
 
     public static function get($key)
