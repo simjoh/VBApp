@@ -1118,7 +1118,7 @@ class ParticipantService extends ServiceAbstract
                 $participant['efternamn'], // Last name
                 $participant['fornamn'], // First name
                 $participant['klubb'], // Rider's club
-                '',
+            
                 $clubforparticipant->getAcpKod() ?? '', // Empty column
                 $participant['brevenr'] == 0 ? '' : $participant['brevenr'], // ACP code number
                 $participant['tid'] ?? '', // Time
