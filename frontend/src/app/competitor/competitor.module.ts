@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 
 import { CompetitorRoutingModule } from './competitor-routing.module';
 import { CompetitorComponent } from './competitor.component';
-import {CoreModule} from "../core/core.module";
 import {MapComponent} from "./map/map.component";
 import {SharedModule} from "../shared/shared.module";
 import { TrackInfoComponent } from './track-info/track-info.component';
@@ -18,7 +17,6 @@ import {ListModule} from "./list/list.module";
   imports: [
     SharedModule,
     CommonModule,
-    CoreModule,
     CompetitorRoutingModule,
   ],
   exports: [MapComponent, TrackInfoComponent]

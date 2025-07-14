@@ -57,11 +57,11 @@ export class MenuComponent implements OnInit{
             label: 'Systemadministration',
             items: [{
               label: 'Användare',
-              routerLink: '/admin/useradmin/user'
+              routerLink: '/admin/useradmin/'
             },
               {
                 label: 'Events',
-                routerLink: '/admin/eventadmin/events'
+                routerLink: '/admin/eventadmin/'
               },
               {
                 label: 'Klubbar',
@@ -73,7 +73,7 @@ export class MenuComponent implements OnInit{
               },
               {
                 label: 'Kontrollplatser',
-                routerLink: '/admin/siteadmin/sites/'
+                routerLink: '/admin/siteadmin/'
               }
             ]
           });

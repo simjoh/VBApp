@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin.component';
-import {CoreModule} from "../core/core.module";
 import { DashboardComponent } from './dashboard/dashboard.component';
 import {SharedModule} from "../shared/shared.module";
 import {CheckboxModule} from "primeng/checkbox";
@@ -23,7 +22,6 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
   ],
   imports: [
     CommonModule,
-    CoreModule,
     SharedModule,
     CheckboxModule,
     EventAdminModule,
