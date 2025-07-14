@@ -191,6 +191,17 @@
                         class="mt-1 block w-full sm:w-1/2 px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600">{{$registration->additional_information}}</textarea>
                 </div>
 
+                <div>
+                    <label for="use_physical_brevet_card" class="block text-gray-900 font-semibold text-sm sm:text-base">Brevet-kort</label>
+                    <div class="mt-4 space-y-4">
+                        <div class="flex items-center gap-x-3">
+                            <input id="use_physical_brevet_card" name="use_physical_brevet_card" value="1" type="checkbox"
+                                   class="h-4 w-4 border-black text-black focus:ring-indigo-600" {{ $registration->use_physical_brevet_card ? 'checked' : '' }}>
+                            <label for="use_physical_brevet_card" class="text-sm sm:text-base text-gray-600">Jag vill använda fysiskt brevet-kort istället för digitalt</label>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="border-t-4 border-[#dddddd] my-6"></div>
 
                 <div>

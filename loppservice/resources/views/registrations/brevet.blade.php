@@ -227,6 +227,19 @@
 			</fieldset>
 			@endif
 
+			@if ($availabledetails['event_type'] === 'BRM' || $availabledetails['event_type'] === 'BP')
+			<fieldset>
+				<p class="block text-gray-900 font-semibold text-sm sm:text-base">Brevet-kort</p>
+				<div class="mt-4 space-y-4">
+					<div class="flex items-center gap-x-3">
+						<input id="use_physical_brevet_card" name="use_physical_brevet_card" value="1" type="checkbox"
+							   class="h-4 w-4 border-black text-black focus:ring-indigo-600">
+						<label for="use_physical_brevet_card" class="text-sm sm:text-base text-gray-600">Jag vill använda fysiskt brevet-kort istället för digitalt</label>
+					</div>
+				</div>
+			</fieldset>
+			@endif
+
 
 			<div class="flex items-start">
 				<div class="flex items-center h-5">

@@ -6,160 +6,159 @@
         <img alt="msr logotyp" width="75%" height="800" src="{{ asset('logo2025.svg') }}"/>
     </div>
 </header>
-<body class="antialiased bg-stone-100">
-<!-- Main Content -->
-<div class="container mx-auto p-0 font-sans">
-    <div class="bg-orange-50 p-6 rounded-md shadow-md">
-        @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
+<body class="antialiased bg-[#aaaaaa]">
+    <div class="container mx-auto p-0 font-sans">
+        <div class="bg-orange-50 p-6 rounded-md shadow-md">
+            @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
 
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    <strong class="font-bold">Something went wrong</strong>
-                    @foreach ($errors->all() as $error)
-                    <span class="block sm:inline"><li>{{ $error }}</li></span>
-                    @endforeach
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <strong class="font-bold">Something went wrong</strong>
+                        @foreach ($errors->all() as $error)
+                        <span class="block sm:inline"><li>{{ $error }}</li></span>
+                        @endforeach
 
-                    <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                        <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
     <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg"
          viewBox="0 0 20 20"><title>Close</title><path
             d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
   </span>
-                </div>
-            </ul>
-        </div>
-        @endif
-        <h2 class="text-2xl font-semibold mb-4">Update your details</h2>
-
-        <form method="post" class="grid sm:grid-cols-1 gap-4" action="{{ url('registration.update') }}">
-            @method('PUT')
-            @csrf
-            <hr class="h-1 my-4 bg-gray-900 border-0 dark:bg-gray-700">
-            <input type="text" value="{{ $registration->registration_uid }}" hidden="hidden" id="registration_uid"
-                   name="registration_uid">
-            <div class="border-gray-900/10 pb-3">
-                <div class="grid md:grid-cols-2 gap-3 mt-3 sm:grid-cols-1">
-                    <div>
-                        <label for="first-name" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Firstname</label>
-                        <input type="text" value="{{ $registration->firstname }}" id="first-name" name="first_name"
-                               class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600"
-                               autocomplete="given-name" required>
                     </div>
-                    <div>
-                        <label for="last-name" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Last name</label>
-                        <input type="text" value="{{ $registration->surname }}" id="last-name" name="last_name"
-                               class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600"
-                               autocomplete="family-name" required>
+                </ul>
+            </div>
+            @endif
+            <h2 class="text-2xl font-semibold mb-4">Update your details</h2>
+
+            <form method="post" class="grid sm:grid-cols-1 gap-4" action="{{ url('registration.update') }}">
+                @method('PUT')
+                @csrf
+                <hr class="h-1 my-4 bg-gray-900 border-0 dark:bg-gray-700">
+                <input type="text" value="{{ $registration->registration_uid }}" hidden="hidden" id="registration_uid"
+                       name="registration_uid">
+                <div class="border-gray-900/10 pb-3">
+                    <div class="grid md:grid-cols-2 gap-3 mt-3 sm:grid-cols-1">
+                        <div>
+                            <label for="first-name" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Firstname</label>
+                            <input type="text" value="{{ $registration->firstname }}" id="first-name" name="first_name"
+                                   class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600"
+                                   autocomplete="given-name" required>
+                        </div>
+                        <div>
+                            <label for="last-name" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Last name</label>
+                            <input type="text" value="{{ $registration->surname }}" id="last-name" name="last_name"
+                                   class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600"
+                                   autocomplete="family-name" required>
+                        </div>
                     </div>
-                </div>
 
-                <div class="mt-2 w-1/2">
-                    <label for="email" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Email</label>
-                    <input id="email" name="email" disabled type="email" autocomplete="email" value="{{$registration->email}}"
-                           class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
-                </div>
-
-                <div class="mt-2">
-                    <label for="street-address" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Street adress</label>
-                    <input type="text" name="street-address" id="street-address" autocomplete="street-address"
-                           value="{{ $registration->adress}}"
-                           class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
-                </div>
-
-                <div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">
-                    <div class="mt-2">
-                        <label for="postal-code" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Zip/postal code</label>
-                        <input type="text" name="postal-code" id="postal-code" autocomplete="postal-code"
-                               value="{{ $registration->postal_code}}"
+                    <div class="mt-2 w-1/2">
+                        <label for="email" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Email</label>
+                        <input id="email" name="email" disabled type="email" autocomplete="email" value="{{$registration->email}}"
                                class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
                     </div>
-                    <div class="mt-2 mb-4">
-                        <label for="city" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">City</label>
-                        <input type="text" name="city" id="city" autocomplete="address-level2" value="{{ $registration->city}}"
+
+                    <div class="mt-2">
+                        <label for="street-address" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Street adress</label>
+                        <input type="text" name="street-address" id="street-address" autocomplete="street-address"
+                               value="{{ $registration->adress}}"
                                class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
                     </div>
-                </div>
 
-                <div class="mt-2 mb-4 md:w-1/2 sm:w-full">
-                    <label for="country" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Country</label>
-                    <select name="country" id="country" autocomplete="country-name"
-                            class="w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
-                        <option>Select country</option>
-                        @foreach ($countries as $country)
-                            <option value="{{ $country->country_id }}" {{ $registration->country_id == $country->country_id ? 'selected' : '' }}>
-                                {{ $country->country_name_en }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">
-                    <div class="mt-2">
-                        <label for="tel" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Tel</label>
-                        <input type="text" name="tel" id="tel" autocomplete="tel" value="{{$registration->tel}}"
-                               class="md:w-full  sm:w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+                    <div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">
+                        <div class="mt-2">
+                            <label for="postal-code" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Zip/postal code</label>
+                            <input type="text" name="postal-code" id="postal-code" autocomplete="postal-code"
+                                   value="{{ $registration->postal_code}}"
+                                   class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+                        </div>
+                        <div class="mt-2 mb-4">
+                            <label for="city" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">City</label>
+                            <input type="text" name="city" id="city" autocomplete="address-level2" value="{{ $registration->city}}"
+                                   class="w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+                        </div>
                     </div>
-                    <div class="mt-2 mb-4">
-                        <label for="club" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Club</label>
-                        <select name="club_uid" id="club" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
-                            @foreach ($clubs as $club)
-                                <option value="{{ $club->club_uid }}" {{ $registration->club_uid == $club->club_uid ? 'selected' : '' }}>
-                                    {{ $club->name }}
+
+                    <div class="mt-2 mb-4 md:w-1/2 sm:w-full">
+                        <label for="country" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Country</label>
+                        <select name="country" id="country" autocomplete="country-name"
+                                class="w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-gray-600" required>
+                            <option>Select country</option>
+                            @foreach ($countries as $country)
+                                <option value="{{ $country->country_id }}" {{ $registration->country_id == $country->country_id ? 'selected' : '' }}>
+                                    {{ $country->country_name_en }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
 
-                </div>
-                <p class="text-sm font-medium leading-6 text-gray-900">Birthdate</p>
-                <div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">
-                    <div class="grid md:grid-cols-3 sm:grid-cols-1 gap-3">
+                    <div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">
                         <div class="mt-2">
-                            <label for="year" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">YYYY</label>
-                            <select name="year" id="year"
-                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
-                                <option>Year</option>
-                                @foreach ($years as $year)
-                                @if ($year == $birthyear)
-                                <option value="{{ $year }}" selected>{{ $year }}</option>
-                                @else
-                                <option value="{{ $year }}">{{ $year }}</option>
-                                @endif
+                            <label for="tel" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Tel</label>
+                            <input type="text" name="tel" id="tel" autocomplete="tel" value="{{$registration->tel}}"
+                                   class="md:w-full  sm:w-full px-3 py-2 border-2 focus:outline-none focus:border-gray-600" required>
+                        </div>
+                        <div class="mt-2 mb-4">
+                            <label for="club" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">Club</label>
+                            <select name="club_uid" id="club" class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                                @foreach ($clubs as $club)
+                                    <option value="{{ $club->club_uid }}" {{ $registration->club_uid == $club->club_uid ? 'selected' : '' }}>
+                                        {{ $club->name }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
 
+                    </div>
+                    <p class="text-sm font-medium leading-6 text-gray-900">Birthdate</p>
+                    <div class="grid md:grid-cols-2 sm:grid-cols-1 gap-3">
+                        <div class="grid md:grid-cols-3 sm:grid-cols-1 gap-3">
+                            <div class="mt-2">
+                                <label for="year" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">YYYY</label>
+                                <select name="year" id="year"
+                                        class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                                    <option>Year</option>
+                                    @foreach ($years as $year)
+                                    @if ($year == $birthyear)
+                                    <option value="{{ $year }}" selected>{{ $year }}</option>
+                                    @else
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                    @endif
+                                    @endforeach
+                                </select>
+                            </div>
 
 
-                        <div class="mt-2">
-                            <label for="month" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">MM</label>
-                            <select name="month" id="month"
-                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
-                                @foreach ($months as $key => $months)
-                                @if ($key == $month)
-                                <option value="{{ $key }}" selected>{{ $months }}</option>
-                                @else
-                                <option value="{{ $key }}">{{ $months }}</option>
-                                @endif
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="mt-2">
-                            <label for="day" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">DD</label>
-                            <select name="day" id="day"
-                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
-                                <option value="">Day</option>
-                                @foreach ($days as $key => $daysa)
-                                @if ($daysa == $day)
-                                <option value="{{ $key }}" selected>{{ $daysa }}</option>
-                                @else
-                                <option value="{{ $key }}">{{ $daysa }}</option>
-                                @endif
-                                @endforeach
-                            </select>
+
+                            <div class="mt-2">
+                                <label for="month" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">MM</label>
+                                <select name="month" id="month"
+                                        class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                                    @foreach ($months as $key => $months)
+                                    @if ($key == $month)
+                                    <option value="{{ $key }}" selected>{{ $months }}</option>
+                                    @else
+                                    <option value="{{ $key }}">{{ $months }}</option>
+                                    @endif
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mt-2">
+                                <label for="day" class="block text-gray-900 font-medium sm:text-sm sm:leading-6">DD</label>
+                                <select name="day" id="day"
+                                        class="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-600" required>
+                                    <option value="">Day</option>
+                                    @foreach ($days as $key => $daysa)
+                                    @if ($daysa == $day)
+                                    <option value="{{ $key }}" selected>{{ $daysa }}</option>
+                                    @else
+                                    <option value="{{ $key }}">{{ $daysa }}</option>
+                                    @endif
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
 
 
 				<div class="mt-5 mb-5 md:w-1/2 sm:w-full">

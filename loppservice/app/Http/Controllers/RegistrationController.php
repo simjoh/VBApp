@@ -22,6 +22,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
 
@@ -109,6 +110,7 @@ class RegistrationController extends Controller
             'isRegistrationOpen' => $isRegistrationOpen,
             'event_uid' => $event->event_uid,
             'event_name' => $event->title,
+            'event_type' => $event->event_type,
             'startdate' => Carbon::parse($event->startdate)->format('Y-m-d'),
         ];
         return view('registrations.show')->with([
@@ -190,14 +192,10 @@ class RegistrationController extends Controller
 
         $registration->additional_information = $request['extra-info'];
 
-        // Update club_uid directly from the dropdown selection
-        if ($request->has('club_uid')) {
-        }
-
-        // Get the event associated with this registration
+        // Update use_physical_brevet_card field for BRM and BP events
         $event = Event::where('event_uid', $registration->course_uid)->first();
-
         if ($event && ($event->event_type === 'BRM' || $event->event_type === 'BP')) {
+            $registration->use_physical_brevet_card = $request->has('use_physical_brevet_card') && $request->input('use_physical_brevet_card') == '1';
             // This is a BRM event
             $registration->club_uid = $request['club_uid'];
         }
@@ -519,6 +517,13 @@ class RegistrationController extends Controller
         $registration->course_uid = $event->event_uid;
         $registration->person_uid = $person->person_uid;
         $registration->additional_information = $request['extra-info'];
+
+        // Set use_physical_brevet_card field for BRM and BP events
+        if ($event->event_type === 'BRM' || $event->event_type === 'BP') {
+            $registration->use_physical_brevet_card = $request->has('use_physical_brevet_card') && $request->input('use_physical_brevet_card') == '1';
+        } else {
+            $registration->use_physical_brevet_card = false;
+        }
 
         // Set reservation status based on product category (7 = reservation, 6 = registration)
         if ($reg_product->categoryID === self::PRODUCT_RESERVATION) {

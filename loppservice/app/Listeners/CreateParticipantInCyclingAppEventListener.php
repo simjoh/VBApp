@@ -71,6 +71,7 @@ class CreateParticipantInCyclingAppEventListener
             'registration_uid' => $registration->registration_uid,
             'course_uid' => $registration->course_uid,
             'additional_information' => $registration->additional_information,
+            'use_physical_brevet_card' => $registration->use_physical_brevet_card,
             'reservation' => $registration->reservation,
             'reservation_valid_until' => $registration->reservation_valid_until,
             'startnumber' => $registration->startnumber,

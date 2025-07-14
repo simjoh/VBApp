@@ -850,6 +850,7 @@ class ParticipantService extends ServiceAbstract
             $participant->setClubUid($clubUid);
             $participant->setRegisterDateTime(new DateTime($registration['created_at']));
             $participant->setAdditionalInformation($registration['additional_information'] ?? null);
+            $participant->setUsePhysicalBrevetCard($registration['use_physical_brevet_card'] ?? false);
 
             // Create the participant record
             $participantcreated = $this->participantRepository->createparticipant($participant);
@@ -1197,7 +1198,8 @@ class ParticipantService extends ServiceAbstract
             'Registration Date',
             'Medal',
             'Status',
-            'Additional Information'
+            'Additional Information',
+            'Use Physical Brevet Card'
         ]);
 
         // Add participant data
@@ -1244,7 +1246,8 @@ class ParticipantService extends ServiceAbstract
                 $participant->getRegisterDateTime(),
                 $participant->getMedal() ? 'Ja' : 'Nej',
                 $status,
-                $participant->getAdditionalInformation() ?? ''
+                $participant->getAdditionalInformation() ?? '',
+                $participant->getUsePhysicalBrevetCard() ? 'Ja' : 'Nej'
             ]);
         }
 

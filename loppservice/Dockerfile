@@ -2,7 +2,7 @@ FROM composer:2.4 as build
 COPY loppservice/ /app/
 RUN composer install --prefer-dist --no-dev --optimize-autoloader --no-interaction
 
-FROM php:8.2-apache-buster as dev
+FROM php:8.2-apache-bullseye as dev
 
 ENV APP_ENV=dev
 ENV APP_DEBUG=true
@@ -50,7 +50,7 @@ RUN ln -snf /usr/share/zoneinfo/Europe/Stockholm /etc/localtime && echo "Europe/
 
 RUN echo "date.timezone=Europe/Stockholm" > /usr/local/etc/php/conf.d/timezone.ini
 
-FROM php:8.2-apache-buster as production
+FROM php:8.2-apache-bullseye as production
 
 ENV APP_ENV=production
 ENV APP_DEBUG=false

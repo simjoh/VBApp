@@ -26,6 +26,7 @@ class Participant
     private ?string $dnf_timestamp = null;
     private ?string $finished_timestamp = null;
     private ?string $additional_information = null;
+    private ?bool $use_physical_brevet_card = false;
 
 
 
@@ -316,5 +317,21 @@ class Participant
     public function setAdditionalInformation(?string $additional_information): void
     {
         $this->additional_information = $additional_information;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getUsePhysicalBrevetCard(): ?bool
+    {
+        return $this->use_physical_brevet_card;
+    }
+
+    /**
+     * @param bool|null $use_physical_brevet_card
+     */
+    public function setUsePhysicalBrevetCard(?bool $use_physical_brevet_card): void
+    {
+        $this->use_physical_brevet_card = $use_physical_brevet_card;
     }
 }

@@ -15,10 +15,11 @@ class Registration extends Model
 
     protected $table = 'registrations';
     protected $primaryKey = 'registration_uid';
-    protected $fillable = ['course_uid','additional_information'];
+    protected $fillable = ['course_uid','additional_information','use_physical_brevet_card'];
 
     protected $casts = [
         'reservation_valid_until' => 'date',
+        'use_physical_brevet_card' => 'boolean',
     ];
 
     public function person(): BelongsTo

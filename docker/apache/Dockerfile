@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:8.2-apache-bullseye as dev
 
 # Install system dependencies in a single RUN command to reduce image layers
 RUN apt-get update && apt-get install -y --no-install-recommends \
