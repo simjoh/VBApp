@@ -50,8 +50,8 @@ $settings['mail'] = [
     'mail_username' => $_ENV['MAIL_USERNAME'] ?? '',
     'mail_password' => $_ENV['MAIL_PASSWORD'] ?? '',
     'mail_encryption' => $_ENV['MAIL_ENCRYPTION'] ?? 'tls',
-    'mail_from_address' => $_ENV['MAIL_FROM_ADDRESS'] ?? 'noreply@vasterbottenbrevet.se',
-    'mail_from_name' => $_ENV['MAIL_FROM_NAME'] ?? 'Västerbottenbrevet'
+    'mail_from_address' => $_ENV['MAIL_FROM_ADDRESS'] ?? 'noreply@ebrevet.org',
+    'mail_from_name' => $_ENV['MAIL_FROM_NAME'] ?? 'eBrevet'
 ];
 
 // Application settings

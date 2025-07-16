@@ -60,7 +60,7 @@ export class MenuComponent implements OnInit{
               routerLink: '/admin/useradmin/'
             },
               {
-                label: 'Events',
+                label: 'Arrangemangsgrupper',
                 routerLink: '/admin/eventadmin/'
               },
               {
