@@ -124,6 +124,7 @@ return function (App $app) {
 
         // användare i systemet
         $app->get('/users', \App\Action\User\UserAction::class . ':allUsers')->setName("allUsers");
+        $app->get('/user/available-roles', \App\Action\User\UserAction::class . ':getAvailableRoles')->setName('availableRoles');
         $app->get('/user/{id}', \App\Action\User\UserAction::class . ':getUserById')->setName("user");
         $app->put('/user/{id}', \App\Action\User\UserAction::class . ':updateUser')->setName("updateUser");;
         $app->post('/user/', \App\Action\User\UserAction::class . ':createUser')->setName('createUser');

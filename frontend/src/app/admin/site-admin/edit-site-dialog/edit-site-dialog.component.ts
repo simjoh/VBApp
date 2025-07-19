@@ -15,6 +15,7 @@ export class EditSiteDialogComponent implements OnInit {
 
   siteform: SiteRepresentation;
   uploadedFiles: any[] = [];
+  isSuperUser = false;
 
   constructor(
     private ref: DynamicDialogRef,
@@ -24,6 +25,8 @@ export class EditSiteDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.checkUserRoles();
+
     // Initialize form data
     this.siteform = this.config.data;
 
@@ -40,6 +43,11 @@ export class EditSiteDialogComponent implements OnInit {
     if (this.siteform) {
       this.normalizeCoordinates();
     }
+  }
+
+  private checkUserRoles(): void {
+    const currentUser = JSON.parse(localStorage.getItem('activeUser') || '{}');
+    this.isSuperUser = currentUser.roles?.includes('SUPERUSER');
   }
 
   private normalizeCoordinates(): void {

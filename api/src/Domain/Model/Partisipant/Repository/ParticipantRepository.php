@@ -1204,93 +1204,330 @@ class ParticipantRepository extends BaseRepository
     public function moveAllParticipantsToTrack(string $from_track_uid, string $to_track_uid): array
     {
         try {
-            // Begin transaction
-            $this->connection->beginTransaction();
-            
-            // Get all participants on the source track
+            // Get all participants from source track
             $participants = $this->participantsOnTrack($from_track_uid);
-            if (empty($participants)) {
-                throw new BrevetException("No participants found on source track: " . $from_track_uid, 404);
-            }
-            
-            $results = [
-                'success' => [],
-                'failed' => [],
-                'skipped' => []
-            ];
-            
-            // Validate that the target track exists
-            $targetTrackCheckpoints = $this->getTrackCheckpoints($to_track_uid);
-            if (empty($targetTrackCheckpoints)) {
-                throw new BrevetException("Target track not found or has no checkpoints: " . $to_track_uid, 404);
-            }
+            $movedParticipants = [];
             
             foreach ($participants as $participant) {
-                try {
-                    // Check if participant can be moved (not started, DNF, DNS, or finished)
-                    if ($participant->isStarted() || $participant->isFinished() || $participant->isDnf() || $participant->isDns()) {
-                        $results['skipped'][] = [
-                            'participant_uid' => $participant->getParticipantUid(),
-                            'reason' => 'Participant has already started, finished, DNF, or DNS'
-                        ];
-                        continue;
-                    }
-                    
-                    // Check if there's already a participant with the same start number on the target track
-                    $existingParticipant = $this->participantOntRackAndStartNumber($to_track_uid, $participant->getStartnumber());
-                    if ($existingParticipant) {
-                        $results['failed'][] = [
-                            'participant_uid' => $participant->getParticipantUid(),
-                            'reason' => 'A participant with start number ' . $participant->getStartnumber() . ' already exists on the target track'
-                        ];
-                        continue;
-                    }
-                    
-                    // Delete existing participant checkpoints for this participant
-                    $this->deleteParticipantCheckpointOnTrackByParticipantUid($participant->getParticipantUid());
-                    
-                    // Update the participant's track_uid using the existing updateParticipant method
-                    $participant->setTrackUid($to_track_uid);
-                    $updatedParticipant = $this->updateParticipant($participant);
-                    
-                    if (!$updatedParticipant) {
-                        $results['failed'][] = [
-                            'participant_uid' => $participant->getParticipantUid(),
-                            'reason' => 'Failed to update participant track'
-                        ];
-                        continue;
-                    }
-                    
-                    // Create new participant checkpoints for the new track
-                    $this->createTrackCheckpointsFor($updatedParticipant, $targetTrackCheckpoints);
-                    
-                    $results['success'][] = [
-                        'participant_uid' => $participant->getParticipantUid(),
-                        'startnumber' => $participant->getStartnumber()
-                    ];
-                    
-                } catch (\Exception $e) {
-                    $results['failed'][] = [
-                        'participant_uid' => $participant->getParticipantUid(),
-                        'reason' => 'Error: ' . $e->getMessage()
-                    ];
+                // Check if participant has already started
+                if ($participant->isStarted() || $participant->isFinished() || $participant->isDnf() || $participant->isDns()) {
+                    continue; // Skip participants who have already started
+                }
+                
+                // Check for start number conflicts
+                $existingParticipant = $this->participantOntRackAndStartNumber($to_track_uid, $participant->getStartnumber());
+                if ($existingParticipant) {
+                    // Generate new start number
+                    $newStartNumber = $this->findNextAvailableStartNumber($to_track_uid);
+                    $participant->setStartnumber($newStartNumber);
+                }
+                
+                // Move participant to new track
+                $participant->setTrackUid($to_track_uid);
+                $updatedParticipant = $this->updateParticipant($participant);
+                
+                if ($updatedParticipant) {
+                    // Recreate checkpoints for the new track
+                    $this->moveParticipantToTrack($participant->getParticipantUid(), $to_track_uid);
+                    $movedParticipants[] = $updatedParticipant;
                 }
             }
             
-            // Commit transaction
-            $this->connection->commit();
-            
-            return $results;
+            return $movedParticipants;
             
         } catch (PDOException $e) {
-            // Rollback transaction on error
-            $this->connection->rollBack();
-            throw new BrevetException("Database error while moving participants: " . $e->getMessage(), 5, $e);
-        } catch (BrevetException $e) {
-            // Rollback transaction on BrevetException
-            $this->connection->rollBack();
-            throw $e;
+            throw new BrevetException("Error moving participants: " . $e->getMessage(), 1, $e);
         }
     }
 
+    /**
+     * Get daily participant statistics
+     */
+    public function getDailyStats(string $date, ?int $organizerId = null): array
+    {
+        try {
+            $sql = "SELECT 
+                    COUNT(DISTINCT CASE WHEN DATE(p.register_date_time) = DATE(:date) THEN p.participant_uid END) as countparticipants,
+                    COALESCE(SUM(CASE WHEN DATE(p.register_date_time) = DATE(:date) AND p.started = 1 THEN 1 ELSE 0 END), 0) as started,
+                    COALESCE(SUM(CASE WHEN DATE(p.finished_timestamp) = DATE(:date) THEN 1 ELSE 0 END), 0) as completed,
+                    COALESCE(SUM(CASE WHEN DATE(p.dnf_timestamp) = DATE(:date) THEN 1 ELSE 0 END), 0) as dnf,
+                    COALESCE(SUM(CASE WHEN DATE(p.dns_timestamp) = DATE(:date) THEN 1 ELSE 0 END), 0) as dns
+                FROM participant p
+                JOIN track t ON t.track_uid = p.track_uid";
+
+            // Add organizer filter if provided
+            if ($organizerId !== null) {
+                $sql .= " WHERE t.organizer_id = :organizer_id";
+            }
+
+            $stmt = $this->connection->prepare($sql);
+            $stmt->bindParam(':date', $date);
+            
+            // Bind organizer_id parameter if filtering is needed
+            if ($organizerId !== null) {
+                $stmt->bindParam(':organizer_id', $organizerId, PDO::PARAM_INT);
+            }
+            
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result;
+            
+        } catch (PDOException $e) {
+            throw new BrevetException("Error getting daily stats: " . $e->getMessage(), 1, $e);
+        }
+    }
+
+    /**
+     * Get weekly participant statistics
+     */
+    public function getWeeklyStats(string $date, ?int $organizerId = null): array
+    {
+        try {
+            $sql = "SELECT 
+                    COUNT(DISTINCT CASE WHEN p.register_date_time >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.register_date_time < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN p.participant_uid END) as countparticipants,
+                    COALESCE(SUM(CASE WHEN p.register_date_time >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.register_date_time < DATE_ADD(DATE(:date), INTERVAL 1 DAY) AND p.started = 1 THEN 1 ELSE 0 END), 0) as started,
+                    COALESCE(SUM(CASE WHEN p.finished_timestamp >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.finished_timestamp < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN 1 ELSE 0 END), 0) as completed,
+                    COALESCE(SUM(CASE WHEN p.dnf_timestamp >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.dnf_timestamp < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN 1 ELSE 0 END), 0) as dnf,
+                    COALESCE(SUM(CASE WHEN p.dns_timestamp >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.dns_timestamp < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN 1 ELSE 0 END), 0) as dns
+                FROM participant p
+                JOIN track t ON t.track_uid = p.track_uid";
+
+            // Add organizer filter if provided
+            if ($organizerId !== null) {
+                $sql .= " WHERE t.organizer_id = :organizer_id";
+            }
+            
+            $statement = $this->connection->prepare($sql);
+            $statement->bindParam(':date', $date);
+            
+            // Bind organizer_id parameter if filtering is needed
+            if ($organizerId !== null) {
+                $statement->bindParam(':organizer_id', $organizerId, PDO::PARAM_INT);
+            }
+            
+            $statement->execute();
+            
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
+            
+            return $result ?: [
+                'countparticipants' => 0,
+                'started' => 0,
+                'completed' => 0,
+                'dnf' => 0,
+                'dns' => 0
+            ];
+            
+        } catch (PDOException $e) {
+            throw new BrevetException("Error getting weekly stats: " . $e->getMessage(), 1, $e);
+        }
+    }
+
+    /**
+     * Get yearly participant statistics
+     */
+    public function getYearlyStats(string $date, ?int $organizerId = null): array
+    {
+        try {
+            $sql = "SELECT 
+                    COUNT(DISTINCT CASE WHEN YEAR(p.register_date_time) = YEAR(:date) THEN p.participant_uid END) as countparticipants,
+                    COALESCE(SUM(CASE WHEN YEAR(p.register_date_time) = YEAR(:date) AND p.started = 1 THEN 1 ELSE 0 END), 0) as started,
+                    COALESCE(SUM(CASE WHEN YEAR(p.finished_timestamp) = YEAR(:date) THEN 1 ELSE 0 END), 0) as completed,
+                    COALESCE(SUM(CASE WHEN YEAR(p.dnf_timestamp) = YEAR(:date) THEN 1 ELSE 0 END), 0) as dnf,
+                    COALESCE(SUM(CASE WHEN YEAR(p.dns_timestamp) = YEAR(:date) THEN 1 ELSE 0 END), 0) as dns
+                FROM participant p
+                JOIN track t ON t.track_uid = p.track_uid";
+
+            // Add organizer filter if provided
+            if ($organizerId !== null) {
+                $sql .= " WHERE t.organizer_id = :organizer_id";
+            }
+            
+            $statement = $this->connection->prepare($sql);
+            $statement->bindParam(':date', $date);
+            
+            // Bind organizer_id parameter if filtering is needed
+            if ($organizerId !== null) {
+                $statement->bindParam(':organizer_id', $organizerId, PDO::PARAM_INT);
+            }
+            
+            $statement->execute();
+            
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
+            
+            return $result ?: [
+                'countparticipants' => 0,
+                'started' => 0,
+                'completed' => 0,
+                'dnf' => 0,
+                'dns' => 0
+            ];
+            
+        } catch (PDOException $e) {
+            throw new BrevetException("Error getting yearly stats: " . $e->getMessage(), 1, $e);
+        }
+    }
+
+    /**
+     * Get latest registration
+     */
+    public function getLatestRegistration(?int $organizerId = null): ?array
+    {
+        try {
+            $sql = "SELECT 
+                    p.*,
+                    c.given_name,
+                    c.family_name,
+                    cl.title as club_name,
+                    t.title as track_name
+                FROM participant p
+                JOIN track t ON t.track_uid = p.track_uid
+                LEFT JOIN competitors c ON c.competitor_uid = p.competitor_uid
+                LEFT JOIN club cl ON cl.club_uid = p.club_uid";
+
+            // Add organizer filter if provided
+            if ($organizerId !== null) {
+                $sql .= " WHERE t.organizer_id = :organizer_id";
+            }
+
+            $sql .= " ORDER BY p.register_date_time DESC LIMIT 1";
+
+            $statement = $this->connection->prepare($sql);
+            
+            // Bind organizer_id parameter if filtering is needed
+            if ($organizerId !== null) {
+                $statement->bindParam(':organizer_id', $organizerId, PDO::PARAM_INT);
+            }
+            
+            $statement->execute();
+            
+            $result = $statement->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$result) {
+                return null;
+            }
+
+            return [
+                'participant_uid' => $result['participant_uid'],
+                'name' => $result['given_name'] . ' ' . $result['family_name'],
+                'club' => $result['club_name'] ?? 'No Club',
+                'track' => $result['track_name'],
+                'registration_time' => $result['register_date_time']
+            ];
+            
+        } catch (PDOException $e) {
+            throw new BrevetException("Error getting latest registration: " . $e->getMessage(), 1, $e);
+        }
+    }
+
+    /**
+     * Get top tracks statistics
+     */
+    public function getTopTracks(?int $organizerId = null): array
+    {
+        try {
+            $sql = "WITH recent_registrations AS (
+                SELECT 
+                    t.track_uid,
+                    t.title as track_name,
+                    COUNT(DISTINCT p.participant_uid) as total_participants,
+                    COUNT(DISTINCT CASE WHEN p.register_date_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN p.participant_uid END) as recent_registrations,
+                    MIN(CASE WHEN p.register_date_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN p.register_date_time END) as recent_first_registration,
+                    MAX(CASE WHEN p.register_date_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN p.register_date_time END) as recent_last_registration,
+                    o.organization_name as organizer_name,
+                    t.active,
+                    t.organizer_id
+                FROM track t
+                LEFT JOIN participant p ON t.track_uid = p.track_uid
+                LEFT JOIN organizers o ON t.organizer_id = o.id";
+
+            // Add organizer filter if provided
+            if ($organizerId !== null) {
+                $sql .= " WHERE t.organizer_id = :organizer_id";
+            }
+
+            $sql .= " GROUP BY t.track_uid, t.title, o.organization_name, t.active, t.organizer_id
+            )
+            SELECT 
+                track_name,
+                total_participants as participant_count,
+                recent_registrations as registrations_last_30_days,
+                recent_first_registration as first_registration,
+                recent_last_registration as last_registration,
+                organizer_name,
+                active,
+                organizer_id
+            FROM recent_registrations 
+            WHERE recent_registrations > 0";
+
+            // Add additional organizer filter in the main query if provided
+            if ($organizerId !== null) {
+                $sql .= " AND organizer_id = :organizer_id2";
+            }
+
+            $sql .= " ORDER BY total_participants DESC LIMIT 5";
+            
+            $statement = $this->connection->prepare($sql);
+            
+            // Bind organizer_id parameter if filtering is needed
+            if ($organizerId !== null) {
+                $statement->bindParam(':organizer_id', $organizerId, PDO::PARAM_INT);
+                $statement->bindParam(':organizer_id2', $organizerId, PDO::PARAM_INT);
+            }
+            
+            $statement->execute();
+            
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            
+            return $result;
+            
+        } catch (PDOException $e) {
+            throw new BrevetException("Error getting top tracks: " . $e->getMessage(), 1, $e);
+        }
+    }
+
+    /**
+     * Find the next available start number on a track by finding gaps in the sequence
+     * If there are gaps (e.g., 1001, 1003, 1004), it will return 1002
+     * If no gaps, it will return the next number after the highest
+     * Handles cases where start numbers begin at higher values (e.g., 4001, 4002, 4003)
+     */
+    public function findNextAvailableStartNumber(string $track_uid): string
+    {
+        $participants = $this->participantsOnTrack($track_uid);
+        $usedStartNumbers = [];
+        
+        foreach ($participants as $participant) {
+            $usedStartNumbers[] = (int)$participant->getStartnumber();
+        }
+        
+        if (empty($usedStartNumbers)) {
+            return "1001"; // Default start number if no participants exist
+        }
+        
+        // Sort the used start numbers
+        sort($usedStartNumbers);
+        
+        // Find the actual sequence range
+        $minNumber = $usedStartNumbers[0];
+        $maxNumber = $usedStartNumbers[count($usedStartNumbers) - 1];
+        
+        // If the sequence starts at a higher number (e.g., 4001), work within that range
+        // Otherwise, start from 1001 as the minimum
+        $sequenceStart = max(1001, $minNumber);
+        
+        // Find the first gap in the sequence starting from the sequence start
+        $expectedNumber = $sequenceStart;
+        
+        foreach ($usedStartNumbers as $usedNumber) {
+            if ($usedNumber > $expectedNumber) {
+                // Found a gap, return the expected number
+                return (string)$expectedNumber;
+            }
+            $expectedNumber = $usedNumber + 1;
+        }
+        
+        // No gaps found, return the next number after the highest
+        return (string)$expectedNumber;
+    }
 }

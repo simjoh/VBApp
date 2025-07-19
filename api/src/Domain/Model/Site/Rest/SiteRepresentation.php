@@ -18,6 +18,7 @@ class SiteRepresentation implements JsonSerializable
     private string $check_in_distance = "0.90";
     private string $picture = "";
     private ?array $links = [];
+    private ?int $organizer_id = null;
 
 
     /**
@@ -197,6 +198,22 @@ class SiteRepresentation implements JsonSerializable
         $this->check_in_distance = $check_in_distance;
     }
 
+    /**
+     * @return int|null
+     */
+    public function getOrganizerId(): ?int
+    {
+        return $this->organizer_id;
+    }
+
+    /**
+     * @param int|null $organizer_id
+     */
+    public function setOrganizerId(?int $organizer_id): void
+    {
+        $this->organizer_id = $organizer_id;
+    }
+
     public function jsonSerialize(): array
     {
         return [
@@ -209,6 +226,7 @@ class SiteRepresentation implements JsonSerializable
             'lng' => $this->lng,
             'image' => $this->image,
             'check_in_distance' => $this->check_in_distance,
+            'organizer_id' => $this->organizer_id,
             'links' => $this->links
         ];
     }

@@ -200,6 +200,11 @@
   }
 }
 
+.summary-card {
+  position: sticky;
+  top: 1rem;
+}
+
 :host {
   display: block;
   width: 100%;

@@ -25,9 +25,14 @@ class EventRepository extends BaseRepository
     public function allEvents(): array
     {
         try {
-            $statement = $this->connection->prepare($this->sqls('allEvents'));
+            $sql = $this->sqls('allEvents');
+            $statement = $this->connection->prepare($sql);
+            
+            // Bind organizer filter parameter if needed
+            $this->bindOrganizerFilterParameter($statement);
+            
             $statement->execute();
-            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Event\Event::class, null);
+            $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Event\Event::class, null);
 
             if (empty($events)) {
                 return array();
@@ -123,6 +128,7 @@ class EventRepository extends BaseRepository
         $canceled = $event->isCanceled();
         $start_date = $event->getStartdate();
         $end_date = $event->getEnddate();
+        $organizer_id = $event->getOrganizerId();
         $eve_U = $event->getEventUid();
         
         try {
@@ -136,6 +142,10 @@ class EventRepository extends BaseRepository
             $statement->bindValue(':canceled', $canceled, PDO::PARAM_BOOL);
             $statement->bindValue(':end_date', $end_date);
             $statement->bindValue(':start_date', $start_date);
+            $statement->bindValue(':organizer_id', $organizer_id);
+            
+            // Bind timestamp parameters for update
+            $this->bindTimestampParameters($statement, true);
 
             $status = $statement->execute();
             if($status){
@@ -158,6 +168,7 @@ class EventRepository extends BaseRepository
         $canceled = $event->isCanceled();
         $start_date = $event->getStartdate();
         $end_date = $event->getEnddate();
+        $organizer_id = $event->getOrganizerId();
         
         try {
             $statement = $this->connection->prepare($this->sqls('createEvent'));
@@ -170,6 +181,10 @@ class EventRepository extends BaseRepository
             $statement->bindParam(':canceled', $canceled, PDO::PARAM_BOOL);
             $statement->bindParam(':end_date', $end_date);
             $statement->bindParam(':start_date', $start_date);
+            $statement->bindParam(':organizer_id', $organizer_id);
+            
+            // Bind timestamp parameters for insert
+            $this->bindTimestampParameters($statement, false);
             
             $status = $statement->execute();
 
@@ -225,11 +240,11 @@ class EventRepository extends BaseRepository
     {
         $eventqls['tracksOnEvent'] = 'select track_uid  from event_tracks e where e.event_uid=:event_uid;';
         $eventqls['trackAndEventOnEvent'] = 'select track_uid  from event_tracks where track_uid=:track_uid and event_uid=:event_uid;';
-        $eventqls['allEvents'] = 'select * from event e;';
+        $eventqls['allEvents'] = 'select * from event e' . ($this->getOrganizerFilterSqlWithParam('e') ? ' WHERE ' . $this->getOrganizerFilterSqlWithParam('e') : '') . ';';
         $eventqls['getEventByUid'] = 'select *  from event e where e.event_uid=:event_uid;';
         $eventqls['deleteEvent'] = 'delete from event  where event_uid=:event_uid;';
-        $eventqls['updateEvent']  = "UPDATE event SET  title=:title , description=:description , active=:active, completed=:completed, canceled=:canceled, active=:active , start_date=:start_date, end_date=:end_date WHERE event_uid=:event_uid";
-        $eventqls['createEvent']  = "INSERT INTO event(event_uid, title, start_date, end_date, active, canceled, completed, description) VALUES (:event_uid, :title, :start_date, :end_date, :active, :canceled, :completed, :description)";
+        $eventqls['updateEvent']  = "UPDATE event SET  title=:title , description=:description , active=:active, completed=:completed, canceled=:canceled, active=:active , start_date=:start_date, end_date=:end_date, organizer_id=:organizer_id, " . $this->getUpdateTimestampFragment() . " WHERE event_uid=:event_uid";
+        $eventqls['createEvent']  = "INSERT INTO event(event_uid, title, start_date, end_date, active, canceled, completed, description, organizer_id, " . $this->getTimestampColumns() . ") VALUES (:event_uid, :title, :start_date, :end_date, :active, :canceled, :completed, :description, :organizer_id, " . $this->getTimestampValues() . ")";
         $eventqls['createEventTrack'] = 'INSERT INTO event_tracks(track_uid, event_uid) VALUES (:track_uid , :event_uid)';
         $eventqls['existsByTitleAndStartDate'] = 'select *  from event e where e.title=:title;';
 

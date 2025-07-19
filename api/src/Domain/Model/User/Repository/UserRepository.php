@@ -26,7 +26,6 @@ class UserRepository extends BaseRepository
 
     public function authenticate($username, $password): ?User
     {
-
         $passwordsha = sha1($password);
         $statement = $this->connection->prepare($this->sqls('login2'));
         $statement->bindParam(':user_name', $username, PDO::PARAM_STR);
@@ -39,7 +38,7 @@ class UserRepository extends BaseRepository
 
         $roleArray = [];
         foreach ($result as $row) {
-            array_push($roleArray, new Role(intval($row['role_id']), $row['role_name']));
+            $roleArray[] = $row['role_name'];
         }
 
         $userdetails = $result[0];
@@ -50,7 +49,7 @@ class UserRepository extends BaseRepository
         $user->setFamilyname($userdetails['family_name']);
         $user->setUsername($userdetails['user_name']);
         $user->setToken('');
-        $user->setRoles(array($userdetails['role_name']));
+        $user->setRoles($roleArray);
         
         // Set organizer_id if it exists
         if (isset($userdetails['organizer_id'])) {
@@ -76,107 +75,158 @@ class UserRepository extends BaseRepository
 
     public function getAllUSers(): ?array
     {
-        $statement = $this->connection->prepare($this->sqls('allUsers'));
-        $statement->execute();
-        $data = $statement->fetchAll();
+        try {
+            $sql = $this->sqls('allUsers');
+            $statement = $this->connection->prepare($sql);
+            
+            // Bind organizer filter parameter if needed
+            $this->bindOrganizerFilterParameter($statement);
+            
+            $statement->execute();
+            $data = $statement->fetchAll();
 
-        if (empty($data)) {
-            return array();
+            if (empty($data)) {
+                return array();
+            }
+            $users = [];
+            foreach ($data as $row) {
+                $user = new User();
+                $user->setId($row['user_uid']);
+                $user->setGivenname($row['given_name']);
+                $user->setFamilyname($row['family_name']);
+                $user->setUsername($row['user_name']);
+                $user->setToken('');
+                
+                // Set organizer_id if it exists
+                if (isset($row['organizer_id'])) {
+                    $user->setOrganizerId($row['organizer_id']);
+                }
+                
+                // Set timestamp and confirmation fields
+                if (isset($row['created_at'])) {
+                    $user->setCreatedAt(new \DateTime($row['created_at']));
+                }
+                if (isset($row['updated_at'])) {
+                    $user->setUpdatedAt(new \DateTime($row['updated_at']));
+                }
+                if (isset($row['confirmed'])) {
+                    $user->setConfirmed((bool)$row['confirmed']);
+                }
+                if (isset($row['confirmed_at']) && $row['confirmed_at']) {
+                    $user->setConfirmedAt(new \DateTime($row['confirmed_at']));
+                }
+
+                $user_roles_stmt = $this->connection->prepare($this->sqls('roles'));
+                $user_roles_stmt->bindParam(':user_uid', $row['user_uid']);
+                $user_roles_stmt->execute();
+                $roles = $user_roles_stmt->fetchAll();
+
+                $roleArray = [];
+                if(!empty($roles)){
+                    foreach ($roles as $role) {
+                        $roleArray[] = $role['role_name'];
+                    }
+                    $user->setRoles($roleArray);
+                }
+                array_push($users, $user);
+            }
+            return $users;
         }
-        $users = [];
-        foreach ($data as $row) {
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return array();
+    }
+
+    public function getUserById($id): ?User
+    {
+        try {
+            $statement = $this->connection->prepare($this->sqls('getUserById'));
+            $statement->bindParam(':user_uid', $id, PDO::PARAM_STR);
+            $statement->execute();
+            $data = $statement->fetch();
+            if (empty($data)) {
+                return null;
+            }
+            
+            // Check if current user has access to this user based on organizer
+            if (!$this->hasAccessToUser($data)) {
+                return null;
+            }
+            
             $user = new User();
-            $user->setId($row['user_uid']);
-            $user->setGivenname($row['given_name']);
-            $user->setFamilyname($row['family_name']);
-            $user->setUsername($row['user_name']);
+            $user->setId($data['user_uid']);
+            $user->setGivenname($data['given_name']);
+            $user->setFamilyname($data['family_name']);
+            $user->setUsername($data['user_name']);
             $user->setToken('');
             
             // Set organizer_id if it exists
-            if (isset($row['organizer_id'])) {
-                $user->setOrganizerId($row['organizer_id']);
+            if (isset($data['organizer_id'])) {
+                $user->setOrganizerId($data['organizer_id']);
             }
             
             // Set timestamp and confirmation fields
-            if (isset($row['created_at'])) {
-                $user->setCreatedAt(new \DateTime($row['created_at']));
+            if (isset($data['created_at'])) {
+                $user->setCreatedAt(new \DateTime($data['created_at']));
             }
-            if (isset($row['updated_at'])) {
-                $user->setUpdatedAt(new \DateTime($row['updated_at']));
+            if (isset($data['updated_at'])) {
+                $user->setUpdatedAt(new \DateTime($data['updated_at']));
             }
-            if (isset($row['confirmed'])) {
-                $user->setConfirmed((bool)$row['confirmed']);
+            if (isset($data['confirmed'])) {
+                $user->setConfirmed((bool)$data['confirmed']);
             }
-            if (isset($row['confirmed_at']) && $row['confirmed_at']) {
-                $user->setConfirmedAt(new \DateTime($row['confirmed_at']));
+            if (isset($data['confirmed_at']) && $data['confirmed_at']) {
+                $user->setConfirmedAt(new \DateTime($data['confirmed_at']));
             }
 
             $user_roles_stmt = $this->connection->prepare($this->sqls('roles'));
-            $user_roles_stmt->bindParam(':user_uid', $row['user_uid']);
+            $user_roles_stmt->bindParam(':user_uid', $data['user_uid']);
             $user_roles_stmt->execute();
             $roles = $user_roles_stmt->fetchAll();
 
             $roleArray = [];
             if(!empty($roles)){
                 foreach ($roles as $role) {
-                    array_push($roleArray, new Role($role["role_id"], $role['role_name']));
+                    $roleArray[] = $role['role_name'];
                 }
                 $user->setRoles($roleArray);
             }
-            array_push($users, $user);
+
+            return $user;
         }
-        return $users;
+        catch(PDOException $e)
+        {
+            echo "Error: " . $e->getMessage();
+        }
+        return null;
     }
 
-    public function getUserById($id): ?User
+    /**
+     * Check if the current user has access to a specific user based on organizer
+     * 
+     * @param array $userData The user data from database
+     * @return bool True if access is allowed, false otherwise
+     */
+    private function hasAccessToUser(array $userData): bool
     {
-        $statement = $this->connection->prepare($this->sqls('getUserById'));
-        $statement->bindParam(':user_uid', $id, PDO::PARAM_STR);
-        $statement->execute();
-        $data = $statement->fetch();
-        if (empty($data)) {
-            return null;
-        }
-        $user = new User();
-        $user->setId($data['user_uid']);
-        $user->setGivenname($data['given_name']);
-        $user->setFamilyname($data['family_name']);
-        $user->setUsername($data['user_name']);
-        $user->setToken('');
+        // Get current user context
+        $userContext = \App\common\Context\UserContext::getInstance();
+        $currentUserOrganizerId = $userContext->getOrganizerId();
         
-        // Set organizer_id if it exists
-        if (isset($data['organizer_id'])) {
-            $user->setOrganizerId($data['organizer_id']);
+        // Superusers can access all users
+        if ($userContext->isSuperUser()) {
+            return true;
         }
         
-        // Set timestamp and confirmation fields
-        if (isset($data['created_at'])) {
-            $user->setCreatedAt(new \DateTime($data['created_at']));
+        // If current user has no organizer_id, they can only access users with no organizer_id
+        if ($currentUserOrganizerId === null) {
+            return !isset($userData['organizer_id']) || $userData['organizer_id'] === null;
         }
-        if (isset($data['updated_at'])) {
-            $user->setUpdatedAt(new \DateTime($data['updated_at']));
-        }
-        if (isset($data['confirmed'])) {
-            $user->setConfirmed((bool)$data['confirmed']);
-        }
-        if (isset($data['confirmed_at']) && $data['confirmed_at']) {
-            $user->setConfirmedAt(new \DateTime($data['confirmed_at']));
-        }
-
-        $user_roles_stmt = $this->connection->prepare($this->sqls('roles'));
-        $user_roles_stmt->bindParam(':user_uid', $data['user_uid']);
-        $user_roles_stmt->execute();
-        $roles = $user_roles_stmt->fetchAll();
-
-        $roleArray = [];
-        if(!empty($roles)){
-            foreach ($roles as $role) {
-                array_push($roleArray, new Role($role["role_id"], $role['role_name']));
-            }
-            $user->setRoles($roleArray);
-        }
-
-        return $user;
+        
+        // Regular users can only access users from the same organizer
+        return isset($userData['organizer_id']) && $userData['organizer_id'] == $currentUserOrganizerId;
     }
 
     public function isVolonteer(int $roleId): bool {
@@ -323,7 +373,7 @@ class UserRepository extends BaseRepository
     {
         $usersqls['login'] = 'select * from users where user_name = :user_name and password = :password';
         $usersqls['login2'] = 'select s.*, ru.role_name, ru.role_id from users s inner join user_role r on r.user_uid = s.user_uid inner join roles ru on ru.role_id = r.role_id  where s.user_name = :user_name and password = :password';
-        $usersqls['allUsers'] = 'select * from users s;';
+        $usersqls['allUsers'] = 'select * from users s' . ($this->getOrganizerFilterSqlWithParam('s') ? ' WHERE ' . $this->getOrganizerFilterSqlWithParam('s') : '') . ';';
         $usersqls['getUserById'] = 'select * from users s where s.user_uid = :user_uid;';
         $usersqls['updateUser']  = "UPDATE users SET given_name=:givenname, family_name=:familyname, user_name=:username, organizer_id=:organizer_id, updated_at=CURRENT_TIMESTAMP WHERE user_uid=:user_uid";
         $usersqls['createUser']  = "INSERT INTO users(user_uid, user_name, given_name, family_name, password, organizer_id, created_at, updated_at, confirmed) VALUES (:user_uid, :user_name, :given_name, :family_name, :password, :organizer_id, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)";

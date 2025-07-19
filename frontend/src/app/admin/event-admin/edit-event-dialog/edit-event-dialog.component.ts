@@ -16,18 +16,22 @@ export class EditEventDialogComponent implements OnInit {
   eventStatus: any;
 
   categories: any[] = [{name: 'Aktiv', key: 'A'}, {name: 'Inställd', key: 'I'}, {name: 'Utförd', key: 'U'}];
+  isSuperUser = false;
 
   constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig) {
   }
 
   ngOnInit(): void {
     this.eventForm = this.config.data.event;
+    this.checkUserRoles();
+
     console.log('EditEventDialog ngOnInit - initial event data:', {
       event_uid: this.eventForm.event_uid,
       title: this.eventForm.title,
       active: this.eventForm.active,
       canceled: this.eventForm.canceled,
-      completed: this.eventForm.completed
+      completed: this.eventForm.completed,
+      organizer_id: this.eventForm.organizer_id
     });
 
     // Set the correct initial status based on the event data
@@ -47,6 +51,11 @@ export class EditEventDialogComponent implements OnInit {
     }
 
     console.log('Initial eventStatus value:', this.eventStatus);
+  }
+
+  private checkUserRoles(): void {
+    const activeUser = JSON.parse(localStorage.getItem('activeUser') || '{}');
+    this.isSuperUser = activeUser.roles?.includes('SUPERUSER') || false;
   }
 
 

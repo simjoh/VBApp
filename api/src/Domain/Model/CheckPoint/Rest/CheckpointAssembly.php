@@ -39,7 +39,9 @@ class CheckpointAssembly
             $checkpointRepresentation->setClosing($checkpoint->getClosing());
         }
 
-        $checkpointRepresentation->setSite($this->siteservice->siteFor($checkpoint->getSiteUid(), 's'));
+        // Get site and set it (can be null if site doesn't exist or user doesn't have access)
+        $site = $this->siteservice->siteFor($checkpoint->getSiteUid(), 's');
+        $checkpointRepresentation->setSite($site);
         return $checkpointRepresentation;
     }
 

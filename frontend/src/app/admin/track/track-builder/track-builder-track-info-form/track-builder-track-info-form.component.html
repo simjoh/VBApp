@@ -25,9 +25,14 @@
         (organizerChange)="onOrganizerChange($event)"
         (organizerObjectChange)="onOrganizerObjectChange($event)"
         [showPreview]="false"
-        placeholder="Välj arrangör"
+        [placeholder]="isSuperUser ? 'Välj arrangör' : 'Arrangör förvald'"
+        [disabled]="!isSuperUser"
         class="form-input">
       </brevet-organizer-selector>
+      <small *ngIf="!isSuperUser && model.organizer_id" class="text-gray-500 block mt-1">
+        <i class="pi pi-info-circle mr-1"></i>
+        Arrangör är förvald baserat på din användarroll
+      </small>
     </div>
   </div>
 

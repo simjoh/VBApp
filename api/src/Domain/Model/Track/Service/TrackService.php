@@ -67,7 +67,19 @@ class TrackService extends ServiceAbstract
     public function allTracks(string $currentuserUid): array
     {
         $permissions = $this->getPermissions($currentuserUid);
-        $trackArray = $this->trackRepository->allTracks();
+        
+        // Get current user context to check if superuser and get organizer_id
+        $userContext = \App\common\Context\UserContext::getInstance();
+        $currentUserOrganizerId = $userContext->getOrganizerId();
+        
+        // Only filter by organizer if user is not a superuser
+        $organizerId = null;
+        if (!$userContext->isSuperUser() && $currentUserOrganizerId !== null) {
+            $organizerId = $currentUserOrganizerId;
+        }
+        
+        $trackArray = $this->trackRepository->allTracks($organizerId);
+        
         // hämta checkpoints
         return $this->trackAssembly->toRepresentations($trackArray, $currentuserUid, $permissions);
     }

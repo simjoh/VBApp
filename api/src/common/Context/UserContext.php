@@ -4,6 +4,22 @@ namespace App\common\Context;
 
 class UserContext
 {
+    // Role constants to avoid hardcoding
+    public const ROLE_SUPERUSER = 'SUPERUSER';
+    public const ROLE_ADMIN = 'ADMIN';
+    public const ROLE_VOLONTEER = 'VOLONTEER';
+    public const ROLE_COMPETITOR = 'COMPETITOR';
+    public const ROLE_DEVELOPER = 'DEVELOPER';
+    public const ROLE_USER = 'USER';
+    
+    // Role property names for new format
+    public const ROLE_PROP_IS_SUPERUSER = 'isSuperuser';
+    public const ROLE_PROP_IS_ADMIN = 'isAdmin';
+    public const ROLE_PROP_IS_VOLONTEER = 'isVolonteer';
+    public const ROLE_PROP_IS_COMPETITOR = 'isCompetitor';
+    public const ROLE_PROP_IS_DEVELOPER = 'isDeveloper';
+    public const ROLE_PROP_IS_USER = 'isUser';
+
     private static ?UserContext $instance = null;
     private ?string $userId = null;
     private ?int $organizerId = null;
@@ -76,26 +92,76 @@ class UserContext
 
     public function isAdmin(): bool
     {
-        return $this->hasRole('ADMIN');
+        // Check if roles is an array of strings (old format)
+        if (is_array($this->roles) && !empty($this->roles) && isset($this->roles[0]) && is_string($this->roles[0])) {
+            return $this->hasRole(self::ROLE_ADMIN);
+        }
+        
+        // Check if roles is an object with boolean values (new format)
+        if (is_array($this->roles) && isset($this->roles[self::ROLE_PROP_IS_ADMIN])) {
+            return (bool) $this->roles[self::ROLE_PROP_IS_ADMIN];
+        }
+        
+        return false;
     }
 
     public function isSuperUser(): bool
     {
-        return $this->hasRole('SUPERUSER');
+        // Check if roles is an array of strings (old format)
+        if (is_array($this->roles) && !empty($this->roles) && isset($this->roles[0]) && is_string($this->roles[0])) {
+            return $this->hasRole(self::ROLE_SUPERUSER);
+        }
+        
+        // Check if roles is an object with boolean values (new format)
+        if (is_array($this->roles) && isset($this->roles[self::ROLE_PROP_IS_SUPERUSER])) {
+            return (bool) $this->roles[self::ROLE_PROP_IS_SUPERUSER];
+        }
+        
+        return false;
     }
 
     public function isVolonteer(): bool
     {
-        return $this->hasRole('VOLONTEER');
+        // Check if roles is an array of strings (old format)
+        if (is_array($this->roles) && !empty($this->roles) && isset($this->roles[0]) && is_string($this->roles[0])) {
+            return $this->hasRole(self::ROLE_VOLONTEER);
+        }
+        
+        // Check if roles is an object with boolean values (new format)
+        if (is_array($this->roles) && isset($this->roles[self::ROLE_PROP_IS_VOLONTEER])) {
+            return (bool) $this->roles[self::ROLE_PROP_IS_VOLONTEER];
+        }
+        
+        return false;
     }
 
     public function isCompetitor(): bool
     {
-        return $this->hasRole('COMPETITOR');
+        // Check if roles is an array of strings (old format)
+        if (is_array($this->roles) && !empty($this->roles) && isset($this->roles[0]) && is_string($this->roles[0])) {
+            return $this->hasRole(self::ROLE_COMPETITOR);
+        }
+        
+        // Check if roles is an object with boolean values (new format)
+        if (is_array($this->roles) && isset($this->roles[self::ROLE_PROP_IS_COMPETITOR])) {
+            return (bool) $this->roles[self::ROLE_PROP_IS_COMPETITOR];
+        }
+        
+        return false;
     }
 
     public function isDeveloper(): bool
     {
-        return $this->hasRole('DEVELOPER');
+        // Check if roles is an array of strings (old format)
+        if (is_array($this->roles) && !empty($this->roles) && isset($this->roles[0]) && is_string($this->roles[0])) {
+            return $this->hasRole(self::ROLE_DEVELOPER);
+        }
+        
+        // Check if roles is an object with boolean values (new format)
+        if (is_array($this->roles) && isset($this->roles[self::ROLE_PROP_IS_DEVELOPER])) {
+            return (bool) $this->roles[self::ROLE_PROP_IS_DEVELOPER];
+        }
+        
+        return false;
     }
 } 

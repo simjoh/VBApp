@@ -176,7 +176,8 @@
     <!-- Permission Checkboxes -->
     <div class="col-12 field">
       <div class="grid">
-        <div class="col-12 md:col-6 lg:col-4">
+        <!-- Superuser role - only visible to superusers -->
+        <div class="col-12 md:col-6 lg:col-4" *ngIf="isSuperUser">
           <div class="flex align-items-center">
             <p-checkbox
               [(ngModel)]="userForm.superuser"
@@ -193,6 +194,7 @@
           </small>
         </div>
 
+        <!-- Admin role - visible to all -->
         <div class="col-12 md:col-6 lg:col-4">
           <div class="flex align-items-center">
             <p-checkbox
@@ -210,6 +212,7 @@
           </small>
         </div>
 
+        <!-- User role - visible to all -->
         <div class="col-12 md:col-6 lg:col-4">
           <div class="flex align-items-center">
             <p-checkbox
@@ -227,6 +230,7 @@
           </small>
         </div>
 
+        <!-- Volunteer role - visible to all -->
         <div class="col-12 md:col-6 lg:col-4">
           <div class="flex align-items-center">
             <p-checkbox
@@ -244,7 +248,8 @@
           </small>
         </div>
 
-        <div class="col-12 md:col-6 lg:col-4">
+        <!-- Developer role - only visible to superusers -->
+        <div class="col-12 md:col-6 lg:col-4" *ngIf="isSuperUser">
           <div class="flex align-items-center">
             <p-checkbox
               [(ngModel)]="userForm.developer"
@@ -257,7 +262,7 @@
             </label>
           </div>
           <small class="text-gray-500 block mt-1">
-            Utvecklare med access till utvecklingsverktyg
+            Specialbehörighet för utvecklare
           </small>
         </div>
       </div>

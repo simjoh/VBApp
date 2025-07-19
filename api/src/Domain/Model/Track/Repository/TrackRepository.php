@@ -24,10 +24,23 @@ class TrackRepository extends BaseRepository
     }
 
 
-    public function allTracks(): array
+    public function allTracks(?int $organizerId = null): array
     {
         try {
-            $statement = $this->connection->prepare($this->sqls('allTracks'));
+            $sql = $this->sqls('allTracks');
+            
+            // Add organizer filter if provided
+            if ($organizerId !== null) {
+                $sql = str_replace('select * from track t;', 'select * from track t WHERE t.organizer_id = :organizer_id;', $sql);
+            }
+            
+            $statement = $this->connection->prepare($sql);
+            
+            // Bind organizer_id parameter if filtering is needed
+            if ($organizerId !== null) {
+                $statement->bindParam(':organizer_id', $organizerId, PDO::PARAM_INT);
+            }
+            
             $statement->execute();
             $tracks = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Track\Track::class, null);
 

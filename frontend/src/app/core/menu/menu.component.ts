@@ -25,7 +25,8 @@ export class MenuComponent implements OnInit{
   $activeUser = this.menucomponentService.$activeuser.pipe(
     map(user =>{
 
-
+      // Clear items array to rebuild menu based on current user roles
+      this.items = [];
 
       if (user.roles.includes("ADMIN") || user.roles.includes("SUPERUSER")) {
 
@@ -34,9 +35,7 @@ export class MenuComponent implements OnInit{
             label: 'Start',
             routerLink: '/admin/brevet-admin-start',
           })
-
         }
-
 
         if (!this.items.some(item => item.label === 'Deltagare')) {
           this.items.push({
@@ -52,34 +51,46 @@ export class MenuComponent implements OnInit{
             expanded: true
           })
         }
-        if (!this.items.some(item => item.label === 'Systemadministration')) {
-          this.items.push({
-            label: 'Systemadministration',
-            items: [{
-              label: 'Användare',
-              routerLink: '/admin/useradmin/'
-            },
-              {
-                label: 'Arrangemangsgrupper',
-                routerLink: '/admin/eventadmin/'
-              },
-              {
-                label: 'Klubbar',
-                routerLink: '/admin/clubadmin/'
-              },
-              {
-                label: 'Organisatörer',
-                routerLink: '/admin/organizeradmin/'
-              },
-              {
-                label: 'Kontrollplatser',
-                routerLink: '/admin/siteadmin/'
-              }
-            ]
+
+        // Create system administration submenu
+        const systemAdminItems = [];
+
+        // User management - available to both ADMIN and SUPERUSER
+        systemAdminItems.push({
+          label: 'Användare',
+          routerLink: '/admin/useradmin/'
+        });
+
+        // Event groups - available to both ADMIN and SUPERUSER
+        systemAdminItems.push({
+          label: 'Arrangemangsgrupper',
+          routerLink: '/admin/eventadmin/'
+        });
+
+        // Kontrollplatser - available to both ADMIN and SUPERUSER
+        systemAdminItems.push({
+          label: 'Kontrollplatser',
+          routerLink: '/admin/siteadmin/'
+        });
+
+        // Klubbar and Organisatörer - only available to SUPERUSER
+        if (user.roles.includes("SUPERUSER")) {
+          systemAdminItems.push({
+            label: 'Klubbar',
+            routerLink: '/admin/clubadmin/'
+          });
+          systemAdminItems.push({
+            label: 'Organisatörer',
+            routerLink: '/admin/organizeradmin/'
           });
         }
 
-
+        if (!this.items.some(item => item.label === 'Systemadministration')) {
+          this.items.push({
+            label: 'Systemadministration',
+            items: systemAdminItems
+          });
+        }
       }
 
       if (user.roles.length > 1 && user.roles.includes("VOLONTEER") && !this.items.some(item => item.label === 'Volontär')) {

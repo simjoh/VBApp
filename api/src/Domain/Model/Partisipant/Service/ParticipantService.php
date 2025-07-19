@@ -1260,17 +1260,27 @@ class ParticipantService extends ServiceAbstract
     public function getParticipantStats(string $date): array
     {
         try {
+            // Get current user context to check if superuser and get organizer_id
+            $userContext = \App\common\Context\UserContext::getInstance();
+            $currentUserOrganizerId = $userContext->getOrganizerId();
+            
+            // Only filter by organizer if user is not a superuser
+            $organizerId = null;
+            if (!$userContext->isSuperUser() && $currentUserOrganizerId !== null) {
+                $organizerId = $currentUserOrganizerId;
+            }
+            
             // Get daily stats
-            $dailyStats = $this->getDailyStats($date);
+            $dailyStats = $this->participantRepository->getDailyStats($date, $organizerId);
             
             // Get weekly stats (last 7 days including today)
-            $weeklyStats = $this->getWeeklyStats($date);
+            $weeklyStats = $this->participantRepository->getWeeklyStats($date, $organizerId);
 
             // Get yearly stats
-            $yearlyStats = $this->getYearlyStats($date);
+            $yearlyStats = $this->participantRepository->getYearlyStats($date, $organizerId);
 
             // Get latest registration
-            $latestRegistration = $this->getLatestRegistration();
+            $latestRegistration = $this->participantRepository->getLatestRegistration($organizerId);
             
             return [
                 'daily' => $dailyStats,
@@ -1307,160 +1317,20 @@ class ParticipantService extends ServiceAbstract
         }
     }
 
-    private function getDailyStats(string $date): array
-    {
-        $sql = "SELECT 
-                COUNT(DISTINCT CASE WHEN DATE(p.register_date_time) = DATE(:date) THEN p.participant_uid END) as countparticipants,
-                COALESCE(SUM(CASE WHEN DATE(p.register_date_time) = DATE(:date) AND p.started = 1 THEN 1 ELSE 0 END), 0) as started,
-                COALESCE(SUM(CASE WHEN DATE(p.finished_timestamp) = DATE(:date) THEN 1 ELSE 0 END), 0) as completed,
-                COALESCE(SUM(CASE WHEN DATE(p.dnf_timestamp) = DATE(:date) THEN 1 ELSE 0 END), 0) as dnf,
-                COALESCE(SUM(CASE WHEN DATE(p.dns_timestamp) = DATE(:date) THEN 1 ELSE 0 END), 0) as dns
-            FROM participant p
-            JOIN track t ON t.track_uid = p.track_uid";
-
-        error_log("Daily stats query for date: " . $date);
-        error_log("SQL: " . $sql);
-
-        $stmt = $this->connection->prepare($sql);
-        $stmt->execute(['date' => $date]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    private function getWeeklyStats(string $date): array
-    {
-        $sql = "SELECT 
-                COUNT(DISTINCT CASE WHEN p.register_date_time >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.register_date_time < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN p.participant_uid END) as countparticipants,
-                COALESCE(SUM(CASE WHEN p.register_date_time >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.register_date_time < DATE_ADD(DATE(:date), INTERVAL 1 DAY) AND p.started = 1 THEN 1 ELSE 0 END), 0) as started,
-                COALESCE(SUM(CASE WHEN p.finished_timestamp >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.finished_timestamp < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN 1 ELSE 0 END), 0) as completed,
-                COALESCE(SUM(CASE WHEN p.dnf_timestamp >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.dnf_timestamp < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN 1 ELSE 0 END), 0) as dnf,
-                COALESCE(SUM(CASE WHEN p.dns_timestamp >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.dns_timestamp < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN 1 ELSE 0 END), 0) as dns
-            FROM participant p
-            JOIN track t ON t.track_uid = p.track_uid";
-
-        error_log("Weekly stats query for date: " . $date);
-        error_log("SQL: " . $sql);
-        
-        $statement = $this->connection->prepare($sql);
-        $statement->bindParam(':date', $date);
-        $statement->execute();
-        
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
-        error_log("Weekly stats result: " . json_encode($result));
-        
-        return $result ?: [
-            'countparticipants' => 0,
-            'started' => 0,
-            'completed' => 0,
-            'dnf' => 0,
-            'dns' => 0
-        ];
-    }
-
-    private function getYearlyStats(string $date): array
-    {
-        $sql = "SELECT 
-                COUNT(DISTINCT CASE WHEN YEAR(p.register_date_time) = YEAR(:date) THEN p.participant_uid END) as countparticipants,
-                COALESCE(SUM(CASE WHEN YEAR(p.register_date_time) = YEAR(:date) AND p.started = 1 THEN 1 ELSE 0 END), 0) as started,
-                COALESCE(SUM(CASE WHEN YEAR(p.finished_timestamp) = YEAR(:date) THEN 1 ELSE 0 END), 0) as completed,
-                COALESCE(SUM(CASE WHEN YEAR(p.dnf_timestamp) = YEAR(:date) THEN 1 ELSE 0 END), 0) as dnf,
-                COALESCE(SUM(CASE WHEN YEAR(p.dns_timestamp) = YEAR(:date) THEN 1 ELSE 0 END), 0) as dns
-            FROM participant p
-            JOIN track t ON t.track_uid = p.track_uid";
-
-        error_log("Yearly stats query for date: " . $date);
-        error_log("SQL: " . $sql);
-        
-        $statement = $this->connection->prepare($sql);
-        $statement->bindParam(':date', $date);
-        $statement->execute();
-        
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
-        error_log("Yearly stats result: " . json_encode($result));
-        
-        return $result ?: [
-            'countparticipants' => 0,
-            'started' => 0,
-            'completed' => 0,
-            'dnf' => 0,
-            'dns' => 0
-        ];
-    }
-
-    private function getLatestRegistration(): ?array
-    {
-        $sql = "SELECT 
-                p.*,
-                c.given_name,
-                c.family_name,
-                cl.title as club_name,
-                t.title as track_name
-            FROM participant p
-            JOIN track t ON t.track_uid = p.track_uid
-            LEFT JOIN competitors c ON c.competitor_uid = p.competitor_uid
-            LEFT JOIN club cl ON cl.club_uid = p.club_uid
-            ORDER BY p.register_date_time DESC
-            LIMIT 1";
-
-        $statement = $this->connection->prepare($sql);
-        $statement->execute();
-        
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
-        
-        if (!$result) {
-            return null;
-        }
-
-        return [
-            'participant_uid' => $result['participant_uid'],
-            'name' => $result['given_name'] . ' ' . $result['family_name'],
-            'club' => $result['club_name'] ?? 'No Club',
-            'track' => $result['track_name'],
-            'registration_time' => $result['register_date_time']
-        ];
-    }
-
     public function getTopTracks(): array
     {
         try {
-            $sql = "WITH recent_registrations AS (
-                SELECT 
-                    t.track_uid,
-                    t.title as track_name,
-                    COUNT(DISTINCT p.participant_uid) as total_participants,
-                    COUNT(DISTINCT CASE WHEN p.register_date_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN p.participant_uid END) as recent_registrations,
-                    MIN(CASE WHEN p.register_date_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN p.register_date_time END) as recent_first_registration,
-                    MAX(CASE WHEN p.register_date_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN p.register_date_time END) as recent_last_registration,
-                    o.organization_name as organizer_name,
-                    t.active
-                FROM track t
-                LEFT JOIN participant p ON t.track_uid = p.track_uid
-                LEFT JOIN organizers o ON t.organizer_id = o.id
-                GROUP BY t.track_uid, t.title, o.organization_name, t.active
-            )
-            SELECT 
-                track_name,
-                total_participants as participant_count,
-                recent_registrations as registrations_last_30_days,
-                recent_first_registration as first_registration,
-                recent_last_registration as last_registration,
-                organizer_name,
-                active
-            FROM recent_registrations 
-            WHERE recent_registrations > 0
-            ORDER BY total_participants DESC
-            LIMIT 5";
-
-            error_log("Executing top tracks query: " . $sql);
+            // Get current user context to check if superuser and get organizer_id
+            $userContext = \App\common\Context\UserContext::getInstance();
+            $currentUserOrganizerId = $userContext->getOrganizerId();
             
-            $statement = $this->connection->prepare($sql);
-            $statement->execute();
+            // Only filter by organizer if user is not a superuser
+            $organizerId = null;
+            if (!$userContext->isSuperUser() && $currentUserOrganizerId !== null) {
+                $organizerId = $currentUserOrganizerId;
+            }
             
-            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-            
-            // Log the raw result
-            error_log("Raw top tracks result: " . json_encode($result));
-            
-            return $result;
+            return $this->participantRepository->getTopTracks($organizerId);
             
         } catch (\Exception $e) {
             error_log("Error in getTopTracks: " . $e->getMessage());
@@ -1557,7 +1427,7 @@ class ParticipantService extends ServiceAbstract
         
         // Move the participant to the new track
         $participant->setTrackUid($new_track_uid);
-        $newStartNumber = $this->findNextAvailableStartNumber($new_track_uid);
+        $newStartNumber = $this->participantRepository->findNextAvailableStartNumber($new_track_uid);
         $participant->setStartnumber($newStartNumber);
         
         $updatedParticipant = $this->participantRepository->updateParticipant($participant);
@@ -1640,7 +1510,7 @@ class ParticipantService extends ServiceAbstract
         $oldStartNumber = $participant->getStartnumber();
         
         // Automatically find the next available start number (no client control)
-        $new_startnumber = $this->findNextAvailableStartNumber($to_track_uid);
+        $new_startnumber = $this->participantRepository->findNextAvailableStartNumber($to_track_uid);
         
         // Move the participant with the automatically assigned start number
         $participant->setTrackUid($to_track_uid);
@@ -1665,50 +1535,7 @@ class ParticipantService extends ServiceAbstract
         return $this->participantassembly->toRepresentation($updatedParticipant, $permissions, $currentUserUid);
     }
     
-    /**
-     * Find the next available start number on a track by finding gaps in the sequence
-     * If there are gaps (e.g., 1001, 1003, 1004), it will return 1002
-     * If no gaps, it will return the next number after the highest
-     * Handles cases where start numbers begin at higher values (e.g., 4001, 4002, 4003)
-     */
-    private function findNextAvailableStartNumber(string $track_uid): string
-    {
-        $participants = $this->participantRepository->participantsOnTrack($track_uid);
-        $usedStartNumbers = [];
-        
-        foreach ($participants as $participant) {
-            $usedStartNumbers[] = (int)$participant->getStartnumber();
-        }
-        
-        if (empty($usedStartNumbers)) {
-            return "1001"; // Default start number if no participants exist
-        }
-        
-        // Sort the used start numbers
-        sort($usedStartNumbers);
-        
-        // Find the actual sequence range
-        $minNumber = $usedStartNumbers[0];
-        $maxNumber = $usedStartNumbers[count($usedStartNumbers) - 1];
-        
-        // If the sequence starts at a higher number (e.g., 4001), work within that range
-        // Otherwise, start from 1001 as the minimum
-        $sequenceStart = max(1001, $minNumber);
-        
-        // Find the first gap in the sequence starting from the sequence start
-        $expectedNumber = $sequenceStart;
-        
-        foreach ($usedStartNumbers as $usedNumber) {
-            if ($usedNumber > $expectedNumber) {
-                // Found a gap, return the expected number
-                return (string)$expectedNumber;
-            }
-            $expectedNumber = $usedNumber + 1;
-        }
-        
-        // No gaps found, return the next number after the highest
-        return (string)$expectedNumber;
-    }
+
 
     /**
      * Send email notification when a participant's start number changes

@@ -61,71 +61,60 @@ class EventService extends ServiceAbstract
         $this->eventGroupRestClient = new LoppServiceEventGroupRestClient($settings);
     }
 
-    public function allEvents(string $currentUserUid): array
+    public function allEvents(): array
     {
         $events = $this->eventRepository->allEvents();
         if (!isset($events)) {
             return array();
         }
-
+        $userContext = \App\common\Context\UserContext::getInstance();
+        $currentUserUid = $userContext->getUserId();
         return $this->eventAssembly->toRepresentations($events, $currentUserUid);
     }
 
-    public function eventFor(string $event_uid, string $currentUserUid)
+    public function eventFor(string $event_uid)
     {
-
         $event = $this->eventRepository->eventFor($event_uid);
-
         if (!isset($event)) {
             return null;
         }
+        $userContext = \App\common\Context\UserContext::getInstance();
+        $currentUserUid = $userContext->getUserId();
         $permissions = $this->getPermissions($currentUserUid);
         return $this->eventAssembly->toRepresentation($event, $permissions);
     }
 
-    public function updateEvent(string $event_uid, EventRepresentation $eventRepresentation, string $currentUserUid): EventRepresentation
+    public function updateEvent(string $event_uid, EventRepresentation $eventRepresentation): EventRepresentation
     {
         $event = $this->toEvent($eventRepresentation);
+        $organizerId = $this->eventRepository->getOrganizerIdFromContext();
+        if ($organizerId !== null && $event->getOrganizerId() === null) {
+            $event->setOrganizerId($organizerId);
+        }
+        $userContext = \App\common\Context\UserContext::getInstance();
+        $currentUserUid = $userContext->getUserId();
         $permissions = $this->getPermissions($currentUserUid);
-
         $eventexists = $this->eventRepository->eventFor($event_uid);
-
         if(!$eventexists){
             throw new BrevetException("Event not found", 1, null);
         }
-    
-        // Get the database connection from the repository
         $connection = $this->eventRepository->getConnection();
-        
-        // Begin transaction
         $connection->beginTransaction();
-        
         try {
-            // Update event in local database first
             $event = $this->eventRepository->updateEvent($event_uid, $event);
-            
-            // Try to sync with LoppService, but don't fail if LoppService is unavailable
             try {
-                // Try to get the event group by event UID
                 $eventGroup = $this->eventGroupRestClient->getEventGroupById($event->getEventUid());
-        
                 if ($eventGroup) {
-                    // Update the existing event group
                     $eventGroupDTO = $this->updateEventGroupFromEvent($eventGroup, $event);
-                    
                     $updatedEventGroup = $this->eventGroupRestClient->updateEventGroup($event->getEventUid(), $eventGroupDTO);
-                    
                     if (!$updatedEventGroup) {
                         error_log("Warning: Failed to update event group in LoppService, but continuing with local update: " . $event->getEventUid());
                     } else {
                         error_log("Successfully updated event group in LoppService: " . $event->getEventUid());
                     }
                 } else {
-                    // Event group doesn't exist in LoppService, try to create it
                     $eventGroupDTO = $this->createEventGroupFromEvent($event);
-                    
                     $createdEventGroup = $this->eventGroupRestClient->createEventGroup($eventGroupDTO);
-                    
                     if (!$createdEventGroup) {
                         error_log("Warning: Failed to create event group in LoppService, but continuing with local update: " . $event->getEventUid());
                     } else {
@@ -133,28 +122,20 @@ class EventService extends ServiceAbstract
                     }
                 }
             } catch (\Exception $loppServiceException) {
-                // Only skip LoppService for connection errors, otherwise re-throw
                 $errorMessage = $loppServiceException->getMessage();
                 if (strpos($errorMessage, 'Could not resolve host') !== false || 
                     strpos($errorMessage, 'Connection refused') !== false ||
                     strpos($errorMessage, 'Connection timed out') !== false) {
-                    // Connection issue - log and continue
                     error_log("LoppService connection failed for event " . $event->getEventUid() . ": " . $errorMessage);
                     error_log("Continuing with local event update only");
                 } else {
-                    // Other error - re-throw to maintain existing behavior for non-connection issues
                     throw $loppServiceException;
                 }
             }
-            
             $connection->commit();
             return $this->eventAssembly->toRepresentation($event, $permissions);
-            
         } catch (\Exception $e) {
-            // Rollback the transaction if any exception occurs
             $connection->rollBack();
-            
-            // Log the error with more details
             error_log("Failed to update event with rollback: " . $e->getMessage());
             error_log("Event data: " . json_encode([
                 'uid' => $event->getEventUid(),
@@ -163,36 +144,27 @@ class EventService extends ServiceAbstract
                 'startdate' => $event->getStartdate(),
                 'enddate' => $event->getEnddate()
             ]));
-            
-            // Re-throw the exception to be handled by the caller
             throw new BrevetException("Det gick inte att uppdatera event: " . $e->getMessage(), 14, $e);
         }
     }
 
-    public function createEvent(EventRepresentation $eventRepresentation, string $currentUserUid)
+    public function createEvent(EventRepresentation $eventRepresentation)
     {
         $event = $this->toEvent($eventRepresentation);
-        
-        // Always generate UUID in API first
         $event->setEventUid((string) Uuid::uuid4());
-        
+        $organizerId = $this->eventRepository->getOrganizerIdFromContext();
+        if ($organizerId !== null && $event->getOrganizerId() === null) {
+            $event->setOrganizerId($organizerId);
+        }
+        $userContext = \App\common\Context\UserContext::getInstance();
+        $currentUserUid = $userContext->getUserId();
         $permissions = $this->getPermissions($currentUserUid);
-        
-        // Get the database connection from the repository
         $connection = $this->eventRepository->getConnection();
-        
-        // Begin transaction
         $connection->beginTransaction();
-        
         try {
-            // Create event in local database first
             $event = $this->eventRepository->createEvent($event);
-
-            // Try to create corresponding event group in LoppService, but don't fail if unavailable
             try {
                 $eventGroupDTO = $this->createEventGroupFromEvent($event);
-                
-                // Debug log
                 error_log("Creating event group with data: " . json_encode([
                     'uid' => $eventGroupDTO->uid,
                     'name' => $eventGroupDTO->name,
@@ -200,36 +172,28 @@ class EventService extends ServiceAbstract
                     'startdate' => $eventGroupDTO->startdate,
                     'enddate' => $eventGroupDTO->enddate
                 ]));
-                
                 $createdEventGroup = $this->eventGroupRestClient->createEventGroup($eventGroupDTO);
-        
                 if (!$createdEventGroup) {
                     error_log("Warning: Failed to create event group in LoppService, but continuing with local event: " . $event->getEventUid());
                 } else {
                     error_log("Successfully created event group in LoppService: " . $event->getEventUid());
                 }
             } catch (\Exception $loppServiceException) {
-                // Only skip LoppService for connection errors, otherwise re-throw
                 $errorMessage = $loppServiceException->getMessage();
                 if (strpos($errorMessage, 'Could not resolve host') !== false || 
                     strpos($errorMessage, 'Connection refused') !== false ||
                     strpos($errorMessage, 'Connection timed out') !== false) {
-                    // Connection issue - log and continue
                     error_log("LoppService connection failed for new event " . $event->getEventUid() . ": " . $errorMessage);
                     error_log("Continuing with local event creation only");
                 } else {
-                    // Other error - re-throw to maintain existing behavior for non-connection issues
                     throw $loppServiceException;
                 }
             }
-            
             $connection->commit();
             return $this->eventAssembly->toRepresentation($event, $permissions);
         } catch (\Exception $e) {
-            // Rollback the transaction if any exception occurs
             $connection->rollBack();
             print_r($e->getMessage());
-            // Log the error with more details
             error_log("Failed to create event with rollback. Error: " . $e->getMessage());
             error_log("Event data: " . json_encode([
                 'uid' => $event->getEventUid(),
@@ -238,50 +202,59 @@ class EventService extends ServiceAbstract
                 'startdate' => $event->getStartdate(),
                 'enddate' => $event->getEnddate()
             ]));
-            
-            // Re-throw the exception to be handled by the caller
             throw new BrevetException("Det gick inte att skapa event: " . $e->getMessage(), 11, $e);
         }
     }
 
-    public function deleteEvent(string $event_uid, string $currentUserUid)
+    public function deleteEvent(string $event_uid)
     {
+        $userContext = \App\common\Context\UserContext::getInstance();
+        $currentUserUid = $userContext->getUserId();
         $tracks = $this->trackservice->tracksForEvent($currentUserUid, $event_uid);
-
         if (!empty($tracks)) {
             throw new BrevetException("Det finns banor kopplade till eventet. Banorna måste tas bort från eventet", 5, null);
         }
-
-        // Get the database connection from the repository
-        $connection = $this->eventRepository->getConnection();
         
+        $connection = $this->eventRepository->getConnection();
         try {
             $connection->beginTransaction();
-
-            // Delete the event locally first
+            
+            // Delete from local database first
             $this->eventRepository->deleteEvent($event_uid);
             
-            // Try to delete in LoppService
+            // Try to delete corresponding event group from loppservice
             try {
-                $this->eventGroupRestClient->deleteEventGroup($event_uid);
-                $connection->commit();
-            } catch (\Exception $e) {
-                // Check if the error message indicates the group wasn't found
-                if (strpos($e->getMessage(), 'Event group not found') !== false) {
-                    error_log("Event group not found in LoppService (this is OK): " . $e->getMessage());
-                    $connection->commit();
-                    return;
-                }
+                $deleteSuccess = $this->eventGroupRestClient->deleteEventGroup($event_uid);
                 
-                // For any other error, rollback and throw
-                $connection->rollBack();
-                throw new BrevetException("Det gick inte att ta bort eventgrupp i loppservice: " . $e->getMessage(), 15, $e);
+                if ($deleteSuccess) {
+                    error_log("Successfully deleted event group from loppservice: " . $event_uid);
+                } else {
+                    // Check if the event group exists first to determine if the failure is due to "not found"
+                    $existingEventGroup = $this->eventGroupRestClient->getEventGroupById($event_uid);
+                    if ($existingEventGroup === null) {
+                        error_log("Event group not found in loppservice (this is OK): " . $event_uid);
+                    } else {
+                        error_log("Failed to delete event group from loppservice (event group exists but deletion failed): " . $event_uid);
+                    }
+                }
+            } catch (\Exception $loppServiceException) {
+                $errorMessage = $loppServiceException->getMessage();
+                if (strpos($errorMessage, 'Could not resolve host') !== false || 
+                    strpos($errorMessage, 'Connection refused') !== false ||
+                    strpos($errorMessage, 'Connection timed out') !== false) {
+                    error_log("LoppService connection failed for event deletion " . $event_uid . ": " . $errorMessage);
+                    error_log("Continuing with local event deletion only");
+                } else {
+                    // Log the error but don't fail the main deletion
+                    error_log("Error deleting event group in loppservice: " . $loppServiceException->getMessage());
+                    error_log("Event deletion completed locally, but loppservice sync failed for event: " . $event_uid);
+                }
             }
+            
+            $connection->commit();
         } catch (\Exception $e) {
-            if ($connection->inTransaction()) {
-                $connection->rollBack();
-            }
-            throw new BrevetException("Det gick inte att ta bort event: " . $e->getMessage(), 16, $e);
+            $connection->rollBack();
+            throw new BrevetException("Det gick inte att ta bort event: " . $e->getMessage(), 12, $e);
         }
     }
 
@@ -294,6 +267,7 @@ class EventService extends ServiceAbstract
         $event->setActive($eventRepresentation->isActive());
         $event->setCanceled($eventRepresentation->isCanceled());
         $event->setCompleted($eventRepresentation->isCompleted());
+        $event->setOrganizerId($eventRepresentation->getOrganizerId());
         
         // Format dates properly for MySQL storage
         $event->setStartdate($this->formatDateForDatabase($eventRepresentation->getStartdate()));
@@ -304,12 +278,24 @@ class EventService extends ServiceAbstract
 
     public function getPermissions($user_uid): array
     {
+        // If user_uid is null, try to get it from UserContext
+        if ($user_uid === null) {
+            $userContext = \App\common\Context\UserContext::getInstance();
+            $user_uid = $userContext->getUserId();
+        }
+        
+        // If still null, return empty permissions array
+        if ($user_uid === null) {
+            return [];
+        }
+        
         return $this->permissinrepository->getPermissionsTodata("EVENT", $user_uid);
-
     }
 
-    public function eventInformation(string $eventUid, string $currentUserUid): array
+    public function eventInformation(string $eventUid): array
     {
+        $userContext = \App\common\Context\UserContext::getInstance();
+        $currentUserUid = $userContext->getUserId();
         $permissions = $this->getPermissions($currentUserUid);
         $eventInfos = array();
         $tracksarray = array();

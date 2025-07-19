@@ -20,6 +20,7 @@ export class CreateSiteDialogComponent implements OnInit {
   siteform: SiteFormModel;
   selectedUnit: string = 'm';
   private originalValue: number = 900;
+  isSuperUser = false;
 
   constructor(
     private ref: DynamicDialogRef,
@@ -30,10 +31,26 @@ export class CreateSiteDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.checkUserRoles();
     this.siteform = this.createObject();
   }
 
+  private checkUserRoles(): void {
+    const currentUser = JSON.parse(localStorage.getItem('activeUser') || '{}');
+    this.isSuperUser = currentUser.roles?.includes('SUPERUSER');
+  }
+
   private createObject(): SiteFormModel{
+    // Get current user from localStorage
+    const currentUser = JSON.parse(localStorage.getItem('activeUser') || '{}');
+    const isSuperUser = currentUser.roles?.includes('SUPERUSER');
+
+    // Preselect organizer_id if user is not superuser and has an organizer_id
+    let preselectedOrganizerId: number | undefined = undefined;
+    if (!isSuperUser && currentUser.organizer_id) {
+      preselectedOrganizerId = currentUser.organizer_id;
+    }
+
     return {
       site_uid: "",
       event_uid: "",
@@ -43,7 +60,8 @@ export class CreateSiteDialogComponent implements OnInit {
       lng: "",
       description: "",
       picture: "",
-      check_in_distance: "900"
+      check_in_distance: "900",
+      organizer_id: preselectedOrganizerId
     } as unknown as SiteFormModel;
   }
 
@@ -107,4 +125,5 @@ export class SiteFormModel extends NgForm{
   place: string;
   adress: string;
   check_in_distance: string;
+  organizer_id?: number;
 }

@@ -64,8 +64,8 @@
           </p-card>
         </div>
 
-        <!-- Clubs -->
-        <div class="col-12 sm:col-6 lg:col-4">
+        <!-- Clubs - Only visible to SuperUsers -->
+        <div class="col-12 sm:col-6 lg:col-4" *ngIf="isSuperUser">
           <p-card styleClass="cursor-pointer hover:shadow-5" (click)="navigate('/admin/clubadmin')">
             <div class="flex align-items-center justify-content-center flex-column text-center p-2">
               <i class="pi pi-building text-3xl mb-2" style="color: var(--primary-color)"></i>
@@ -97,8 +97,8 @@
           </p-card>
         </div>
 
-        <!-- Organizers -->
-        <div class="col-12 sm:col-6 lg:col-4">
+        <!-- Organizers - Only visible to SuperUsers -->
+        <div class="col-12 sm:col-6 lg:col-4" *ngIf="isSuperUser">
           <p-card styleClass="cursor-pointer hover:shadow-5" (click)="navigate('/admin/organizeradmin')">
             <div class="flex align-items-center justify-content-center flex-column text-center p-2">
               <i class="pi pi-briefcase text-3xl mb-2" style="color: var(--primary-color)"></i>

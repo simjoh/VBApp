@@ -178,10 +178,16 @@ export class OrganizerSelectorComponent implements OnInit, ControlValueAccessor 
       return `data:image/svg+xml;base64,${logoSvg}`;
     }
 
-    // If it's raw SVG, encode it
+    // If it's raw SVG, encode it properly handling Unicode characters
     if (logoSvg && logoSvg.includes('<svg')) {
-      const base64 = btoa(logoSvg);
-      return `data:image/svg+xml;base64,${base64}`;
+      try {
+        // Use encodeURIComponent to handle Unicode characters properly
+        const encodedSvg = encodeURIComponent(logoSvg);
+        return `data:image/svg+xml;charset=utf-8,${encodedSvg}`;
+      } catch (error) {
+        console.error('Error encoding SVG:', error);
+        return '';
+      }
     }
 
     return '';

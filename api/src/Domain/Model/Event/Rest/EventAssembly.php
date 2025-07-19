@@ -48,6 +48,9 @@ class EventAssembly
         $eventrepresentation->setCompleted($event->isCompleted());
         $eventrepresentation->setStartdate($event->getStartdate());
         $eventrepresentation->setEnddate($event->getEnddate());
+        $eventrepresentation->setOrganizerId($event->getOrganizerId());
+        $eventrepresentation->setCreatedAt($event->getCreatedAt());
+        $eventrepresentation->setUpdatedAt($event->getUpdatedAt());
 
         $participantsarray = array();
         $linkArray = array();
@@ -77,6 +80,11 @@ class EventAssembly
 
             array_push($linkArray, new Link("relation.event.result", 'GET', $this->settings['path'] . 'results/event/' . $event->getEventUid()));
 
+            // Add organizer link if organizer_id exists
+            if($event->getOrganizerId() !== null){
+                array_push($linkArray, new Link("relation.event.organizer", 'GET', $this->settings['path'] . 'organizer/' . $event->getOrganizerId()));
+            }
+
 
         }
 
@@ -89,8 +97,18 @@ class EventAssembly
 
     public function getPermissions($user_uid): array
     {
+        // If user_uid is null, try to get it from UserContext
+        if ($user_uid === null) {
+            $userContext = \App\common\Context\UserContext::getInstance();
+            $user_uid = $userContext->getUserId();
+        }
+        
+        // If still null, return empty permissions array
+        if ($user_uid === null) {
+            return [];
+        }
+        
         return $this->permissinrepository->getPermissionsTodata("EVENT",$user_uid);
-
     }
 
 

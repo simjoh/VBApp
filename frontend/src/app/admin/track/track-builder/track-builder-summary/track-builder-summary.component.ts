@@ -24,6 +24,7 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
   organizer: OrganizerRepresentation | null = null;
   formData: any = {};
   buttonDisabled = true;
+  isSuperUser = false;
 
   constructor(
     private trackbuildercomponentService: TrackBuilderComponentService,
@@ -32,6 +33,8 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.checkUserRoles();
+
     // Subscribe to the event
     this.subscriptions.push(
       this.trackbuildercomponentService.$currentEvent.subscribe(event => {
@@ -65,25 +68,20 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
     // Subscribe to the track data
     this.subscriptions.push(
       this.trackbuildercomponentService.$all.subscribe(data => {
-        console.log('Summary received $all data:', data);
         if (data) {
           // Update track data
           if (data.rusaTrackRepresentation) {
             this.track = data.rusaTrackRepresentation;
-            console.log('Updated track:', this.track);
           }
 
           // Update controls data - always sort by distance
           if (data.rusaplannercontrols) {
-            console.log('Found rusaplannercontrols:', data.rusaplannercontrols);
             // Create deep copies to avoid reference issues
             const controlsCopy = data.rusaplannercontrols.map(control => ({...control}));
 
             // Sort controls by distance and update the view
             this.controls = this.sortControlsByDistance(controlsCopy);
-            console.log('Updated controls:', this.controls);
           } else {
-            console.log('No rusaplannercontrols found in data');
           }
 
           // Update button state
@@ -92,13 +90,17 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
           // Update the UI
           this.cdr.markForCheck();
         } else {
-          console.log('No data received in $all subscription');
         }
       })
     );
 
     // Initial button state check
     this.updateButtonState();
+  }
+
+  private checkUserRoles(): void {
+    const currentUser = JSON.parse(localStorage.getItem('activeUser') || '{}');
+    this.isSuperUser = currentUser.roles?.includes('SUPERUSER');
   }
 
   ngOnDestroy(): void {
@@ -399,6 +401,10 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
     if (this.organizer) {
       return this.organizer.organization_name || this.organizer.contact_person_name || 'Vald arrangör';
     }
+    // For non-superusers, show a default organizer name since it's pre-selected
+    if (!this.isSuperUser && this.formData.organizer_id) {
+      return 'Din arrangör';
+    }
     return 'Cykelklubben';
   }
 
@@ -432,7 +438,8 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
 
   getOrganizerLogo(): string {
     if (this.organizer && this.organizer.logo_svg) {
-      return this.getSafeLogoUrl(this.organizer.logo_svg);
+      const logoUrl = this.getSafeLogoUrl(this.organizer.logo_svg);
+      return logoUrl;
     }
     return '';
   }
@@ -491,10 +498,16 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
       return `data:image/svg+xml;base64,${logoSvg}`;
     }
 
-    // If it's raw SVG, encode it
+    // If it's raw SVG, encode it properly handling Unicode characters
     if (logoSvg && logoSvg.includes('<svg')) {
-      const base64 = btoa(logoSvg);
-      return `data:image/svg+xml;base64,${base64}`;
+      try {
+        // Use encodeURIComponent to handle Unicode characters properly
+        const encodedSvg = encodeURIComponent(logoSvg);
+        return `data:image/svg+xml;charset=utf-8,${encodedSvg}`;
+      } catch (error) {
+        console.error('Error encoding SVG:', error);
+        return '';
+      }
     }
 
     return '';

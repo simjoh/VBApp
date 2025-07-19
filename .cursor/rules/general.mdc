@@ -30,6 +30,9 @@ DB_DATABASE=vasterbottenbrevet_se_db_2
 DB_PASSWORD=secret
 
 
+use ssl=0
+
+
 
 example api call with token
 
@@ -47,3 +50,6 @@ curl -X PUT \
     "to_track_uid": "04b9b0c6-9b25-407e-a70f-0e3a79465957"
   }' \
   "http://localhost:8090/api/participants/move"
+
+
+

@@ -79,6 +79,34 @@ class UserAction extends BaseAction
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $this->userservice->deleteUser($route->getArgument('id'));
+        return $response->withStatus(204);
+    }
+
+    public function getAvailableRoles(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        $userContext = \App\common\Context\UserContext::getInstance();
+        
+        $availableRoles = [];
+        
+        if ($userContext->isSuperUser()) {
+            // Superusers can assign all roles
+            $availableRoles = [
+                ['id' => 3, 'role_name' => 'SUPERUSER', 'description' => 'Superanvändare med alla behörigheter'],
+                ['id' => 1, 'role_name' => 'ADMIN', 'description' => 'Administratör med skriv och läsrättigheter'],
+                ['id' => 2, 'role_name' => 'USER', 'description' => 'Läsbehörighet och viss skrivbehörighet'],
+                ['id' => 6, 'role_name' => 'VOLONTEER', 'description' => 'Behörighet att checka in och se passeringar vid kontroller'],
+                ['id' => 5, 'role_name' => 'DEVELOPER', 'description' => 'Specialbehörighet för utvecklare']
+            ];
+        } else {
+            // Non-superusers can only assign these roles
+            $availableRoles = [
+                ['id' => 1, 'role_name' => 'ADMIN', 'description' => 'Administratör med skriv och läsrättigheter'],
+                ['id' => 2, 'role_name' => 'USER', 'description' => 'Läsbehörighet och viss skrivbehörighet'],
+                ['id' => 6, 'role_name' => 'VOLONTEER', 'description' => 'Behörighet att checka in och se passeringar vid kontroller']
+            ];
+        }
+        
+        $response->getBody()->write(json_encode($availableRoles));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 }

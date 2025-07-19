@@ -77,35 +77,35 @@ class LoginAction extends BaseAction
         $rolearray = array();
 
         foreach ($roles as &$value) {
-            if($value == 'ADMIN'){
-                $rolearray['isAdmin'] = true;
+            if($value == \App\common\Context\UserContext::ROLE_ADMIN){
+                $rolearray[\App\common\Context\UserContext::ROLE_PROP_IS_ADMIN] = true;
             } else {
-                $rolearray['isAdmin'] = false;
+                $rolearray[\App\common\Context\UserContext::ROLE_PROP_IS_ADMIN] = false;
             }
-            if($value == 'SUPERUSER'){
-                $rolearray['isSuperuser'] = true;
+            if($value == \App\common\Context\UserContext::ROLE_SUPERUSER){
+                $rolearray[\App\common\Context\UserContext::ROLE_PROP_IS_SUPERUSER] = true;
             } else {
-                $rolearray['isSuperuser'] = false;
+                $rolearray[\App\common\Context\UserContext::ROLE_PROP_IS_SUPERUSER] = false;
             }
-            if($value == 'COMPETITOR'){
-                $rolearray['isCompetitor'] = true;
+            if($value == \App\common\Context\UserContext::ROLE_COMPETITOR){
+                $rolearray[\App\common\Context\UserContext::ROLE_PROP_IS_COMPETITOR] = true;
             } else {
-                $rolearray['isCompetitor'] = false;
+                $rolearray[\App\common\Context\UserContext::ROLE_PROP_IS_COMPETITOR] = false;
             }
-            if($value == 'VOLONTEER'){
-                $rolearray['isVolonteer'] = true;
+            if($value == \App\common\Context\UserContext::ROLE_VOLONTEER){
+                $rolearray[\App\common\Context\UserContext::ROLE_PROP_IS_VOLONTEER] = true;
             } else {
-                $rolearray['isVolonteer'] = false;
+                $rolearray[\App\common\Context\UserContext::ROLE_PROP_IS_VOLONTEER] = false;
             }
-            if($value == 'USER'){
-                $rolearray['isUser'] = true;
+            if($value == \App\common\Context\UserContext::ROLE_USER){
+                $rolearray[\App\common\Context\UserContext::ROLE_PROP_IS_USER] = true;
             } else {
-                $rolearray['isUser'] = false;
+                $rolearray[\App\common\Context\UserContext::ROLE_PROP_IS_USER] = false;
             }
-            if($value == 'DEVELOPER'){
-                $rolearray['isDeveloper'] = true;
+            if($value == \App\common\Context\UserContext::ROLE_DEVELOPER){
+                $rolearray[\App\common\Context\UserContext::ROLE_PROP_IS_DEVELOPER] = true;
             } else {
-                $rolearray['isDeveloper'] = false;
+                $rolearray[\App\common\Context\UserContext::ROLE_PROP_IS_DEVELOPER] = false;
             }
         }
         return $rolearray;

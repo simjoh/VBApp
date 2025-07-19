@@ -16,12 +16,13 @@ export class CreateEventDialogComponent implements OnInit {
   es: any;
   eventStatus: any;
   categories: any[] = [{name: 'Aktiv', key: 'A'}, {name: 'Inställd', key: 'I'}, {name: 'Utförd', key: 'U'}];
-
+  isSuperUser = false;
 
   constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig,public datepipe: DatePipe) { }
 
   ngOnInit(): void {
    this.eventForm = this.createObject();
+   this.checkUserRoles();
 
     // Set default status to "Aktiv" (Active)
     this.eventStatus = this.categories[0];
@@ -30,7 +31,22 @@ export class CreateEventDialogComponent implements OnInit {
     this.updateFormStatus(this.eventStatus);
   }
 
+  private checkUserRoles(): void {
+    const activeUser = JSON.parse(localStorage.getItem('activeUser') || '{}');
+    this.isSuperUser = activeUser.roles?.includes('SUPERUSER') || false;
+  }
+
   private createObject(): EventFormModel{
+    // Get current user from localStorage
+    const currentUser = JSON.parse(localStorage.getItem('activeUser') || '{}');
+    const isSuperUser = currentUser.roles?.includes('SUPERUSER');
+
+    // Preselect organizer_id if user is not superuser and has an organizer_id
+    let preselectedOrganizerId: number | undefined = undefined;
+    if (!isSuperUser && currentUser.organizer_id) {
+      preselectedOrganizerId = currentUser.organizer_id;
+    }
+
     return {
       event_uid: "",
       title: "",
@@ -39,7 +55,8 @@ export class CreateEventDialogComponent implements OnInit {
       active: true,  // Default to active
       canceled: false,
       completed: false,
-      description: ""
+      description: "",
+      organizer_id: preselectedOrganizerId
     } as unknown as EventFormModel;
   }
 
@@ -65,7 +82,8 @@ export class CreateEventDialogComponent implements OnInit {
         active: this.eventForm.active,
         canceled: this.eventForm.canceled,
         completed: this.eventForm.completed,
-        description: eventForm.controls.description.value
+        description: eventForm.controls.description.value,
+        organizer_id: this.eventForm.organizer_id
       } as EventRepresentation
   }
 
@@ -101,5 +119,6 @@ export class EventFormModel {
   startdate: Date;
   endddate: Date;
   description: string;
-  completed: boolean
+  completed: boolean;
+  organizer_id?: number;
 }

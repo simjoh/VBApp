@@ -132,6 +132,26 @@
       </textarea>
     </div>
 
+    <!-- Organizer Selection - Only visible to SuperUsers or pre-selected for non-superusers -->
+    <div class="col-12 field" *ngIf="isSuperUser || siteform.organizer_id">
+      <label for="organizer_id" class="block mb-2 font-medium text-gray-900">
+        <i class="pi pi-users mr-2"></i>
+        Arrangör
+      </label>
+      <brevet-organizer-selector
+        [(ngModel)]="siteform.organizer_id"
+        name="organizer_id"
+        [placeholder]="isSuperUser ? 'Välj arrangör' : 'Arrangör förvald'"
+        [disabled]="!isSuperUser"
+        [showPreview]="true"
+        class="w-full">
+      </brevet-organizer-selector>
+      <small *ngIf="!isSuperUser && siteform.organizer_id" class="text-gray-500 block mt-1">
+        <i class="pi pi-info-circle mr-1"></i>
+        Arrangör är förvald baserat på din användarroll
+      </small>
+    </div>
+
     <!-- Image Upload -->
     <div class="col-12 field">
       <label class="block mb-2 font-medium text-gray-900">
