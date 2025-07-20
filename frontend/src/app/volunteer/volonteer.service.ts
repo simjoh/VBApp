@@ -24,9 +24,6 @@ export class VolonteerService {
       map((checkpoints: Array<ParticipantToPassCheckpointRepresentation>) => {
         return checkpoints;
       }),
-      tap((checkpoints: Array<ParticipantToPassCheckpointRepresentation>) => {
-        console.log(checkpoints);
-      }),
       shareReplay(1)
     ) as Observable<Array<ParticipantToPassCheckpointRepresentation>>;
   }
@@ -37,9 +34,6 @@ export class VolonteerService {
       take(1),
       map((checkpoints: Array<CheckpointRepresentation>) => {
         return checkpoints;
-      }),
-      tap((checkpoints: Array<CheckpointRepresentation>) => {
-        console.log(checkpoints);
       }),
       shareReplay(1)
     ) as Observable<Array<CheckpointRepresentation>>;

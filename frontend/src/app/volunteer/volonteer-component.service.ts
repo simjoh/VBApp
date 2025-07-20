@@ -88,7 +88,6 @@ export class VolonteerComponentService {
 
         return first === item.checkpoint_uid;
       })
-      console.log(valdbana);
       return valdbana;
     }),
   ) as Observable<CheckpointRepresentation>;
@@ -126,7 +125,6 @@ export class VolonteerComponentService {
       const dnfochdns = stats.dns + stats.dnf;
       stats.percentageoff = stats.countpassed - dnfochdns / rand.length * 100;
       stats.percentageoff = Math.floor((100 * stats.countpassed - dnfochdns) / rand.length);
-      console.log(stats.percentageoff);
       if (stats.percentageoff < 0){
         stats.percentageoff = 0;
       }

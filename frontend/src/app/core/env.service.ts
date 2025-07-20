@@ -41,7 +41,6 @@ export class EnvService {
 
   private setEnvVariables(): void {
     const hostname = window && window.location && window.location.hostname;
-    console.log(hostname);
     if (/^.*localhost.*/.test(hostname)) {
       this._env = Environment.Local;
       this._apiUrl = '/api';

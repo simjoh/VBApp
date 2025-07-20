@@ -4,7 +4,7 @@ import {LoginComponentService} from "./login-component.service";
 import {NgForm} from "@angular/forms";
 import {EventsService} from "../core/events/events.service";
 import {EventType} from "../core/events/aevents";
-import {map, tap} from "rxjs/operators";
+import {map} from "rxjs/operators";
 import {Observable} from "rxjs";
 import {environment} from "../../environments/environment";
 
@@ -30,22 +30,14 @@ export class LoginComponent implements  OnInit{
       return {
         meddelande: event.data,
       } as ViewInformation;
-    }),
-    tap((vyinfo) => {
-      console.log("ErrorInfo", vyinfo);
     })
   ) as Observable<ViewInformation>;
 
   login(){
-    // @ts-ignore
-    console.log('Login button clicked');
     if (!this.form.invalid){
-      console.log('Form is valid, attempting login with model:', this.loginComponetService.loginModel$);
       this.authServiceService.loginUser(this.loginComponetService.loginModel$).then((ss) => {
-        console.log('Login promise resolved', ss);
+        // Login completed
       });
-    } else {
-      console.log('Form is invalid:', this.form);
     }
   }
 

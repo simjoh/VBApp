@@ -85,11 +85,9 @@ export class ParticipantListComponent implements OnInit {
 
 		if (this.linkservice.exists(product.link, 'relation.volonteer.undocheckout')) {
 
-			console.log("undo checkout")
 			this.volonteerComponentService.undocheckout(product);
 		} else {
 			this.volonteerComponentService.checkout(product);
-			console.log("checkout")
 		}
 
 

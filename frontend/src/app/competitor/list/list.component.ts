@@ -42,23 +42,16 @@ export class ListComponent implements OnInit, AfterViewInit {
 	async getGeoLocation() {
 		this.pendingRequestsService.increase();
 		try {
-			console.log('Starting geolocation request at:', new Date().toISOString());
 			await this.sleep(500); // 3 second delay
-			console.log('After sleep, before getting position at:', new Date().toISOString());
 			const position = await firstValueFrom(this.geolocationService.getCurrentPosition());
-			console.log('Position received at:', new Date().toISOString());
 			const currentTimestamp = Date.now();
 			const timeDifference = Math.abs(currentTimestamp - position.timestamp);
 			const timeDifferenceInMinutes = timeDifference / (1000 * 60);
 			if (timeDifferenceInMinutes <= 1) {
 				this.within = true;
-				console.log("Current timestamp is within one minute from the given timestamp.");
 			} else {
 				this.within = false;
-				console.log("Current timestamp is more than one minute away from the given timestamp.");
 			}
-			console.log('Latitude:', position.coords.latitude);
-			console.log('Longitude:', position.coords.longitude);
 			this.lat = position.coords.latitude;
 			this.long = position.coords.longitude;
 		} finally {
@@ -67,7 +60,6 @@ export class ListComponent implements OnInit, AfterViewInit {
 	}
 
 	sleep(ms) {
-		console.log(`Starting sleep for ${ms}ms at:`, new Date().toISOString());
 		return new Promise(resolve => setTimeout(resolve, ms));
 	}
 
@@ -78,16 +70,15 @@ export class ListComponent implements OnInit, AfterViewInit {
 			await this.getGeoLocation();
 			if (!this.within) {
 				while (!this.within) {
-					console.log("Waiting for location update...");
 					await this.sleep(3000);
 					await this.getGeoLocation();
 				}
 			}
-			
+
 			if ($event === true) {
 				await this.comp.stamp($event, s, this.lat, this.long);
 				let nextindex = this.nextIndexForward(index, kontroller)
-				
+
 			} else {
 				await this.comp.rollbackStamp($event, s);
 			}
@@ -103,7 +94,6 @@ export class ListComponent implements OnInit, AfterViewInit {
 			localStorage.setItem('nextcheckpoint', JSON.stringify(kontroller.at(index + 1).checkpoint.checkpoint_uid));
 			let nextindex = this.nextIndexForward(index, kontroller)
 			setTimeout(() => {
-				console.log(kontroller.at(nextindex.checkpoint.checkpoint_uid));
 				this.scroll(nextindex.checkpoint.checkpoint_uid);
 			}, 2000);
 		} else {
@@ -160,7 +150,7 @@ export class ListComponent implements OnInit, AfterViewInit {
 			return val;
 		})
 	).subscribe((dnf) => {
-		console.log(dnf);
+		// DNF status updated
 	});
 
 
@@ -194,7 +184,7 @@ export class ListComponent implements OnInit, AfterViewInit {
 	async ngOnInit(): Promise<void> {
 		await this.getGeoLocation();
 		this.comp.reload();
-	
+
 	}
 
 	ngAfterViewInit(): void {

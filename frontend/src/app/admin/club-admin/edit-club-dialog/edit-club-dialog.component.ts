@@ -26,7 +26,6 @@ export class EditClubDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.originalClub = this.config.data.club;
-    console.log('Original club data:', this.originalClub);
 
     this.clubForm.patchValue({
       title: this.originalClub.title,
@@ -40,7 +39,6 @@ export class EditClubDialogComponent implements OnInit {
     }
 
     const formValue = this.clubForm.value;
-    console.log('Form values before submit:', formValue);
 
     // Handle ACP kod properly - preserve value if provided, set to null only if explicitly cleared
     let acpKod = null;
@@ -56,7 +54,6 @@ export class EditClubDialogComponent implements OnInit {
       links: this.originalClub.links
     };
 
-    console.log('Submitting club data:', club);
     this.ref.close(club);
   }
 

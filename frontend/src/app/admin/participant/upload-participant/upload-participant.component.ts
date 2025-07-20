@@ -37,7 +37,6 @@ export class UploadParticipantComponent implements OnInit {
   }
 
   myUploader($event: any) {
-    console.log($event.files);
     for(let file of $event.files) {
         let progress = this.uploadService.upload(environment.backend_url + "participants/upload/track/" + this.trackuid , new Set($event.files));
 
@@ -45,12 +44,10 @@ export class UploadParticipantComponent implements OnInit {
         this.uploadedFiles.push(file);
 this.primeFileUpload.onProgress.emit({ originalEvent: null, progress: ss });
       })).subscribe();
-        console.log("FILE TO BE UPLOADED: ", file);
     }
   }
 
   updateTtrack($event: any) {
-    console.log($event);
       this.trackuid = $event
   }
 

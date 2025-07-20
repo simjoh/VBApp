@@ -67,16 +67,12 @@ export class EventListComponent implements OnInit {
   }
 
   editEvent(event: EventRepresentation) {
-    console.log('Edit button clicked for event:', event);
-
     let width;
     if ( this.deviceDetector.isDesktop()){
       width = "400px";
     } else {
       width = "95%"
     }
-
-    console.log('Opening edit dialog with width:', width);
 
     const editref = this.dialogService.open(EditEventDialogComponent, {
       data: {
@@ -89,15 +85,10 @@ export class EventListComponent implements OnInit {
       contentStyle: { 'overflow': 'visible' }
     });
 
-    console.log('Dialog opened, setting up close handler');
-
     editref.onClose.pipe(take(1)).subscribe(((event: EventRepresentation) => {
-      console.log('Dialog closed with result:', event);
       if (event) {
-        console.log('Updating event:', event);
         this.eventService.updateEvent(event.event_uid, event);
       } else {
-        console.log('Dialog cancelled, destroying reference');
         editref.destroy();
       }
 
@@ -110,11 +101,10 @@ export class EventListComponent implements OnInit {
       header: 'Bekräfta',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        console.log(event_uid)
         this.eventService.deleterEvent(event_uid);
       },
       reject: () => {
-        console.log("reject");
+        // User rejected deletion
       }
     });
   }

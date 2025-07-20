@@ -24,9 +24,6 @@ export class CompetitorService {
       map((checkpoints: Array<RandonneurCheckPointRepresentation>) => {
         return checkpoints;
       }),
-      tap((checkpoints: Array<RandonneurCheckPointRepresentation>) => {
-        console.log(checkpoints);
-      }),
       shareReplay(1)
     ) as Observable<Array<RandonneurCheckPointRepresentation>>;
   }
@@ -36,9 +33,6 @@ export class CompetitorService {
       take(1),
       map((checkpoints: Array<RandonneurCheckPointRepresentation>) => {
         return checkpoints;
-      }),
-      tap((checkpoints: Array<RandonneurCheckPointRepresentation>) => {
-        console.log(checkpoints);
       }),
       shareReplay(1)
     ) as Observable<Array<RandonneurCheckPointRepresentation>>;

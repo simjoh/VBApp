@@ -45,8 +45,6 @@ publishReultLinkExists(track: TrackRepresentation){
       // Check which link is available (only one should exist at a time)
       const hasPublishLink = this.linkService.exists(trackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT);
       const hasUnpublishLink = this.linkService.exists(trackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
-      console.log('hasPublishLink', hasPublishLink);
-      console.log('hasUnpublishLink', hasUnpublishLink);
 
       // Decide action based on available link
       if (hasPublishLink) {

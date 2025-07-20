@@ -46,14 +46,11 @@ export class TrackService {
 
 
   public tracksForEvent(eventuid: string){
-    const path = 'tracks/event/' + eventuid;
+    const path = 'event/' + eventuid + '/checkpoints';
     return this.httpClient.get<Array<any>>(environment.backend_url + path).pipe(
       take(1),
       map((checkpoints: Array<any>) => {
         return checkpoints;
-      }),
-      tap((checkpoints: Array<any>) => {
-        console.log(checkpoints);
       }),
       shareReplay(1)
     ) as Observable<Array<any>>;
@@ -65,9 +62,6 @@ export class TrackService {
       take(1),
       map((tracks: Array<TrackRepresentation>) => {
         return tracks.map(track => this.normalizeTrackData(track));
-      }),
-      tap((tracks: Array<TrackRepresentation>) => {
-        console.log('Normalized tracks:', tracks);
       }),
       shareReplay(1)
     ) as Observable<Array<TrackRepresentation>>;
@@ -90,7 +84,6 @@ export class TrackService {
     if (!link) {
       throw new Error('Link not found - cannot perform publish action');
     }
-    console.log('Making PUT request to:', link.url, 'with method:', link.method);
 
     try {
       // First make the publish/unpublish request
@@ -110,11 +103,7 @@ export class TrackService {
 
       // Then fetch the updated track data
       return await this.getTrack(trackUid).pipe(
-        take(1),
-        map(track => {
-          console.log('Track fetched after publish action:', track);
-          return track;
-        })
+        take(1)
       ).toPromise();
     } catch (error) {
       console.error('Error in publish action:', error);
@@ -165,23 +154,19 @@ export class TrackService {
 
   async undopublishresult(trackRepresentation: TrackRepresentation): Promise<TrackRepresentation> {
     const link = this.linkService.findByRel(trackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
-    console.log('Undopublish link found:', link);
     if (!link) {
       throw new Error('Undopublish link not found - track may already be unpublished');
     }
     const result = await this.publishresultaction(link);
-    console.log('Undopublish result:', result);
     return result;
   }
 
   async publishresult(trackRepresentation: TrackRepresentation): Promise<TrackRepresentation> {
     const link = this.linkService.findByRel(trackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT);
-    console.log('Publish link found:', link);
     if (!link) {
       throw new Error('Publish link not found - track may already be published');
     }
     const result = await this.publishresultaction(link);
-    console.log('Publish result:', result);
     return result;
   }
 

@@ -13,7 +13,6 @@ export class KontrollFormComponent {
     kontrollLongitud: new FormControl(''),
   });
   onSubmit(){
-    console.log('Sent')
     console.warn(this.kontrollForm.value)
   }
 }

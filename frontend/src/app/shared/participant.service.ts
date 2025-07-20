@@ -98,9 +98,6 @@ export class ParticipantService {
       map((participants: Array<ParticipantRepresentation>) => {
         return participants;
       }),
-      tap((participants: Array<ParticipantRepresentation>) => {
-        console.log(participants);
-      }),
       shareReplay(1)
     ) as Observable<Array<ParticipantRepresentation>>;
   }
@@ -282,11 +279,11 @@ export class ParticipantService {
   }
 
   getParticipantStats(): Observable<ParticipantStats> {
-    return this.httpClient.get<ParticipantStats>('/api/participants/stats');
+    return this.httpClient.get<ParticipantStats>(environment.backend_url + 'participants/stats');
   }
 
   getTopTracks(timeRange: string = 'all'): Observable<TopTrack[]> {
-    return this.httpClient.get<TopTrack[]>(`/api/participants/top-tracks?timeRange=${timeRange}`);
+    return this.httpClient.get<TopTrack[]>(environment.backend_url + `participants/top-tracks?timeRange=${timeRange}`);
   }
 
 }
