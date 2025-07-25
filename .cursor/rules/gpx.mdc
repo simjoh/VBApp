@@ -185,3 +185,4 @@ Implemetation in VBAPP have some important things to take care of
 5. it must be possible to use current structure for handling track and checkpoint. Distances between wpt must be able to be mesured
 6. keep gpx handling code tigth within a own package etc.. not sprread code to much
 7. avoid frontend logic if possible
+8. 
