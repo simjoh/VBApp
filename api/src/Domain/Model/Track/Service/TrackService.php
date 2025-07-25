@@ -593,6 +593,74 @@ class TrackService extends ServiceAbstract
         }
     }
 
+    /**
+     * Create a track from GPX data with proper site matching and ACP time calculations
+     * 
+     * @param array $gpxData The GPX data from frontend containing track and checkpoint information
+     * @param string $currentUserUid The current user's UID
+     * @param mixed $formData Optional form data for loppservice integration
+     * @return TrackRepresentation The created track representation
+     * @throws BrevetException If required data is missing or track creation fails
+     */
+    public function createTrackFromGpxData(array $gpxData, string $currentUserUid, $formData = null): TrackRepresentation
+    {
+        // Validate required data
+        $eventUid = $gpxData['event_uid'] ?? null;
+        $startDate = $gpxData['track']['start_date'] ?? null;
+        $startTime = $gpxData['track']['start_time'] ?? null;
+        
+        if (!$eventUid || !$startDate || !$startTime) {
+            throw new BrevetException('Missing required data: event_uid, start_date, or start_time', 400, null);
+        }
+
+        // Extract track information
+        $trackTitle = $gpxData['track']['title'] ?? '';
+        $trackLink = $gpxData['track']['link'] ?? '';
+        $trackDistance = $gpxData['track']['distance'] ?? 0;
+        $checkpoints = $gpxData['checkpoints'] ?? [];
+
+        // Build rusaplannercontrols array with site matching
+        $rusaplannercontrols = [];
+        foreach ($checkpoints as $cp) {
+            // Create site representation
+            $siteRep = new \stdClass();
+            $siteRep->site_uid = $cp['site_uid'] ?? null; // Frontend should provide or backend should match/create
+            $siteRep->lat = $cp['lat'];
+            $siteRep->lng = $cp['lon'];
+            $siteRep->place = $cp['name'];
+            $siteRep->description = $cp['desc'];
+
+            // Create control representation
+            $rusaControlRep = new \stdClass();
+            $rusaControlRep->CONTROL_DISTANCE_KM = $cp['distance'];
+            $rusaControlRep->OPEN = $cp['open'] ?? '';
+            $rusaControlRep->CLOSE = $cp['close'] ?? '';
+
+            $rusaplannercontrols[] = (object)[
+                'siteRepresentation' => $siteRep,
+                'rusaControlRepresentation' => $rusaControlRep,
+            ];
+        }
+
+        // Build track representation
+        $trackrepresentation = (object)[
+            'rusaTrackRepresentation' => (object)[
+                'TRACK_TITLE' => $trackTitle,
+                'LINK_TO_TRACK' => $trackLink,
+                'EVENT_DISTANCE_KM' => $trackDistance,
+                'START_DATE' => $startDate,
+                'START_TIME' => $startTime,
+            ],
+            'eventRepresentation' => (object)[
+                'event_uid' => $eventUid,
+            ],
+            'rusaplannercontrols' => $rusaplannercontrols,
+        ];
+
+        // Use existing createTrackFromPlanner method
+        return $this->createTrackFromPlanner($trackrepresentation, $currentUserUid, $formData);
+    }
+
     public function getTrackByUid(string $trackUid): ?Track
     {
         return $this->trackRepository->getTrackByUid($trackUid);

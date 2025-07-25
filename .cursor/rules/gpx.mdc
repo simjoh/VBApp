@@ -176,7 +176,7 @@ Common elements
 
 
 
-Implemetation in VBAPP have some important things to take care of
+Implementation in VBAPP have some important things to take care of
 
 1. matching waypoints or points of intrests location against sites location. 
 2. Must handle most common gpx producer such as strava ridewithgpx and commute 

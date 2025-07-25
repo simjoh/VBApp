@@ -6,9 +6,17 @@ use App\Domain\Model\Track\Rest\TrackRepresentation;
 use App\Domain\Model\CheckPoint\Rest\CheckpointRepresentation;
 use App\common\Brevetcalculator\ACPBrevetCalculator;
 use App\Domain\Model\Site\Rest\SiteRepresentation;
+use App\Domain\Model\Site\Service\SiteMatchingService;
 
 class GpxService
 {
+    private ?SiteMatchingService $siteMatchingService;
+
+    public function __construct(?SiteMatchingService $siteMatchingService = null)
+    {
+        $this->siteMatchingService = $siteMatchingService;
+    }
+
     /**
      * Parse a GPX file and return its XML structure.
      * @param string $filepath
@@ -55,13 +63,14 @@ class GpxService
     }
 
     /**
-     * Convert GPX waypoints to an array of CheckpointRepresentation objects.
+     * Convert GPX waypoints to an array of CheckpointRepresentation objects with site matching.
      * @param \SimpleXMLElement $gpx
      * @param string $startDateTime
      * @param float $totalDistance
+     * @param float|null $siteMatchThreshold Maximum distance for site matching (uses service default if null)
      * @return CheckpointRepresentation[]
      */
-    public function gpxToCheckpoints(\SimpleXMLElement $gpx, string $startDateTime, float $totalDistance): array
+    public function gpxToCheckpoints(\SimpleXMLElement $gpx, string $startDateTime, float $totalDistance, ?float $siteMatchThreshold = null): array
     {
         $checkpoints = [];
         // Use <wpt> as controls if present, else use first/last <trkpt>
@@ -81,19 +90,34 @@ class GpxService
         }
         // Calculate distances for each checkpoint
         foreach ($waypoints as $i => $wpt) {
-            $lat = (string)$wpt['lat'];
-            $lon = (string)$wpt['lon'];
+            $lat = floatval($wpt['lat']);
+            $lon = floatval($wpt['lon']);
             $name = (string)($wpt->name ?? ("Control " . ($i+1)));
             $desc = (string)($wpt->desc ?? '');
             // Find nearest trkpt to this wpt for distance calculation
-            $distance = $this->findDistanceAlongTrack($trkptCoords, floatval($lat), floatval($lon));
-            // Build SiteRepresentation
-            $site = new SiteRepresentation();
-            $site->setPlace($name);
-            $site->setAdress("");
-            $site->setLat($lat);
-            $site->setLng($lon);
-            $site->setDescription($desc);
+            $distance = $this->findDistanceAlongTrack($trkptCoords, $lat, $lon);
+            
+            // Use site matching if service is available
+            if ($this->siteMatchingService) {
+                $siteMatchResult = $this->siteMatchingService->matchWaypointToSite(
+                    $lat, 
+                    $lon, 
+                    $name, 
+                    $desc, 
+                    $siteMatchThreshold
+                );
+                $site = $siteMatchResult['siteRepresentation'];
+            } else {
+                // Fallback: create basic site representation without matching
+                $site = new SiteRepresentation();
+                $site->setPlace($name);
+                $site->setAdress("");
+                $site->setLat(strval($lat));
+                $site->setLng(strval($lon));
+                $site->setDescription($desc);
+                $site->setCheckInDistance("0.90");
+            }
+            
             // Calculate open/close times if startDateTime is set
             $opens = "";
             $closing = "";
@@ -112,6 +136,82 @@ class GpxService
             $cp->setClosing($closing);
             $checkpoints[] = $cp;
         }
+        return $checkpoints;
+    }
+
+    /**
+     * Convert GPX waypoints to checkpoints with detailed site matching information.
+     * @param \SimpleXMLElement $gpx
+     * @param string $startDateTime
+     * @param float $totalDistance
+     * @param float|null $siteMatchThreshold Maximum distance for site matching
+     * @return array Array with checkpoint and matching information
+     */
+    public function gpxToCheckpointsWithMatchingInfo(\SimpleXMLElement $gpx, string $startDateTime, float $totalDistance, ?float $siteMatchThreshold = null): array
+    {
+        if (!$this->siteMatchingService) {
+            throw new \RuntimeException('SiteMatchingService is required for detailed matching information');
+        }
+
+        $checkpoints = [];
+        $waypoints = $gpx->wpt;
+        if (count($waypoints) == 0) {
+            $trkpts = $gpx->trk->trkseg->trkpt;
+            if (count($trkpts) > 0) {
+                $waypoints = [$trkpts[0], $trkpts[count($trkpts)-1]];
+            }
+        }
+        
+        $trkpts = $gpx->trk->trkseg->trkpt;
+        $trkptCoords = [];
+        foreach ($trkpts as $pt) {
+            $trkptCoords[] = [floatval($pt['lat']), floatval($pt['lon'])];
+        }
+        
+        foreach ($waypoints as $i => $wpt) {
+            $lat = floatval($wpt['lat']);
+            $lon = floatval($wpt['lon']);
+            $name = (string)($wpt->name ?? ("Control " . ($i+1)));
+            $desc = (string)($wpt->desc ?? '');
+            $distance = $this->findDistanceAlongTrack($trkptCoords, $lat, $lon);
+            
+            $siteMatchResult = $this->siteMatchingService->matchWaypointToSite(
+                $lat, 
+                $lon, 
+                $name, 
+                $desc, 
+                $siteMatchThreshold
+            );
+            
+            $opens = "";
+            $closing = "";
+            if ($startDateTime && $totalDistance > 0) {
+                $calc = new ACPBrevetCalculator($totalDistance, $startDateTime);
+                $opens = $calc->getOpeningDateTime($distance)->format('Y-m-d H:i:s');
+                $closing = $calc->getClosingDateTime($distance)->format('Y-m-d H:i:s');
+            }
+            
+            $cp = new CheckpointRepresentation();
+            $cp->setSite($siteMatchResult['siteRepresentation']);
+            $cp->setTitle($name);
+            $cp->setDescription($desc);
+            $cp->setDistance($distance);
+            $cp->setOpens($opens);
+            $cp->setClosing($closing);
+            
+            $checkpoints[] = [
+                'checkpoint' => $cp,
+                'matchedSite' => $siteMatchResult['matchedSite'],
+                'matchDistance' => $siteMatchResult['matchDistance'],
+                'waypointData' => [
+                    'lat' => $lat,
+                    'lon' => $lon,
+                    'name' => $name,
+                    'description' => $desc
+                ]
+            ];
+        }
+        
         return $checkpoints;
     }
 

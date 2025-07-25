@@ -154,15 +154,30 @@ return [
         );
     },
 
-    \App\common\Database\MigrationManager::class => function(ContainerInterface $container) {
+    \App\common\Database\MigrationManager::class => function (ContainerInterface $container) {
         return new \App\common\Database\MigrationManager(
             $container->get(PDO::class)
         );
     },
 
-    \App\Action\Migration\MigrationAction::class => function(ContainerInterface $container) {
+    \App\Action\Migration\MigrationAction::class => function (ContainerInterface $container) {
         return new \App\Action\Migration\MigrationAction(
             $container->get(\App\common\Database\MigrationManager::class)
+        );
+    },
+
+    // Site matching service registration
+    \App\Domain\Model\Site\Service\SiteMatchingService::class => function (ContainerInterface $container) {
+        return new \App\Domain\Model\Site\Service\SiteMatchingService(
+            $container->get(\App\Domain\Model\Site\Repository\SiteRepository::class),
+            1.0 // Default match threshold in km
+        );
+    },
+
+    // Enhanced GPX service with site matching
+    \App\common\Gpx\GpxService::class => function (ContainerInterface $container) {
+        return new \App\common\Gpx\GpxService(
+            $container->get(\App\Domain\Model\Site\Service\SiteMatchingService::class)
         );
     },
 
