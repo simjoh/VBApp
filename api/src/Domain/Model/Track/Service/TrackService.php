@@ -101,19 +101,25 @@ class TrackService extends ServiceAbstract
 
     public function tracksForEvent(string $currentuserUid, string $event_uid): ?array
     {
+        $startTime = microtime(true);
+        error_log("TrackService::tracksForEvent START - event_uid: $event_uid");
+        
         $permissions = $this->getPermissions($currentuserUid);
+        
+        $tracksQueryStart = microtime(true);
         $tracks = $this->trackRepository->tracksbyEvent($event_uid);
+        $tracksQueryTime = microtime(true) - $tracksQueryStart;
+        error_log("TrackService::tracksForEvent - tracksbyEvent query took: " . number_format($tracksQueryTime * 1000, 2) . "ms, returned " . count($tracks) . " tracks");
 
-//        if (empty($track_uids)) {
-//            return array();
-//        }
-//        $test = [];
-//        foreach ($track_uids as $s => $ro) {
-//            $test[] = $ro[$s];
-//        }
-//        $tracks = $this->trackRepository->tracksOnEvent($test);
+        $assemblyStart = microtime(true);
+        $result = $this->trackAssembly->toRepresentations($tracks, $currentuserUid, $permissions);
+        $assemblyTime = microtime(true) - $assemblyStart;
+        error_log("TrackService::tracksForEvent - toRepresentations took: " . number_format($assemblyTime * 1000, 2) . "ms");
 
-        return $this->trackAssembly->toRepresentations($tracks, $currentuserUid, $permissions);
+        $totalTime = microtime(true) - $startTime;
+        error_log("TrackService::tracksForEvent END - Total time: " . number_format($totalTime * 1000, 2) . "ms");
+
+        return $result;
     }
 
     public function createTrack(TrackRepresentation $trackrepresentation, string $currentuserUid): TrackRepresentation
@@ -995,6 +1001,14 @@ class TrackService extends ServiceAbstract
             // Create new participant checkpoints for this participant
             $this->participantRepository->createTrackCheckpointsFor($participant, $newCheckpointUids);
         }
+    }
+
+    public function getTrackRepository() {
+        return $this->trackRepository;
+    }
+
+    public function getTrackAssembly() {
+        return $this->trackAssembly;
     }
 
 }

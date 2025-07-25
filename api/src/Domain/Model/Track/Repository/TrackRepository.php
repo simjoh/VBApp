@@ -82,14 +82,23 @@ class TrackRepository extends BaseRepository
 
     public function tracksbyEvent(string $event_uid)
     {
+        $startTime = microtime(true);
+        error_log("TrackRepository::tracksbyEvent START - event_uid: $event_uid");
 
         try {
+            $queryStart = microtime(true);
             $statement = $this->connection->prepare($this->sqls('tracksByEvent'));
             $statement->bindParam(':event_uid', $event_uid);
             $statement->execute();
             $tracks = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Track\Track::class, null);
+            $queryTime = microtime(true) - $queryStart;
+            error_log("TrackRepository::tracksbyEvent - SQL query took: " . number_format($queryTime * 1000, 2) . "ms, returned " . count($tracks) . " tracks");
+            
+            $totalTime = microtime(true) - $startTime;
+            error_log("TrackRepository::tracksbyEvent END - Total time: " . number_format($totalTime * 1000, 2) . "ms");
             return $tracks;
         } catch (PDOException $e) {
+            error_log("TrackRepository::tracksbyEvent ERROR: " . $e->getMessage());
             echo "Error: " . $e->getMessage();
         }
         return array();

@@ -126,7 +126,10 @@ class MigrationManager
             '/CREATE\s+TABLE.*TEMPORARY/i',
             '/TRUNCATE\s+TABLE/i',
             '/LOCK\s+TABLES/i',
-            '/UNLOCK\s+TABLES/i'
+            '/UNLOCK\s+TABLES/i',
+            '/PREPARE\s+stmt\s+FROM/i',
+            '/EXECUTE\s+stmt/i',
+            '/DEALLOCATE\s+PREPARE/i'
         ];
 
         foreach ($complexPatterns as $pattern) {

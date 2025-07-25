@@ -24,12 +24,8 @@ export class TrackAdminComponentService {
 
 
   $eventsAndTrack = combineLatest(([this.$eventTrackSubject.asObservable().pipe(startWith([])), this.eventtrackService.getEventsAndTracks()])).pipe(
-    mergeMap(([checkin ,part]) => {
-         return this.eventtrackService.getEventsAndTracks().pipe(
-           map((ss) => {
-             return this.sortEvents(ss);
-           })
-         );
+    map(([checkin, eventsAndTracks]) => {
+      return this.sortEvents(eventsAndTracks);
     })
   ) as Observable<EventInformationRepresentation[]>;
 
