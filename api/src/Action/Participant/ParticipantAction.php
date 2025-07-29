@@ -346,25 +346,46 @@ class ParticipantAction
 
     public function uploadParticipants(ServerRequestInterface $request, ResponseInterface $response)
     {
-
         $uploadDir = $this->settings['upload_directory'];
         $uploadedFiles = $request->getUploadedFiles();
 
-        foreach ($uploadedFiles as $uploadedFile) {
-//            if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-            $filename = $this->moveUploadedFile($uploadDir, $uploadedFile);
-
-//            }
+        if (empty($uploadedFiles)) {
+            $errorResponse = ['error' => 'No files uploaded'];
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         }
+
+        $filename = null;
+        foreach ($uploadedFiles as $uploadedFile) {
+            if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+                $filename = $this->moveUploadedFile($uploadDir, $uploadedFile);
+                break; // Process only the first valid file
+            }
+        }
+
+        if (!$filename) {
+            $errorResponse = ['error' => 'Failed to upload file'];
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+
         $routeContext = RouteContext::fromRequest($request);
         $route = $routeContext->getRoute();
         $track_uid = $route->getArgument('trackUid');
-        $uploadedParticipants = $this->participantService->parseUplodesParticipant($filename, $uploadDir, $track_uid, $request->getAttribute('currentuserUid'));
-        $response->getBody()->write(json_encode($uploadedParticipants));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
-
-
-        //return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        
+        try {
+            $uploadedParticipants = $this->participantService->parseUplodesParticipant($filename, $uploadDir, $track_uid, $request->getAttribute('currentuserUid'));
+            $response->getBody()->write(json_encode($uploadedParticipants));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+        } catch (BrevetException $e) {
+            $errorResponse = ['error' => $e->getMessage()];
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        } catch (Exception $e) {
+            $errorResponse = ['error' => 'Internal server error: ' . $e->getMessage()];
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
     }
 
     public function deleteParticipant(ServerRequestInterface $request, ResponseInterface $response)

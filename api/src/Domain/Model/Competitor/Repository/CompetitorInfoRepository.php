@@ -85,6 +85,7 @@ class CompetitorInfoRepository extends BaseRepository
 
     public function creatCompetitorInfoForCompetitorParams(string $email, string $phone, string $adress, string $postal_code, string $place, string $country, string $competitor_uid)  {
         $uid = Uuid::uuid4();
+        $country_id = null; // Default country_id value
         try {
             $statement = $this->connection->prepare($this->sqls('createCompetitorInfo2'));
 
@@ -96,6 +97,7 @@ class CompetitorInfoRepository extends BaseRepository
             $statement->bindParam(':postal_code', $postal_code);
             $statement->bindParam(':place', $place);
             $statement->bindParam(':country', $country);
+            $statement->bindParam(':country_id', $country_id);
             $status = $statement->execute();
 
             $competitorInfo = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Competitor\CompetitorInfo::class, null);

@@ -16,7 +16,7 @@ class Participant
     private bool $dns;
     private bool $dnf;
     private ?bool $started;
-    private ?bool $medal;
+    private ?bool $medal = false;
 
 
 

@@ -1,10 +1,24 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef} from '@angular/core';
 import {FileUpload} from "primeng/fileupload";
 import {UploadService} from "../../../core/upload.service";
-import {ParticipantComponentService} from "../participant-component.service";
-import {map, tap} from "rxjs/operators";
 import {environment} from "../../../../environments/environment";
+import {map} from "rxjs/operators";
+import {ParticipantComponentService} from "../participant-component.service";
 import {MessageService} from "primeng/api";
+import {TrackService} from "../../../shared/track-service";
+
+interface UploadStats {
+  total_rows: number;
+  successful: number;
+  failed: number;
+  skipped: number;
+  errors: Array<{
+    row: number;
+    message: string;
+    data: any[];
+  }>;
+  participants: any[];
+}
 
 @Component({
   selector: 'brevet-upload-participant',
@@ -16,9 +30,12 @@ export class UploadParticipantComponent implements OnInit {
 
   @ViewChild('primeFileUpload') primeFileUpload: FileUpload;
 
-  trackuid: string;
-
+  trackuid: string = '';
   valtbana: boolean = false;
+  uploadedFiles: any[] = [];
+  uploadStats: UploadStats | null = null;
+  showStats: boolean = false;
+  selectedTrack: any = null;
 
   trackuid$ = this.participantcomponentservice.track$.toPromise().then((s) => {
       if (s.length === 36){
@@ -28,10 +45,13 @@ export class UploadParticipantComponent implements OnInit {
       }
   });
 
-
-  uploadedFiles: any[] = [];
-
-  constructor( private uploadService: UploadService, private participantcomponentservice: ParticipantComponentService,private messageService: MessageService) { }
+  constructor(
+    private uploadService: UploadService,
+    private participantcomponentservice: ParticipantComponentService,
+    private messageService: MessageService,
+    private cdr: ChangeDetectorRef,
+    private trackService: TrackService
+  ) { }
 
   ngOnInit(): void {
   }
@@ -40,15 +60,72 @@ export class UploadParticipantComponent implements OnInit {
     for(let file of $event.files) {
         let progress = this.uploadService.upload(environment.backend_url + "participants/upload/track/" + this.trackuid , new Set($event.files));
 
-      progress[$event.files[0].name].progress.pipe(map((ss) => {
-        this.uploadedFiles.push(file);
-this.primeFileUpload.onProgress.emit({ originalEvent: null, progress: ss });
-      })).subscribe();
+      progress[$event.files[0].name].progress.pipe(
+        map((ss) => {
+          this.uploadedFiles.push(file);
+          this.primeFileUpload.onProgress.emit({ originalEvent: null, progress: ss });
+        })
+      ).subscribe();
+
+      // Subscribe to the response to get upload statistics
+      progress[$event.files[0].name].response.subscribe((response: any) => {
+        // Handle the upload response with statistics
+        if (response && typeof response === 'object') {
+          // Check if it's an error response
+          if (response.error) {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Upload Failed',
+              detail: response.error
+            });
+            return;
+          }
+
+          this.uploadStats = response as UploadStats;
+          this.showStats = true;
+
+          // Trigger change detection to update the view
+          this.cdr.detectChanges();
+
+          // Show summary message
+          if (this.uploadStats.successful > 0) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Upload Complete',
+              detail: `Successfully uploaded ${this.uploadStats.successful} participants`
+            });
+          }
+
+          if (this.uploadStats.failed > 0 || this.uploadStats.skipped > 0) {
+            this.messageService.add({
+              severity: 'warn',
+              summary: 'Upload Issues',
+              detail: `${this.uploadStats.failed} failed, ${this.uploadStats.skipped} skipped`
+            });
+          }
+        }
+      });
     }
   }
 
   updateTtrack($event: any) {
-      this.trackuid = $event
+      this.trackuid = $event;
+
+      // Fetch track information to check if it's active
+      if (this.trackuid) {
+        this.trackService.getTrack(this.trackuid).subscribe(
+          (trackInfo: any) => {
+            this.selectedTrack = trackInfo;
+            this.cdr.detectChanges();
+          },
+          (error) => {
+            console.error('Error fetching track info:', error);
+            this.selectedTrack = null;
+          }
+        );
+      } else {
+        this.selectedTrack = null;
+      }
   }
 
   progressReport($event: any) {
@@ -58,5 +135,19 @@ this.primeFileUpload.onProgress.emit({ originalEvent: null, progress: ss });
   removeFile(file: File, uploader: FileUpload) {
     const index = uploader.files.indexOf(file);
     uploader.remove(null, index);
+  }
+
+  hideStats() {
+    this.showStats = false;
+    this.uploadStats = null;
+    this.cdr.detectChanges();
+  }
+
+  getSeverityClass(): string {
+    if (!this.uploadStats) return '';
+
+    if (this.uploadStats.failed > 0) return 'error';
+    if (this.uploadStats.skipped > 0) return 'warn';
+    return 'success';
   }
 }

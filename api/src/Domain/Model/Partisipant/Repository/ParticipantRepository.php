@@ -340,6 +340,32 @@ class ParticipantRepository extends BaseRepository
         return null;
     }
 
+    public function participantOnTrackAndRefNr(string $track_uid, string $refNr): ?Participant
+    {
+        try {
+            // Hash the reference number to match how it's stored in competitor_credential
+            $hashedRefNr = sha1($refNr);
+            
+            $statement = $this->connection->prepare($this->sqls('participantOnTrackAndRefNr'));
+            $statement->bindParam(':track_uid', $track_uid);
+            $statement->bindParam(':ref_nr', $hashedRefNr);
+            $statement->execute();
+
+            $event = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Partisipant\Participant::class, null);
+
+            if ($statement->rowCount() > 1) {
+                throw new Exception();
+            }
+            if (!empty($event)) {
+                return $event[0];
+            }
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+
+        return null;
+    }
+
     public function participantWithStartNumberExists(string $startnumber): bool
     {
         try {
@@ -1082,6 +1108,7 @@ class ParticipantRepository extends BaseRepository
         $eventqls['deleteParticipantCheckpointOnTrack'] = 'delete from participant_checkpoint e where e.participant_uid=:participant_uid;';
         $eventqls['stampCheckoutOnCheckpoint'] = "UPDATE participant_checkpoint SET  checkedout=:checkedout, checkout_date_time=:checkout_date_time, volonteer_checkout=:volonteer_checkout, lat=:lat, lng=:lng  WHERE participant_uid=:participant_uid and checkpoint_uid=:checkpoint_uid;";
         $eventqls['participantCountByClub'] = 'SELECT COUNT(*) as count FROM participant WHERE club_uid = :club_uid;';
+        $eventqls['participantOnTrackAndRefNr'] = 'select p.* from participant p inner join competitor_credential cc on p.participant_uid = cc.participant_uid where p.track_uid=:track_uid and cc.password=:ref_nr;';
 
 
         return $eventqls[$type];

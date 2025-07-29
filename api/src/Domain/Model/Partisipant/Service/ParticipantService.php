@@ -294,6 +294,12 @@ class ParticipantService extends ServiceAbstract
         if (!isset($track)) {
             throw new BrevetException("Finns ingen bana med det uidet" . $trackUid, 1, null);
         }
+
+        // Check if track is active before proceeding with upload
+        if (!$track->isActive()) {
+            throw new BrevetException("Banan är inte aktiv. Upload av deltagare är inte tillåtet för inaktiva banor.", 403, null);
+        }
+
         // Lös in filen som laddades upp
         //  $csv = Reader::createFromPath($this->settings['upload_directory']  . 'Deltagarlista-MSR-2022-test.csv', 'r');
         $csv = Reader::createFromPath($this->settings['upload_directory'] . $filename, 'r');
@@ -305,66 +311,173 @@ class ParticipantService extends ServiceAbstract
         $records = $stmt->process($csv);
 
         $createdParticipants = [];
+        $uploadStats = [
+            'total_rows' => 0,
+            'successful' => 0,
+            'failed' => 0,
+            'skipped' => 0,
+            'errors' => [],
+            'participants' => []
+        ];
+
+        $rowNumber = 0;
         foreach ($records as $record) {
+            $rowNumber++;
+            $uploadStats['total_rows']++;
 
-            // se om det finns en sådan deltagare först
-            $competitor = $this->competitorService->getCompetitorByNameAndBirthDate($record[1], $record[2], $record[12]);
-
-            if (!isset($competitor)) {
-                // createOne
-                $competitor = $this->competitorService->createCompetitor($record[1], $record[2], "", $record[12]);
-                if (isset($competitor)) {
-                    //  $compInfo = $this->competitorInfoRepository->getCompetitorInfoByCompetitorUid($competitor->getId());
-                    // if(!isset($compInfo)){
-                    $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParams($record[9], $record[10], $record[5], $record[6], $record[7], $record[8], $competitor->getId());
-                    // }
+            try {
+                // Validate required fields
+                if (empty($record[0]) || empty($record[1]) || empty($record[2])) {
+                    $uploadStats['failed']++;
+                    $uploadStats['errors'][] = [
+                        'row' => $rowNumber,
+                        'message' => 'Missing required fields: start number, first name, or last name',
+                        'data' => $record
+                    ];
+                    continue;
                 }
-            }
-            $existingParticipant = $this->participantRepository->participantForTrackAndCompetitor($trackUid, $competitor->getId());
 
+                // Convert birth year to proper date format (YYYY-01-01)
+                $birthYear = $record[12];
+                if (empty($birthYear) || !is_numeric($birthYear)) {
+                    $uploadStats['failed']++;
+                    $uploadStats['errors'][] = [
+                        'row' => $rowNumber,
+                        'message' => 'Invalid birth year: ' . $birthYear,
+                        'data' => $record
+                    ];
+                    continue;
+                }
+                $birthDate = $birthYear . '-01-01'; // Use January 1st as default date
 
-            if (!isset($existingParticipant)) {
-                $participant = new Participant();
+                // Check if start number is unique on this track
+                $startNumber = $record[0];
+                $existingParticipantWithStartNumber = $this->participantRepository->participantOntRackAndStartNumber($trackUid, $startNumber);
+                if (isset($existingParticipantWithStartNumber)) {
+                    $uploadStats['failed']++;
+                    $uploadStats['errors'][] = [
+                        'row' => $rowNumber,
+                        'message' => 'Start number already exists on this track: ' . $startNumber,
+                        'data' => $record
+                    ];
+                    continue;
+                }
 
-                $participant->setCompetitorUid($competitor->getId());
+                // Check if reference number is unique (if provided)
+                $referenceNumber = isset($record[13]) ? trim($record[13]) : null;
+                if (!empty($referenceNumber)) {
+                    $existingParticipantWithRefNr = $this->participantRepository->participantOnTrackAndRefNr($trackUid, $referenceNumber);
+                    if (isset($existingParticipantWithRefNr)) {
+                        $uploadStats['failed']++;
+                        $uploadStats['errors'][] = [
+                            'row' => $rowNumber,
+                            'message' => 'Reference number already exists on this track: ' . $referenceNumber,
+                            'data' => $record
+                        ];
+                        continue;
+                    }
+                }
 
-                $participant->setStartnumber($record[0]);
-                $participant->setFinished(false);
-                $participant->setTrackUid($track->getTrackUid());
-                $participant->setDnf(false);
-                $participant->setDns(false);
-                $participant->setTime(null);
-                $participant->setStarted(false);
-                $participant->setAcpkod("s");
+                // Process physical brevet card preference (column 14, index 14)
+                $physicalBrevetCard = false;
+                if (isset($record[14]) && !empty($record[14])) {
+                    $physicalBrevetCard = in_array(strtolower(trim($record[14])), ['ja', 'yes', '1', 'true']);
+                }
 
-                // kolla om klubben finns i databasen annars skapa vi en klubb
-                $existingClub = $this->clubrepository->getClubByTitle($record[4]);
+                // Process additional information (column 15, index 15)
+                $additionalInformation = isset($record[15]) ? trim($record[15]) : null;
 
-                if (!isset($existingClub)) {
-                    $clubUid = $this->createClubAndReturnUid("", $record[4]);
-                    $participant->setClubUid($clubUid);
+                // se om det finns en sådan deltagare först
+                $competitor = $this->competitorService->getCompetitorByNameAndBirthDate($record[1], $record[2], $birthDate);
+
+                if (!isset($competitor)) {
+                    // createOne
+                    $competitor = $this->competitorService->createCompetitor($record[1], $record[2], "", $birthDate);
+                    if (isset($competitor)) {
+                        //  $compInfo = $this->competitorInfoRepository->getCompetitorInfoByCompetitorUid($competitor->getId());
+                        // if(!isset($compInfo)){
+                        $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParams($record[9], $record[10], $record[5], $record[6], $record[7], $record[8], $competitor->getId());
+                        // }
+                    }
+                }
+                $existingParticipant = $this->participantRepository->participantForTrackAndCompetitor($trackUid, $competitor->getId());
+
+                if (!isset($existingParticipant)) {
+                    $participant = new Participant();
+
+                    $participant->setCompetitorUid($competitor->getId());
+
+                    $participant->setStartnumber($record[0]);
+                    $participant->setFinished(false);
+                    $participant->setTrackUid($track->getTrackUid());
+                    $participant->setDnf(false);
+                    $participant->setDns(false);
+                    $participant->setTime(null);
+                    $participant->setStarted(false);
+                    $participant->setAcpkod("s");
+
+                    // kolla om klubben finns i databasen annars skapa vi en klubb
+                    $existingClub = $this->clubrepository->getClubByTitle($record[4]);
+
+                    if (!isset($existingClub)) {
+                        $clubUid = $this->createClubAndReturnUid("", $record[4]);
+                        $participant->setClubUid($clubUid);
+                    } else {
+                        $participant->setClubUid($existingClub->getClubUid());
+                    }
+                    $participant->setTrackUid($trackUid);
+                    $participant->setRegisterDateTime($record[11]);
+                    
+                    // Set physical brevet card preference and additional information
+                    $participant->setUsePhysicalBrevetCard($physicalBrevetCard);
+                    $participant->setAdditionalInformation($additionalInformation);
+
+                    $participantcreated = $this->participantRepository->createparticipant($participant);
+                    if (isset($participantcreated)) {
+
+                        $this->participantRepository->createTrackCheckpointsFor($participant, $this->trackRepository->checkpoints($trackUid));
+                    }
+
+                    array_push($createdParticipants, $participant);
+                    $uploadStats['successful']++;
                 } else {
-                    $participant->setClubUid($existingClub->getClubUid());
-                }
-                $participant->setTrackUid($trackUid);
-                $participant->setRegisterDateTime($record[11]);
-
-                $participantcreated = $this->participantRepository->createparticipant($participant);
-                if (isset($participantcreated)) {
-
-                    $this->participantRepository->createTrackCheckpointsFor($participant, $this->trackRepository->checkpoints($trackUid));
+                    $uploadStats['skipped']++;
+                    $uploadStats['errors'][] = [
+                        'row' => $rowNumber,
+                        'message' => 'Participant already exists on this track: ' . $record[1] . ' ' . $record[2],
+                        'data' => $record
+                    ];
                 }
 
-                array_push($createdParticipants, $participant);
-            }
+                if (isset($participantcreated) && isset($competitor)) {
+                    // skapa upp inloggning för cyklisten
+                    $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $record[0], $record[13]);
+                }
 
-            if (isset($participantcreated) && isset($competitor)) {
-                // skapa upp inloggning för cyklisten
-                $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $record[0], $record[13]);
+            } catch (Exception $e) {
+                $uploadStats['failed']++;
+                $uploadStats['errors'][] = [
+                    'row' => $rowNumber,
+                    'message' => 'Error processing row: ' . $e->getMessage(),
+                    'data' => $record
+                ];
             }
         }
 
-        return $this->participantassembly->toRepresentations($createdParticipants, $currentUserUid);
+        // Add created participants to stats
+        $participantRepresentations = $this->participantassembly->toRepresentations($createdParticipants, $currentUserUid);
+        
+        // Add competitor information to each participant
+        foreach ($participantRepresentations as $participantRep) {
+            $competitor = $this->competitorService->getCompetitorByUid($participantRep->getCompetitorUid(), $currentUserUid);
+            if ($competitor) {
+                $participantRep->setCompetitor($competitor);
+            }
+        }
+        
+        $uploadStats['participants'] = $participantRepresentations;
+
+        return $uploadStats;
     }
 
 
