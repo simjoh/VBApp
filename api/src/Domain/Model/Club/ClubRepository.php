@@ -7,6 +7,7 @@ use PDO;
 use PDOException;
 use Ramsey\Uuid\Uuid;
 use App\common\Exceptions\BrevetException;
+use App\common\Repository\PaginationResult;
 
 class ClubRepository extends BaseRepository
 {
@@ -137,6 +138,219 @@ class ClubRepository extends BaseRepository
         return array();
     }
 
+    /**
+     * Search clubs by title using wildcard patterns
+     * Supports patterns like: "john*", "*doe", "*smith*", "exact"
+     * 
+     * @param string $title The search term with optional wildcards
+     * @return array Array of Club objects
+     */
+    public function searchClubsByTitle(string $title): array
+    {
+        return $this->executeWildcardSearch(
+            $this->sqls('searchClubsByTitle'),
+            $title,
+            \App\Domain\Model\Club\Club::class
+        );
+    }
+
+    /**
+     * Search clubs by title using wildcard patterns and return single result
+     * 
+     * @param string $title The search term with optional wildcards
+     * @return Club|null Single Club object or null
+     */
+    public function searchClubByTitleSingle(string $title): ?Club
+    {
+        return $this->executeWildcardSearchSingle(
+            $this->sqls('searchClubsByTitle'),
+            $title,
+            \App\Domain\Model\Club\Club::class
+        );
+    }
+
+    /**
+     * Search clubs by ACP code using wildcard patterns
+     * 
+     * @param string $acpCode The ACP code with optional wildcards
+     * @return array Array of Club objects
+     */
+    public function searchClubsByAcpCode(string $acpCode): array
+    {
+        return $this->executeWildcardSearch(
+            $this->sqls('searchClubsByAcpCode'),
+            $acpCode,
+            \App\Domain\Model\Club\Club::class
+        );
+    }
+
+    /**
+     * Advanced search with multiple criteria and wildcards
+     * 
+     * @param array $criteria Search criteria ['title' => 'john*', 'acp_code' => '123*']
+     * @return array Array of Club objects
+     */
+    public function advancedSearch(array $criteria): array
+    {
+        try {
+            $conditions = [];
+            $params = [];
+            
+            foreach ($criteria as $field => $value) {
+                if (!empty($value)) {
+                    $condition = $this->buildSearchCondition($field, $value, 'c');
+                    $conditions[] = $condition['sql'];
+                    $params = array_merge($params, $condition['params']);
+                }
+            }
+            
+            if (empty($conditions)) {
+                $allClubs = $this->getAllClubs();
+                return $allClubs ?? [];
+            }
+            
+            $whereClause = implode(' AND ', $conditions);
+            $sql = "SELECT * FROM club c WHERE " . $whereClause;
+            
+            $statement = $this->connection->prepare($sql);
+            
+            // Bind parameters
+            foreach ($params as $key => $value) {
+                $statement->bindParam($key, $value);
+            }
+            
+            $statement->execute();
+            
+            $results = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Club\Club::class, null);
+            
+            return empty($results) ? [] : $results;
+            
+        } catch (PDOException $e) {
+            error_log("Error in advanced search: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Get all clubs with pagination
+     * 
+     * @param int $page Page number (1-based)
+     * @param int $perPage Items per page (max 100)
+     * @param string $orderBy Optional ORDER BY clause
+     * @return PaginationResult
+     */
+    public function getAllClubsPaginated(int $page = 1, int $perPage = 20, string $orderBy = 'ORDER BY title ASC'): PaginationResult
+    {
+        return $this->executePaginatedQuery(
+            $this->sqls('allClubsPaginated'),
+            $this->sqls('countAllClubs'),
+            \App\Domain\Model\Club\Club::class,
+            $page,
+            $perPage,
+            [],
+            $orderBy
+        );
+    }
+
+    /**
+     * Search clubs by title with pagination
+     * 
+     * @param string $title The search term with optional wildcards
+     * @param int $page Page number (1-based)
+     * @param int $perPage Items per page (max 100)
+     * @param string $orderBy Optional ORDER BY clause
+     * @return PaginationResult
+     */
+    public function searchClubsByTitlePaginated(string $title, int $page = 1, int $perPage = 20, string $orderBy = 'ORDER BY title ASC'): PaginationResult
+    {
+        return $this->executeWildcardSearchPaginated(
+            $this->sqls('searchClubsByTitle'),
+            $title,
+            \App\Domain\Model\Club\Club::class,
+            $page,
+            $perPage,
+            [],
+            $orderBy
+        );
+    }
+
+    /**
+     * Get clubs with cursor-based pagination (useful for large datasets)
+     * 
+     * @param ?string $cursor The cursor value (null for first page)
+     * @param int $perPage Items per page (max 100)
+     * @param string $direction 'next' or 'previous'
+     * @return PaginationResult
+     */
+    public function getClubsCursorPaginated(?string $cursor = null, int $perPage = 20, string $direction = 'next'): PaginationResult
+    {
+        return $this->executeCursorPaginatedQuery(
+            $this->sqls('allClubsCursorPaginated'),
+            $this->sqls('countAllClubs'),
+            \App\Domain\Model\Club\Club::class,
+            'club_uid', // Use club_uid as cursor field
+            $cursor,
+            $perPage,
+            [],
+            $direction
+        );
+    }
+
+    /**
+     * Advanced search with pagination
+     * 
+     * @param array $criteria Search criteria
+     * @param int $page Page number (1-based)
+     * @param int $perPage Items per page (max 100)
+     * @param string $orderBy Optional ORDER BY clause
+     * @return PaginationResult
+     */
+    public function advancedSearchPaginated(array $criteria, int $page = 1, int $perPage = 20, string $orderBy = 'ORDER BY title ASC'): PaginationResult
+    {
+        try {
+            $conditions = [];
+            $params = [];
+            
+            foreach ($criteria as $field => $value) {
+                if (!empty($value)) {
+                    $condition = $this->buildSearchCondition($field, $value, 'c');
+                    $conditions[] = $condition['sql'];
+                    $params = array_merge($params, $condition['params']);
+                }
+            }
+            
+            if (empty($conditions)) {
+                return $this->getAllClubsPaginated($page, $perPage, $orderBy);
+            }
+            
+            $whereClause = implode(' AND ', $conditions);
+            $sql = "SELECT * FROM club c WHERE " . $whereClause;
+            $countSql = "SELECT COUNT(*) FROM club c WHERE " . $whereClause;
+            
+            return $this->executePaginatedQuery(
+                $sql,
+                $countSql,
+                \App\Domain\Model\Club\Club::class,
+                $page,
+                $perPage,
+                $params,
+                $orderBy
+            );
+            
+        } catch (PDOException $e) {
+            error_log("Error in advanced search paginated: " . $e->getMessage());
+            return new PaginationResult(
+                data: [],
+                total: 0,
+                page: $page,
+                perPage: $perPage,
+                totalPages: 0,
+                hasNextPage: false,
+                hasPreviousPage: false
+            );
+        }
+    }
+
     public function createClub(Club $club): void
     {
         try {
@@ -156,7 +370,7 @@ class ClubRepository extends BaseRepository
             error_log("Club created successfully in database", 0);
         } catch (PDOException $e) {
             error_log("Error creating club in database: " . $e->getMessage(), 0);
-            throw new BrevetException("Det gick inte att skapa klubben: " . $e->getMessage());
+            throw new BrevetException("Det gick inte att skapa klubben: " . $e->getMessage(), 5);
         }
     }
 
@@ -180,7 +394,7 @@ class ClubRepository extends BaseRepository
             error_log("Club updated successfully in database", 0);
         } catch (PDOException $e) {
             error_log("Error updating club in database: " . $e->getMessage(), 0);
-            throw new BrevetException("Det gick inte att uppdatera klubben: " . $e->getMessage());
+            throw new BrevetException("Det gick inte att uppdatera klubben: " . $e->getMessage(), 5);
         }
     }
 
@@ -213,9 +427,14 @@ class ClubRepository extends BaseRepository
         $clubsql['clubByTitleLower'] = 'select * from club e where REPLACE(TRIM(lower(title))," ","")=:title;';
         $clubsql['allClubs'] = 'select * from club;';
         $clubsql['clubByAcpCode'] = 'select * from club e where acp_kod=:acpcode;';
+        $clubsql['searchClubsByTitle'] = 'select * from club e where title LIKE :search;';
+        $clubsql['searchClubsByAcpCode'] = 'select * from club e where acp_kod LIKE :search;';
         $clubsql['createClub'] = 'INSERT INTO club(club_uid, acp_kod, title) VALUES (:club_uid, :acp_kod, :title)';
         $clubsql['updateClub'] = 'UPDATE club set acp_kod=:acp_kod, title=:title where club_uid=:club_uid';
         $clubsql['deleteClub'] = 'DELETE FROM club WHERE club_uid = :club_uid';
+        $clubsql['allClubsPaginated'] = 'SELECT * FROM club';
+        $clubsql['countAllClubs'] = 'SELECT COUNT(*) FROM club';
+        $clubsql['allClubsCursorPaginated'] = 'SELECT * FROM club';
         return $clubsql[$type];
     }
 }
