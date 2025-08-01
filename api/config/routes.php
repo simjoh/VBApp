@@ -199,6 +199,8 @@ return function (App $app) {
       $group->get('/migrations/{action}', \App\Action\Migration\MigrationAction::class);
       // Test email endpoint
       $group->post('/test/email', \App\Action\Test\TestEmailAction::class);
+      // Logs management endpoints
+      $group->get('/logs/{action}', \App\Action\Infra\LogsAction::class);
     });
 
     // Competitor info management
