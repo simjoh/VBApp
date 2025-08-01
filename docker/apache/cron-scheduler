@@ -1,0 +1,1 @@
+* * * * * www-data cd /var/www/html/api && /usr/local/bin/php -f unified_cron_scheduler.php >> /var/log/cron.log 2>&1 

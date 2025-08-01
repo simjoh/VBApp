@@ -201,6 +201,8 @@ return function (App $app) {
       $group->post('/test/email', \App\Action\Test\TestEmailAction::class);
       // Logs management endpoints
       $group->get('/logs/{action}', \App\Action\Infra\LogsAction::class);
+      // Schedule management endpoints
+      $group->get('/schedule/{action}', \App\Action\Infra\ScheduleAction::class);
     });
 
     // Competitor info management

@@ -1,0 +1,2 @@
+[2025-08-01 12:06:00] brevet-api.INFO: Scheduled command executed {"command":"example:every-minute","timestamp":"2025-08-01 12:06:00","memory_usage_mb":2.00,"status":"success"} []
+[2025-08-01 12:06:35] brevet-api.INFO: Scheduled command executed {"command":"example:every-minute","timestamp":"2025-08-01 12:06:35","memory_usage_mb":2.00,"status":"success"} []

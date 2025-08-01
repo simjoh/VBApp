@@ -212,6 +212,11 @@ return [
             $container->get(\App\common\Service\LoggerService::class),
             $container
         );
+    },
+
+    // Infrastructure schedule action
+    \App\Action\Infra\ScheduleAction::class => function (ContainerInterface $container) {
+        return new \App\Action\Infra\ScheduleAction($container);
     }
 
 ];

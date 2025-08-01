@@ -1,0 +1,220 @@
+<?php
+
+namespace App\common\Service;
+
+use PDO;
+use Exception;
+use Psr\Container\ContainerInterface;
+
+class UnifiedSchedulerService
+{
+    private PDO $pdo;
+    private CliLoggerService $logger;
+    private ContainerInterface $container;
+    private array $commands = [];
+
+    public function __construct(PDO $pdo, CliLoggerService $logger, ContainerInterface $container)
+    {
+        $this->pdo = $pdo;
+        $this->logger = $logger;
+        $this->container = $container;
+        $this->initializeCommandsTable();
+    }
+
+    /**
+     * Register a command
+     * @param UnifiedCommandService $command
+     * @return void
+     */
+    public function registerCommand(UnifiedCommandService $command): void
+    {
+        $this->commands[$command->getName()] = $command;
+    }
+
+    /**
+     * Get all registered commands
+     * @return array
+     */
+    public function getCommands(): array
+    {
+        return $this->commands;
+    }
+
+    /**
+     * Get a specific command by name
+     * @param string $name
+     * @return UnifiedCommandService|null
+     */
+    public function getCommand(string $name): ?UnifiedCommandService
+    {
+        return $this->commands[$name] ?? null;
+    }
+
+    /**
+     * Run all scheduled commands
+     * @return array
+     */
+    public function runScheduledCommands(): array
+    {
+        $results = [];
+        $this->logger->info("Starting unified scheduled commands execution");
+
+        foreach ($this->commands as $command) {
+            if ($command->shouldRun()) {
+                $result = $this->executeCommand($command);
+                $results[$command->getName()] = $result;
+            }
+        }
+
+        $this->logger->info("Completed unified scheduled commands execution", ['results' => $results]);
+        return $results;
+    }
+
+    /**
+     * Execute a specific command by name
+     * @param string $commandName
+     * @return array
+     */
+    public function executeCommandByName(string $commandName): array
+    {
+        $command = $this->getCommand($commandName);
+        if (!$command) {
+            throw new Exception("Command '{$commandName}' not found");
+        }
+        
+        return $this->executeCommand($command);
+    }
+
+    /**
+     * Execute a specific command
+     * @param UnifiedCommandService $command
+     * @return array
+     */
+    public function executeCommand(UnifiedCommandService $command): array
+    {
+        $startTime = microtime(true);
+        
+        try {
+            $this->logger->info("Executing command: {$command->getName()}");
+            
+            $result = $command->execute();
+            $result['execution_time'] = microtime(true) - $startTime;
+            
+            // Log the execution
+            $this->logger->info("Command {$command->getName()} completed", ['result' => $result]);
+            
+            // Record execution in database
+            $this->recordExecution($command->getName(), $result);
+            
+            return $result;
+            
+        } catch (Exception $e) {
+            $this->logger->error("Error executing command {$command->getName()}: " . $e->getMessage());
+            
+            $result = [
+                'success' => false,
+                'message' => $e->getMessage(),
+                'execution_time' => microtime(true) - $startTime
+            ];
+            
+            $this->logger->error("Command {$command->getName()} failed", ['result' => $result]);
+            $this->recordExecution($command->getName(), $result);
+            
+            return $result;
+        }
+    }
+
+    /**
+     * Initialize the commands table
+     * @return void
+     */
+    private function initializeCommandsTable(): void
+    {
+        $sql = "
+            CREATE TABLE IF NOT EXISTS scheduled_commands (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                command_name VARCHAR(255) NOT NULL,
+                last_execution TIMESTAMP NULL,
+                execution_count INT DEFAULT 0,
+                last_success TIMESTAMP NULL,
+                last_error TEXT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                INDEX idx_command_name (command_name),
+                INDEX idx_last_execution (last_execution)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        ";
+
+        try {
+            $this->pdo->exec($sql);
+        } catch (Exception $e) {
+            $this->logger->error("Failed to initialize commands table: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Record command execution in database
+     * @param string $commandName
+     * @param array $result
+     * @return void
+     */
+    private function recordExecution(string $commandName, array $result): void
+    {
+        try {
+            $sql = "
+                INSERT INTO scheduled_commands (command_name, last_execution, execution_count, last_success, last_error)
+                VALUES (:command_name, NOW(), 1, :last_success, :last_error)
+                ON DUPLICATE KEY UPDATE
+                    last_execution = NOW(),
+                    execution_count = execution_count + 1,
+                    last_success = VALUES(last_success),
+                    last_error = VALUES(last_error)
+            ";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                'command_name' => $commandName,
+                'last_success' => $result['success'] ? date('Y-m-d H:i:s') : null,
+                'last_error' => $result['success'] ? null : $result['message']
+            ]);
+        } catch (Exception $e) {
+            $this->logger->error("Failed to record command execution: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get command execution history
+     * @param string $commandName
+     * @return array|null
+     */
+    public function getCommandHistory(string $commandName): ?array
+    {
+        try {
+            $sql = "SELECT * FROM scheduled_commands WHERE command_name = :command_name";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['command_name' => $commandName]);
+            
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            $this->logger->error("Failed to get command history: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * List all command execution histories
+     * @return array
+     */
+    public function getAllCommandHistories(): array
+    {
+        try {
+            $sql = "SELECT * FROM scheduled_commands ORDER BY last_execution DESC";
+            $stmt = $this->pdo->query($sql);
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            $this->logger->error("Failed to get all command histories: " . $e->getMessage());
+            return [];
+        }
+    }
+} 

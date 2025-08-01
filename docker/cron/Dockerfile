@@ -18,25 +18,23 @@
 #RUN service cron start -f
 #CMD ["cron", "-f"]
 
-FROM php:8.2-apache
+FROM ubuntu:22.04
 
-# Updating packages and installing cron
-RUN apt-get update && apt-get install cron -y
+# Install cron and curl
+RUN apt-get update && apt-get install -y cron curl
 
-
-RUN apt-get update && apt-get install -y \
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libpng-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-install pdo_mysql
+# Set working directory
+WORKDIR /var/www/html
 
 # Adding crontab to the appropriate location
 ADD scheduler /etc/cron.d/my-cron-file
 
-# Giving permission to crontab file
-RUN chmod 0644 /etc/cron.d/my-cron-file
+# Copy the API call script
+COPY call_schedule_api.sh /var/www/html/call_schedule_api.sh
+
+# Giving permission to crontab file and script
+RUN chmod 0644 /etc/cron.d/my-cron-file && \
+    chmod +x /var/www/html/call_schedule_api.sh
 
 RUN touch /var/log/cron.log
 

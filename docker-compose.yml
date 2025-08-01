@@ -154,11 +154,9 @@ services:
     build:
       context: ./docker/cron
       dockerfile: Dockerfile
-    links:
-      - app
-      - db-1
-    volumes:
-      - working_dir2:/var/www/html/
+    container_name: vbapp-cron
+    depends_on:
+      - php-vasterbottenbrevetapp
     networks:
       - sample_network
 networks:

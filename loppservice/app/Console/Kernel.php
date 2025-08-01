@@ -5,6 +5,7 @@ namespace App\Console;
 use App\Console\Commands\CountryUpdate;
 use App\Console\Commands\PingEbrevetEventApp;
 use App\Console\Commands\RemoveIncompletedRegistrations;
+use App\Console\Commands\ExampleEveryTwoMinutes;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -22,6 +23,8 @@ class Kernel extends ConsoleKernel
             ->daily();
         $schedule->command(PingEbrevetEventApp::class)
             ->hourly();
+      /*   $schedule->command(ExampleEveryTwoMinutes::class)
+            ->everyTwoMinutes(); */
 
 //        $schedule->call(function () {
 //
