@@ -33,6 +33,7 @@ use League\Csv\Writer;
 use App\Domain\Model\Result\Repository\ResultRepository;
 use App\Domain\Model\Organizer\Repository\OrganizerRepository;
 use App\common\Service\EmailService;
+use App\common\Service\LoggerService;
 use App\Domain\Model\Track\Service\TrackService;
 use PDO;
 use PDOException;
@@ -60,6 +61,7 @@ class ParticipantService extends ServiceAbstract
     private $connection;
     private $emailService;
     private $trackService;
+    private $logger;
 
     public function __construct(
         ContainerInterface             $c,
@@ -81,7 +83,8 @@ class ParticipantService extends ServiceAbstract
         OrganizerRepository $organizerRepository,
         PDO $connection,
         EmailService $emailService,
-        TrackService $trackService
+        TrackService $trackService,
+        LoggerService $logger
     ) {
         $this->trackRepository = $trackRepository;
         $this->participantRepository = $participantRepository;
@@ -103,6 +106,7 @@ class ParticipantService extends ServiceAbstract
         $this->connection = $connection;
         $this->emailService = $emailService;
         $this->trackService = $trackService;
+        $this->logger = $logger;
     }
 
 
@@ -841,6 +845,14 @@ class ParticipantService extends ServiceAbstract
 
     public function addParticipantOnTrackFromLoppservice(LoppservicePersonRepresentation $loppservicePersonRepresentation, string $track_uid, $loppserviceRegistrationRepresentation, $club, $medal): bool
     {
+        // Log the start of participant creation from loppservice
+        if (isset($this->logger)) {
+            $this->logger->info('Starting participant creation from loppservice', [
+                'track_uid' => $track_uid,
+                'person_uid' => $loppservicePersonRepresentation->person_uid ?? 'unknown',
+                'registration_uid' => $loppserviceRegistrationRepresentation->registration['registration_uid'] ?? 'unknown'
+            ]);
+        }
 
         $finnsitabell = GlobalConfig::get($track_uid);
 
@@ -865,6 +877,12 @@ class ParticipantService extends ServiceAbstract
 
             $track = $this->trackRepository->getTrackByUid($track_uid);
             if (!isset($track)) {
+                if (isset($this->logger)) {
+                    $this->logger->error('Track not found during participant creation', [
+                        'track_uid' => $track_uid,
+                        'person_uid' => $person_uid ?? 'unknown'
+                    ]);
+                }
                 throw new BrevetException("Track not exists", 5, null);
             }
 
@@ -901,6 +919,13 @@ class ParticipantService extends ServiceAbstract
                 );
                 
                 if (!$competitor) {
+                    if (isset($this->logger)) {
+                        $this->logger->error('Failed to create competitor', [
+                            'person_uid' => $person_uid,
+                            'firstname' => $participant_to_create['firstname'],
+                            'surname' => $participant_to_create['surname']
+                        ]);
+                    }
                     throw new BrevetException("Failed to create competitor for person_uid: " . $person_uid, 5, null);
                 }
 
@@ -969,6 +994,14 @@ class ParticipantService extends ServiceAbstract
             $participantcreated = $this->participantRepository->createparticipant($participant);
             
             if (!isset($participantcreated)) {
+                if (isset($this->logger)) {
+                    $this->logger->error('Failed to create participant record', [
+                        'registration_uid' => $registration_uid,
+                        'person_uid' => $person_uid,
+                        'track_uid' => $track_uid,
+                        'startnumber' => $registration['startnumber']
+                    ]);
+                }
                 throw new BrevetException("Failed to create participant record", 5, null);
             }
 
@@ -991,6 +1024,16 @@ class ParticipantService extends ServiceAbstract
             // Re-throw BrevetException as-is
             throw $e;
         } catch (Exception $e) {
+            if (isset($this->logger)) {
+                $this->logger->error('Unexpected error during participant creation from loppservice', [
+                    'error' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'track_uid' => $track_uid ?? 'unknown',
+                    'person_uid' => $person_uid ?? 'unknown',
+                    'registration_uid' => $registration_uid ?? 'unknown'
+                ]);
+            }
             throw new BrevetException("Unexpected error: " . $e->getMessage() . " at line " . $e->getLine() . " in " . $e->getFile(), 5, null);
         }
     }
