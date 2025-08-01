@@ -69,7 +69,6 @@ class OrganizerAssembly
             
             return $statement->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
-            error_log("Error checking tracks for organizer: " . $e->getMessage());
             return [];
         }
     }

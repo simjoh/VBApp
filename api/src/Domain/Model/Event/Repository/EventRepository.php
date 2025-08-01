@@ -24,29 +24,19 @@ class EventRepository extends BaseRepository
 
     public function allEvents(): array
     {
-        $startTime = microtime(true);
-        error_log("EventRepository::allEvents START");
-        
         try {
-            $queryStart = microtime(true);
             $statement = $this->connection->prepare($this->sqls('allEvents'));
             $statement->execute();
             $events = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE,  \App\Domain\Model\Event\Event::class, null);
-            $queryTime = microtime(true) - $queryStart;
-            error_log("EventRepository::allEvents - SQL query took: " . number_format($queryTime * 1000, 2) . "ms, returned " . count($events) . " events");
 
             if (empty($events)) {
-                error_log("EventRepository::allEvents END - No events found, total time: " . number_format((microtime(true) - $startTime) * 1000, 2) . "ms");
                 return array();
             }
 
-            $totalTime = microtime(true) - $startTime;
-            error_log("EventRepository::allEvents END - Total time: " . number_format($totalTime * 1000, 2) . "ms");
             return $events;
         }
         catch(PDOException $e)
         {
-            error_log("EventRepository::allEvents ERROR: " . $e->getMessage());
             echo "Error: " . $e->getMessage();
         }
         return array();
@@ -54,36 +44,25 @@ class EventRepository extends BaseRepository
 
     public function eventFor(string $event_uid): ?Event
     {
-        $startTime = microtime(true);
-        error_log("EventRepository::eventFor START - event_uid: $event_uid");
-        
         try {
-            $queryStart = microtime(true);
             $statement = $this->connection->prepare($this->sqls('getEventByUid'));
             $statement->bindParam(':event_uid', $event_uid);
             $statement->execute();
             $event = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Event\Event::class, null);
-            $queryTime = microtime(true) - $queryStart;
-            error_log("EventRepository::eventFor - SQL query took: " . number_format($queryTime * 1000, 2) . "ms, returned " . count($event) . " events");
 
             if($statement->rowCount() > 1){
                 // Fixa bätter felhantering
                 throw new Exception();
             }
             if(!empty($event)){
-                $totalTime = microtime(true) - $startTime;
-                error_log("EventRepository::eventFor END - Event found, total time: " . number_format($totalTime * 1000, 2) . "ms");
                 return $event[0];
             }
         }
         catch(PDOException $e)
         {
-            error_log("EventRepository::eventFor ERROR: " . $e->getMessage());
             echo "Error: " . $e->getMessage();
         }
 
-        $totalTime = microtime(true) - $startTime;
-        error_log("EventRepository::eventFor END - No event found, total time: " . number_format($totalTime * 1000, 2) . "ms");
         return null;
     }
 

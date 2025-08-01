@@ -314,6 +314,7 @@
       <path value="$PROJECT_DIR$/api/vendor/graham-campbell/result-type" />
       <path value="$PROJECT_DIR$/api/vendor/vlucas/phpdotenv" />
       <path value="$PROJECT_DIR$/api/vendor/phpoption/phpoption" />
+      <path value="$PROJECT_DIR$/api/vendor/monolog/monolog" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4">

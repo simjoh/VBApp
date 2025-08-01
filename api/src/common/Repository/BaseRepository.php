@@ -70,7 +70,6 @@ abstract class BaseRepository extends Database
             return empty($results) ? [] : $results;
             
         } catch (\PDOException $e) {
-            error_log("Error in wildcard search: " . $e->getMessage());
             return [];
         }
     }
@@ -205,7 +204,6 @@ abstract class BaseRepository extends Database
             );
             
         } catch (\PDOException $e) {
-            error_log("Error in paginated query: " . $e->getMessage());
             return new PaginationResult(
                 data: [],
                 total: 0,
@@ -310,7 +308,6 @@ abstract class BaseRepository extends Database
             );
             
         } catch (\PDOException $e) {
-            error_log("Error in cursor paginated query: " . $e->getMessage());
             return new PaginationResult(
                 data: [],
                 total: 0,
@@ -355,7 +352,6 @@ abstract class BaseRepository extends Database
             
             return null;
         } catch (\Exception $e) {
-            error_log("Error getting cursor value: " . $e->getMessage());
             return null;
         }
     }

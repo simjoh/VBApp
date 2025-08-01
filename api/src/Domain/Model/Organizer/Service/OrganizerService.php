@@ -85,21 +85,14 @@ class OrganizerService
             try {
                 $organizerDTO = $this->createOrganizerDTOFromOrganizer($createdOrganizer);
                 
-                // Debug log
-                error_log("Creating organizer in LoppService with data: " . json_encode([
-                    'id' => $organizerDTO->id,
-                    'organization_name' => $organizerDTO->organization_name,
-                    'contact_person_name' => $organizerDTO->contact_person_name,
-                    'email' => $organizerDTO->email,
-                    'active' => $organizerDTO->active
-                ]));
+                // Create organizer in LoppService
                 
                 $createdOrganizerDTO = $this->organizerRestClient->createOrganizer($organizerDTO);
                 
                 if (!$createdOrganizerDTO) {
-                    error_log("Warning: Failed to create organizer in LoppService, but continuing with local organizer: " . $createdOrganizer->getId());
+                    // Failed to create organizer in LoppService, but continuing with local organizer
                 } else {
-                    error_log("Successfully created organizer in LoppService: " . $createdOrganizer->getId());
+                    // Successfully created organizer in LoppService
                 }
             } catch (\Exception $loppServiceException) {
                 // Only skip LoppService for connection errors, otherwise re-throw
@@ -107,9 +100,7 @@ class OrganizerService
                 if (strpos($errorMessage, 'Could not resolve host') !== false || 
                     strpos($errorMessage, 'Connection refused') !== false ||
                     strpos($errorMessage, 'Connection timed out') !== false) {
-                    // Connection issue - log and continue
-                    error_log("LoppService connection failed for new organizer " . $createdOrganizer->getId() . ": " . $errorMessage);
-                    error_log("Continuing with local organizer creation only");
+                    // Connection issue - continue with local organizer creation only
                 } else {
                     // Other error - re-throw to maintain existing behavior for non-connection issues
                     throw $loppServiceException;
@@ -123,14 +114,7 @@ class OrganizerService
             // Rollback the transaction if any exception occurs
             $connection->rollBack();
             
-            // Log the error with more details
-            error_log("Failed to create organizer with rollback: " . $e->getMessage());
-            error_log("Organizer data: " . json_encode([
-                'organization_name' => $organizer->getOrganizationName(),
-                'contact_person_name' => $organizer->getContactPersonName(),
-                'email' => $organizer->getEmail(),
-                'active' => $organizer->isActive()
-            ]));
+            // Failed to create organizer with rollback
             
             // Re-throw the exception to be handled by the caller
             throw new BrevetException("Det gick inte att skapa organizer: " . $e->getMessage(), 11, $e);
@@ -183,18 +167,18 @@ class OrganizerService
                     $updatedOrganizerDTO = $this->organizerRestClient->updateOrganizer($updatedOrganizer->getId(), $organizerDTO);
                     
                     if (!$updatedOrganizerDTO) {
-                        error_log("Warning: Failed to update organizer in LoppService, but continuing with local update: " . $updatedOrganizer->getId());
+                        // Failed to update organizer in LoppService, but continuing with local update
                     } else {
-                        error_log("Successfully updated organizer in LoppService: " . $updatedOrganizer->getId());
+                        // Successfully updated organizer in LoppService
                     }
                 } else {
                     // Organizer doesn't exist in LoppService, try to create it
                     $createdOrganizerDTO = $this->organizerRestClient->createOrganizer($organizerDTO);
                     
                     if (!$createdOrganizerDTO) {
-                        error_log("Warning: Failed to create organizer in LoppService, but continuing with local update: " . $updatedOrganizer->getId());
+                        // Failed to create organizer in LoppService, but continuing with local update
                     } else {
-                        error_log("Successfully created organizer in LoppService: " . $updatedOrganizer->getId());
+                        // Successfully created organizer in LoppService
                     }
                 }
             } catch (\Exception $loppServiceException) {
@@ -203,9 +187,7 @@ class OrganizerService
                 if (strpos($errorMessage, 'Could not resolve host') !== false || 
                     strpos($errorMessage, 'Connection refused') !== false ||
                     strpos($errorMessage, 'Connection timed out') !== false) {
-                    // Connection issue - log and continue
-                    error_log("LoppService connection failed for organizer " . $updatedOrganizer->getId() . ": " . $errorMessage);
-                    error_log("Continuing with local organizer update only");
+                    // Connection issue - continue with local organizer update only
                 } else {
                     // Other error - re-throw to maintain existing behavior for non-connection issues
                     throw $loppServiceException;
@@ -219,15 +201,7 @@ class OrganizerService
             // Rollback the transaction if any exception occurs
             $connection->rollBack();
             
-            // Log the error with more details
-            error_log("Failed to update organizer with rollback: " . $e->getMessage());
-            error_log("Organizer data: " . json_encode([
-                'id' => $organizer->getId(),
-                'organization_name' => $organizer->getOrganizationName(),
-                'contact_person_name' => $organizer->getContactPersonName(),
-                'email' => $organizer->getEmail(),
-                'active' => $organizer->isActive()
-            ]));
+            // Failed to update organizer with rollback
             
             // Re-throw the exception to be handled by the caller
             throw new BrevetException("Det gick inte att uppdatera organizer: " . $e->getMessage(), 14, $e);
@@ -272,8 +246,7 @@ class OrganizerService
                 try {
                     $this->organizerRestClient->deleteOrganizer($organizerId);
                 } catch (\Exception $e) {
-                    // Log the error but don't fail the main transaction
-                    error_log("Failed to delete organizer from loppservice: " . $e->getMessage());
+                    // Failed to delete organizer from loppservice, but don't fail the main transaction
                     // Could throw exception here if we want strict synchronization
                     // throw new BrevetException("Kunde inte ta bort arrangören från loppservice: " . $e->getMessage(), 4, null);
                 }
@@ -311,7 +284,6 @@ class OrganizerService
             
             return $statement->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
-            error_log("Error checking tracks for organizer: " . $e->getMessage());
             return [];
         }
     }

@@ -84,7 +84,6 @@ class TrackService extends ServiceAbstract
 
         $isracePassed = $this->trackRepository->isRacePassed($trackUid);
         
-        error_log("Final active status: " . var_export($track->isActive(), true));
         return $this->trackAssembly->toRepresentation($track, $permissions, $currentuserUid);
     }
 
@@ -101,23 +100,10 @@ class TrackService extends ServiceAbstract
 
     public function tracksForEvent(string $currentuserUid, string $event_uid): ?array
     {
-        $startTime = microtime(true);
-        error_log("TrackService::tracksForEvent START - event_uid: $event_uid");
-        
         $permissions = $this->getPermissions($currentuserUid);
         
-        $tracksQueryStart = microtime(true);
         $tracks = $this->trackRepository->tracksbyEvent($event_uid);
-        $tracksQueryTime = microtime(true) - $tracksQueryStart;
-        error_log("TrackService::tracksForEvent - tracksbyEvent query took: " . number_format($tracksQueryTime * 1000, 2) . "ms, returned " . count($tracks) . " tracks");
-
-        $assemblyStart = microtime(true);
         $result = $this->trackAssembly->toRepresentations($tracks, $currentuserUid, $permissions);
-        $assemblyTime = microtime(true) - $assemblyStart;
-        error_log("TrackService::tracksForEvent - toRepresentations took: " . number_format($assemblyTime * 1000, 2) . "ms");
-
-        $totalTime = microtime(true) - $startTime;
-        error_log("TrackService::tracksForEvent END - Total time: " . number_format($totalTime * 1000, 2) . "ms");
 
         return $result;
     }
@@ -446,33 +432,27 @@ class TrackService extends ServiceAbstract
             $deleteSuccess = $loppServiceClient->deleteEvent($track_uid);
             
             if ($deleteSuccess) {
-                error_log("Successfully deleted event from loppservice: " . $track_uid);
+                // Successfully deleted event from loppservice
             } else {
                 // Check if the event exists first to determine if the failure is due to "not found"
                 $existingEvent = $loppServiceClient->getEventById($track_uid);
                 if ($existingEvent === null) {
-                    error_log("Event not found in loppservice (this is OK): " . $track_uid);
+                    // Event not found in loppservice (this is OK)
                 } else {
-                    error_log("Failed to delete event from loppservice (event exists but deletion failed): " . $track_uid);
+                    // Failed to delete event from loppservice (event exists but deletion failed)
                 }
             }
         } catch (\Exception $e) {
-            // Log the error but don't fail the main deletion
-            error_log("Error deleting event in loppservice: " . $e->getMessage());
-            error_log("Track deletion completed locally, but loppservice sync failed for track: " . $track_uid);
+            // Track deletion completed locally, but loppservice sync failed
         }
     }
 
     public function publishResults(?string $track_uid, $publish, string $currentuserUid)
     {
-        error_log("publishResults called with track_uid: $track_uid, publish: " . var_export($publish, true) . ", user: $currentuserUid");
-        
         $track = $this->trackRepository->getTrackByUid($track_uid);
         if ($track == null) {
             throw new BrevetException("Finns ingen bana med angivet uid", 5);
         }
-
-        error_log("Track found - current active status: " . var_export($track->isActive(), true));
 
         // Get the database connection from the repository for transaction handling
         $connection = $this->trackRepository->getConnection();
@@ -484,13 +464,11 @@ class TrackService extends ServiceAbstract
             // When publishing (publish=true), set active=0 (published)
             // When unpublishing (publish=false), set active=1 (unpublished)
             $newActiveState = ($publish === true || $publish === "true") ? 0 : 1;
-            error_log("Setting track active state to: " . $newActiveState);
             
             $this->trackRepository->setInactive($track_uid, $newActiveState);
 
             // Commit the transaction
             $connection->commit();
-            error_log("Transaction committed successfully");
             
             // Return the updated track representation
             $permissions = $this->getPermissions($currentuserUid);
@@ -499,7 +477,6 @@ class TrackService extends ServiceAbstract
         } catch (\Exception $e) {
             // Rollback the transaction on any error
             $connection->rollBack();
-            error_log("Transaction rolled back due to error: " . $e->getMessage());
             
             if ($e instanceof BrevetException) {
                 throw $e;
@@ -520,8 +497,7 @@ class TrackService extends ServiceAbstract
                 return $this->rusaTimeTrackPlannerService->getresponseFromRusaTime($rusaPlannnerInput, $currentuserUid);
             }
         } catch (\Exception $e) {
-            // Log error and return empty response instead of letting the error bubble up
-            error_log("Error in planTrack: " . $e->getMessage());
+            // Return empty response instead of letting the error bubble up
             return new \App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation();
         }
     }
@@ -872,13 +848,11 @@ class TrackService extends ServiceAbstract
                 if ($createdEvent !== null) {
                     return true;
                 } else {
-                    error_log("Failed to create event in loppservice");
                     return false;
                 }
             } catch (\Exception $e) {
                 // Check if it's an "alreadyexists" error
                 if ($e->getMessage() === 'alreadyexists') {
-                    error_log("Event with this title already exists in loppservice");
                     throw new BrevetException("Ett event med detta namn finns redan i loppservice. Vänligen välj ett annat namn.", 9);
                 }
                 
@@ -887,9 +861,6 @@ class TrackService extends ServiceAbstract
             }
             
         } catch (\Exception $e) {
-            error_log("Exception in createEventInLoppservice: " . $e->getMessage());
-            error_log("Loppservice URL being used: " . $this->settings['loppserviceurl']);
-            
             // Re-throw the exception to let the calling code handle it
             throw $e;
         }
@@ -971,20 +942,15 @@ class TrackService extends ServiceAbstract
                 if ($updatedEvent !== null) {
                     return true;
                 } else {
-                    error_log("Failed to update event in loppservice");
                     return false;
                 }
             } catch (\Exception $e) {
-                error_log("Error updating event in loppservice: " . $e->getMessage());
                 // Don't throw exception for loppservice errors, just log and continue
                 return false;
             }
             
         } catch (\Exception $e) {
-            error_log("Exception in updateEventInLoppservice: " . $e->getMessage());
-            error_log("Loppservice URL being used: " . $this->settings['loppserviceurl']);
-            
-            // Don't throw exception for loppservice errors, just log and continue
+            // Don't throw exception for loppservice errors, just continue
             return false;
         }
     }

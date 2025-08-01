@@ -50,10 +50,6 @@ class VolonteerRepository extends BaseRepository
             $results = $statement->fetchAll(PDO::FETCH_ASSOC);
             
             // Debug: Log the column names from the first row
-            if (!empty($results)) {
-                error_log('Database columns: ' . implode(', ', array_keys($results[0])));
-                error_log('First row data: ' . print_r($results[0], true));
-            }
             
             if (empty($results)) {
                 return array();
@@ -72,7 +68,6 @@ class VolonteerRepository extends BaseRepository
         }
         catch(PDOException $e)
         {
-            error_log('PDO Error in getRandoneurToPassCheckpoint: ' . $e->getMessage());
             echo "Error: " . $e->getMessage();
         }
         return array();

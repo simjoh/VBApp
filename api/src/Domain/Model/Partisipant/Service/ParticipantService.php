@@ -1435,7 +1435,6 @@ class ParticipantService extends ServiceAbstract
                 'latest_registration' => $latestRegistration
             ];
         } catch (PDOException $e) {
-            error_log("Error getting participant stats: " . $e->getMessage());
             return [
                 'daily' => [
                     'countparticipants' => 0,
@@ -1474,8 +1473,7 @@ class ParticipantService extends ServiceAbstract
             FROM participant p
             JOIN track t ON t.track_uid = p.track_uid";
 
-        error_log("Daily stats query for date: " . $date);
-        error_log("SQL: " . $sql);
+        // Get daily stats for date
 
         $stmt = $this->connection->prepare($sql);
         $stmt->execute(['date' => $date]);
@@ -1493,15 +1491,13 @@ class ParticipantService extends ServiceAbstract
             FROM participant p
             JOIN track t ON t.track_uid = p.track_uid";
 
-        error_log("Weekly stats query for date: " . $date);
-        error_log("SQL: " . $sql);
+        // Get weekly stats for date
         
         $statement = $this->connection->prepare($sql);
         $statement->bindParam(':date', $date);
         $statement->execute();
         
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-        error_log("Weekly stats result: " . json_encode($result));
         
         return $result ?: [
             'countparticipants' => 0,
@@ -1523,15 +1519,13 @@ class ParticipantService extends ServiceAbstract
             FROM participant p
             JOIN track t ON t.track_uid = p.track_uid";
 
-        error_log("Yearly stats query for date: " . $date);
-        error_log("SQL: " . $sql);
+        // Get yearly stats for date
         
         $statement = $this->connection->prepare($sql);
         $statement->bindParam(':date', $date);
         $statement->execute();
         
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-        error_log("Yearly stats result: " . json_encode($result));
         
         return $result ?: [
             'countparticipants' => 0,
@@ -1606,20 +1600,14 @@ class ParticipantService extends ServiceAbstract
             ORDER BY total_participants DESC
             LIMIT 5";
 
-            error_log("Executing top tracks query: " . $sql);
-            
             $statement = $this->connection->prepare($sql);
             $statement->execute();
             
             $result = $statement->fetchAll(PDO::FETCH_ASSOC);
             
-            // Log the raw result
-            error_log("Raw top tracks result: " . json_encode($result));
-            
             return $result;
             
         } catch (\Exception $e) {
-            error_log("Error in getTopTracks: " . $e->getMessage());
             return [];
         }
     }
@@ -1663,8 +1651,7 @@ class ParticipantService extends ServiceAbstract
             return $clubUid;
             
         } catch (\Exception $e) {
-            // Log error but don't fail the registration
-            error_log("Failed to sync club from loppservice: " . $e->getMessage());
+            // Failed to sync club from loppservice
             return null;
         }
     }
@@ -1880,27 +1867,23 @@ class ParticipantService extends ServiceAbstract
             // Get participant with all related data
             $participant = $this->participantRepository->participantFor($participant_uid);
             if (!$participant) {
-                error_log("Participant not found for email notification: " . $participant_uid);
                 return false;
             }
 
             // Get track information
             $track = $this->trackService->getTrackByUid($participant->getTrackUid());
             if (!$track) {
-                error_log("Track not found for email notification: " . $participant->getTrackUid());
                 return false;
             }
 
             // Get competitor info for email
             $competitor = $this->competitorService->getCompetitorByUid($participant->getCompetitorUid(), "");
             if (!$competitor) {
-                error_log("Competitor not found for email notification: " . $participant_uid);
                 return false;
             }
 
             $competitorInfo = $this->competitorInfoRepository->getCompetitorInfoByCompetitorUid($competitor->getCompetitorUid());
             if (!$competitorInfo || !$competitorInfo->getEmail()) {
-                error_log("No email found for participant: " . $participant_uid);
                 return false;
             }
 
@@ -1938,9 +1921,6 @@ class ParticipantService extends ServiceAbstract
             // If mailhog is configured, send to mailhog for testing, otherwise send to actual competitor
             if ($mailHost === 'mailhog') {
                 $recipientEmail = 'receiverinbox@mailhog.local';
-                error_log("Development mode: Start number change email sent to mailhog (would be sent to: " . $competitorInfo->getEmail() . ")");
-            } else {
-                error_log("Production mode: Start number change email sent to competitor: " . $competitorInfo->getEmail());
             }
             
             $success = $this->emailService->sendEmailWithTemplate(
@@ -1950,16 +1930,11 @@ class ParticipantService extends ServiceAbstract
                 $emailData
             );
 
-            if ($success) {
-                error_log("Start number change notification sent successfully to: " . $competitorInfo->getEmail());
-            } else {
-                error_log("Failed to send start number change notification to: " . $competitorInfo->getEmail());
-            }
+            // Email notification sent
 
             return $success;
 
         } catch (\Exception $e) {
-            error_log("Error sending start number change notification: " . $e->getMessage());
             return false;
         }
     }

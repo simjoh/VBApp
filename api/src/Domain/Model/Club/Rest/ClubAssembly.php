@@ -64,9 +64,8 @@ class ClubAssembly
         try {
             return $this->participantRepository->isClubInUseByParticipants($clubUid);
         } catch (\Exception $e) {
-            // Log the error but don't prevent deletion if we can't check
-            error_log("Error checking if club is in use: " . $e->getMessage());
-            return false; // Allow deletion if we can't determine usage
+            // Allow deletion if we can't determine usage
+            return false;
         }
     }
 

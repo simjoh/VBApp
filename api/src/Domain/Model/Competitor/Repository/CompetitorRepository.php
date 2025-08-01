@@ -309,7 +309,6 @@ class CompetitorRepository extends BaseRepository
             
             return $refNr;
         } catch (PDOException $e) {
-            error_log("Error generating and storing ref_nr: " . $e->getMessage());
             // Return a fallback ref_nr if there's an error
             return '99999';
         }

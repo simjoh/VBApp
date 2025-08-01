@@ -24,7 +24,6 @@ class UserContextMiddleware
         $userAgent = $request->getHeaderLine("User-Agent");
         
         if ($userAgent === 'Loppservice/1.0') {
-            error_log("[UserContext] Skipping context for Loppservice request");
             return $handler->handle($request);
         }
 
@@ -39,8 +38,6 @@ class UserContextMiddleware
 
         if (!empty($token)) {
             try {
-                error_log("[UserContext] Processing token for request: " . $request->getUri()->getPath());
-                
                 $signer = new HS256($this->key);
                 $parser = new Parser($signer);
                 $claims = $parser->parse($token);
@@ -49,47 +46,21 @@ class UserContextMiddleware
                 $organizerId = isset($claims['organizer_id']) ? $claims['organizer_id'] : null;
                 $roles = isset($claims['roles']) ? $claims['roles'] : [];
 
-                error_log("[UserContext] Token claims: " . json_encode([
-                    'user_id' => $claims['id'],
-                    'organizer_id' => $organizerId,
-                    'roles' => $roles
-                ]));
-
                 // Initialize UserContext
                 UserContext::getInstance()->initialize($claims['id'], $organizerId, $roles);
-                
-                // Log the entire UserContext object for verification
-                $context = UserContext::getInstance();
-                error_log("[UserContext] Full UserContext object: " . json_encode([
-                    'userId' => $context->getUserId(),
-                    'organizerId' => $context->getOrganizerId(),
-                    'hasOrganization' => $context->hasOrganization(),
-                    'roles' => $context->getRoles(),
-                    'isAdmin' => $context->isAdmin(),
-                    'isVolonteer' => $context->isVolonteer(),
-                    'isCompetitor' => $context->isCompetitor(),
-                    'isSuperUser' => $context->isSuperUser(),
-                    'isDeveloper' => $context->isDeveloper()
-                ]));
-
-                error_log("[UserContext] Context initialized successfully");
 
                 // Handle the request
                 $response = $handler->handle($request);
 
                 // Clear context after request is handled
                 UserContext::getInstance()->clear();
-                error_log("[UserContext] Context cleared after request");
 
                 return $response;
             } catch (\Exception $e) {
-                error_log("[UserContext] Error processing token: " . $e->getMessage());
                 UserContext::getInstance()->clear();
                 throw $e;
             }
         }
-
-        error_log("[UserContext] No token found, proceeding without context");
         return $handler->handle($request);
     }
 
@@ -106,7 +77,6 @@ class UserContextMiddleware
                 $normalizedRoles[] = $value;
             }
         }
-        error_log("[UserContext] Normalized roles: " . json_encode($normalizedRoles));
         return $normalizedRoles;
     }
 } 

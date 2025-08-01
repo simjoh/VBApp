@@ -47,3 +47,12 @@ curl -X PUT \
     "to_track_uid": "04b9b0c6-9b25-407e-a70f-0e3a79465957"
   }' \
   "http://localhost:8090/api/participants/move"
+
+
+
+if i want you to check logs in api then check container php-apache and logs dir for logfile
+
+When logging.
+
+Dont spam the log with unneccessary logs.
+Log important things for system

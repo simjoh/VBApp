@@ -120,9 +120,9 @@ class EventService extends ServiceAbstract
                     $updatedEventGroup = $this->eventGroupRestClient->updateEventGroup($event->getEventUid(), $eventGroupDTO);
                     
                     if (!$updatedEventGroup) {
-                        error_log("Warning: Failed to update event group in LoppService, but continuing with local update: " . $event->getEventUid());
+                        // Failed to update event group in LoppService, but continuing with local update
                     } else {
-                        error_log("Successfully updated event group in LoppService: " . $event->getEventUid());
+                        // Successfully updated event group in LoppService
                     }
                 } else {
                     // Event group doesn't exist in LoppService, try to create it
@@ -131,9 +131,9 @@ class EventService extends ServiceAbstract
                     $createdEventGroup = $this->eventGroupRestClient->createEventGroup($eventGroupDTO);
                     
                     if (!$createdEventGroup) {
-                        error_log("Warning: Failed to create event group in LoppService, but continuing with local update: " . $event->getEventUid());
+                        // Failed to create event group in LoppService, but continuing with local update
                     } else {
-                        error_log("Successfully created event group in LoppService: " . $event->getEventUid());
+                        // Successfully created event group in LoppService
                     }
                 }
             } catch (\Exception $loppServiceException) {
@@ -142,9 +142,7 @@ class EventService extends ServiceAbstract
                 if (strpos($errorMessage, 'Could not resolve host') !== false || 
                     strpos($errorMessage, 'Connection refused') !== false ||
                     strpos($errorMessage, 'Connection timed out') !== false) {
-                    // Connection issue - log and continue
-                    error_log("LoppService connection failed for event " . $event->getEventUid() . ": " . $errorMessage);
-                    error_log("Continuing with local event update only");
+                    // Connection issue - continue with local event update only
                 } else {
                     // Other error - re-throw to maintain existing behavior for non-connection issues
                     throw $loppServiceException;
@@ -158,15 +156,7 @@ class EventService extends ServiceAbstract
             // Rollback the transaction if any exception occurs
             $connection->rollBack();
             
-            // Log the error with more details
-            error_log("Failed to update event with rollback: " . $e->getMessage());
-            error_log("Event data: " . json_encode([
-                'uid' => $event->getEventUid(),
-                'title' => $event->getTitle(),
-                'description' => $event->getDescription(),
-                'startdate' => $event->getStartdate(),
-                'enddate' => $event->getEnddate()
-            ]));
+            // Failed to update event with rollback
             
             // Re-throw the exception to be handled by the caller
             throw new BrevetException("Det gick inte att uppdatera event: " . $e->getMessage(), 14, $e);
@@ -196,21 +186,14 @@ class EventService extends ServiceAbstract
             try {
                 $eventGroupDTO = $this->createEventGroupFromEvent($event);
                 
-                // Debug log
-                error_log("Creating event group with data: " . json_encode([
-                    'uid' => $eventGroupDTO->uid,
-                    'name' => $eventGroupDTO->name,
-                    'description' => $eventGroupDTO->description,
-                    'startdate' => $eventGroupDTO->startdate,
-                    'enddate' => $eventGroupDTO->enddate
-                ]));
+                // Create event group in LoppService
                 
                 $createdEventGroup = $this->eventGroupRestClient->createEventGroup($eventGroupDTO);
         
                 if (!$createdEventGroup) {
-                    error_log("Warning: Failed to create event group in LoppService, but continuing with local event: " . $event->getEventUid());
+                    // Failed to create event group in LoppService, but continuing with local event
                 } else {
-                    error_log("Successfully created event group in LoppService: " . $event->getEventUid());
+                    // Successfully created event group in LoppService
                 }
             } catch (\Exception $loppServiceException) {
                 // Only skip LoppService for connection errors, otherwise re-throw
@@ -218,9 +201,7 @@ class EventService extends ServiceAbstract
                 if (strpos($errorMessage, 'Could not resolve host') !== false || 
                     strpos($errorMessage, 'Connection refused') !== false ||
                     strpos($errorMessage, 'Connection timed out') !== false) {
-                    // Connection issue - log and continue
-                    error_log("LoppService connection failed for new event " . $event->getEventUid() . ": " . $errorMessage);
-                    error_log("Continuing with local event creation only");
+                    // Connection issue - continue with local event creation only
                 } else {
                     // Other error - re-throw to maintain existing behavior for non-connection issues
                     throw $loppServiceException;
@@ -233,15 +214,7 @@ class EventService extends ServiceAbstract
             // Rollback the transaction if any exception occurs
             $connection->rollBack();
             print_r($e->getMessage());
-            // Log the error with more details
-            error_log("Failed to create event with rollback. Error: " . $e->getMessage());
-            error_log("Event data: " . json_encode([
-                'uid' => $event->getEventUid(),
-                'title' => $event->getTitle(),
-                'description' => $event->getDescription(),
-                'startdate' => $event->getStartdate(),
-                'enddate' => $event->getEnddate()
-            ]));
+            // Failed to create event with rollback
             
             // Re-throw the exception to be handled by the caller
             throw new BrevetException("Det gick inte att skapa event: " . $e->getMessage(), 11, $e);
@@ -272,7 +245,7 @@ class EventService extends ServiceAbstract
             } catch (\Exception $e) {
                 // Check if the error message indicates the group wasn't found
                 if (strpos($e->getMessage(), 'Event group not found') !== false) {
-                    error_log("Event group not found in LoppService (this is OK): " . $e->getMessage());
+                    // Event group not found in LoppService (this is OK)
                     $connection->commit();
                     return;
                 }
@@ -314,43 +287,25 @@ class EventService extends ServiceAbstract
 
     public function eventInformation(string $eventUid, string $currentUserUid): array
     {
-        $startTime = microtime(true);
-        error_log("EventService::eventInformation START - eventUid: $eventUid");
-        
         $permissions = $this->getPermissions($currentUserUid);
         $eventInfos = array();
 
         if ($eventUid != "") {
             // Single event optimization
-            $eventStart = microtime(true);
             $event = $this->eventRepository->eventFor($eventUid);
-            $eventTime = microtime(true) - $eventStart;
-            error_log("EventService::eventInformation - Single event fetch took: " . number_format($eventTime * 1000, 2) . "ms");
             
             if (!$event) {
-                error_log("EventService::eventInformation END - No event found, total time: " . number_format((microtime(true) - $startTime) * 1000, 2) . "ms");
                 return [];
             }
             
-            $optimizedStart = microtime(true);
             $eventInfos = $this->getEventInformationOptimized([$event], $currentUserUid, $permissions);
-            $optimizedTime = microtime(true) - $optimizedStart;
-            error_log("EventService::eventInformation - getEventInformationOptimized took: " . number_format($optimizedTime * 1000, 2) . "ms");
         } else {
             // Multiple events optimization
-            $eventsStart = microtime(true);
             $events = $this->eventRepository->allEvents();
-            $eventsTime = microtime(true) - $eventsStart;
-            error_log("EventService::eventInformation - allEvents fetch took: " . number_format($eventsTime * 1000, 2) . "ms");
-            
-            $optimizedStart = microtime(true);
             $eventInfos = $this->getEventInformationOptimized($events, $currentUserUid, $permissions);
-            $optimizedTime = microtime(true) - $optimizedStart;
-            error_log("EventService::eventInformation - getEventInformationOptimized took: " . number_format($optimizedTime * 1000, 2) . "ms");
         }
 
         // Sort eventInfos by startdate (desc) and then by title
-        $sortStart = microtime(true);
         usort($eventInfos, function($a, $b) {
             $dateCompare = strtotime($b->getEvent()->getStartdate()) - strtotime($a->getEvent()->getStartdate());
             if ($dateCompare === 0) {
@@ -358,11 +313,6 @@ class EventService extends ServiceAbstract
             }
             return $dateCompare;
         });
-        $sortTime = microtime(true) - $sortStart;
-        error_log("EventService::eventInformation - Sorting took: " . number_format($sortTime * 1000, 2) . "ms");
-
-        $totalTime = microtime(true) - $startTime;
-        error_log("EventService::eventInformation END - Total time: " . number_format($totalTime * 1000, 2) . "ms, returned " . count($eventInfos) . " events");
 
         return $eventInfos;
     }
@@ -377,9 +327,6 @@ class EventService extends ServiceAbstract
      */
     private function getEventInformationOptimized(array $events, string $currentUserUid, array $permissions): array
     {
-        $startTime = microtime(true);
-        error_log("EventService::getEventInformationOptimized START - processing " . count($events) . " events");
-        
         if (empty($events)) {
             return [];
         }
@@ -397,7 +344,6 @@ class EventService extends ServiceAbstract
         
         // Batch fetch all tracks for all events in one query
         $allTracks = $this->getTracksForEventsBatch($eventUids, $currentUserUid);
-        error_log("EventService::getEventInformationOptimized - Batch fetched " . count($allTracks) . " tracks for " . count($eventUids) . " events");
         
         // Group tracks by event
         $tracksByEvent = [];
@@ -426,25 +372,17 @@ class EventService extends ServiceAbstract
                 'trackUids' => $trackUids
             ];
         }
-        $step1Time = microtime(true) - $step1Start;
-        error_log("EventService::getEventInformationOptimized - Step 1 (batch collect tracks) took: " . number_format($step1Time * 1000, 2) . "ms, found " . count($allTrackUids) . " tracks");
 
         // Step 2: Batch fetch all track statistics in one query
         $trackStatsMap = [];
         if (!empty($allTrackUids)) {
-            $step2Start = microtime(true);
             $trackStatsMap = $this->getTrackStatisticsBatch($allTrackUids);
-            $step2Time = microtime(true) - $step2Start;
-            error_log("EventService::getEventInformationOptimized - Step 2 (batch track statistics) took: " . number_format($step2Time * 1000, 2) . "ms");
         }
 
         // Step 3: Batch fetch all track details in one query
         $trackDetailsMap = [];
         if (!empty($allTrackUids)) {
-            $step3Start = microtime(true);
             $trackDetailsMap = $this->getTrackDetailsBatch($allTrackUids, $currentUserUid);
-            $step3Time = microtime(true) - $step3Start;
-            error_log("EventService::getEventInformationOptimized - Step 3 (batch track details) took: " . number_format($step3Time * 1000, 2) . "ms");
         }
 
         // Step 4: Build event information representations
@@ -479,11 +417,7 @@ class EventService extends ServiceAbstract
                 $eventData['tracks'] // Pass the pre-fetched Track objects
             );
         }
-        $step4Time = microtime(true) - $step4Start;
-        error_log("EventService::getEventInformationOptimized - Step 4 (build representations) took: " . number_format($step4Time * 1000, 2) . "ms");
-
-        $totalTime = microtime(true) - $startTime;
-        error_log("EventService::getEventInformationOptimized END - Total time: " . number_format($totalTime * 1000, 2) . "ms");
+        // Build representations completed
 
         return $eventInfos;
     }
@@ -501,28 +435,18 @@ class EventService extends ServiceAbstract
             return [];
         }
 
-        $startTime = microtime(true);
-        error_log("EventService::getTracksForEventsBatch START - processing " . count($eventUids) . " event UIDs");
-
         try {
             // Use a single query to get all tracks for all events
             $placeholders = str_repeat('?,', count($eventUids) - 1) . '?';
             $sql = "SELECT * FROM track WHERE event_uid IN ($placeholders)";
             
-            $queryStart = microtime(true);
             $statement = $this->trackservice->getTrackRepository()->connection->prepare($sql);
             $statement->execute($eventUids);
             $tracks = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Track\Track::class, null);
-            $queryTime = microtime(true) - $queryStart;
-            error_log("EventService::getTracksForEventsBatch - SQL query took: " . number_format($queryTime * 1000, 2) . "ms, returned " . count($tracks) . " tracks");
             
         } catch (PDOException $e) {
-            error_log("Error in batch tracks for events: " . $e->getMessage());
             return [];
         }
-        
-        $totalTime = microtime(true) - $startTime;
-        error_log("EventService::getTracksForEventsBatch END - Total time: " . number_format($totalTime * 1000, 2) . "ms");
         
         return $tracks;
     }
@@ -535,9 +459,6 @@ class EventService extends ServiceAbstract
      */
     private function getTrackStatisticsBatch(array $trackUids): array
     {
-        $startTime = microtime(true);
-        error_log("EventService::getTrackStatisticsBatch START - processing " . count($trackUids) . " track UIDs");
-        
         if (empty($trackUids)) {
             return [];
         }
@@ -553,14 +474,10 @@ class EventService extends ServiceAbstract
                 WHERE track_uid IN ($placeholders)";
         
         try {
-            $queryStart = microtime(true);
             $statement = $this->statisticsRepository->connection->prepare($sql);
             $statement->execute($trackUids);
             $results = $statement->fetchAll(PDO::FETCH_ASSOC);
-            $queryTime = microtime(true) - $queryStart;
-            error_log("EventService::getTrackStatisticsBatch - SQL query took: " . number_format($queryTime * 1000, 2) . "ms, returned " . count($results) . " rows");
             
-            $processStart = microtime(true);
             foreach ($results as $row) {
                 $trackStats = new \App\Domain\Model\Stats\TrackStatistics();
                 $trackStats->setCountParticipants((int)$row['countParticipants']);
@@ -570,15 +487,12 @@ class EventService extends ServiceAbstract
                 
                 $trackStatsMap[$row['track_uid']] = $trackStats;
             }
-            $processTime = microtime(true) - $processStart;
-            error_log("EventService::getTrackStatisticsBatch - Processing results took: " . number_format($processTime * 1000, 2) . "ms");
             
         } catch (PDOException $e) {
-            error_log("Error in batch track statistics: " . $e->getMessage());
+            // Error in batch track statistics
         }
         
-        $totalTime = microtime(true) - $startTime;
-        error_log("EventService::getTrackStatisticsBatch END - Total time: " . number_format($totalTime * 1000, 2) . "ms, returned " . count($trackStatsMap) . " track stats");
+        // Track statistics batch processing completed
         
         return $trackStatsMap;
     }
@@ -592,9 +506,6 @@ class EventService extends ServiceAbstract
      */
     private function getTrackDetailsBatch(array $trackUids, string $currentUserUid): array
     {
-        $startTime = microtime(true);
-        error_log("EventService::getTrackDetailsBatch START - processing " . count($trackUids) . " track UIDs");
-        
         if (empty($trackUids)) {
             return [];
         }
@@ -607,26 +518,19 @@ class EventService extends ServiceAbstract
         $sql = "SELECT * FROM track WHERE track_uid IN ($placeholders)";
         
         try {
-            $tracksQueryStart = microtime(true);
             $statement = $this->trackservice->getTrackRepository()->connection->prepare($sql);
             $statement->execute($trackUids);
             $tracks = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Track\Track::class, null);
-            $tracksQueryTime = microtime(true) - $tracksQueryStart;
-            error_log("EventService::getTrackDetailsBatch - Tracks query took: " . number_format($tracksQueryTime * 1000, 2) . "ms, returned " . count($tracks) . " tracks");
             
             // Get all checkpoints for all tracks in one query
-            $checkpointQueryStart = microtime(true);
             $checkpointSql = "SELECT tc.track_uid, tc.checkpoint_uid 
                              FROM track_checkpoint tc 
                              WHERE tc.track_uid IN ($placeholders)";
             $checkpointStatement = $this->trackservice->getTrackRepository()->connection->prepare($checkpointSql);
             $checkpointStatement->execute($trackUids);
             $checkpointResults = $checkpointStatement->fetchAll(PDO::FETCH_ASSOC);
-            $checkpointQueryTime = microtime(true) - $checkpointQueryStart;
-            error_log("EventService::getTrackDetailsBatch - Checkpoints query took: " . number_format($checkpointQueryTime * 1000, 2) . "ms, returned " . count($checkpointResults) . " checkpoints");
             
             // Group checkpoints by track
-            $groupStart = microtime(true);
             $trackCheckpoints = [];
             foreach ($checkpointResults as $row) {
                 if (!isset($trackCheckpoints[$row['track_uid']])) {
@@ -634,11 +538,8 @@ class EventService extends ServiceAbstract
                 }
                 $trackCheckpoints[$row['track_uid']][] = $row['checkpoint_uid'];
             }
-            $groupTime = microtime(true) - $groupStart;
-            error_log("EventService::getTrackDetailsBatch - Grouping checkpoints took: " . number_format($groupTime * 1000, 2) . "ms");
             
             // Build track representations
-            $buildStart = microtime(true);
             foreach ($tracks as $track) {
                 $trackUid = $track->getTrackUid();
                 
@@ -652,15 +553,12 @@ class EventService extends ServiceAbstract
                 $trackInformationRepresentation = $this->trackInformationAssembly->toRepresentation($trackRepresentation, $permissions, $currentUserUid, null);
                 $trackDetailsMap[$trackUid] = $trackInformationRepresentation;
             }
-            $buildTime = microtime(true) - $buildStart;
-            error_log("EventService::getTrackDetailsBatch - Building representations took: " . number_format($buildTime * 1000, 2) . "ms");
             
         } catch (PDOException $e) {
-            error_log("Error in batch track details: " . $e->getMessage());
+            // Error in batch track details
         }
         
-        $totalTime = microtime(true) - $startTime;
-        error_log("EventService::getTrackDetailsBatch END - Total time: " . number_format($totalTime * 1000, 2) . "ms, returned " . count($trackDetailsMap) . " track details");
+        // Track details batch processing completed
         
         return $trackDetailsMap;
     }
@@ -748,7 +646,6 @@ class EventService extends ServiceAbstract
                     $dateTime = new \DateTime($date);
                     return $dateTime->format('Y-m-d');
                 } catch (\Exception $e) {
-                    error_log("Failed to parse ISO date: " . $date . " - " . $e->getMessage());
                     return date('Y-m-d');
                 }
             }
@@ -762,7 +659,6 @@ class EventService extends ServiceAbstract
             try {
                 return date('Y-m-d', strtotime($date));
             } catch (\Exception $e) {
-                error_log("Failed to parse date string: " . $date . " - " . $e->getMessage());
                 return date('Y-m-d');
             }
         }
@@ -775,7 +671,6 @@ class EventService extends ServiceAbstract
         try {
             return date('Y-m-d', strtotime($date));
         } catch (\Exception $e) {
-            error_log("Failed to format date: " . print_r($date, true) . " - " . $e->getMessage());
             return date('Y-m-d');
         }
     }

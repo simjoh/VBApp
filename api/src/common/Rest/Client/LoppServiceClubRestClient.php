@@ -222,20 +222,7 @@ class LoppServiceClubRestClient
      */
     private function handleException(RequestException $e): void
     {
-        $errorMessage = 'LoppService API Error';
-        $statusCode = 'Unknown';
-        $responseBody = 'No response body';
-
-        if ($e->hasResponse()) {
-            $response = $e->getResponse();
-            $statusCode = $response->getStatusCode();
-            $responseBody = $response->getBody()->getContents();
-            $errorMessage .= " ({$statusCode}): {$responseBody}";
-        } else {
-            $errorMessage .= ': ' . $e->getMessage();
-        }
-
-        error_log($errorMessage);
+        // Exception handling without logging - let the calling code handle logging if needed
         throw $e;
     }
 } 
