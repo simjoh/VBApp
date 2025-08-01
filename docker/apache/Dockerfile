@@ -57,10 +57,13 @@ RUN a2enmod setenvif headers rewrite || true
 # Set working directory (optional but recommended)
 WORKDIR /var/www/html
 
-# Create uploads directory and set permissions
+# Create uploads and logs directories and set permissions
 RUN mkdir -p /var/www/html/api/uploads && \
+    mkdir -p /var/www/html/api/logs && \
     chown -R www-data:www-data /var/www/html/api/uploads && \
-    chmod -R 755 /var/www/html/api/uploads
+    chown -R www-data:www-data /var/www/html/api/logs && \
+    chmod -R 755 /var/www/html/api/uploads && \
+    chmod -R 755 /var/www/html/api/logs
 
 # Create entrypoint script to fix permissions on container start
 COPY docker/apache/entrypoint.sh /usr/local/bin/entrypoint.sh
