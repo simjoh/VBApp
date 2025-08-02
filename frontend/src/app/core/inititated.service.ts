@@ -15,17 +15,17 @@ export class InititatedService {
 
   private initiated(): Observable<boolean> {
     const token = localStorage.getItem('loggedInUser');
-    
+
     if (!token) {
       return of(true);
     }
 
     // Validate token by making a simple API call
-    return this.http.get(`${environment.backend_url}ping`, { 
-      headers: { 
+    return this.http.get(`${environment.backend_url}ping`, {
+      headers: {
         'APIKEY': environment.api_key,
-        'TOKEN': token 
-      } 
+        'TOKEN': token
+      }
     }).pipe(
       map(() => true),
       catchError(() => {

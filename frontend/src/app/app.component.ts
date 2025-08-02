@@ -23,8 +23,8 @@ export class AppComponent implements OnInit, OnDestroy{
 
   constructor(
     private primengConfig: PrimeNGConfig,
-    injector: Injector, 
-    private initiatedService: InititatedService, 
+    injector: Injector,
+    private initiatedService: InititatedService,
     private authenticatedservice: AuthenticatedService,
     private authService: AuthService
   ) {
@@ -33,7 +33,7 @@ export class AppComponent implements OnInit, OnDestroy{
 
   ngOnInit() {
     this.primengConfig.ripple = true;
-    
+
     // Validate token every 5 minutes
     this.tokenValidationSubscription = interval(5 * 60 * 1000).pipe(
       switchMap(() => this.authService.validateToken())

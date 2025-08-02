@@ -130,7 +130,7 @@ export class AuthService {
 
   public validateToken(): Observable<boolean> {
     const token = localStorage.getItem('loggedInUser');
-    
+
     if (!token) {
       return of(false);
     }
