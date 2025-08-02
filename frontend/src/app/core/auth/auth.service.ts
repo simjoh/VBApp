@@ -118,12 +118,30 @@ export class AuthService {
   public logoutUser() {
     localStorage.removeItem('loggedInUser');
     localStorage.removeItem('activeUser');
-    this.authSubjet.next(null)
+    this.authSubjet.next(null);
     this.authenticatedService.authenticatedSubject.next(false);
+    this.authenticatedService.updateAuthenticationStatus();
+    this.router.navigate(['/login']);
   }
 
   public reload(){
     this.authSubjet.next(null);
+  }
+
+  public validateToken(): Observable<boolean> {
+    const token = localStorage.getItem('loggedInUser');
+    
+    if (!token) {
+      return of(false);
+    }
+
+    return this.httpClient.get(this.backendUrl() + 'ping').pipe(
+      map(() => true),
+      catchError(() => {
+        this.logoutUser();
+        return of(false);
+      })
+    );
   }
 
   private backendUrl(): string{
