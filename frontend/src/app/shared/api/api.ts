@@ -129,6 +129,7 @@ export interface ParticipantToPassCheckpointRepresentation {
   has_checkouted: boolean;
   volonteer_checkin: boolean;
   dnf: boolean;
+  started: boolean;
   link: Link[];
 }
 

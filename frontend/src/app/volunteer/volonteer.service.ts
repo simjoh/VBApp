@@ -39,6 +39,17 @@ export class VolonteerService {
     ) as Observable<Array<CheckpointRepresentation>>;
   }
 
+  public getParticipantsForCheckpoint(trackuid: string, checkpoint_uid: string): Observable<Array<ParticipantToPassCheckpointRepresentation>>{
+    const path = "volonteer/track/" + trackuid + "/checkpoint/" + checkpoint_uid + "/randonneurs";
+    return this.httpClient.get<Array<ParticipantToPassCheckpointRepresentation>>(environment.backend_url + path).pipe(
+      take(1),
+      map((participants: Array<ParticipantToPassCheckpointRepresentation>) => {
+        return participants;
+      }),
+      shareReplay(1)
+    ) as Observable<Array<ParticipantToPassCheckpointRepresentation>>;
+  }
+
 
   public checkinParticipant(product: any): Promise<boolean>{
     const link = this.linkService.findByRel(product.link,'relation.volonteer.stamp', HttpMethod.PUT)
