@@ -1668,6 +1668,7 @@ class ParticipantService extends ServiceAbstract
         // Get the participant to verify it exists
         $participant = $this->participantRepository->participantFor($participant_uid);
         if (!$participant) {
+            error_log('moveParticipantToTrack: participant not found ' . $participant_uid);
             throw new BrevetException("Participant not found with UID: " . $participant_uid, 404);
         }
         
@@ -1676,22 +1677,26 @@ class ParticipantService extends ServiceAbstract
         // Validate that the new track exists
         $newTrack = $this->trackRepository->getTrackByUid($new_track_uid);
         if (!$newTrack) {
+            error_log('moveParticipantToTrack: target track not found ' . $new_track_uid);
             throw new BrevetException("Target track not found with UID: " . $new_track_uid, 404);
         }
         
         // Check if participant has already started (has stamps, DNF, DNS, or finished)
         if ($participant->isStarted() || $participant->isFinished() || $participant->isDnf() || $participant->isDns()) {
+            error_log('moveParticipantToTrack: participant cannot be moved due to state (started/finished/DNF/DNS) uid=' . $participant_uid);
             throw new BrevetException("Cannot move participant who has already started, finished, DNF, or DNS", 9);
         }
         
         // Check if the participant is already on the target track
         if ($old_track_uid === $new_track_uid) {
+            error_log('moveParticipantToTrack: participant already on target track uid=' . $participant_uid . ' track=' . $new_track_uid);
             throw new BrevetException("Participant is already on the target track", 9);
         }
         
         // Check if there's already a participant with the same start number on the target track
         $existingParticipant = $this->participantRepository->participantOntRackAndStartNumber($new_track_uid, $participant->getStartnumber());
         if ($existingParticipant) {
+            error_log('moveParticipantToTrack: start number conflict uid=' . $participant_uid . ' startnumber=' . $participant->getStartnumber() . ' targetTrack=' . $new_track_uid);
             throw new BrevetException("A participant with start number " . $participant->getStartnumber() . " already exists on the target track", 9);
         }
         
@@ -1750,7 +1755,24 @@ class ParticipantService extends ServiceAbstract
         
         // Move all participants using the repository method
         $results = $this->participantRepository->moveAllParticipantsToTrack($from_track_uid, $to_track_uid);
-        
+
+        // Send move notification to all successfully moved participants
+        if (isset($results['success']) && is_array($results['success'])) {
+            foreach ($results['success'] as $successItem) {
+                try {
+                    $uid = $successItem['participant_uid'] ?? null;
+                    $start = (string)($successItem['startnumber'] ?? '');
+                    if ($uid) {
+                        // Use same old/new startnumber -> template will omit change section
+                        $this->sendStartNumberChangeNotification($uid, $start, $start);
+                    }
+                } catch (\Throwable $e) {
+                    // Avoid breaking the move flow due to email issues
+                    error_log('Bulk move email failed for participant ' . ($successItem['participant_uid'] ?? 'unknown') . ': ' . $e->getMessage());
+                }
+            }
+        }
+
         return $results;
     }
 
@@ -1912,7 +1934,7 @@ class ParticipantService extends ServiceAbstract
             ];
 
             // Send email - check if we're in development (mailhog) or production mode
-            $subject = "Startnummer ändrat - " . $track->getTitle();
+            $subject = "Flytt av deltagande - " . $track->getTitle();
             
             // Get mail configuration
             $mailHost = $this->settings['mail']['mail_host'] ?? 'mailhog';
@@ -1926,7 +1948,7 @@ class ParticipantService extends ServiceAbstract
             $success = $this->emailService->sendEmailWithTemplate(
                 $recipientEmail,
                 $subject,
-                'startnumber-changed-email-template.php',
+                'participant-moved-email-template.php',
                 $emailData
             );
 

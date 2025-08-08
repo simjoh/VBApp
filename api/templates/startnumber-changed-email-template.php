@@ -87,7 +87,19 @@
             </div>
             
             <p><strong>Event:</strong> <?php echo htmlspecialchars($track->getTitle() ?? ''); ?></p>
-            <p><strong>Datum:</strong> <?php echo htmlspecialchars($track->getStartDateTime() ?? ''); ?></p>
+            <p><strong>Datum:</strong> <?php
+                $raw = $track->getStartDateTime();
+                if ($raw instanceof DateTimeInterface) {
+                    echo htmlspecialchars($raw->format('Y-m-d H:i'));
+                } else {
+                    try {
+                        $dt = new DateTime((string)$raw);
+                        echo htmlspecialchars($dt->format('Y-m-d H:i'));
+                    } catch (Exception $e) {
+                        echo htmlspecialchars((string)$raw);
+                    }
+                }
+            ?></p>
             <p><strong>Arrangör:</strong> <?php echo htmlspecialchars($organizer ?? ''); ?></p>
             
             <p>Om du har några frågor, vänligen kontakta arrangören.</p>

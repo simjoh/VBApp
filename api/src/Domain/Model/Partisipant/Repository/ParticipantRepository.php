@@ -1293,7 +1293,8 @@ class ParticipantRepository extends BaseRepository
                     
                     $results['success'][] = [
                         'participant_uid' => $participant->getParticipantUid(),
-                        'startnumber' => $participant->getStartnumber()
+                        'startnumber' => $participant->getStartnumber(),
+                        'moved_to_track_uid' => $to_track_uid
                     ];
                     
                 } catch (\Exception $e) {

@@ -71,6 +71,17 @@
         [disabled]="!participantComponentService.getCurrentTrackUid() || hasPublishLink()"
         [pTooltip]="hasPublishLink() ? 'Banan måste vara publicerad först' : ''">
       </button>
+
+      <!-- Move All Participants Button -->
+      <button
+        pButton
+        pRipple
+        icon="pi pi-users"
+        label="Flytta Alla Deltagare"
+        (click)="openMoveParticipantsDialog('bulk')"
+        class="p-button-outlined p-button-warning"
+        [disabled]="!participantComponentService.getCurrentTrackUid()">
+      </button>
     </div>
   </div>
 
@@ -118,7 +129,7 @@
           </div>
         </th>
         <th style="width: 15%">
-          <div class="text-right">Åtgärd</div>
+          <div class="text-right">Åtgärder</div>
         </th>
       </tr>
     </ng-template>
@@ -160,6 +171,17 @@
         </td>
         <td>
           <div class="flex justify-content-end gap-2">
+            <button
+              pButton
+              pRipple
+              icon="pi pi-exchange"
+              label="Flytta"
+              (click)="openMoveParticipantsDialog('single', participant)"
+              class="p-button-sm p-button-outlined p-button-warning"
+              pTooltip="Flytta deltagare till annan bana"
+              tooltipPosition="top"
+              [disabled]="participant.participant.started || participant.participant.finished || participant.participant.dnf || participant.participant.dns">
+            </button>
             <button
               pButton
               pRipple

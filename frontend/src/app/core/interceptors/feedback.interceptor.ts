@@ -10,10 +10,24 @@ export class FeedbackInterceptor implements HttpInterceptor {
   constructor(private messageService: MessageService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(request).pipe(
+    // Allow developers to suppress error toasts per-request by adding header:
+    //  - 'X-Ignore-Errors': 'true' (or 'X-Suppress-Error': 'true')
+    const shouldSuppress = request.headers.get('X-Ignore-Errors') === 'true' || request.headers.get('X-Suppress-Error') === 'true';
+
+    // Do not pass the internal header to the backend
+    let sanitizedHeaders = request.headers;
+    if (sanitizedHeaders.has('X-Ignore-Errors')) {
+      sanitizedHeaders = sanitizedHeaders.delete('X-Ignore-Errors');
+    }
+    if (sanitizedHeaders.has('X-Suppress-Error')) {
+      sanitizedHeaders = sanitizedHeaders.delete('X-Suppress-Error');
+    }
+    const sanitizedRequest = (sanitizedHeaders === request.headers) ? request : request.clone({ headers: sanitizedHeaders });
+
+    return next.handle(sanitizedRequest).pipe(
       catchError(err => {
         if (err instanceof HttpErrorResponse) {
-          if (err.error){
+          if (!shouldSuppress && err.error){
             if (Number(err.error.code) >= 6 ){
               if (Number(err.error.code) === 7 ){
                 this.messageService.add({key: 'tc', severity:'info', summary: 'Info', detail: this.felmeddelandeFor(err)});

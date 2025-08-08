@@ -645,8 +645,38 @@ class ParticipantAction
         // Get the new track UID from the request body
         $requestData = json_decode($request->getBody()->getContents(), true);
         $new_track_uid = $requestData['new_track_uid'] ?? null;
+
+        // Minimal structured logging for diagnostics
+        try {
+            if ($this->container && $this->container->has('logger')) {
+                $this->container->get('logger')->info('MoveParticipantToTrack request', [
+                    'participant_uid' => $participant_uid,
+                    'new_track_uid' => $new_track_uid
+                ]);
+            } else {
+                error_log(sprintf(
+                    'MoveParticipantToTrack request: participant_uid=%s new_track_uid=%s',
+                    $participant_uid ?? 'NULL',
+                    $new_track_uid ?? 'NULL'
+                ));
+            }
+        } catch (\Throwable $e) {
+            // ignore logging failures
+        }
         
         if (!$new_track_uid) {
+            try {
+                if ($this->container && $this->container->has('logger')) {
+                    $this->container->get('logger')->info('MoveParticipantToTrack bad request: missing new_track_uid', [
+                        'participant_uid' => $participant_uid
+                    ]);
+                } else {
+                    error_log(sprintf(
+                        'MoveParticipantToTrack bad request: missing new_track_uid for participant_uid=%s',
+                        $participant_uid ?? 'NULL'
+                    ));
+                }
+            } catch (\Throwable $e) {}
             $errorResponse = ['error' => 'new_track_uid is required in request body'];
             $response->getBody()->write(json_encode($errorResponse));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);

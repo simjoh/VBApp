@@ -7,6 +7,7 @@ import {DialogService} from "primeng/dynamicdialog";
 import {EditTimeDialogComponent} from "../edit-time-dialog/edit-time-dialog.component";
 import {EditBrevenrDialogComponent} from "../edit-brevenr-dialog/edit-brevenr-dialog.component";
 import {EditCompetitorInfoDialogComponent} from "../edit-competitor-info-dialog/edit-competitor-info-dialog.component";
+import {MoveParticipantsDialogComponent} from "../move-participants-dialog/move-participants-dialog.component";
 import {environment} from "../../../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import { saveAs } from 'file-saver';
@@ -383,5 +384,36 @@ export class ParticipantTableComponent implements OnInit {
     } catch (error) {
       console.error('Error in publish operation:', error);
     }
+  }
+
+  openMoveParticipantsDialog(mode: 'single' | 'bulk', participant?: ParticipantInformationRepresentation): void {
+    const config = {
+      mode: mode,
+      participant: participant,
+      currentTrackUid: this.participantComponentService.getCurrentTrackUid()
+    };
+
+    const ref = this.dialogService.open(MoveParticipantsDialogComponent, {
+      data: config,
+      header: mode === 'single' ? 'Flytta Deltagare' : 'Flytta Deltagare Mellan Banor',
+      width: '55%',
+      modal: true,
+      closable: true,
+      maximizable: true
+    });
+
+    ref.onClose.subscribe((result: any) => {
+      if (result && result.success) {
+        this.participantComponentService.reload();
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Framgång',
+          detail: mode === 'single' ? 'Deltagare flyttad framgångsrikt' : 'Deltagare flyttade framgångsrikt'
+        });
+      } else if (result && result.reload) {
+        // Ensure list refresh if dialog signals a reload after bulk or conflict resolution
+        this.participantComponentService.reload();
+      }
+    });
   }
 }
