@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {DialogService} from "primeng/dynamicdialog";
 import {ConfirmationService, MenuItem} from "primeng/api";
+import {PageHeaderConfig} from '../../shared/components/page-header/page-header.component';
 
 @Component({
   selector: 'brevet-event-admin',
@@ -12,6 +13,12 @@ import {ConfirmationService, MenuItem} from "primeng/api";
 export class EventAdminComponent implements OnInit {
 
   designTabs = [];
+  
+  headerConfig: PageHeaderConfig = {
+    icon: 'pi pi-calendar',
+    title: 'Hantera Arrangemangsgrupp',
+    description: 'Hantera grupper av arrangemang'
+  };
 
   constructor() { }
 

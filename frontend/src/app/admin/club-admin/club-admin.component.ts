@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { DialogService } from "primeng/dynamicdialog";
 import { ConfirmationService, MenuItem } from "primeng/api";
+import {CompactPageHeaderConfig} from '../../shared/components';
 
 @Component({
   selector: 'brevet-club-admin',
@@ -12,6 +13,12 @@ import { ConfirmationService, MenuItem } from "primeng/api";
 export class ClubAdminComponent implements OnInit {
 
   designTabs = [];
+
+  headerConfig: CompactPageHeaderConfig = {
+    icon: 'pi pi-building',
+    title: 'Hantera Klubbar',
+    description: 'Hantera och organisera alla klubbar'
+  };
 
   constructor() { }
 

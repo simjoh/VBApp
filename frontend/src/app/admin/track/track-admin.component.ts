@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {MenuItem} from "primeng/api";
 import {TrackAdminComponentService} from "./track-admin-component.service";
+import {CompactPageHeaderConfig, CompactActionCardConfig} from '../../shared/components';
 
 @Component({
   selector: 'brevet-track-admin',
@@ -14,6 +15,27 @@ export class TrackAdminComponent implements OnInit {
 
   designTabs = [];
   tabs = [];
+
+  headerConfig: CompactPageHeaderConfig = {
+    icon: 'pi pi-directions',
+    title: 'Hantera Banor',
+    description: 'Hantera banor, kontrollpunkter och evenemang'
+  };
+
+  actionCards: CompactActionCardConfig[] = [
+    {
+      icon: 'pi pi-list',
+      title: 'Banlista',
+      description: 'Visa och hantera alla banor',
+      action: 'list'
+    },
+    {
+      icon: 'pi pi-map',
+      title: 'Banbyggare',
+      description: 'Skapa och redigera banor',
+      action: 'builder'
+    }
+  ];
 
   constructor(
     private router: Router,
@@ -42,6 +64,8 @@ export class TrackAdminComponent implements OnInit {
         routerLink: 'brevet-track-builder',
       }
     ] as MenuItem[];
+
+    this.updateActionCardsActiveState();
   }
 
   isActive(tab: string): boolean {
@@ -65,5 +89,17 @@ export class TrackAdminComponent implements OnInit {
         this.router.navigate(['/admin/banor/brevet-track-builder']);
         break;
     }
+  }
+
+  onActionCardClick(action: string): void {
+    this.navigateToTab(action);
+    this.updateActionCardsActiveState();
+  }
+
+  private updateActionCardsActiveState(): void {
+    this.actionCards = this.actionCards.map(card => ({
+      ...card,
+      isActive: this.isActive(card.action || '')
+    }));
   }
 }

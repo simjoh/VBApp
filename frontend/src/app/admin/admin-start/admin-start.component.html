@@ -1,10 +1,10 @@
 <div class="container-fluid px-4">
   <!-- Welcome Card -->
-  <div class="grid justify-content-center mb-3">
+  <div class="grid justify-content-center mb-2">
     <div class="col-12 md:col-8 lg:col-6">
       <p-card header="Välkommen till eBrevet" styleClass="text-center">
-        <div class="mb-3">
-          <img src="./assets/ebrevet-prod.svg" class="img-responsive" alt="RAW" style="max-height: 150px;">
+        <div class="mb-1">
+          <img src="./assets/ebrevet-prod.svg" class="img-responsive" alt="RAW" style="max-height: 100px;">
         </div>
         <ng-template pTemplate="footer">
           <div class="text-center">
@@ -23,10 +23,10 @@
         <!-- Dashboard -->
         <div class="col-12 sm:col-6 lg:col-4">
           <p-card styleClass="cursor-pointer hover:shadow-5" (click)="navigate('/admin/dashboard')">
-            <div class="flex align-items-center justify-content-center flex-column text-center p-2">
-              <i class="pi pi-chart-bar text-3xl mb-2" style="color: var(--primary-color)"></i>
-              <h3 class="m-2">Översikt</h3>
-              <p class="m-0">Översikt och statistik</p>
+            <div class="flex align-items-center justify-content-center flex-column text-center p-1">
+              <i class="pi pi-chart-bar text-xl mb-1" style="color: var(--primary-color)"></i>
+              <h5 class="m-0">Översikt</h5>
+              <p class="m-0 text-xs">Översikt och statistik</p>
             </div>
           </p-card>
         </div>
@@ -34,10 +34,10 @@
         <!-- Events -->
         <div class="col-12 sm:col-6 lg:col-4">
           <p-card styleClass="cursor-pointer hover:shadow-5" (click)="navigate('/admin/eventadmin')">
-            <div class="flex align-items-center justify-content-center flex-column text-center p-2">
-              <i class="pi pi-calendar text-3xl mb-2" style="color: var(--primary-color)"></i>
-              <h3 class="m-2">Arrangemangsgrupp</h3>
-              <p class="m-0">Hantera arrangemangsgrupper</p>
+            <div class="flex align-items-center justify-content-center flex-column text-center p-1">
+              <i class="pi pi-calendar text-xl mb-1" style="color: var(--primary-color)"></i>
+              <h5 class="m-0">Arrangemangsgrupp</h5>
+              <p class="m-0 text-xs">Hantera arrangemangsgrupper</p>
             </div>
           </p-card>
         </div>
@@ -45,10 +45,10 @@
         <!-- Tracks -->
         <div class="col-12 sm:col-6 lg:col-4">
           <p-card styleClass="cursor-pointer hover:shadow-5" (click)="navigate('/admin/banor')">
-            <div class="flex align-items-center justify-content-center flex-column text-center p-2">
-              <i class="pi pi-map text-3xl mb-2" style="color: var(--primary-color)"></i>
-              <h3 class="m-2">Banor</h3>
-              <p class="m-0">Hantera banor</p>
+            <div class="flex align-items-center justify-content-center flex-column text-center p-1">
+              <i class="pi pi-map text-xl mb-1" style="color: var(--primary-color)"></i>
+              <h5 class="m-0">Banor</h5>
+              <p class="m-0 text-xs">Hantera banor</p>
             </div>
           </p-card>
         </div>
@@ -56,10 +56,10 @@
         <!-- Participants -->
         <div class="col-12 sm:col-6 lg:col-4">
           <p-card styleClass="cursor-pointer hover:shadow-5" (click)="navigate('/admin/participant')">
-            <div class="flex align-items-center justify-content-center flex-column text-center p-2">
-              <i class="pi pi-users text-3xl mb-2" style="color: var(--primary-color)"></i>
-              <h3 class="m-2">Deltagare</h3>
-              <p class="m-0">Hantera deltagare</p>
+            <div class="flex align-items-center justify-content-center flex-column text-center p-1">
+              <i class="pi pi-users text-xl mb-1" style="color: var(--primary-color)"></i>
+              <h5 class="m-0">Deltagare</h5>
+              <p class="m-0 text-xs">Hantera deltagare</p>
             </div>
           </p-card>
         </div>
@@ -67,10 +67,10 @@
         <!-- Clubs -->
         <div class="col-12 sm:col-6 lg:col-4">
           <p-card styleClass="cursor-pointer hover:shadow-5" (click)="navigate('/admin/clubadmin')">
-            <div class="flex align-items-center justify-content-center flex-column text-center p-2">
-              <i class="pi pi-building text-3xl mb-2" style="color: var(--primary-color)"></i>
-              <h3 class="m-2">Klubbar</h3>
-              <p class="m-0">Hantera klubbar</p>
+            <div class="flex align-items-center justify-content-center flex-column text-center p-1">
+              <i class="pi pi-building text-xl mb-1" style="color: var(--primary-color)"></i>
+              <h5 class="m-0">Klubbar</h5>
+              <p class="m-0 text-xs">Hantera klubbar</p>
             </div>
           </p-card>
         </div>
@@ -78,10 +78,10 @@
         <!-- Sites -->
         <div class="col-12 sm:col-6 lg:col-4">
           <p-card styleClass="cursor-pointer hover:shadow-5" (click)="navigate('/admin/siteadmin')">
-            <div class="flex align-items-center justify-content-center flex-column text-center p-2">
-              <i class="pi pi-map-marker text-3xl mb-2" style="color: var(--primary-color)"></i>
-              <h3 class="m-2">Platser</h3>
-              <p class="m-0">Hantera kontrollplatser</p>
+            <div class="flex align-items-center justify-content-center flex-column text-center p-1">
+              <i class="pi pi-map-marker text-xl mb-1" style="color: var(--primary-color)"></i>
+              <h5 class="m-0">Platser</h5>
+              <p class="m-0 text-xs">Hantera kontrollplatser</p>
             </div>
           </p-card>
         </div>
@@ -89,10 +89,10 @@
         <!-- Users -->
         <div class="col-12 sm:col-6 lg:col-4">
           <p-card styleClass="cursor-pointer hover:shadow-5" (click)="navigate('/admin/useradmin')">
-            <div class="flex align-items-center justify-content-center flex-column text-center p-2">
-              <i class="pi pi-user text-3xl mb-2" style="color: var(--primary-color)"></i>
-              <h3 class="m-2">Användare</h3>
-              <p class="m-0">Hantera användare</p>
+            <div class="flex align-items-center justify-content-center flex-column text-center p-1">
+              <i class="pi pi-user text-xl mb-1" style="color: var(--primary-color)"></i>
+              <h5 class="m-0">Användare</h5>
+              <p class="m-0 text-xs">Hantera användare</p>
             </div>
           </p-card>
         </div>
@@ -100,10 +100,10 @@
         <!-- Organizers -->
         <div class="col-12 sm:col-6 lg:col-4">
           <p-card styleClass="cursor-pointer hover:shadow-5" (click)="navigate('/admin/organizeradmin')">
-            <div class="flex align-items-center justify-content-center flex-column text-center p-2">
-              <i class="pi pi-briefcase text-3xl mb-2" style="color: var(--primary-color)"></i>
-              <h3 class="m-2">Organisatörer</h3>
-              <p class="m-0">Hantera organisatörer</p>
+            <div class="flex align-items-center justify-content-center flex-column text-center p-1">
+              <i class="pi pi-briefcase text-xl mb-1" style="color: var(--primary-color)"></i>
+              <h5 class="m-0">Arrangör</h5>
+              <p class="m-0 text-xs">Hantera arrangörer</p>
             </div>
           </p-card>
         </div>
@@ -112,66 +112,66 @@
   </div>
 
   <!-- Stats Grid -->
-  <div class="grid justify-content-center mt-3">
+  <div class="grid justify-content-center mt-2">
     <div class="col-12 md:col-8 lg:col-6">
       <div class="grid">
         <div class="col-12 md:col-6 lg:col-3">
-          <div class="surface-0 shadow-2 p-2 border-1 border-50 border-round">
-            <div class="flex justify-content-between mb-2">
+          <div class="surface-0 shadow-2 p-1 border-1 border-50 border-round">
+            <div class="flex justify-content-between mb-1">
               <div>
-                <span class="block text-500 font-medium mb-2">Dagens deltagare</span>
-                <div class="text-900 font-medium text-xl">{{ (participantStats$ | async)?.daily?.countparticipants || 0 }}</div>
+                <span class="block text-500 font-medium mb-1 text-xs">Dagens deltagare</span>
+                <div class="text-900 font-medium text-base">{{ (participantStats$ | async)?.daily?.countparticipants || 0 }}</div>
               </div>
-              <div class="flex align-items-center justify-content-center bg-blue-100 border-round" style="width:2.5rem;height:2.5rem">
-                <i class="pi pi-users text-blue-500 text-xl"></i>
+              <div class="flex align-items-center justify-content-center bg-blue-100 border-round" style="width:1.5rem;height:1.5rem">
+                <i class="pi pi-users text-blue-500 text-xs"></i>
               </div>
             </div>
-            <span class="text-500">Veckovis: {{ (participantStats$ | async)?.weekly?.countparticipants || 0 }}</span>
+            <span class="text-500 text-xs">Veckovis: {{ (participantStats$ | async)?.weekly?.countparticipants || 0 }}</span>
           </div>
         </div>
 
         <div class="col-12 md:col-6 lg:col-3">
-          <div class="surface-0 shadow-2 p-2 border-1 border-50 border-round">
-            <div class="flex justify-content-between mb-2">
+          <div class="surface-0 shadow-2 p-1 border-1 border-50 border-round">
+            <div class="flex justify-content-between mb-1">
               <div>
-                <span class="block text-500 font-medium mb-2">Startade idag</span>
-                <div class="text-900 font-medium text-xl">{{ (participantStats$ | async)?.daily?.started || 0 }}</div>
+                <span class="block text-500 font-medium mb-1 text-xs">Startade idag</span>
+                <div class="text-900 font-medium text-base">{{ (participantStats$ | async)?.daily?.started || 0 }}</div>
               </div>
-              <div class="flex align-items-center justify-content-center bg-green-100 border-round" style="width:2.5rem;height:2.5rem">
-                <i class="pi pi-play text-green-500 text-xl"></i>
+              <div class="flex align-items-center justify-content-center bg-green-100 border-round" style="width:1.5rem;height:1.5rem">
+                <i class="pi pi-play text-green-500 text-xs"></i>
               </div>
             </div>
-            <span class="text-500">Veckovis: {{ (participantStats$ | async)?.weekly?.started || 0 }}</span>
+            <span class="text-500 text-xs">Veckovis: {{ (participantStats$ | async)?.weekly?.started || 0 }}</span>
           </div>
         </div>
 
         <div class="col-12 md:col-6 lg:col-3">
-          <div class="surface-0 shadow-2 p-2 border-1 border-50 border-round">
-            <div class="flex justify-content-between mb-2">
+          <div class="surface-0 shadow-2 p-1 border-1 border-50 border-round">
+            <div class="flex justify-content-between mb-1">
               <div>
-                <span class="block text-500 font-medium mb-2">Bröt idag</span>
-                <div class="text-900 font-medium text-xl">{{ (participantStats$ | async)?.daily?.dnf || 0 }}</div>
+                <span class="block text-500 font-medium mb-1 text-xs">Bröt idag</span>
+                <div class="text-900 font-medium text-base">{{ (participantStats$ | async)?.daily?.dnf || 0 }}</div>
               </div>
-              <div class="flex align-items-center justify-content-center bg-orange-100 border-round" style="width:2.5rem;height:2.5rem">
-                <i class="pi pi-times-circle text-orange-500 text-xl"></i>
+              <div class="flex align-items-center justify-content-center bg-orange-100 border-round" style="width:1.5rem;height:1.5rem">
+                <i class="pi pi-times-circle text-orange-500 text-xs"></i>
               </div>
             </div>
-            <span class="text-500">Veckovis: {{ (participantStats$ | async)?.weekly?.dnf || 0 }}</span>
+            <span class="text-500 text-xs">Veckovis: {{ (participantStats$ | async)?.weekly?.dnf || 0 }}</span>
           </div>
         </div>
 
         <div class="col-12 md:col-6 lg:col-3">
-          <div class="surface-0 shadow-2 p-2 border-1 border-50 border-round">
-            <div class="flex justify-content-between mb-2">
+          <div class="surface-0 shadow-2 p-1 border-1 border-50 border-round">
+            <div class="flex justify-content-between mb-1">
               <div>
-                <span class="block text-500 font-medium mb-2">Startade inte idag</span>
-                <div class="text-900 font-medium text-xl">{{ (participantStats$ | async)?.daily?.dns || 0 }}</div>
+                <span class="block text-500 font-medium mb-1 text-xs">Startade inte idag</span>
+                <div class="text-900 font-medium text-base">{{ (participantStats$ | async)?.daily?.dns || 0 }}</div>
               </div>
-              <div class="flex align-items-center justify-content-center bg-red-100 border-round" style="width:2.5rem;height:2.5rem">
-                <i class="pi pi-ban text-red-500 text-xl"></i>
+              <div class="flex align-items-center justify-content-center bg-red-100 border-round" style="width:1.5rem;height:1.5rem">
+                <i class="pi pi-ban text-red-500 text-xs"></i>
               </div>
             </div>
-            <span class="text-500">Veckovis: {{ (participantStats$ | async)?.weekly?.dns || 0 }}</span>
+            <span class="text-500 text-xs">Veckovis: {{ (participantStats$ | async)?.weekly?.dns || 0 }}</span>
           </div>
         </div>
       </div>

@@ -1,0 +1,18 @@
+<div class="compact-action-card"
+     [class.active]="config.isActive"
+     (click)="onCardClick()">
+  <div class="flex align-items-center p-3">
+    <i [class]="config.icon + ' mr-3'"
+        [ngStyle]="{'color': config.isActive ? 'var(--primary-color)' : 'var(--text-color-secondary)'}"
+        style="font-size: 1.25rem;"></i>
+    <div>
+      <h4 class="m-0 font-semibold"
+          [ngStyle]="{'color': config.isActive ? 'var(--primary-color)' : 'var(--text-color)'}">
+        {{ config.title }}
+      </h4>
+      <p *ngIf="config.description" class="m-0 mt-1 text-500 text-sm">
+        {{ config.description }}
+      </p>
+    </div>
+  </div>
+</div>

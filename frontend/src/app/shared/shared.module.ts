@@ -63,7 +63,12 @@ import {StepsModule} from "primeng/steps";
 import {CheckboxModule} from "primeng/checkbox";
 import { OrganizerSelectorComponent } from './organizer-selector/organizer-selector.component';
 
-
+// New Compact Components
+import { PageHeaderComponent } from './components/page-header/page-header.component';
+import { ActionCardComponent } from './components/action-card/action-card.component';
+import { PageLayoutComponent } from './components/page-layout/page-layout.component';
+import { CompactPageHeaderComponent } from './components/compact-page-header/compact-page-header.component';
+import { CompactActionCardComponent } from './components/compact-action-card/compact-action-card.component';
 
 @NgModule({
     declarations: [
@@ -87,7 +92,13 @@ import { OrganizerSelectorComponent } from './organizer-selector/organizer-selec
         TracksForEventSelectorComponent,
         EventSelectorComponent,
         SiteSelectorComponent,
-        OrganizerSelectorComponent
+        OrganizerSelectorComponent,
+        // New Compact Components
+        PageHeaderComponent,
+        ActionCardComponent,
+        PageLayoutComponent,
+        CompactPageHeaderComponent,
+        CompactActionCardComponent
     ],
     imports: [
         CommonModule,
@@ -132,7 +143,13 @@ import { OrganizerSelectorComponent } from './organizer-selector/organizer-selec
         PanelModule, ToolbarModule,
         MenuModule, BadgeModule,CheckboxModule, StepsModule ,ListboxModule, SiteSelectorComponent, EventSelectorComponent, InputNumberModule, TracksForEventSelectorComponent, CheckpointComponent, CheckpointPreviewComponent, CheckpointPreviewDialogComponent, KnobModule, HtmlLinkComponent, ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
         LogoComponent, DatePipe, NgbCollapseModule, ProgressSpinnerModule, AccordionModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
-        ProgressBarModule, TrackTableComponent, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent, DateTimePrettyPrintPipe, RemoveAfterPipe, TracksForEventSelectorComponent, CheckpointTableComponent, OrganizerSelectorComponent],
+        ProgressBarModule, TrackTableComponent, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent, DateTimePrettyPrintPipe, RemoveAfterPipe, TracksForEventSelectorComponent, CheckpointTableComponent, OrganizerSelectorComponent,
+        // New Compact Components
+        PageHeaderComponent,
+        ActionCardComponent,
+        PageLayoutComponent,
+        CompactPageHeaderComponent,
+        CompactActionCardComponent],
     providers: [DatePipe, DialogService]
 })
 export class SharedModule { }

@@ -1,0 +1,25 @@
+<div class="container-fluid px-4">
+  <!-- Page Header -->
+  <app-page-header [config]="headerConfig"></app-page-header>
+
+  <!-- Action Cards Grid -->
+  <div class="grid justify-content-center" *ngIf="showActionCards && actionCards.length > 0">
+    <div class="col-12 md:col-8 lg:col-6">
+      <div class="grid">
+        <div class="col-12 sm:col-6" *ngFor="let card of actionCards">
+          <app-action-card 
+            [config]="card" 
+            (cardClick)="onActionCardClick($event)">
+          </app-action-card>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Area -->
+  <div class="grid justify-content-center mt-4" *ngIf="contentTemplate">
+    <div class="col-12 md:col-8 lg:col-6">
+      <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
+    </div>
+  </div>
+</div>
