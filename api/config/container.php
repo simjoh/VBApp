@@ -154,15 +154,30 @@ return [
         );
     },
 
-    \App\common\Database\MigrationManager::class => function(ContainerInterface $container) {
+    \App\common\Database\MigrationManager::class => function (ContainerInterface $container) {
         return new \App\common\Database\MigrationManager(
             $container->get(PDO::class)
         );
     },
 
-    \App\Action\Migration\MigrationAction::class => function(ContainerInterface $container) {
+    \App\Action\Migration\MigrationAction::class => function (ContainerInterface $container) {
         return new \App\Action\Migration\MigrationAction(
             $container->get(\App\common\Database\MigrationManager::class)
+        );
+    },
+
+    // Site matching service registration
+    \App\Domain\Model\Site\Service\SiteMatchingService::class => function (ContainerInterface $container) {
+        return new \App\Domain\Model\Site\Service\SiteMatchingService(
+            $container->get(\App\Domain\Model\Site\Repository\SiteRepository::class),
+            1.0 // Default match threshold in km
+        );
+    },
+
+    // Enhanced GPX service with site matching
+    \App\common\Gpx\GpxService::class => function (ContainerInterface $container) {
+        return new \App\common\Gpx\GpxService(
+            $container->get(\App\Domain\Model\Site\Service\SiteMatchingService::class)
         );
     },
 
@@ -179,6 +194,29 @@ return [
             $container->get(\App\Domain\Model\Partisipant\Repository\ParticipantRepository::class),
             $container->get(\App\Domain\Model\Track\Service\RusaTimeTrackPlannerService::class)
         );
+    },
+
+    // Logger service registration
+    \App\common\Service\LoggerService::class => function (ContainerInterface $container) {
+        return new \App\common\Service\LoggerService($container);
+    },
+
+    // Also register the Monolog Logger instance for direct use
+    \Monolog\Logger::class => function (ContainerInterface $container) {
+        return $container->get(\App\common\Service\LoggerService::class)->getLogger();
+    },
+
+    // Infrastructure logs action
+    \App\Action\Infra\LogsAction::class => function (ContainerInterface $container) {
+        return new \App\Action\Infra\LogsAction(
+            $container->get(\App\common\Service\LoggerService::class),
+            $container
+        );
+    },
+
+    // Infrastructure schedule action
+    \App\Action\Infra\ScheduleAction::class => function (ContainerInterface $container) {
+        return new \App\Action\Infra\ScheduleAction($container);
     }
 
 ];

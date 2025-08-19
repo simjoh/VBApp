@@ -30,9 +30,6 @@ DB_DATABASE=vasterbottenbrevet_se_db_2
 DB_PASSWORD=secret
 
 
-use ssl=0
-
-
 
 example api call with token
 
@@ -53,3 +50,9 @@ curl -X PUT \
 
 
 
+if i want you to check logs in api then check container php-apache and logs dir for logfile
+
+When logging.
+
+Dont spam the log with unneccessary logs.
+Log important things for system

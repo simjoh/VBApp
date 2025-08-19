@@ -106,7 +106,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         catchError(() => of([]))
       )
     }).pipe(
-      tap(data => console.log('All dashboard data:', data)),
       map(({ events, tracks, participants, topTracks }) => ({
         totalEvents: events.length,
         activeEvents: events.filter((event: EventRepresentation) => !event.completed).length,

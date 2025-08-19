@@ -24,9 +24,6 @@ export class VolonteerService {
       map((checkpoints: Array<ParticipantToPassCheckpointRepresentation>) => {
         return checkpoints;
       }),
-      tap((checkpoints: Array<ParticipantToPassCheckpointRepresentation>) => {
-        console.log(checkpoints);
-      }),
       shareReplay(1)
     ) as Observable<Array<ParticipantToPassCheckpointRepresentation>>;
   }
@@ -38,11 +35,19 @@ export class VolonteerService {
       map((checkpoints: Array<CheckpointRepresentation>) => {
         return checkpoints;
       }),
-      tap((checkpoints: Array<CheckpointRepresentation>) => {
-        console.log(checkpoints);
-      }),
       shareReplay(1)
     ) as Observable<Array<CheckpointRepresentation>>;
+  }
+
+  public getParticipantsForCheckpoint(trackuid: string, checkpoint_uid: string): Observable<Array<ParticipantToPassCheckpointRepresentation>>{
+    const path = "volonteer/track/" + trackuid + "/checkpoint/" + checkpoint_uid + "/randonneurs";
+    return this.httpClient.get<Array<ParticipantToPassCheckpointRepresentation>>(environment.backend_url + path).pipe(
+      take(1),
+      map((participants: Array<ParticipantToPassCheckpointRepresentation>) => {
+        return participants;
+      }),
+      shareReplay(1)
+    ) as Observable<Array<ParticipantToPassCheckpointRepresentation>>;
   }
 
 

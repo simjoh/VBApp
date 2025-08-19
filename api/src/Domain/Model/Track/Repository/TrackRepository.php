@@ -24,23 +24,10 @@ class TrackRepository extends BaseRepository
     }
 
 
-    public function allTracks(?int $organizerId = null): array
+    public function allTracks(): array
     {
         try {
-            $sql = $this->sqls('allTracks');
-            
-            // Add organizer filter if provided
-            if ($organizerId !== null) {
-                $sql = str_replace('select * from track t;', 'select * from track t WHERE t.organizer_id = :organizer_id;', $sql);
-            }
-            
-            $statement = $this->connection->prepare($sql);
-            
-            // Bind organizer_id parameter if filtering is needed
-            if ($organizerId !== null) {
-                $statement->bindParam(':organizer_id', $organizerId, PDO::PARAM_INT);
-            }
-            
+            $statement = $this->connection->prepare($this->sqls('allTracks'));
             $statement->execute();
             $tracks = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Track\Track::class, null);
 
@@ -95,12 +82,12 @@ class TrackRepository extends BaseRepository
 
     public function tracksbyEvent(string $event_uid)
     {
-
         try {
             $statement = $this->connection->prepare($this->sqls('tracksByEvent'));
             $statement->bindParam(':event_uid', $event_uid);
             $statement->execute();
             $tracks = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Track\Track::class, null);
+            
             return $tracks;
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
@@ -379,27 +366,19 @@ class TrackRepository extends BaseRepository
         // When publishing (publish=true), set active=0 (published)
         // When unpublishing (publish=false), set active=1 (unpublished)
         $active = $publish ? 0 : 1;
-        error_log("setInactive called with track_uid: $track_uid, publish: " . var_export($publish, true) . ", active: " . var_export($active, true));
         
         try {
             $statement = $this->connection->prepare($this->sqls('setStatus'));
             $statement->bindParam(':active', $active, PDO::PARAM_INT);
             $statement->bindParam(':track_uid', $track_uid);
             
-            error_log("Executing SQL: " . $this->sqls('setStatus') . " with active=$active, track_uid=$track_uid");
-            
             $status = $statement->execute();
-            
-            error_log("SQL execution status: " . var_export($status, true));
-            error_log("Rows affected: " . $statement->rowCount());
 
             if (!$status) {
-                error_log("SQL execution failed");
                 throw new BrevetException("Failed to update track status", 1, null);
             }
 
         } catch (PDOException $e) {
-            error_log("PDO Error in setInactive: " . $e->getMessage());
             throw new BrevetException("Database error while updating track status: " . $e->getMessage(), 1, $e);
         }
     }

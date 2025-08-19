@@ -13,12 +13,12 @@ export class MapComponent implements OnInit{
   checkpoints: any;
   latitude: number = 18.5204;
   longitude: number = 73.8567;
-  constructor() { 
+  constructor() {
     this.getLocation();
   }
 
-  
-  ngOnInit() { 
+
+  ngOnInit() {
     var checkpoints = [{name:'test',lan:20.3,lat:63},{name:'test 2',lan:20.3, lat:63}]
     this.getLocation()
     var mousePositionControl = new ol.control.MousePosition({
@@ -57,7 +57,7 @@ export class MapComponent implements OnInit{
     this.addBiker(this.latitude, this.longitude)
     this.addCheckpoint(this.latitude, this.longitude,'Kontroll 1')
   }
- 
+
   getLocation(): void{
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position)=>{
@@ -67,11 +67,9 @@ export class MapComponent implements OnInit{
         });
     } else {
       //TODO:ALERT USER THAT IT IS NOT POSSIBLE TO CHECKIN
-       console.log("No support for geolocation")
     }
   }
   checkin(){
-    console.log('Should submit')
     this.getLocation();
     this.callApi(this.longitude,this.latitude);
   }
@@ -80,7 +78,6 @@ export class MapComponent implements OnInit{
     //const url = `https://api-adresse.data.gouv.fr/reverse/?lon=${Longitude}&lat=${Latitude}`
     //Call API
     alert('Registrerad kör vidare till nästa kontreoll')
-    console.log('Longitude',Longitude, 'Latitude',Latitude);
   }
   addCheckpoint(lat: number, lng: number,checkpoint_name:string) {
     var vectorLayer = new ol.layer.Vector({
@@ -89,7 +86,7 @@ export class MapComponent implements OnInit{
           geometry: new ol.geom.Point(ol.proj.transform([lng+0.1, lat+0.1], 'EPSG:4326', 'EPSG:3857')),
         })]
       }),
-      
+
       style: new ol.style.Style({
         text: new ol.style.Text({
           text: checkpoint_name,

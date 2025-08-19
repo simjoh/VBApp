@@ -42,6 +42,25 @@ class EventInformationAssembly
         return $eventinformationrepresentation;
     }
 
+    /**
+     * Create event information representation with pre-fetched tracks to avoid N+1 queries
+     * 
+     * @param Event $event The event
+     * @param array $tracks Pre-fetched track representations
+     * @param array $permissions User permissions
+     * @param string $currentUserUid Current user UID
+     * @param array $prefetchedTracks Pre-fetched Track objects for this event
+     * @return EventInformationRepresentation
+     */
+    public function toRepresentationWithTracks(Event $event, array $tracks, array $permissions, string $currentUserUid, array $prefetchedTracks): EventInformationRepresentation {
+        $permissions = $this->getPermissions($currentUserUid);
+        $eventinformationrepresentation = new EventInformationRepresentation();
+        $eventinformationrepresentation->setEvent($this->eventAssembly->toRepresentationWithTracks($event, $permissions, $prefetchedTracks));
+        $eventinformationrepresentation->setTracks($tracks);
+
+        return $eventinformationrepresentation;
+    }
+
     public function getPermissions($user_uid): array
     {
         return $this->permissinrepository->getPermissionsTodata("EVENT",$user_uid);

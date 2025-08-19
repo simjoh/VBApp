@@ -41,15 +41,15 @@ class CheckpointRepresentation implements JsonSerializable
     /**
      * @return SiteRepresentation
      */
-    public function getSite(): ?SiteRepresentation
+    public function getSite(): SiteRepresentation
     {
         return $this->site;
     }
 
     /**
-     * @param SiteRepresentation|null $site
+     * @param SiteRepresentation $site
      */
-    public function setSite(?SiteRepresentation $site): void
+    public function setSite(SiteRepresentation $site): void
     {
         $this->site = $site;
     }

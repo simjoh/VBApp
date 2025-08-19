@@ -1,12 +1,15 @@
 <ng-container *ngIf="$checkpoints | async as checkpoints">
-<p-listbox
-  pTooltip="Välj en av kontrollerna på banan"
-  tooltipPosition="right"
-  class="lg:w-full md:w-full sm:w-full"
-  emptyMessage="Inga kontroller hittades"
-   [options]="checkpoints"
-  [(ngModel)]="selectedcheckpoint"
-  (ngModelChange)="valdKontroll()"
-  optionValue="value" optionLabel="label">
-</p-listbox>
+  <div class="checkpoint-selector">
+    <p-listbox
+      pTooltip="Välj en av kontrollerna på banan"
+      tooltipPosition="right"
+      class="w-full modern-listbox"
+      emptyMessage="Inga kontroller hittades"
+      [options]="checkpoints"
+      [(ngModel)]="selectedcheckpoint"
+      (ngModelChange)="valdKontroll()"
+      optionValue="value"
+      optionLabel="label">
+    </p-listbox>
+  </div>
 </ng-container>

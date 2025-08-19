@@ -92,7 +92,7 @@ export class OrganizerListComponent implements OnInit {
       if (organizer) {
         this.organizerService.createOrganizer(organizer).subscribe({
           next: (createdOrganizer) => {
-            console.log('Organizer created successfully:', createdOrganizer);
+            // Organizer created successfully
           },
           error: (error) => {
             console.error('Error creating organizer:', error);
@@ -128,7 +128,7 @@ export class OrganizerListComponent implements OnInit {
       if (organizer && organizer.id) {
         this.organizerService.updateOrganizer(organizer.id, organizer).subscribe({
           next: (updatedOrganizer) => {
-            console.log('Organizer updated successfully:', updatedOrganizer);
+            // Organizer updated successfully
           },
           error: (error) => {
             console.error('Error updating organizer:', error);
@@ -152,7 +152,7 @@ export class OrganizerListComponent implements OnInit {
       accept: () => {
         this.organizerService.deleteOrganizer(organizer_id).subscribe({
           next: () => {
-            console.log('Organizer deleted successfully');
+            // Organizer deleted successfully
           },
           error: (error) => {
             console.error('Error deleting organizer:', error);
@@ -161,7 +161,7 @@ export class OrganizerListComponent implements OnInit {
         });
       },
       reject: () => {
-        console.log("reject");
+        // User rejected deletion
       }
     });
   }

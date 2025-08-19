@@ -55,21 +55,17 @@ class ClubService
     {
         try {
             $permissions = $this->getPermissions($currentuser_id);
-            error_log("Creating club with ACP kod: " . $clubRepresentation->getAcpKod(), 0);
             
             $club = new Club();
             $club->setClubUid(Uuid::uuid4()->toString());
             $club->setTitle($clubRepresentation->getTitle());
             $club->setAcpKod($clubRepresentation->getAcpKod());
             
-            error_log("Club object before save - ACP kod: " . $club->getAcpKod(), 0);
             $this->clubrepository->createClub($club);
-            error_log("Club saved successfully", 0);
             
             return $this->clubAssembly->toRepresentation($club, $permissions);
         } catch (\Exception $e) {
-            error_log("Error creating club: " . $e->getMessage(), 0);
-            throw new BrevetException("Det gick inte att skapa klubben: " . $e->getMessage());
+            throw new BrevetException("Det gick inte att skapa klubben: " . $e->getMessage(), 1, $e);
         }
     }
 
@@ -77,23 +73,18 @@ class ClubService
     {
         try {
             $permissions = $this->getPermissions($currentuser_id);
-            error_log("Updating club with ACP kod: " . $clubRepresentation->getAcpKod(), 0);
-            
             $club = $this->clubrepository->getClubByUId($clubRepresentation->getClubUid());
             if ($club != null) {
                 $club->setTitle($clubRepresentation->getTitle());
                 $club->setAcpKod($clubRepresentation->getAcpKod());
                 
-                error_log("Club object before update - ACP kod: " . $club->getAcpKod(), 0);
                 $this->clubrepository->updateClub($club);
-                error_log("Club updated successfully", 0);
                 
                 return $this->clubAssembly->toRepresentation($club, $permissions);
             }
             return null;
         } catch (\Exception $e) {
-            error_log("Error updating club: " . $e->getMessage(), 0);
-            throw new BrevetException("Det gick inte att uppdatera klubben: " . $e->getMessage());
+            throw new BrevetException("Det gick inte att uppdatera klubben: " . $e->getMessage(), 1, $e);
         }
     }
 
@@ -125,8 +116,7 @@ class ClubService
                 try {
                     $this->clubRestClient->deleteClub($club_uid);
                 } catch (\Exception $e) {
-                    // Log the error but don't fail the main transaction
-                    error_log("Failed to delete club from loppservice: " . $e->getMessage());
+                    // Failed to delete club from loppservice
                     // Could throw exception here if we want strict synchronization
                     // throw new BrevetException("Kunde inte ta bort klubben från loppservice: " . $e->getMessage(), 4, null);
                 }

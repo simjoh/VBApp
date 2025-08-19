@@ -1,0 +1,188 @@
+---
+description: Rueles and guidance for gpx
+alwaysApply: false
+---
+Gpx documentation
+
+https://www.topografix.com/gpx.asp
+
+
+Documentation
+
+https://www.topografix.com/GPX/1/1/
+
+
+Schema files
+
+https://www.topografix.com/GPX/1/1/gpx.xsd
+
+
+
+GPX for Developers
+What is GPX?
+
+GPX (the GPS eXchange Format) is a light-weight XML data format for the interchange of GPS data (waypoints, routes, and tracks) and geospatial data (points, lines, and polygons) between GPS hardware, software applications, and web services on the Internet.
+Why use GPX?
+
+GPX was designed from the ground up to be the standard XML format for exchanging GPS data between applications. Because GPX is based on XML, it inherits all of the benefits of XML. XML is an open standard, with a rapidly growing base of developers and tool providers. GPX defines a common set of data tags for describing GPS and geographic data in XML. GPX is simple enough to learn in an hour, yet powerful enough to describe complex geographic objects. In addition to the standardized, public definition, GPX allows developers to define their own private objects and attributes. The GPX standard is designed to grow over time, and developers are encouraged to participate on the GPX Developers Mailing List, where new extensions to the GPX standard are reviewed.
+The GPX Developers Mailing List
+
+GPX is an open standard, and anyone is welcome to participate in its development and evolution. The GPX Developers Mailing List includes an email discussion list, an archive of past discussions, and a file depository for storing example GPX files.
+Requirements for using GPX
+
+GPX is an open standard. Anyone may use it, and there are no fees or licensing involved. To keep the standard from fragmenting, we ask that you:
+
+    Validate your GPX output.
+    Use the GPX tags the way they were intended.
+    Example: <sym>8197</sym> might be a convenient way for your application to store a Garmin waypoint symbol, but it defeats the purpose of a common format. Use <sym>Golf Course</sym> instead.
+    Participate in the GPX Developers Mailing List.
+    Submit your ideas and upcoming needs for GPX extensions to the GPX Developers Mailing List.
+    If enough people find them useful, we'll add them to the public specification.
+
+Reading a GPX file
+
+The following advice is intended to help developers avoid common mistakes when adding support for reading or importing GPX data into their applications.
+
+GPX is an XML format, and you should use dedicated XML tools and frameworks for reading and writing GPX. You might open a sample GPX file in your text editor and think "I can parse this with scanf and printf", but you'll be in for trouble in the long run. XML files contain namespaces, namespace prefixes, CDATA strings, entity encoding, and support for different character sets. Using an XML library to read and write GPX handles all of these issues for you.
+
+The GPX format is made up of a core schema which fully defines the http://www.topografix.com/GPX/1/1 namespace, and which allows unlimited expansion through the use of additional namespaces within the <extensions> element. An element name in GPX is only unique within the namespace that defines it. For example, there is a <time> element in http://www.topografix.com/GPX/1/1 and a a <time> element with the same base name but a different meaning in http://www.topografix.com/GPX/gpx_modified/0/1 It is very important when parsing GPX data for elements that your application understands, that you match the element name AND the namespace before processing that data.
+
+A related issue arises if you parse data by matching against specific namespace prefixes. Namespace prefixes are a short way to reference the namespace that an element belongs to. Garmin and geocaching.com are two popular sources of GPX data that include extended data using namespace prefixes. You might write a parser looking for geocaches by matching against <groundspeak:cache>, because this is what appears in a GPX file directly from geocaching.com. But the "groundspeak" in that "groundspeak:" namespace prefix is only a unique identifier for the geocache data you want because earlier in the file, it was designated as the prefix shortcut for http://www.groundspeak.com/cache/1/0 using xmlns:groundspeak="http://www.groundspeak.com/cache/1/0". If instead the file had declared xmlns:squirrels="http://www.groundspeak.com/cache/1/0", it could then refer to all geocaches in the file as <squirrels:cache> A correctly-written GPX parser would match against "cache" and then confirm the namespace is the one it expects, or lookup the namespace prefix pairing of "squirrels" to see what namespace it stands for. While this is a contrived example, the Garmin gpxx: and trkpt1: prefixes are widely used by Garmin hardware, but recent Garmin software have started using ns2: and ns3: to reference the same namespaces. Bottom line: don't make assumptions about namespace prefixes. Use the tools in your XML library to properly resolve the namespace that each element belongs to.
+
+If you have created your own GPX extension, and are parsing elements from it in a GPX file, make sure you're in your own namespace before processing that data! The developer of EasyGPS recently discovered an error in their code when parsing a complex <marker> element they had defined, because another GPX developer had used <marker> in a different way within a different namespace. EasyGPS was blindly matching and parsing <marker> in <extensions> without confirming the namespace it expected, and an error occurred when a GPX file from the other application was opened. Design your code from the beginning to be namespace-aware, and you'll be protected from problems like this further down the road.
+
+Namespaces are immutable. http://www.topografix.com/GPX/1/1 will always refer to the core GPX 1.1 specification, which can be found by following the xsi:schemaLocation directive in each GPX file. xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" tells the world that the schema for namespace http://www.topografix.com/GPX/1/1 can be found at the URL http://www.topografix.com/GPX/1/1/gpx.xsd Schema locations can change! Many schemas were originally given http addresses, and are now being redirected to https. Many Garmin schemas have been redirected to a different server, or don't actually exist at the schemaLocation given in the GPX file. While this is unfortunate, it should not cause your GPX reader to fail. Do not hard-code assumptions about the locations or availability of GPX schemas into your implementation.
+
+Use XML-parsing tools, not text-parsing tools, to correctly handle CDATA, entity encoding, and character encoding issues. Most GPX files use UTF-8 character encoding (it's a best practice), but there's no requirement to do so. You will occasionally encounter GPX files with a different encoding. Using XML tools will automatically handle CDATA and encoded entities within the GPX data.
+Writing a GPX File
+
+The following advice is intended to help developers avoid common mistakes when adding support for creating GPX files or exporting GPX data from their applications.
+
+You might open a GPX sample file in a text editor and think "this is text-based - I can output GPX data using printf". GPX is XML, not text, and the differences are subtle but important. Using proper XML tools from an XML library will avoid lots of problems when you start dealing with waypoint names with < in them, for example.
+
+The three or four lines at the top of a GPX file are where most of the mistakes happen, so let's walk through them one at a time.
+
+<?xml version="1.0" encoding="UTF-8"?>
+GPX files are XML files. Your output should start with this line, declaring the XML version, and the character encoding used in the file. UTF-8 is the most widely-used encoding, and you should use it unless you have a solid reason not to.
+
+<gpx xmlns="http://www.topografix.com/GPX/1/1"
+version="1.1"
+creator="ExpertGPS 8.53"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:wptx1="http://www.garmin.com/xmlschemas/WaypointExtension/v1"
+xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3"
+xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1"
+xsi:schemaLocation="http://www.topografix.com/GPX/1/1 https://www.topografix.com/GPX/1/1/gpx.xsd
+http://www.topografix.com/GPX/gpx_style/0/2 https://www.topografix.com/GPX/gpx_style/0/2/gpx_style.xsd
+http://www.topografix.com/GPX/gpx_overlay/0/4 https://www.topografix.com/GPX/gpx_overlay/0/4/gpx_overlay.xsd
+http://www.topografix.com/GPX/gpx_modified/0/1 https://www.topografix.com/GPX/gpx_modified/0/1/gpx_modified.xsd
+http://www.garmin.com/xmlschemas/WaypointExtension/v1 https://www8.garmin.com/xmlschemas/WaypointExtensionv1.xsd
+http://www.garmin.com/xmlschemas/GpxExtensions/v3 https://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd
+http://www.garmin.com/xmlschemas/TrackPointExtension/v1 https://www8.garmin.com/xmlschemas/TrackPointExtensionv1.xsd">
+This is the second line of a GPX file output by ExpertGPS. Your application will output something similar, but customized to the way you use GPX. Let's break it down further.
+
+<gpx xmlns="http://www.topografix.com/GPX/1/1"
+The root element of this XML document is <gpx> The unprefixed namespace for this document is http://www.topografix.com/GPX/1/1. That means that any element appearing in this document, that isn't prefixed by a :, belongs to the http://www.topografix.com/GPX/1/1 namespace, which is the official namespace for the core GPX 1.1 format.
+
+version="1.1" creator="ExpertGPS 8.53"
+GPX 1.1 has two required attributes for the root gpx element. You'll see that when you look at the .xsd schema for GPX 1.1 shortly. You MUST include these in your output. version is fixed as "1.1" for a GPX 1.1 file. creator is the name of the hardware, software, or website that is producing this GPX data. It's a best practice to include a version number or release identifier, so you'll know if a broken GPX file is from an old version or if there is still an issue with your GPX output. If you are creating a low-level library or DLL to add GPX functionality to other applications, you should pass the higher-level application name through as the creator, unless you want to handle their bug reports.
+
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:wptx1="http://www.garmin.com/xmlschemas/WaypointExtension/v1"
+xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3"
+xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1"
+These lines declare that we'll be referencing several other namespaces in this GPX document, and establishes abbreviations (namespace prefixes) which we can use to refer to each namespace rather than spell it out each time we reference it. We'll be using XMLSchema-instance in the next line to declare the location of all the other schemas used in this document. We'll also be making use of three Garmin extension schemas, and we'll be referencing them using the prefixes wptx1, gpxx, and gpxtpx.
+
+xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd
+http://www.topografix.com/GPX/gpx_style/0/2 http://www.topografix.com/GPX/gpx_style/0/2/gpx_style.xsd
+http://www.topografix.com/GPX/gpx_overlay/0/4 http://www.topografix.com/GPX/gpx_overlay/0/4/gpx_overlay.xsd
+http://www.topografix.com/GPX/gpx_modified/0/1 http://www.topografix.com/GPX/gpx_modified/0/1/gpx_modified.xsd
+http://www.garmin.com/xmlschemas/WaypointExtension/v1 https://www8.garmin.com/xmlschemas/WaypointExtensionv1.xsd
+http://www.garmin.com/xmlschemas/GpxExtensions/v3 https://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd
+http://www.garmin.com/xmlschemas/TrackPointExtension/v1 https://www8.garmin.com/xmlschemas/TrackPointExtensionv1.xsd">
+xsi:schemaLocation is a list of entry pairs, where the first entry in each pair specifies the namespace, and the second entry contains the path to the schema definition.
+In this example, the first pair gives the location of the schema that defines the core GPX 1.1 namespace we saw earlier.
+The next three pairs specify the schema locations for three other namespaces we'll be using in this GPX file. Notice that these three namespaces were not given a prefix mapping like the Garmin ones were. Prefix mappings are optional.
+The final three pairs specify the schema locations for the Garmin namespaces being used. These namespaces WERE given prefix mappings above.
+
+Now that the header is out of the way, we can write some actual data, like this waypoint:
+
+<wpt lat="51.05728482" lon="3.98793118">
+ <time>2023-10-17T17:13:00.211Z</time>
+ <name>Deep Water</name>
+ <sym>Marina</sym>
+ <type>Address</type>
+ <extensions>
+  <time xmlns="http://www.topografix.com/GPX/gpx_modified/0/1">2023-10-18T14:17:56.100Z</time>
+  <label xmlns="http://www.topografix.com/GPX/gpx_overlay/0/4">
+   <label_text>Sample Waypoint with Garmin Depth</label_text>
+  </label>
+  <wptx1:WaypointExtension>
+   <wptx1:Depth>100.00</wptx1:Depth>
+  </wptx1:WaypointExtension>
+ </extensions>
+</wpt>
+
+wpt is one of the three main second-level elements in core GPX (wpt, rte, trk), and because it appears here without a prefix or namespace, we know it's a wpt in the default http://www.topografix.com/GPX/1/1 namespace.
+
+time, name, sym, type, and extensions are all valid children of wpt, declared in wptType.
+
+extensions is a special element in GPX 1.1 that allows you to extend the GPX format by including data from other namespaces. In this case, we're including elements from gpx_modified, gpx_overlay, and Garmin's WaypointExtension namespaces.
+
+time in extensions is explicitly declared as an element from gpx_modified, meaning this is the last time this waypoint was modified. A few lines up, time in the core GPX 1.1 namespace means that time is the initial creation time of the waypoint.
+
+label is a complex element from gpx_overlay that contains a text label to display on a map, different from the waypoint name to use on the GPS receiver.
+
+Depth is the depth of the waypoint in meters. Notice that this element has been referenced by the wptx1: prefix, which only works because that prefix has been mapped to a namespace above using xmlns:wptx1="http://www.garmin.com/xmlschemas/WaypointExtension/v1".
+
+As you can see, this is a complex file with elements being used from multiple namespaces and referenced in different ways. The good news is that if you use XML libraries to output your GPX data, first creating a DOM and declaring namespaces and prefixes and schemaLocations, you can then populate the DOM by inserting elements, qualified with their namespaces. When you write the DOM out to XML, the XML library will handle all of the hard work of ensuring that the namespace references are correct for each element and complex data type in the GPX file.
+
+In GPX, the order of elements within a parent element is fixed. If you write elements out of the order they are listed in the schema, your GPX file will be broken.
+
+As a final step, make sure your GPX output validates correctly.
+Creating a New GPX Extension Schema
+
+The GPX format was designed to be extended to allow new concepts and data elements to be exchanged between different applications in GPX files. The core GPX 1.1 schema represents a core set of GPS receiver functionality, but GPS receivers and mapping applications have grown more complex over the years. GPX extension schemas allow anyone to represent new data elements within GPX.
+
+Before creating a new GPX extension schema, do some research to find out if the same or a similar data element is already represented in GPX or an existing GPX extension schema. There are a handful of official GPX extension schemas (starting with gpx_) and Garmin has created a dozen of their own to express many of the commonly-requested data elements. Ask on the GPX Developers Mailing List and you'll be pointed to any existing solutions we know about.
+
+New GPX extension schemas should follow the same guiding principles as the core GPX schema. Attributes are typically used for required data within an object. Elements are used for optional data. Metric units are used throughout GPX. GPX schemas are self-documenting, using xsd:annotation and xsd:documentation within the .xsd file. All new schemas should be referenced through https, not http, and the schemaLocation you choose needs to stay accessable so that XML validators can find your schema and validate files against it.
+Modifying GPX Files In-Place or Inserting New Data
+
+You might be tempted to try to edit just one waypoint in a file containing thousands of them, or insert a new element into an existing file. You can't safely do this unless you ensure that any namespaces used by the data you add into the file are actually declared in the GPX header. Don't make assumptions that GPX files formatted by other applications will have created a GPX file with the namespaces you're inserting. Proceed with extreme caution if you attempt this.
+Passing Arbitrary GPX Data Through Your Application
+
+If you're writing an application that reads in GPX data, does some processing, and then writes it out in GPX format, you might be tempted to try to preserve verbatum the contents of <extensions> so that data from GPX extension schemas you don't natively support will still pass through unchanged. If you're merging two GPX data sources this way, you could have all sorts of problems. Consider merging a GPX 1.0 file and a GPX 1.1 file, for example. Proceed with extreme caution if you attempt this.
+
+GPX Home
+
+GPX is an open standard. All text on this Web page is in the public domain. This page is maintained by Dan Foster
+
+
+
+Common elements
+
+
+<gpx>	Root element
+<wpt>	Waypoint with latitude/longitude
+<trk>	A GPS track (made of segments and points)
+<trkseg>	A segment of a track
+<trkpt>	A point in a track
+<rte>	Route (less common than tracks)
+<rtept>	A point in a route
+<ele>	Elevation in meters
+<time>	Timestamp in ISO 8601 format
+<name>	Optional name of the element
+
+
+
+Implementation in VBAPP have some important things to take care of
+
+1. matching waypoints or points of intrests location against sites location. 
+2. Must handle most common gpx producer such as strava ridewithgpx and commute 
+3. waypoints is in randonee what we  call checkpoint or control
+4. validate gpx so it can be processed by VBapp
+5. it must be possible to use current structure for handling track and checkpoint. Distances between wpt must be able to be mesured
+6. keep gpx handling code tigth within a own package etc.. not sprread code to much
+7. avoid frontend logic if possible
+8. 

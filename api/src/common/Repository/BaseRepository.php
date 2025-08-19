@@ -24,196 +24,397 @@ abstract class BaseRepository extends Database
     }
 
     /**
-     * Get the organizer ID from UserContext
+     * Convert wildcard pattern to SQL LIKE pattern
+     * Supports * as wildcard character
      * 
-     * @return int|null The organizer ID from the current user context, or null if not available
+     * @param string $pattern The wildcard pattern (e.g., "john*", "*doe", "*smith*")
+     * @return string SQL LIKE pattern
      */
-    public function getOrganizerIdFromContext(): ?int
+    protected function wildcardToLikePattern(string $pattern): string
     {
-        $userContext = \App\common\Context\UserContext::getInstance();
-        return $userContext->getOrganizerId();
+        // Escape SQL LIKE special characters except *
+        $escaped = preg_replace('/[%_]/', '\\\\$0', $pattern);
+        
+        // Convert * to SQL LIKE wildcard %
+        $likePattern = str_replace('*', '%', $escaped);
+        
+        return $likePattern;
     }
 
     /**
-     * Check if the current user has an organization
+     * Execute a wildcard search query
      * 
-     * @return bool True if the user has an organization, false otherwise
+     * @param string $sql The SQL query with :search placeholder
+     * @param string $searchTerm The search term with wildcards
+     * @param string $className The class name to instantiate results
+     * @param array $additionalParams Additional parameters to bind
+     * @return array Array of objects or empty array
      */
-    public function hasOrganization(): bool
+    protected function executeWildcardSearch(string $sql, string $searchTerm, string $className, array $additionalParams = []): array
     {
-        $userContext = \App\common\Context\UserContext::getInstance();
-        return $userContext->hasOrganization();
+        try {
+            $likePattern = $this->wildcardToLikePattern($searchTerm);
+            
+            $statement = $this->connection->prepare($sql);
+            $statement->bindParam(':search', $likePattern);
+            
+            // Bind additional parameters
+            foreach ($additionalParams as $key => $value) {
+                $statement->bindParam($key, $value);
+            }
+            
+            $statement->execute();
+            
+            $results = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $className, []);
+            
+            return empty($results) ? [] : $results;
+            
+        } catch (\PDOException $e) {
+            return [];
+        }
     }
 
     /**
-     * Get the current timestamp in MySQL format
+     * Execute a wildcard search query and return single result
      * 
-     * @return string Current timestamp in 'Y-m-d H:i:s' format
+     * @param string $sql The SQL query with :search placeholder
+     * @param string $searchTerm The search term with wildcards
+     * @param string $className The class name to instantiate results
+     * @param array $additionalParams Additional parameters to bind
+     * @return object|null Single object or null
      */
-    protected function getCurrentTimestamp(): string
+    protected function executeWildcardSearchSingle(string $sql, string $searchTerm, string $className, array $additionalParams = []): ?object
     {
-        return date('Y-m-d H:i:s');
+        $results = $this->executeWildcardSearch($sql, $searchTerm, $className, $additionalParams);
+        
+        return empty($results) ? null : $results[0];
     }
 
     /**
-     * Get the current date in MySQL format
+     * Check if a string contains wildcard characters
      * 
-     * @return string Current date in 'Y-m-d' format
+     * @param string $searchTerm The search term to check
+     * @return bool True if contains wildcards
      */
-    protected function getCurrentDate(): string
+    protected function hasWildcards(string $searchTerm): bool
     {
-        return date('Y-m-d');
+        return strpos($searchTerm, '*') !== false;
     }
 
     /**
-     * Get the created_at timestamp for new records
+     * Build a dynamic search query based on whether wildcards are present
      * 
-     * @return string Current timestamp for created_at field
+     * @param string $column The column to search in
+     * @param string $searchTerm The search term
+     * @param string $tableAlias Optional table alias
+     * @return array ['sql' => string, 'params' => array]
      */
-    protected function getCreatedAtTimestamp(): string
+    protected function buildSearchCondition(string $column, string $searchTerm, string $tableAlias = ''): array
     {
-        return $this->getCurrentTimestamp();
-    }
-
-    /**
-     * Get the updated_at timestamp for modified records
-     * 
-     * @return string Current timestamp for updated_at field
-     */
-    protected function getUpdatedAtTimestamp(): string
-    {
-        return $this->getCurrentTimestamp();
-    }
-
-    /**
-     * Bind created_at and updated_at parameters to a prepared statement
-     * 
-     * @param \PDOStatement $statement The prepared statement
-     * @param bool $isUpdate Whether this is an update operation (affects which timestamps to bind)
-     */
-    protected function bindTimestampParameters(\PDOStatement $statement, bool $isUpdate = false): void
-    {
-        if ($isUpdate) {
-            // For updates, only set updated_at
-            $statement->bindValue(':updated_at', $this->getUpdatedAtTimestamp());
+        $prefix = $tableAlias ? $tableAlias . '.' : '';
+        
+        if ($this->hasWildcards($searchTerm)) {
+            // Use LIKE for wildcard searches
+            $likePattern = $this->wildcardToLikePattern($searchTerm);
+            return [
+                'sql' => $prefix . $column . ' LIKE :search',
+                'params' => [':search' => $likePattern]
+            ];
         } else {
-            // For inserts, set both created_at and updated_at
-            $statement->bindValue(':created_at', $this->getCreatedAtTimestamp());
-            $statement->bindValue(':updated_at', $this->getUpdatedAtTimestamp());
+            // Use exact match for non-wildcard searches
+            return [
+                'sql' => $prefix . $column . ' = :search',
+                'params' => [':search' => $searchTerm]
+            ];
+        }
+    }
+
+
+
+    /**
+     * Execute a paginated query with offset/limit pagination
+     * 
+     * @param string $sql The base SQL query (without LIMIT/OFFSET)
+     * @param string $countSql The count SQL query for total records
+     * @param string $className The class name to instantiate results
+     * @param int $page The page number (1-based)
+     * @param int $perPage Number of items per page
+     * @param array $params Parameters to bind to the query
+     * @param string $orderBy Optional ORDER BY clause
+     * @return PaginationResult
+     */
+    protected function executePaginatedQuery(
+        string $sql,
+        string $countSql,
+        string $className,
+        int $page = 1,
+        int $perPage = 20,
+        array $params = [],
+        string $orderBy = ''
+    ): PaginationResult {
+        try {
+            // Validate pagination parameters
+            $page = max(1, $page);
+            $perPage = max(1, min(100, $perPage)); // Limit to 100 items per page
+            
+            $offset = ($page - 1) * $perPage;
+            
+            // Get total count
+            $countStatement = $this->connection->prepare($countSql);
+            foreach ($params as $key => $value) {
+                $countStatement->bindParam($key, $value);
+            }
+            $countStatement->execute();
+            $total = (int) $countStatement->fetchColumn();
+            
+            // Calculate pagination info
+            $totalPages = (int) ceil($total / $perPage);
+            $hasNextPage = $page < $totalPages;
+            $hasPreviousPage = $page > 1;
+            
+            // Build the final query with pagination
+            $finalSql = $sql;
+            if ($orderBy) {
+                $finalSql .= ' ' . $orderBy;
+            }
+            $finalSql .= " LIMIT :limit OFFSET :offset";
+            
+            // Execute the paginated query
+            $statement = $this->connection->prepare($finalSql);
+            
+            // Bind parameters
+            foreach ($params as $key => $value) {
+                $statement->bindParam($key, $value);
+            }
+            $statement->bindParam(':limit', $perPage, PDO::PARAM_INT);
+            $statement->bindParam(':offset', $offset, PDO::PARAM_INT);
+            
+            $statement->execute();
+            
+            $data = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $className, []);
+            
+            return new PaginationResult(
+                data: $data,
+                total: $total,
+                page: $page,
+                perPage: $perPage,
+                totalPages: $totalPages,
+                hasNextPage: $hasNextPage,
+                hasPreviousPage: $hasPreviousPage
+            );
+            
+        } catch (\PDOException $e) {
+            return new PaginationResult(
+                data: [],
+                total: 0,
+                page: $page,
+                perPage: $perPage,
+                totalPages: 0,
+                hasNextPage: false,
+                hasPreviousPage: false
+            );
         }
     }
 
     /**
-     * Get SQL fragment for timestamp columns in INSERT statements
+     * Execute a cursor-based paginated query
      * 
-     * @return string SQL fragment like "created_at, updated_at"
+     * @param string $sql The base SQL query
+     * @param string $countSql The count SQL query for total records
+     * @param string $className The class name to instantiate results
+     * @param string $cursorField The field to use for cursor pagination
+     * @param ?string $cursor The cursor value (null for first page)
+     * @param int $perPage Number of items per page
+     * @param array $params Parameters to bind to the query
+     * @param string $direction 'next' or 'previous'
+     * @return PaginationResult
      */
-    protected function getTimestampColumns(): string
-    {
-        return 'created_at, updated_at';
+    protected function executeCursorPaginatedQuery(
+        string $sql,
+        string $countSql,
+        string $className,
+        string $cursorField,
+        ?string $cursor = null,
+        int $perPage = 20,
+        array $params = [],
+        string $direction = 'next'
+    ): PaginationResult {
+        try {
+            // Validate pagination parameters
+            $perPage = max(1, min(100, $perPage));
+            
+            // Get total count
+            $countStatement = $this->connection->prepare($countSql);
+            foreach ($params as $key => $value) {
+                $countStatement->bindParam($key, $value);
+            }
+            $countStatement->execute();
+            $total = (int) $countStatement->fetchColumn();
+            
+            // Build cursor condition
+            $cursorCondition = '';
+            if ($cursor !== null) {
+                $operator = $direction === 'next' ? '>' : '<';
+                $cursorCondition = " AND {$cursorField} {$operator} :cursor";
+            }
+            
+            // Build the final query
+            $finalSql = $sql . $cursorCondition . " ORDER BY {$cursorField} " . 
+                       ($direction === 'next' ? 'ASC' : 'DESC') . 
+                       " LIMIT :limit";
+            
+            // Execute the cursor paginated query
+            $statement = $this->connection->prepare($finalSql);
+            
+            // Bind parameters
+            foreach ($params as $key => $value) {
+                $statement->bindParam($key, $value);
+            }
+            if ($cursor !== null) {
+                $statement->bindParam(':cursor', $cursor);
+            }
+            $statement->bindParam(':limit', $perPage, PDO::PARAM_INT);
+            
+            $statement->execute();
+            
+            $data = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $className, []);
+            
+            // Calculate cursors
+            $nextCursor = null;
+            $previousCursor = null;
+            
+            if (!empty($data)) {
+                $firstItem = $data[0];
+                $lastItem = end($data);
+                
+                // Get cursor values using reflection or direct property access
+                $nextCursor = $this->getCursorValue($lastItem, $cursorField);
+                $previousCursor = $this->getCursorValue($firstItem, $cursorField);
+            }
+            
+            $hasNextPage = count($data) === $perPage;
+            $hasPreviousPage = $cursor !== null;
+            
+            return new PaginationResult(
+                data: $data,
+                total: $total,
+                page: 0, // Not applicable for cursor pagination
+                perPage: $perPage,
+                totalPages: 0, // Not applicable for cursor pagination
+                hasNextPage: $hasNextPage,
+                hasPreviousPage: $hasPreviousPage,
+                nextCursor: $nextCursor,
+                previousCursor: $previousCursor
+            );
+            
+        } catch (\PDOException $e) {
+            return new PaginationResult(
+                data: [],
+                total: 0,
+                page: 0,
+                perPage: $perPage,
+                totalPages: 0,
+                hasNextPage: false,
+                hasPreviousPage: false
+            );
+        }
     }
 
     /**
-     * Get SQL fragment for timestamp values in INSERT statements
+     * Get cursor value from an object using reflection
      * 
-     * @return string SQL fragment like ":created_at, :updated_at"
+     * @param object $object The object to extract cursor value from
+     * @param string $field The field name
+     * @return string|null
      */
-    protected function getTimestampValues(): string
+    private function getCursorValue(object $object, string $field): ?string
     {
-        return ':created_at, :updated_at';
+        try {
+            $reflection = new \ReflectionClass($object);
+            
+            // Try to find a getter method
+            $getterMethod = 'get' . ucfirst($field);
+            if ($reflection->hasMethod($getterMethod)) {
+                return (string) $object->$getterMethod();
+            }
+            
+            // Try to access property directly
+            if ($reflection->hasProperty($field)) {
+                $property = $reflection->getProperty($field);
+                $property->setAccessible(true);
+                return (string) $property->getValue($object);
+            }
+            
+            // Try to access public property
+            if (property_exists($object, $field)) {
+                return (string) $object->$field;
+            }
+            
+            return null;
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**
-     * Get SQL fragment for updating timestamp in UPDATE statements
+     * Build a count SQL query from a base SQL query
      * 
-     * @return string SQL fragment like "updated_at = :updated_at"
+     * @param string $sql The base SQL query
+     * @return string The count SQL query
      */
-    protected function getUpdateTimestampFragment(): string
+    protected function buildCountQuery(string $sql): string
     {
-        return 'updated_at = :updated_at';
+        // Remove ORDER BY clause if present
+        $sql = preg_replace('/\s+ORDER\s+BY\s+.*$/i', '', $sql);
+        
+        // Extract the FROM clause and everything after it
+        if (preg_match('/FROM\s+(.+)$/i', $sql, $matches)) {
+            return "SELECT COUNT(*) FROM " . $matches[1];
+        }
+        
+        // Fallback: wrap the entire query
+        return "SELECT COUNT(*) FROM ($sql) as count_table";
     }
 
     /**
-     * Check if organizer filtering should be applied based on user roles
+     * Execute a wildcard search with pagination
      * 
-     * @return bool True if filtering should be applied, false if user has elevated privileges
+     * @param string $sql The SQL query with :search placeholder
+     * @param string $searchTerm The search term with wildcards
+     * @param string $className The class name to instantiate results
+     * @param int $page The page number (1-based)
+     * @param int $perPage Number of items per page
+     * @param array $additionalParams Additional parameters to bind
+     * @param string $orderBy Optional ORDER BY clause
+     * @return PaginationResult
      */
-    protected function shouldApplyOrganizerFilter(): bool
-    {
-        $userContext = \App\common\Context\UserContext::getInstance();
+    protected function executeWildcardSearchPaginated(
+        string $sql,
+        string $searchTerm,
+        string $className,
+        int $page = 1,
+        int $perPage = 20,
+        array $additionalParams = [],
+        string $orderBy = ''
+    ): PaginationResult {
+        $likePattern = $this->wildcardToLikePattern($searchTerm);
         
-        // Skip filtering for SUPERUSER only (aligns with service layer logic)
-        if ($userContext->isSuperUser()) {
-            return false;
-        }
+        // Build count query
+        $countSql = $this->buildCountQuery($sql);
         
-        // Apply filtering for all other roles
-        return true;
-    }
-
-    /**
-     * Get organizer filter SQL fragment
-     * 
-     * @param string $tableAlias The table alias to use in the WHERE clause
-     * @return string SQL fragment for organizer filtering or empty string if no filtering needed
-     */
-    protected function getOrganizerFilterSql(string $tableAlias = ''): string
-    {
-        if (!$this->shouldApplyOrganizerFilter()) {
-            return '';
-        }
+        // Prepare parameters
+        $params = [':search' => $likePattern];
+        $params = array_merge($params, $additionalParams);
         
-        $organizerId = $this->getOrganizerIdFromContext();
-        if ($organizerId === null) {
-            return '';
-        }
-        
-        $prefix = $tableAlias ? $tableAlias . '.' : '';
-        return $prefix . 'organizer_id = ' . $organizerId;
-    }
-
-    /**
-     * Get organizer filter SQL fragment with parameter binding
-     * 
-     * @param string $tableAlias The table alias to use in the WHERE clause
-     * @param string $paramName The parameter name to use (default: 'organizer_id')
-     * @return string SQL fragment for organizer filtering with parameter or empty string if no filtering needed
-     */
-    protected function getOrganizerFilterSqlWithParam(string $tableAlias = '', string $paramName = 'organizer_id'): string
-    {
-        if (!$this->shouldApplyOrganizerFilter()) {
-            return '';
-        }
-        
-        $organizerId = $this->getOrganizerIdFromContext();
-        if ($organizerId === null) {
-            return '';
-        }
-        
-        $prefix = $tableAlias ? $tableAlias . '.' : '';
-        return $prefix . 'organizer_id = :' . $paramName;
-    }
-
-    /**
-     * Bind organizer filter parameter to a prepared statement
-     * 
-     * @param \PDOStatement $statement The prepared statement
-     * @param string $paramName The parameter name to use (default: 'organizer_id')
-     * @return bool True if parameter was bound, false if no filtering needed
-     */
-    protected function bindOrganizerFilterParameter(\PDOStatement $statement, string $paramName = 'organizer_id'): bool
-    {
-        if (!$this->shouldApplyOrganizerFilter()) {
-            return false;
-        }
-        
-        $organizerId = $this->getOrganizerIdFromContext();
-        if ($organizerId === null) {
-            return false;
-        }
-        
-        $statement->bindValue(':' . $paramName, $organizerId);
-        return true;
+        return $this->executePaginatedQuery(
+            $sql,
+            $countSql,
+            $className,
+            $page,
+            $perPage,
+            $params,
+            $orderBy
+        );
     }
 
 }

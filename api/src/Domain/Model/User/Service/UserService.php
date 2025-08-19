@@ -59,9 +59,6 @@ class UserService extends  ServiceAbstract
     }
 
     public function updateUser($id, UserRepresentation $userrepresentation, string $currentUserUIDInSystem): ?UserRepresentation {
-        // Validate roles based on current user permissions
-        $this->validateUserRoles($userrepresentation->getRoles(), $currentUserUIDInSystem);
-        
         // Update basic user information
         $user = $this->repository->updateUser($id, $this->userAssembly->toUser($userrepresentation));
         
@@ -88,24 +85,22 @@ class UserService extends  ServiceAbstract
     }
 
     public function createUser(UserRepresentation $userrepresentation, string $currentuser): UserRepresentation {
-        // Validate roles based on current user permissions
-        $this->validateUserRoles($userrepresentation->getRoles(), $currentuser);
-        
-        $newUser = $this->repository->createUser($this->userAssembly->toUser($userrepresentation));
+       $newUser = $this->repository->createUser($this->userAssembly->toUser($userrepresentation));
 
-        if(isset($newUser)){
+       if(isset($newUser)){
             $userinfo =  $this->userInfoAssembly->toUserinfo($userrepresentation->getUserInfoRepresentation(),$newUser->getId(),True);
             if(isset($userinfo)){
                 $this->userInfoRepository->createUserInfo($userinfo, $newUser->getId());
             }
-        }
+
+       }
 
         foreach ($userrepresentation->getRoles() as $row) {
             $role = new Role($row['id'],$row['role_name']);
             $this->userRoleRepository->createUser($role, $newUser->getId());
         }
 
-        return $this->userAssembly->toRepresentation($newUser,$this->getPermissions($currentuser));
+       return $this->userAssembly->toRepresentation($newUser,$this->getPermissions($currentuser));
     }
 
     public function deleteUser($user_uid): void{
@@ -125,40 +120,5 @@ class UserService extends  ServiceAbstract
     public function getPermissions($user_uid): array
     {
         return $this->permissionrepository->getPermissionsTodata("USER",$user_uid);
-    }
-
-    /**
-     * Validate that the current user can assign the specified roles
-     * 
-     * @param array $roles The roles to be assigned
-     * @param string $currentUserUid The current user's UID
-     * @throws \App\common\Exceptions\BrevetException If role assignment is not allowed
-     */
-    private function validateUserRoles(array $roles, string $currentUserUid): void
-    {
-        $userContext = \App\common\Context\UserContext::getInstance();
-        
-        // Superusers can assign any role
-        if ($userContext->isSuperUser()) {
-            return;
-        }
-        
-        // Non-superusers can only assign these roles
-        $allowedRoles = [
-            \App\common\Context\UserContext::ROLE_ADMIN,
-            \App\common\Context\UserContext::ROLE_USER,
-            \App\common\Context\UserContext::ROLE_VOLONTEER
-        ];
-        
-        foreach ($roles as $role) {
-            $roleName = is_array($role) ? $role['role_name'] : $role;
-            
-            if (!in_array($roleName, $allowedRoles)) {
-                throw new \App\common\Exceptions\BrevetException(
-                    "Du har inte behörighet att tilldela rollen '$roleName'. Endast superanvändare kan tilldela denna roll.",
-                    403
-                );
-            }
-        }
     }
 }

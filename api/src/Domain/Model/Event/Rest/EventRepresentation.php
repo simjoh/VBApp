@@ -16,9 +16,6 @@ class EventRepresentation implements JsonSerializable
     private bool $canceled;
     private bool $completed;
     private string $description;
-    private ?int $organizer_id = null;
-    private ?string $created_at = null;
-    private ?string $updated_at = null;
     private array $links = [];
 
     /**
@@ -147,54 +144,6 @@ class EventRepresentation implements JsonSerializable
     public function setDescription(string $description): void
     {
         $this->description = $description;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getOrganizerId(): ?int
-    {
-        return $this->organizer_id;
-    }
-
-    /**
-     * @param int|null $organizer_id
-     */
-    public function setOrganizerId(?int $organizer_id): void
-    {
-        $this->organizer_id = $organizer_id;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getCreatedAt(): ?string
-    {
-        return $this->created_at;
-    }
-
-    /**
-     * @param string|null $created_at
-     */
-    public function setCreatedAt(?string $created_at): void
-    {
-        $this->created_at = $created_at;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getUpdatedAt(): ?string
-    {
-        return $this->updated_at;
-    }
-
-    /**
-     * @param string|null $updated_at
-     */
-    public function setUpdatedAt(?string $updated_at): void
-    {
-        $this->updated_at = $updated_at;
     }
 
     /**

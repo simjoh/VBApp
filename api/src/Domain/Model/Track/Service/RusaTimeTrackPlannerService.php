@@ -278,7 +278,6 @@ class RusaTimeTrackPlannerService
                             );
                         } catch (\Exception $innerEx) {
                             // Fall back to original method if the new one fails
-                            error_log("Error in fromACPCalculator: " . $innerEx->getMessage());
                             
                             // Build a simple response like before
                             $response = new \stdClass();
@@ -291,20 +290,18 @@ class RusaTimeTrackPlannerService
                             try {
                                 return $this->rusaresponseAssembler->toRepresentation($response, $currentUseruid, $rusaPlannnerInput, $event);
                             } catch (\Exception $e2) {
-                                error_log("Error in toRepresentation fallback: " . $e2->getMessage());
                                 return new \App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation();
                             }
                         }
                     }
                 }
             } catch (\Exception $e) {
-                error_log("Error getting event: " . $e->getMessage());
+                // Error getting event
             }
             
             // If we couldn't get the event or there was an error, return an empty response
             return new \App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation();
         } catch (\Exception $e) {
-            error_log("Uncaught exception in getResponseFromACPCalculator: " . $e->getMessage());
             return new \App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation();
         }
     }

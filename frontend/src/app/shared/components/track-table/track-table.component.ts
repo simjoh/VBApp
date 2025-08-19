@@ -91,12 +91,6 @@ export class TrackTableComponent implements OnInit, OnChanges {
 
   async publish(trackRepresentation: TrackRepresentation) {
     try {
-      console.log('Publishing track - before API call:', {
-        trackUid: trackRepresentation.track_uid,
-        active: trackRepresentation.active,
-        links: trackRepresentation.links?.map((l: any) => ({ rel: l.rel, method: l.method }))
-      });
-
       // Disable buttons during the operation to prevent double-clicks
       const publishButton = document.querySelector(`[data-track-uid="${trackRepresentation.track_uid}"] .publish-btn`) as HTMLButtonElement;
       const unpublishButton = document.querySelector(`[data-track-uid="${trackRepresentation.track_uid}"] .unpublish-btn`) as HTMLButtonElement;
@@ -106,11 +100,8 @@ export class TrackTableComponent implements OnInit, OnChanges {
 
       await this.tracktablecomponentService.publishResults(trackRepresentation);
 
-      console.log('Publishing track - API call successful, reloading...');
-
       // Add a minimal delay to ensure the backend transaction is committed
       setTimeout(() => {
-        console.log('Reloading data after publish action...');
         this.reload.emit(trackRepresentation.track_uid);
         this.cdr.detectChanges(); // Force change detection
       }, 100);

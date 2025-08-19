@@ -21,6 +21,8 @@ use App\common\Rest\DTO\EventGroupDTO;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Response;
 use Fig\Http\Message\StatusCodeInterface;
+use PDO;
+use PDOException;
 
 class EventService extends ServiceAbstract
 {
@@ -56,205 +58,207 @@ class EventService extends ServiceAbstract
         $this->trackInformationAssembly = $trackInformationAssembly;
         $this->statisticsRepository = $statisticsRepository;
         
+
+        
         // Initialize the event group rest client
         $settings = $c->get('settings');
         $this->eventGroupRestClient = new LoppServiceEventGroupRestClient($settings);
     }
 
-    public function allEvents(): array
+    public function allEvents(string $currentUserUid): array
     {
         $events = $this->eventRepository->allEvents();
         if (!isset($events)) {
             return array();
         }
-        $userContext = \App\common\Context\UserContext::getInstance();
-        $currentUserUid = $userContext->getUserId();
+
         return $this->eventAssembly->toRepresentations($events, $currentUserUid);
     }
 
-    public function eventFor(string $event_uid)
+    public function eventFor(string $event_uid, string $currentUserUid)
     {
+
         $event = $this->eventRepository->eventFor($event_uid);
+
         if (!isset($event)) {
             return null;
         }
-        $userContext = \App\common\Context\UserContext::getInstance();
-        $currentUserUid = $userContext->getUserId();
         $permissions = $this->getPermissions($currentUserUid);
         return $this->eventAssembly->toRepresentation($event, $permissions);
     }
 
-    public function updateEvent(string $event_uid, EventRepresentation $eventRepresentation): EventRepresentation
+    public function updateEvent(string $event_uid, EventRepresentation $eventRepresentation, string $currentUserUid): EventRepresentation
     {
         $event = $this->toEvent($eventRepresentation);
-        $organizerId = $this->eventRepository->getOrganizerIdFromContext();
-        if ($organizerId !== null && $event->getOrganizerId() === null) {
-            $event->setOrganizerId($organizerId);
-        }
-        $userContext = \App\common\Context\UserContext::getInstance();
-        $currentUserUid = $userContext->getUserId();
         $permissions = $this->getPermissions($currentUserUid);
+
         $eventexists = $this->eventRepository->eventFor($event_uid);
+
         if(!$eventexists){
             throw new BrevetException("Event not found", 1, null);
         }
+    
+        // Get the database connection from the repository
         $connection = $this->eventRepository->getConnection();
+        
+        // Begin transaction
         $connection->beginTransaction();
+        
         try {
+            // Update event in local database first
             $event = $this->eventRepository->updateEvent($event_uid, $event);
+            
+            // Try to sync with LoppService, but don't fail if LoppService is unavailable
             try {
+                // Try to get the event group by event UID
                 $eventGroup = $this->eventGroupRestClient->getEventGroupById($event->getEventUid());
+        
                 if ($eventGroup) {
+                    // Update the existing event group
                     $eventGroupDTO = $this->updateEventGroupFromEvent($eventGroup, $event);
+                    
                     $updatedEventGroup = $this->eventGroupRestClient->updateEventGroup($event->getEventUid(), $eventGroupDTO);
+                    
                     if (!$updatedEventGroup) {
-                        error_log("Warning: Failed to update event group in LoppService, but continuing with local update: " . $event->getEventUid());
+                        // Failed to update event group in LoppService, but continuing with local update
                     } else {
-                        error_log("Successfully updated event group in LoppService: " . $event->getEventUid());
+                        // Successfully updated event group in LoppService
                     }
                 } else {
+                    // Event group doesn't exist in LoppService, try to create it
                     $eventGroupDTO = $this->createEventGroupFromEvent($event);
+                    
                     $createdEventGroup = $this->eventGroupRestClient->createEventGroup($eventGroupDTO);
+                    
                     if (!$createdEventGroup) {
-                        error_log("Warning: Failed to create event group in LoppService, but continuing with local update: " . $event->getEventUid());
+                        // Failed to create event group in LoppService, but continuing with local update
                     } else {
-                        error_log("Successfully created event group in LoppService: " . $event->getEventUid());
+                        // Successfully created event group in LoppService
                     }
                 }
             } catch (\Exception $loppServiceException) {
+                // Only skip LoppService for connection errors, otherwise re-throw
                 $errorMessage = $loppServiceException->getMessage();
                 if (strpos($errorMessage, 'Could not resolve host') !== false || 
                     strpos($errorMessage, 'Connection refused') !== false ||
                     strpos($errorMessage, 'Connection timed out') !== false) {
-                    error_log("LoppService connection failed for event " . $event->getEventUid() . ": " . $errorMessage);
-                    error_log("Continuing with local event update only");
+                    // Connection issue - continue with local event update only
                 } else {
+                    // Other error - re-throw to maintain existing behavior for non-connection issues
                     throw $loppServiceException;
                 }
             }
+            
             $connection->commit();
             return $this->eventAssembly->toRepresentation($event, $permissions);
+            
         } catch (\Exception $e) {
+            // Rollback the transaction if any exception occurs
             $connection->rollBack();
-            error_log("Failed to update event with rollback: " . $e->getMessage());
-            error_log("Event data: " . json_encode([
-                'uid' => $event->getEventUid(),
-                'title' => $event->getTitle(),
-                'description' => $event->getDescription(),
-                'startdate' => $event->getStartdate(),
-                'enddate' => $event->getEnddate()
-            ]));
+            
+            // Failed to update event with rollback
+            
+            // Re-throw the exception to be handled by the caller
             throw new BrevetException("Det gick inte att uppdatera event: " . $e->getMessage(), 14, $e);
         }
     }
 
-    public function createEvent(EventRepresentation $eventRepresentation)
+    public function createEvent(EventRepresentation $eventRepresentation, string $currentUserUid)
     {
         $event = $this->toEvent($eventRepresentation);
+        
+        // Always generate UUID in API first
         $event->setEventUid((string) Uuid::uuid4());
-        $organizerId = $this->eventRepository->getOrganizerIdFromContext();
-        if ($organizerId !== null && $event->getOrganizerId() === null) {
-            $event->setOrganizerId($organizerId);
-        }
-        $userContext = \App\common\Context\UserContext::getInstance();
-        $currentUserUid = $userContext->getUserId();
+        
         $permissions = $this->getPermissions($currentUserUid);
+        
+        // Get the database connection from the repository
         $connection = $this->eventRepository->getConnection();
+        
+        // Begin transaction
         $connection->beginTransaction();
+        
         try {
+            // Create event in local database first
             $event = $this->eventRepository->createEvent($event);
+
+            // Try to create corresponding event group in LoppService, but don't fail if unavailable
             try {
                 $eventGroupDTO = $this->createEventGroupFromEvent($event);
-                error_log("Creating event group with data: " . json_encode([
-                    'uid' => $eventGroupDTO->uid,
-                    'name' => $eventGroupDTO->name,
-                    'description' => $eventGroupDTO->description,
-                    'startdate' => $eventGroupDTO->startdate,
-                    'enddate' => $eventGroupDTO->enddate
-                ]));
+                
+                // Create event group in LoppService
+                
                 $createdEventGroup = $this->eventGroupRestClient->createEventGroup($eventGroupDTO);
+        
                 if (!$createdEventGroup) {
-                    error_log("Warning: Failed to create event group in LoppService, but continuing with local event: " . $event->getEventUid());
+                    // Failed to create event group in LoppService, but continuing with local event
                 } else {
-                    error_log("Successfully created event group in LoppService: " . $event->getEventUid());
+                    // Successfully created event group in LoppService
                 }
             } catch (\Exception $loppServiceException) {
+                // Only skip LoppService for connection errors, otherwise re-throw
                 $errorMessage = $loppServiceException->getMessage();
                 if (strpos($errorMessage, 'Could not resolve host') !== false || 
                     strpos($errorMessage, 'Connection refused') !== false ||
                     strpos($errorMessage, 'Connection timed out') !== false) {
-                    error_log("LoppService connection failed for new event " . $event->getEventUid() . ": " . $errorMessage);
-                    error_log("Continuing with local event creation only");
+                    // Connection issue - continue with local event creation only
                 } else {
+                    // Other error - re-throw to maintain existing behavior for non-connection issues
                     throw $loppServiceException;
                 }
             }
+            
             $connection->commit();
             return $this->eventAssembly->toRepresentation($event, $permissions);
         } catch (\Exception $e) {
+            // Rollback the transaction if any exception occurs
             $connection->rollBack();
             print_r($e->getMessage());
-            error_log("Failed to create event with rollback. Error: " . $e->getMessage());
-            error_log("Event data: " . json_encode([
-                'uid' => $event->getEventUid(),
-                'title' => $event->getTitle(),
-                'description' => $event->getDescription(),
-                'startdate' => $event->getStartdate(),
-                'enddate' => $event->getEnddate()
-            ]));
+            // Failed to create event with rollback
+            
+            // Re-throw the exception to be handled by the caller
             throw new BrevetException("Det gick inte att skapa event: " . $e->getMessage(), 11, $e);
         }
     }
 
-    public function deleteEvent(string $event_uid)
+    public function deleteEvent(string $event_uid, string $currentUserUid)
     {
-        $userContext = \App\common\Context\UserContext::getInstance();
-        $currentUserUid = $userContext->getUserId();
         $tracks = $this->trackservice->tracksForEvent($currentUserUid, $event_uid);
+
         if (!empty($tracks)) {
             throw new BrevetException("Det finns banor kopplade till eventet. Banorna måste tas bort från eventet", 5, null);
         }
-        
+
+        // Get the database connection from the repository
         $connection = $this->eventRepository->getConnection();
+        
         try {
             $connection->beginTransaction();
-            
-            // Delete from local database first
+
+            // Delete the event locally first
             $this->eventRepository->deleteEvent($event_uid);
             
-            // Try to delete corresponding event group from loppservice
+            // Try to delete in LoppService
             try {
-                $deleteSuccess = $this->eventGroupRestClient->deleteEventGroup($event_uid);
+                $this->eventGroupRestClient->deleteEventGroup($event_uid);
+                $connection->commit();
+            } catch (\Exception $e) {
+                // Check if the error message indicates the group wasn't found
+                if (strpos($e->getMessage(), 'Event group not found') !== false) {
+                    // Event group not found in LoppService (this is OK)
+                    $connection->commit();
+                    return;
+                }
                 
-                if ($deleteSuccess) {
-                    error_log("Successfully deleted event group from loppservice: " . $event_uid);
-                } else {
-                    // Check if the event group exists first to determine if the failure is due to "not found"
-                    $existingEventGroup = $this->eventGroupRestClient->getEventGroupById($event_uid);
-                    if ($existingEventGroup === null) {
-                        error_log("Event group not found in loppservice (this is OK): " . $event_uid);
-                    } else {
-                        error_log("Failed to delete event group from loppservice (event group exists but deletion failed): " . $event_uid);
-                    }
-                }
-            } catch (\Exception $loppServiceException) {
-                $errorMessage = $loppServiceException->getMessage();
-                if (strpos($errorMessage, 'Could not resolve host') !== false || 
-                    strpos($errorMessage, 'Connection refused') !== false ||
-                    strpos($errorMessage, 'Connection timed out') !== false) {
-                    error_log("LoppService connection failed for event deletion " . $event_uid . ": " . $errorMessage);
-                    error_log("Continuing with local event deletion only");
-                } else {
-                    // Log the error but don't fail the main deletion
-                    error_log("Error deleting event group in loppservice: " . $loppServiceException->getMessage());
-                    error_log("Event deletion completed locally, but loppservice sync failed for event: " . $event_uid);
-                }
+                // For any other error, rollback and throw
+                $connection->rollBack();
+                throw new BrevetException("Det gick inte att ta bort eventgrupp i loppservice: " . $e->getMessage(), 15, $e);
             }
-            
-            $connection->commit();
         } catch (\Exception $e) {
-            $connection->rollBack();
-            throw new BrevetException("Det gick inte att ta bort event: " . $e->getMessage(), 12, $e);
+            if ($connection->inTransaction()) {
+                $connection->rollBack();
+            }
+            throw new BrevetException("Det gick inte att ta bort event: " . $e->getMessage(), 16, $e);
         }
     }
 
@@ -267,7 +271,6 @@ class EventService extends ServiceAbstract
         $event->setActive($eventRepresentation->isActive());
         $event->setCanceled($eventRepresentation->isCanceled());
         $event->setCompleted($eventRepresentation->isCompleted());
-        $event->setOrganizerId($eventRepresentation->getOrganizerId());
         
         // Format dates properly for MySQL storage
         $event->setStartdate($this->formatDateForDatabase($eventRepresentation->getStartdate()));
@@ -278,51 +281,28 @@ class EventService extends ServiceAbstract
 
     public function getPermissions($user_uid): array
     {
-        // If user_uid is null, try to get it from UserContext
-        if ($user_uid === null) {
-            $userContext = \App\common\Context\UserContext::getInstance();
-            $user_uid = $userContext->getUserId();
-        }
-        
-        // If still null, return empty permissions array
-        if ($user_uid === null) {
-            return [];
-        }
-        
         return $this->permissinrepository->getPermissionsTodata("EVENT", $user_uid);
+
     }
 
-    public function eventInformation(string $eventUid): array
+    public function eventInformation(string $eventUid, string $currentUserUid): array
     {
-        $userContext = \App\common\Context\UserContext::getInstance();
-        $currentUserUid = $userContext->getUserId();
         $permissions = $this->getPermissions($currentUserUid);
         $eventInfos = array();
-        $tracksarray = array();
 
         if ($eventUid != "") {
+            // Single event optimization
             $event = $this->eventRepository->eventFor($eventUid);
-            $tracks = $this->trackservice->tracksForEvent($currentUserUid, $event->getEventUid());
-            foreach ($tracks as $track) {
-                // $participants = $this->participantService->participantsOnTrack($track->getTrackUid(), $currentUserUid);
-                $trackstats = $this->statisticsRepository->statsForTrack($track->getTrackUid());
-                array_push($tracksarray, $this->trackInformationAssembly->toRepresentation($this->trackservice->getTrackByTrackUid($track->getTrackUid(), $currentUserUid), $permissions, $currentUserUid, $trackstats == null ? null : $trackstats));
+            
+            if (!$event) {
+                return [];
             }
-            array_push($eventInfos, $this->eventInformationAssembly->toRepresentation($event, $tracksarray, $permissions, $currentUserUid));
+            
+            $eventInfos = $this->getEventInformationOptimized([$event], $currentUserUid, $permissions);
         } else {
-
+            // Multiple events optimization
             $events = $this->eventRepository->allEvents();
-            foreach ($events as $event) {
-                $tracksarray = [];
-                $tracks = $this->trackservice->tracksForEvent($currentUserUid, $event->getEventUid());
-                foreach ($tracks as $track) {
-                    //$participants = $this->participantService->participantsOnTrack($track->getTrackUid(), $currentUserUid);
-                    $trackstats = $this->statisticsRepository->statsForTrack($track->getTrackUid());
-                    array_push($tracksarray, $this->trackInformationAssembly->toRepresentation($this->trackservice->getTrackByTrackUid($track->getTrackUid(), $currentUserUid), $permissions, $currentUserUid, $trackstats == null ? null : $trackstats));
-                }
-                array_push($eventInfos, $this->eventInformationAssembly->toRepresentation($event, $tracksarray, $permissions, $currentUserUid));
-            }
-
+            $eventInfos = $this->getEventInformationOptimized($events, $currentUserUid, $permissions);
         }
 
         // Sort eventInfos by startdate (desc) and then by title
@@ -337,6 +317,252 @@ class EventService extends ServiceAbstract
         return $eventInfos;
     }
 
+    /**
+     * Optimized method to get event information with batched database queries
+     * 
+     * @param array $events Array of Event objects
+     * @param string $currentUserUid Current user UID
+     * @param array $permissions User permissions
+     * @return array Array of EventInformationRepresentation objects
+     */
+    private function getEventInformationOptimized(array $events, string $currentUserUid, array $permissions): array
+    {
+        if (empty($events)) {
+            return [];
+        }
+
+        $eventInfos = [];
+        $allTrackUids = [];
+        $eventTrackMap = [];
+
+        // Step 1: Collect all event UIDs and batch fetch tracks for all events
+        $step1Start = microtime(true);
+        $eventUids = [];
+        foreach ($events as $event) {
+            $eventUids[] = $event->getEventUid();
+        }
+        
+        // Batch fetch all tracks for all events in one query
+        $allTracks = $this->getTracksForEventsBatch($eventUids, $currentUserUid);
+        
+        // Group tracks by event
+        $tracksByEvent = [];
+        foreach ($allTracks as $track) {
+            $eventUid = $track->getEventUid();
+            if (!isset($tracksByEvent[$eventUid])) {
+                $tracksByEvent[$eventUid] = [];
+            }
+            $tracksByEvent[$eventUid][] = $track;
+        }
+        
+        // Build event track map
+        foreach ($events as $event) {
+            $eventUid = $event->getEventUid();
+            $tracks = $tracksByEvent[$eventUid] ?? [];
+            
+            $trackUids = [];
+            foreach ($tracks as $track) {
+                $trackUids[] = $track->getTrackUid();
+                $allTrackUids[] = $track->getTrackUid();
+            }
+            
+            $eventTrackMap[$eventUid] = [
+                'event' => $event,
+                'tracks' => $tracks,
+                'trackUids' => $trackUids
+            ];
+        }
+
+        // Step 2: Batch fetch all track statistics in one query
+        $trackStatsMap = [];
+        if (!empty($allTrackUids)) {
+            $trackStatsMap = $this->getTrackStatisticsBatch($allTrackUids);
+        }
+
+        // Step 3: Batch fetch all track details in one query
+        $trackDetailsMap = [];
+        if (!empty($allTrackUids)) {
+            $trackDetailsMap = $this->getTrackDetailsBatch($allTrackUids, $currentUserUid);
+        }
+
+        // Step 4: Build event information representations
+        $step4Start = microtime(true);
+        foreach ($eventTrackMap as $eventUid => $eventData) {
+            $tracksarray = [];
+            
+            foreach ($eventData['tracks'] as $track) {
+                $trackUid = $track->getTrackUid();
+                
+                // Get pre-fetched data
+                $trackstats = $trackStatsMap[$trackUid] ?? null;
+                $trackDetails = $trackDetailsMap[$trackUid] ?? null;
+                
+                // Use pre-fetched track details or fallback to individual fetch
+                $trackRepresentation = $trackDetails ?: 
+                    $this->trackInformationAssembly->toRepresentation(
+                        $this->trackservice->getTrackByTrackUid($trackUid, $currentUserUid), 
+                        $permissions, 
+                        $currentUserUid, 
+                        $trackstats
+                    );
+                
+                $tracksarray[] = $trackRepresentation;
+            }
+            
+            $eventInfos[] = $this->eventInformationAssembly->toRepresentationWithTracks(
+                $eventData['event'], 
+                $tracksarray, 
+                $permissions, 
+                $currentUserUid,
+                $eventData['tracks'] // Pass the pre-fetched Track objects
+            );
+        }
+        // Build representations completed
+
+        return $eventInfos;
+    }
+
+    /**
+     * Batch fetch tracks for multiple events
+     * 
+     * @param array $eventUids Array of event UIDs
+     * @param string $currentUserUid Current user UID
+     * @return array Array of Track objects
+     */
+    private function getTracksForEventsBatch(array $eventUids, string $currentUserUid): array
+    {
+        if (empty($eventUids)) {
+            return [];
+        }
+
+        try {
+            // Use a single query to get all tracks for all events
+            $placeholders = str_repeat('?,', count($eventUids) - 1) . '?';
+            $sql = "SELECT * FROM track WHERE event_uid IN ($placeholders)";
+            
+            $statement = $this->trackservice->getTrackRepository()->connection->prepare($sql);
+            $statement->execute($eventUids);
+            $tracks = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Track\Track::class, null);
+            
+        } catch (PDOException $e) {
+            return [];
+        }
+        
+        return $tracks;
+    }
+
+    /**
+     * Batch fetch track statistics for multiple tracks
+     * 
+     * @param array $trackUids Array of track UIDs
+     * @return array Map of track_uid => TrackStatistics
+     */
+    private function getTrackStatisticsBatch(array $trackUids): array
+    {
+        if (empty($trackUids)) {
+            return [];
+        }
+
+        $trackStatsMap = [];
+        
+        // Create placeholders for IN clause
+        $placeholders = str_repeat('?,', count($trackUids) - 1) . '?';
+        
+        // Single query to get all track statistics
+        $sql = "SELECT track_uid, countparticipants as countParticipants, dns as countDns, dnf as countDnf, completed as countFinished 
+                FROM v_race_statistic 
+                WHERE track_uid IN ($placeholders)";
+        
+        try {
+            $statement = $this->statisticsRepository->connection->prepare($sql);
+            $statement->execute($trackUids);
+            $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach ($results as $row) {
+                $trackStats = new \App\Domain\Model\Stats\TrackStatistics();
+                $trackStats->setCountParticipants((int)$row['countParticipants']);
+                $trackStats->setCountDns((int)$row['countDns']);
+                $trackStats->setCountDnf((int)$row['countDnf']);
+                $trackStats->setCountFinished((int)$row['countFinished']);
+                
+                $trackStatsMap[$row['track_uid']] = $trackStats;
+            }
+            
+        } catch (PDOException $e) {
+            // Error in batch track statistics
+        }
+        
+        // Track statistics batch processing completed
+        
+        return $trackStatsMap;
+    }
+
+    /**
+     * Batch fetch track details for multiple tracks
+     * 
+     * @param array $trackUids Array of track UIDs
+     * @param string $currentUserUid Current user UID
+     * @return array Map of track_uid => TrackRepresentation
+     */
+    private function getTrackDetailsBatch(array $trackUids, string $currentUserUid): array
+    {
+        if (empty($trackUids)) {
+            return [];
+        }
+
+        $trackDetailsMap = [];
+        $permissions = $this->getPermissions($currentUserUid);
+        
+        // Get all tracks in one query
+        $placeholders = str_repeat('?,', count($trackUids) - 1) . '?';
+        $sql = "SELECT * FROM track WHERE track_uid IN ($placeholders)";
+        
+        try {
+            $statement = $this->trackservice->getTrackRepository()->connection->prepare($sql);
+            $statement->execute($trackUids);
+            $tracks = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Track\Track::class, null);
+            
+            // Get all checkpoints for all tracks in one query
+            $checkpointSql = "SELECT tc.track_uid, tc.checkpoint_uid 
+                             FROM track_checkpoint tc 
+                             WHERE tc.track_uid IN ($placeholders)";
+            $checkpointStatement = $this->trackservice->getTrackRepository()->connection->prepare($checkpointSql);
+            $checkpointStatement->execute($trackUids);
+            $checkpointResults = $checkpointStatement->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Group checkpoints by track
+            $trackCheckpoints = [];
+            foreach ($checkpointResults as $row) {
+                if (!isset($trackCheckpoints[$row['track_uid']])) {
+                    $trackCheckpoints[$row['track_uid']] = [];
+                }
+                $trackCheckpoints[$row['track_uid']][] = $row['checkpoint_uid'];
+            }
+            
+            // Build track representations
+            foreach ($tracks as $track) {
+                $trackUid = $track->getTrackUid();
+                
+                // Set checkpoints for this track
+                if (isset($trackCheckpoints[$trackUid])) {
+                    $track->setCheckpoints($trackCheckpoints[$trackUid]);
+                }
+                
+                // Create track representation using TrackInformationAssembly to match the fallback format
+                $trackRepresentation = $this->trackservice->getTrackAssembly()->toRepresentation($track, $permissions, $currentUserUid);
+                $trackInformationRepresentation = $this->trackInformationAssembly->toRepresentation($trackRepresentation, $permissions, $currentUserUid, null);
+                $trackDetailsMap[$trackUid] = $trackInformationRepresentation;
+            }
+            
+        } catch (PDOException $e) {
+            // Error in batch track details
+        }
+        
+        // Track details batch processing completed
+        
+        return $trackDetailsMap;
+    }
+    
     /**
      * Create an EventGroupDTO from an Event
      * 
@@ -420,7 +646,6 @@ class EventService extends ServiceAbstract
                     $dateTime = new \DateTime($date);
                     return $dateTime->format('Y-m-d');
                 } catch (\Exception $e) {
-                    error_log("Failed to parse ISO date: " . $date . " - " . $e->getMessage());
                     return date('Y-m-d');
                 }
             }
@@ -434,7 +659,6 @@ class EventService extends ServiceAbstract
             try {
                 return date('Y-m-d', strtotime($date));
             } catch (\Exception $e) {
-                error_log("Failed to parse date string: " . $date . " - " . $e->getMessage());
                 return date('Y-m-d');
             }
         }
@@ -447,7 +671,6 @@ class EventService extends ServiceAbstract
         try {
             return date('Y-m-d', strtotime($date));
         } catch (\Exception $e) {
-            error_log("Failed to format date: " . print_r($date, true) . " - " . $e->getMessage());
             return date('Y-m-d');
         }
     }

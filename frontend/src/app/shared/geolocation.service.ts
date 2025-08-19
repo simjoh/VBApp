@@ -78,7 +78,6 @@ export class GeolocationService {
 	stopWatch(){
 		setTimeout(() => {
 			navigator.geolocation.clearWatch(this.watchId);
-			console.log('Stopped watching position after 60 seconds.');
 		}, 60000);
 	}
 

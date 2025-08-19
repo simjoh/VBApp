@@ -97,11 +97,15 @@ class CompetitorRepository extends BaseRepository
             $statement->rowCount();
             if ($statement->rowCount() > 0) {
                 $competitor = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Competitor\Competitor::class, null);
-                return $competitor[0];
+                if (!empty($competitor)) {
+                    return $competitor[0];
+                }
             }
             if (!empty($event)) {
                 $competitor = $statement->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, \App\Domain\Model\Competitor\Competitor::class, null);
-                return $competitor[0];
+                if (!empty($competitor)) {
+                    return $competitor[0];
+                }
             }
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
@@ -118,11 +122,13 @@ class CompetitorRepository extends BaseRepository
             $uid = Uuid::uuid4();
             $role_id = 4;
             $password = sha1("pass");
+            $gender = 0; // Default gender value
             $stmt = $this->connection->prepare($this->sqls('createCompetitor'));
             $stmt->bindParam(':familyname', $familyName);
             $stmt->bindParam(':username', $userName);
             $stmt->bindParam(':givenname', $givenName);
             $stmt->bindParam(':birthdate', $birthdate);
+            $stmt->bindParam(':gender', $gender);
             $stmt->bindParam(':role_id', $role_id);
             $stmt->bindParam(':uid', $uid);
             $stmt->bindParam(':password', $uid);
@@ -303,7 +309,6 @@ class CompetitorRepository extends BaseRepository
             
             return $refNr;
         } catch (PDOException $e) {
-            error_log("Error generating and storing ref_nr: " . $e->getMessage());
             // Return a fallback ref_nr if there's an error
             return '99999';
         }

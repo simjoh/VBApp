@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {VolonteerService} from "./volonteer.service";
 import {EventService} from "../admin/event-admin/event.service";
-import {BehaviorSubject, Observable} from "rxjs";
+import {BehaviorSubject, Observable, combineLatest} from "rxjs";
 import {map, mergeMap, startWith, take, tap, withLatestFrom} from "rxjs/operators";
 import {TrackService} from "../shared/track-service";
 import {CheckpointRepresentation, ParticipantToPassCheckpointRepresentation} from "../shared/api/api";
@@ -88,7 +88,6 @@ export class VolonteerComponentService {
 
         return first === item.checkpoint_uid;
       })
-      console.log(valdbana);
       return valdbana;
     }),
   ) as Observable<CheckpointRepresentation>;
@@ -109,9 +108,10 @@ export class VolonteerComponentService {
     map((rand) => {
       const stats = new Statistics();
       stats.countpassed = rand.filter((obj) => obj.passed === true).length;
-      stats.notPassed = rand.filter((obj) => obj.passed === false).length;
+      stats.notPassed = rand.filter((obj) => obj.passed === false && obj.dnf === false).length;
       stats.dnf = rand.filter((obj) => obj.dnf === true).length;
       stats.checkedout = rand.filter((obj) => obj.has_checkouted === true).length;
+      stats.started = rand.filter((obj) => obj.started === true).length;
    //   stats.dns = rand.filter((obj) => obj.dns === true).length;
       if (!stats.dns){
           stats.dns = 0;
@@ -126,7 +126,6 @@ export class VolonteerComponentService {
       const dnfochdns = stats.dns + stats.dnf;
       stats.percentageoff = stats.countpassed - dnfochdns / rand.length * 100;
       stats.percentageoff = Math.floor((100 * stats.countpassed - dnfochdns) / rand.length);
-      console.log(stats.percentageoff);
       if (stats.percentageoff < 0){
         stats.percentageoff = 0;
       }
@@ -135,6 +134,21 @@ export class VolonteerComponentService {
     })
   ) as Observable<Statistics>;
 
+  // Get expected participants - count those who haven't checked in yet
+  expectedParticipants$ = this.randonneurs$.pipe(
+    map(currentParticipants => {
+      // Count participants who haven't checked in yet (not passed and not DNF)
+      const notCheckedIn = currentParticipants.filter(p => p.passed === false && p.dnf === false).length;
+      return notCheckedIn;
+    })
+  ) as Observable<number>;
+
+  // Combined stats with expected participants
+  combinedStats$ = combineLatest([this.stats$, this.expectedParticipants$]).pipe(
+    map(([stats, expected]) => {
+      return { ...stats, expected };
+    })
+  ) as Observable<Statistics & { expected: number }>;
 
 
   constructor(private volonteerService: VolonteerService,private   eventService: EventService, private trackService: TrackService) { }
@@ -199,5 +213,6 @@ export class Statistics {
   checkedout: number;
   dnf: number;
   dns: number;
+  started: number;
   percentageoff: number
 }

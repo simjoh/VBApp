@@ -18,8 +18,7 @@ export class CompetitorComponent implements OnInit {
   getGeoLocation() {
     this.geolocationService.getCurrentPosition().subscribe({
       next: (position) => {
-        console.log('Latitude:', position.coords.latitude);
-        console.log('Longitude:', position.coords.longitude);
+        // Position received
       },
       error: (error) => {
         console.error('Error getting geolocation:', error);

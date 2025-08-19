@@ -4,7 +4,12 @@ import {UnknownRouteComponent} from "./unknown-route/unknown-route.component";
 import {AuthenticatedGuard} from "./core/auth/authenticated.guard";
 import {NgbdTableComplete} from "./admin/competitors-list/competitors-table-complete";
 import { KontrollFormComponent } from './admin/kontroll-form/kontroll-form.component';
+
 export const ROUTES: Routes = [
+  {
+    path: 'login',
+    loadChildren: () => import('./login/login.module').then(m => m.LoginModule),
+  },
   {
     path: '',
     canActivate: [AuthenticatedGuard],
@@ -36,12 +41,11 @@ export const ROUTES: Routes = [
         component: UnknownRouteComponent
       }
     ],
-
-
   },
   // { path: 'kontroller', component: KontrollerComponent },
   { path: 'kontroll-form', component: KontrollFormComponent },
 ];
+
 @NgModule({
   imports: [RouterModule.forRoot(ROUTES)],
   exports: [RouterModule]

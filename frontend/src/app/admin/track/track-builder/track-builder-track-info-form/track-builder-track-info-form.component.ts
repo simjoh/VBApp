@@ -1,8 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy, LOCALE_ID } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, LOCALE_ID, Inject } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeSv from '@angular/common/locales/sv';
 import {TrackBuilderComponentService} from "../track-builder-component.service";
-import { OrganizerService } from '../../../organizer-admin/organizer.service';
 
 // Register Swedish locale
 registerLocaleData(localeSv);
@@ -21,7 +20,6 @@ export class TrackBuilderTrackInfoFormComponent implements OnInit {
   model = new EventTrackInfo(0,"", "", "", "", "", 0);
   selectedOrganizer: any = null;
   stripeEnabled: boolean = false;
-  isSuperUser = false;
 
   // Event type options
   eventTypeOptions = [
@@ -58,15 +56,9 @@ export class TrackBuilderTrackInfoFormComponent implements OnInit {
     clear: 'Rensa'
   };
 
-  constructor(
-    private trackbuildercomponentService: TrackBuilderComponentService,
-    private organizerService: OrganizerService
-  ) { }
+  constructor(private trackbuildercomponentService: TrackBuilderComponentService) { }
 
   ngOnInit(): void {
-    this.checkUserRoles();
-    this.add();
-
     // Initialize selected distance if model has a value
     if (this.model.trackdistance > 0) {
       this.selectedDistance = this.model.trackdistance;
@@ -91,30 +83,6 @@ export class TrackBuilderTrackInfoFormComponent implements OnInit {
       // Convert string date to Date object for p-calendar
       this.model.startdate = this.stringDateToDate(this.model.startdate);
     }
-  }
-
-  private checkUserRoles(): void {
-    const currentUser = JSON.parse(localStorage.getItem('activeUser') || '{}');
-    this.isSuperUser = currentUser.roles?.includes('SUPERUSER');
-
-    // If user is not superuser, pre-select their organizer_id and load organizer data
-    if (!this.isSuperUser && currentUser.organizer_id) {
-      this.model.organizer_id = currentUser.organizer_id;
-
-      // Load the organizer data for the pre-selected organizer
-      this.loadOrganizerData(currentUser.organizer_id);
-    }
-  }
-
-  private loadOrganizerData(organizerId: number): void {
-    this.organizerService.getOrganizers().subscribe(organizers => {
-      const organizer = organizers.find(org => org.id === organizerId);
-      if (organizer) {
-        this.selectedOrganizer = organizer;
-        // Store in the track builder service for summary access
-        this.trackbuildercomponentService.setOrganizer(organizer);
-      }
-    });
   }
 
   private formatDateToYYYYMMDD(date: Date): string {
@@ -499,16 +467,10 @@ export class TrackBuilderTrackInfoFormComponent implements OnInit {
       return `data:image/svg+xml;base64,${logoSvg}`;
     }
 
-    // If it's raw SVG, encode it properly handling Unicode characters
+    // If it's raw SVG, encode it
     if (logoSvg && logoSvg.includes('<svg')) {
-      try {
-        // Use encodeURIComponent to handle Unicode characters properly
-        const encodedSvg = encodeURIComponent(logoSvg);
-        return `data:image/svg+xml;charset=utf-8,${encodedSvg}`;
-      } catch (error) {
-        console.error('Error encoding SVG:', error);
-        return '';
-      }
+      const base64 = btoa(logoSvg);
+      return `data:image/svg+xml;base64,${base64}`;
     }
 
     return '';

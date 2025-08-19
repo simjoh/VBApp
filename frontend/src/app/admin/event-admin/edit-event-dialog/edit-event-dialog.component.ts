@@ -16,46 +16,24 @@ export class EditEventDialogComponent implements OnInit {
   eventStatus: any;
 
   categories: any[] = [{name: 'Aktiv', key: 'A'}, {name: 'Inställd', key: 'I'}, {name: 'Utförd', key: 'U'}];
-  isSuperUser = false;
 
   constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig) {
   }
 
   ngOnInit(): void {
     this.eventForm = this.config.data.event;
-    this.checkUserRoles();
-
-    console.log('EditEventDialog ngOnInit - initial event data:', {
-      event_uid: this.eventForm.event_uid,
-      title: this.eventForm.title,
-      active: this.eventForm.active,
-      canceled: this.eventForm.canceled,
-      completed: this.eventForm.completed,
-      organizer_id: this.eventForm.organizer_id
-    });
 
     // Set the correct initial status based on the event data
     if (this.eventForm.active === true) {
       this.eventStatus = this.categories[0]; // Aktiv
-      console.log('Setting initial status to Aktiv');
     } else if (this.eventForm.completed === true) {
       this.eventStatus = this.categories[2]; // Utförd
-      console.log('Setting initial status to Utförd');
     } else if (this.eventForm.canceled === true) {
       this.eventStatus = this.categories[1]; // Inställd
-      console.log('Setting initial status to Inställd');
     } else {
       // Default to Aktiv if no status is set
       this.eventStatus = this.categories[0];
-      console.log('Setting initial status to default (Aktiv)');
     }
-
-    console.log('Initial eventStatus value:', this.eventStatus);
-  }
-
-  private checkUserRoles(): void {
-    const activeUser = JSON.parse(localStorage.getItem('activeUser') || '{}');
-    this.isSuperUser = activeUser.roles?.includes('SUPERUSER') || false;
   }
 
 
@@ -68,17 +46,6 @@ export class EditEventDialogComponent implements OnInit {
       if (this.eventForm.enddate instanceof Date) {
         this.eventForm.enddate = this.formatDateForBackend(this.eventForm.enddate);
       }
-
-      console.log('Submitting event form with data:', {
-        event_uid: this.eventForm.event_uid,
-        title: this.eventForm.title,
-        startdate: this.eventForm.startdate,
-        enddate: this.eventForm.enddate,
-        active: this.eventForm.active,
-        canceled: this.eventForm.canceled,
-        completed: this.eventForm.completed,
-        description: this.eventForm.description
-      });
 
       this.ref.close(this.eventForm);
     } else {
@@ -101,12 +68,8 @@ export class EditEventDialogComponent implements OnInit {
   }
 
   changeStatus(event: any) {
-    console.log('changeStatus called with event:', event);
-    console.log('event.value:', event.value);
-
     // Use the event.value which contains the selected category
     const selectedCategory = event.value;
-    console.log('selectedCategory:', selectedCategory);
 
     // Reset all status fields first
     this.eventForm.active = false;
@@ -121,17 +84,10 @@ export class EditEventDialogComponent implements OnInit {
     } else if (selectedCategory && selectedCategory.key === "I") {
       this.eventForm.canceled = true;
     }
-
-    console.log('Updated eventForm status:', {
-      active: this.eventForm.active,
-      completed: this.eventForm.completed,
-      canceled: this.eventForm.canceled
-    });
   }
 
   // Alternative method to handle radio button changes
   onRadioChange() {
-    console.log('onRadioChange called - eventStatus value:', this.eventStatus);
     if (this.eventStatus) {
       this.changeStatus({ value: this.eventStatus });
     }

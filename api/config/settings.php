@@ -71,4 +71,12 @@ $settings['demo'] = filter_var($_ENV['APP_DEMO'] ?? 'true', FILTER_VALIDATE_BOOL
 $settings['rusaurl'] = $_ENV['RUSA_URL'] ?? 'https://rusa.jkassen.org/time/rusa-time-api.php';
 $settings['loppserviceurl'] = $_ENV['LOPPSERVICE_URL'] ?? 'http://app:80/loppservice';
 
+// Logging settings
+$settings['logging'] = [
+    'path' => __DIR__ . '/../logs',
+    'level' => \Monolog\Logger::DEBUG,
+    'max_files' => 14, // Keep 14 days of logs (same as Laravel default)
+    'debug' => filter_var($_ENV['APP_DEBUG'] ?? 'true', FILTER_VALIDATE_BOOLEAN),
+];
+
 return $settings;

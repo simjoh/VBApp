@@ -659,12 +659,6 @@ class LoppServiceEventRestClient
      */
     private function handleException(RequestException $e): void
     {
-        if ($e->hasResponse()) {
-            $statusCode = $e->getResponse()->getStatusCode();
-            $body = $e->getResponse()->getBody()->getContents();
-            error_log("LoppService API Error ($statusCode): $body");
-        } else {
-            error_log("LoppService API Error: " . $e->getMessage());
-        }
+        // Exception handling without logging - let the calling code handle logging if needed
     }
 } 

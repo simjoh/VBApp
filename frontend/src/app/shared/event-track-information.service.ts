@@ -22,9 +22,6 @@ public getEventsAndTracks(){
       this.httpClient.get<Array<EventInformationRepresentation>>(environment.backend_url + path).pipe(
         map((tracks: Array<EventInformationRepresentation>) => {
           return tracks;
-        }),
-        tap((tracks: Array<EventInformationRepresentation>) => {
-          console.log('Fresh data loaded:', tracks);
         })
       )
     )
@@ -32,7 +29,6 @@ public getEventsAndTracks(){
 }
 
 public refresh() {
-  console.log('Refreshing events and tracks data...');
   this.refreshSubject.next(Date.now());
 }
 

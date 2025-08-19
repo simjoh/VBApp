@@ -12,6 +12,9 @@ return function (App $app) {
     // Add CORS middleware first
     $app->add(\App\Middleware\CorsMiddleware::class);
 
+    // Add request logging middleware
+    $app->add(\App\Middleware\RequestLoggingMiddleware::class);
+
     // Add UserContext cleanup middleware (should be one of the first to ensure cleanup)
     $app->add(\App\Middleware\UserContextCleanupMiddleware::class);
 

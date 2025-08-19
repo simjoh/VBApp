@@ -1,0 +1,9 @@
+<div class="compact-header mb-3">
+  <div class="flex align-items-center">
+    <i [class]="config.icon + ' mr-3'" style="font-size: 1.5rem; color: var(--primary-color)"></i>
+    <div>
+      <h2 class="m-0 text-xl font-semibold">{{ config.title }}</h2>
+      <p *ngIf="showDescription" class="m-0 mt-1 text-500 text-sm">{{ config.description }}</p>
+    </div>
+  </div>
+</div>

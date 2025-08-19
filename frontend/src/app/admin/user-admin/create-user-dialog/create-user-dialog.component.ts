@@ -16,21 +16,12 @@ export class CreateUserDialogComponent implements OnInit {
 
 
   userForm: UserFormModel;
-  isSuperUser = false;
 
 
   constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig) {
-    this.userForm = this.createObject();
-    this.checkUserRoles();
   }
   ngOnInit(): void {
-    // Component initialization
-  }
-
-  private checkUserRoles(): void {
-    const activeUser = JSON.parse(localStorage.getItem('activeUser') || '{}');
-    this.isSuperUser = activeUser.roles?.includes('SUPERUSER') || false;
-    console.log('Create dialog - Is superuser:', this.isSuperUser);
+    this.userForm = this.createObject();
   }
 
   addUser(contactForm: NgForm) {

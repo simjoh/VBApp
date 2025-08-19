@@ -36,31 +36,23 @@ export class AuthService {
   constructor(private httpClient: HttpClient, private authenticatedService: AuthenticatedService,private router: Router, private eventService: EventsService, private readonly :DialogService, private asd: ConfirmationService) { }
 
   async loginUser(loginModel$: Observable<LoginModel>)  {
-    console.log('AuthService.loginUser called');
     if (this.isMockedLoggin()){
-      console.log('Mock login mode active');
       this.mockLogin();
     }
     await loginModel$.pipe(
       map(model => {
-        console.log('loginUser: model received from observable', model);
         this.httpClient.post<any>(this.backendUrl() + "login", this.createPayload(model))
           .pipe(
             map(response => {
-              console.log('loginUser: HTTP response received', response);
-              console.log('loginUser: Response organizer_id:', response.organizer_id);
-              console.log('loginUser: Full response object:', JSON.stringify(response, null, 2));
               localStorage.setItem('loggedInUser', JSON.stringify(response.token));
               this.authenticatedService.changeStatus(true);
               return response;
             }),
             catchError((error: HttpErrorResponse) => {
-              console.log('loginUser: HTTP error', error);
               this.eventService.nyHändelse(EventType.Error, new AEvent(EventType.Error, "Cannot sign in"));
               return of(null);
             })
             ).toPromise().then((data) => {
-              console.log('loginUser: HTTP promise resolved', data);
               if (data){
                 this.setActiveUser(data)
                 this.redirect(data.roles);
@@ -126,12 +118,30 @@ export class AuthService {
   public logoutUser() {
     localStorage.removeItem('loggedInUser');
     localStorage.removeItem('activeUser');
-    this.authSubjet.next(null)
+    this.authSubjet.next(null);
     this.authenticatedService.authenticatedSubject.next(false);
+    this.authenticatedService.updateAuthenticationStatus();
+    this.router.navigate(['/login']);
   }
 
   public reload(){
     this.authSubjet.next(null);
+  }
+
+  public validateToken(): Observable<boolean> {
+    const token = localStorage.getItem('loggedInUser');
+
+    if (!token) {
+      return of(false);
+    }
+
+    return this.httpClient.get(this.backendUrl() + 'ping').pipe(
+      map(() => true),
+      catchError(() => {
+        this.logoutUser();
+        return of(false);
+      })
+    );
   }
 
   private backendUrl(): string{

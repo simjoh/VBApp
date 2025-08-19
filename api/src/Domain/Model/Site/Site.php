@@ -17,10 +17,9 @@ class Site implements JsonSerializable
     private DecimalNumber $lat;
     private DecimalNumber $lng;
     private DecimalNumber $check_in_distance;
-    private ?int $organizerId = null;
 
 
-    public function __construct(string $site_uid, string $place, $adress, string $description, $location, DecimalNumber $lat, DecimalNumber $lng, string $picture, ?DecimalNumber $check_in_distance = null, ?int $organizerId = null)
+    public function __construct(string $site_uid, string $place, $adress, string $description, $location, DecimalNumber $lat, DecimalNumber $lng, string $picture, ?DecimalNumber $check_in_distance = null)
     {
 
         $this->site_uid = $site_uid;
@@ -32,7 +31,6 @@ class Site implements JsonSerializable
         $this->lng = $lng;
         $this->picture = $picture;
         $this->check_in_distance = $check_in_distance ?? new DecimalNumber('0.90');
-        $this->organizerId = $organizerId;
     }
 
     /**
@@ -156,22 +154,6 @@ class Site implements JsonSerializable
         $this->check_in_distance = $check_in_distance;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getOrganizerId(): ?int
-    {
-        return $this->organizerId;
-    }
-
-    /**
-     * @param int|null $organizerId
-     */
-    public function setOrganizerId(?int $organizerId): void
-    {
-        $this->organizerId = $organizerId;
-    }
-
     public function jsonSerialize(): array
     {
         return [
@@ -183,8 +165,7 @@ class Site implements JsonSerializable
             'lat' => strval($this->lat),
             'lng' => strval($this->lng),
             'picture' => $this->picture,
-            'check_in_distance' => strval($this->check_in_distance),
-            'organizer_id' => $this->organizerId
+            'check_in_distance' => strval($this->check_in_distance)
         ];
     }
 

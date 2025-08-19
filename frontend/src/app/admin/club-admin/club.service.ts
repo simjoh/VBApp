@@ -31,10 +31,8 @@ export class ClubService {
     map(([all, insert, del, clubReload]) => {
       // Handle deletion first (del will be a club_uid string when deletion occurs)
       if (del && del !== '') {
-        console.log("Processing deletion for club:", del);
         const index = all.findIndex((elt) => elt.club_uid === del);
         if (index !== -1) {
-          console.log("Removing club at index:", index);
           const updatedClubs = [...all];
           updatedClubs.splice(index, 1);
           return this.deepCopyProperties(updatedClubs);
@@ -43,13 +41,11 @@ export class ClubService {
 
       // Handle insertion
       if (insert && insert !== '') {
-        console.log("Processing insertion for club:", insert);
         return [...all, insert]
       }
 
       // Handle update/reload
       if (clubReload) {
-        console.log("Processing update for club:", clubReload.club_uid);
         const indexReload = all.findIndex((elt) => elt.club_uid === clubReload.club_uid);
         if (indexReload !== -1) {
           const updatedClubs = [...all];
@@ -65,9 +61,7 @@ export class ClubService {
   constructor(private httpClient: HttpClient) { }
 
   async newClub(newClub: ClubRepresentation) {
-    console.log('Creating new club with data:', newClub);
     const club = await this.addClub(newClub);
-    console.log('Successfully created club:', club);
     this.clubInsertedSubject.next(club);
   }
 
@@ -76,7 +70,6 @@ export class ClubService {
       map((clubs: Array<ClubRepresentation>) => {
         return clubs.sort((a, b) => (a.title > b.title) ? 1 : -1);
       }),
-      tap(clubs => console.log("Fetched all clubs:", clubs)),
       shareReplay(1)
     );
   }
@@ -85,24 +78,19 @@ export class ClubService {
     return this.httpClient.get<ClubRepresentation>(environment.backend_url + "club/" + clubUid).pipe(
       map((club: ClubRepresentation) => {
         return club;
-      }),
-      tap(club => console.log("Fetched club details:", club))
+      })
     ) as Observable<ClubRepresentation>
   }
 
   async addClub(club: ClubRepresentation) {
-    console.log('Sending create club request with data:', club);
     return await this.httpClient.post<ClubRepresentation>(environment.backend_url + "club/createclub", club).pipe(
       map((response: ClubRepresentation) => {
-        console.log('Received create club response:', response);
         return response;
-      }),
-      tap(club => console.log("Created club:", club))
+      })
     ).toPromise();
   }
 
   public deleteClub(clubUid: string) {
-    console.log("Attempting to delete club:", clubUid);
     return this.httpClient.delete(environment.backend_url + "club/" + clubUid)
       .pipe(
         catchError(err => {
@@ -110,7 +98,6 @@ export class ClubService {
           return throwError(err);
         })
       ).toPromise().then((s) => {
-        console.log("Club deletion successful, triggering UI update for:", clubUid);
         this.removeSubject.next(clubUid);
       }).catch((error) => {
         console.error("Club deletion failed:", error);
@@ -119,14 +106,11 @@ export class ClubService {
   }
 
   public updateClub(clubUid: string, club: ClubRepresentation) {
-    console.log('Sending update club request with data:', club);
     return this.httpClient.put<ClubRepresentation>(environment.backend_url + "club/" + clubUid, club as ClubRepresentation).pipe(
       map((response: ClubRepresentation) => {
-        console.log('Received update club response:', response);
         this.clubReloadAction.next(response)
         return response;
-      }),
-      tap(club => console.log("Updated club:", club))
+      })
     ).toPromise()
   }
 

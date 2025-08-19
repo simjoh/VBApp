@@ -24,6 +24,9 @@ class ParticipantRepresentation implements JsonSerializable
     private ?string $dnf_timestamp;
     private ?string $finished_timestamp;
     private array $links = [];
+    private $competitor = null; // Add competitor property to avoid deprecation warning
+    private ?string $additional_information = null;
+    private ?bool $use_physical_brevet_card = false;
     /**
      * @return string
      */
@@ -281,6 +284,54 @@ class ParticipantRepresentation implements JsonSerializable
     public function setFinishedTimestamp(?string $finished_timestamp): void
     {
         $this->finished_timestamp = $finished_timestamp;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCompetitor()
+    {
+        return $this->competitor;
+    }
+
+    /**
+     * @param mixed $competitor
+     */
+    public function setCompetitor($competitor): void
+    {
+        $this->competitor = $competitor;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAdditionalInformation(): ?string
+    {
+        return $this->additional_information;
+    }
+
+    /**
+     * @param string|null $additional_information
+     */
+    public function setAdditionalInformation(?string $additional_information): void
+    {
+        $this->additional_information = $additional_information;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getUsePhysicalBrevetCard(): ?bool
+    {
+        return $this->use_physical_brevet_card;
+    }
+
+    /**
+     * @param bool|null $use_physical_brevet_card
+     */
+    public function setUsePhysicalBrevetCard(?bool $use_physical_brevet_card): void
+    {
+        $this->use_physical_brevet_card = $use_physical_brevet_card;
     }
 
     public function jsonSerialize(): mixed

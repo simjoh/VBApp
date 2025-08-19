@@ -4,6 +4,10 @@
 require __DIR__ . '/vendor/autoload.php';
 
 use App\common\Database\MigrationManager;
+use App\common\Service\CliLoggerService;
+use App\common\Service\UnifiedSchedulerService;
+use App\common\Service\CliContainer;
+use App\Commands\UnifiedCommandRegistry;
 
 // Load environment variables
 if (file_exists(__DIR__ . '/.env_dev')) {
@@ -36,6 +40,13 @@ try {
 
     // Create migration manager
     $migrationManager = new MigrationManager($pdo);
+
+    // Create unified scheduler services
+    $logger = new CliLoggerService();
+    $container = new CliContainer($pdo);
+    $scheduler = new UnifiedSchedulerService($pdo, $logger, $container);
+    $commandRegistry = new UnifiedCommandRegistry($scheduler, $pdo, $logger, $container);
+    $commandRegistry->registerAllCommands();
 
     // Execute command
     switch ($command) {
@@ -70,22 +81,71 @@ try {
             $migrationManager->createMigration($name);
             break;
 
+        case 'schedule:run':
+            echo "Running scheduled commands...\n";
+            $results = $scheduler->runScheduledCommands();
+            foreach ($results as $commandName => $result) {
+                $status = $result['success'] ? 'SUCCESS' : 'FAILED';
+                echo "  {$commandName}: {$status} - {$result['message']}\n";
+            }
+            break;
+
+        case 'schedule:list':
+            echo "Available scheduled commands:\n";
+            $commands = $commandRegistry->listCommands();
+            foreach ($commands as $command) {
+                $status = $command['should_run'] ? 'READY' : 'WAITING';
+                echo "  {$command['name']}: {$command['description']} ({$status})\n";
+            }
+            break;
+
+        case 'schedule:execute':
+            if (empty($options)) {
+                echo "Error: Command name is required\n";
+                echo "Usage: php artisan schedule:execute <command_name>\n";
+                exit(1);
+            }
+            $commandName = $options[0];
+            echo "Executing command: {$commandName}\n";
+            $result = $commandRegistry->executeCommand($commandName);
+            $status = $result['success'] ? 'SUCCESS' : 'FAILED';
+            echo "Result: {$status} - {$result['message']}\n";
+            break;
+
+        case 'schedule:history':
+            echo "Command execution history:\n";
+            $histories = $scheduler->getAllCommandHistories();
+            foreach ($histories as $history) {
+                $lastExec = $history['last_execution'] ?: 'Never';
+                $lastSuccess = $history['last_success'] ?: 'Never';
+                echo "  {$history['command_name']}: Last run: {$lastExec}, Last success: {$lastSuccess}, Count: {$history['execution_count']}\n";
+            }
+            break;
+
+
+
         case 'help':
         default:
-            echo "VBApp Artisan - Database Management Tool\n\n";
+            echo "VBApp Artisan - Database Management & Scheduled Tasks Tool\n\n";
             echo "Usage: php artisan <command> [options]\n\n";
-            echo "Available Commands:\n";
+            echo "Database Commands:\n";
             echo "  migrate                    Run all pending migrations\n";
             echo "  migrate:status             Show migration status\n";
             echo "  migrate:rollback [steps]   Rollback last batch (default: 1)\n";
             echo "  migrate:init               Initialize migrations table\n";
-            echo "  migrate:create <name>      Create a new migration file\n";
+            echo "  migrate:create <name>      Create a new migration file\n\n";
+            echo "Scheduled Task Commands:\n";
+            echo "  schedule:run               Run all scheduled commands\n";
+            echo "  schedule:list              List all available scheduled commands\n";
+            echo "  schedule:execute <name>    Execute a specific command\n";
+            echo "  schedule:history           Show command execution history\n";
             echo "  help                       Show this help message\n\n";
             echo "Examples:\n";
             echo "  php artisan migrate\n";
-            echo "  php artisan migrate:status\n";
-            echo "  php artisan migrate:rollback 3\n";
-            echo "  php artisan migrate:create add_user_table\n";
+            echo "  php artisan schedule:run\n";
+            echo "  php artisan schedule:execute cleanup:logs\n";
+            echo "  php artisan schedule:list\n";
+            echo "  php artisan schedule:execute system:health-check\n";
             break;
     }
 

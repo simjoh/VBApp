@@ -60,25 +60,15 @@ class SiteService extends ServiceAbstract
 
     public function createSite(SiteRepresentation $siteRepresentation)
     {
+
         $exists = $this->siterepository->existsByPlaceAndAdress2(strtolower(str_replace(' ', '', $siteRepresentation->getPlace())), strtolower(str_replace(' ', '', $siteRepresentation->getAdress())));
         if ($exists !== null) {
             throw new BrevetException("Det finns redan en kontrollplats med samma plats och adress", 6, null);
-        }
 
-        // Get current user context to set organizer_id
-        $userContext = \App\common\Context\UserContext::getInstance();
-        $currentUserOrganizerId = $userContext->getOrganizerId();
-        
-        // Set organizer_id based on user role
-        if ($userContext->isSuperUser()) {
-            // Superusers can set any organizer_id or leave it null
-            // The organizer_id should already be set in the representation if provided
-        } else {
-            // Non-superusers must use their own organizer_id
-            $siteRepresentation->setOrganizerId($currentUserOrganizerId);
         }
 
         return $this->siterepository->createSite($this->siteassembly->toSite($siteRepresentation));
+
     }
 
     public function getPermissions($user_uid): array

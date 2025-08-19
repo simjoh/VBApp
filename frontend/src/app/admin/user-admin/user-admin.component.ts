@@ -7,6 +7,7 @@ import { User } from '../../shared/api/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { EditUserDialogComponent } from './edit-user-dialog/edit-user-dialog.component';
 import { CreateUserDialogComponent } from './create-user-dialog/create-user-dialog.component';
+import {CompactPageHeaderConfig} from '../../shared/components';
 
 interface AdminUser extends User {
   name: string;
@@ -26,6 +27,12 @@ export class UserAdminComponent implements OnInit {
 
   users$: Observable<AdminUser[]>;
   ref: DynamicDialogRef | undefined;
+
+  headerConfig: CompactPageHeaderConfig = {
+    icon: 'pi pi-user-edit',
+    title: 'Användarhantering',
+    description: 'Hantera och organisera alla användare'
+  };
 
   constructor(
     private userService: UserAdminComponentService,

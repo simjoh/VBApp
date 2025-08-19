@@ -1,0 +1,27 @@
+.compact-action-card {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow);
+  }
+
+  &.active {
+    border-color: var(--primary-color);
+    background: var(--primary-50);
+  }
+
+  h4 {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  p {
+    color: var(--text-color-secondary);
+    line-height: 1.2;
+  }
+}

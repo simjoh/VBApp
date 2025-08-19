@@ -1,9 +1,61 @@
 <div class="mt-4 col-12 lg:col-5 sm:col-12">
-  <h4>Här kan du ladda upp deltagare med en csv fil</h4>
+  <h4>
+    Här kan du ladda upp deltagare med en csv fil
+    <span
+      class="pi pi-info-circle ml-2"
+      (click)="op.toggle($event)"
+      style="font-size: 1.2em; cursor: pointer; color: #1976d2;"
+      tabindex="0"
+    ></span>
+  </h4>
 </div>
+
+<p-overlayPanel #op>
+  <div class="p-3">
+    <h5 class="mb-3">CSV-format för deltagare</h5>
+    <p class="mb-2"><strong>16 kolumner separerade med semikolon (;)</strong></p>
+    <ol class="mb-3" style="padding-left: 1.5rem;">
+      <li>Startnummer</li>
+      <li>Förnamn</li>
+      <li>Efternamn</li>
+      <li>Kön (Man/Kvinna)</li>
+      <li>Klubbnamn</li>
+      <li>Adress</li>
+      <li>Postnummer</li>
+      <li>Stad</li>
+      <li>Land</li>
+      <li>E-post</li>
+      <li>Telefon</li>
+      <li>Registreringsdatum (YYYY-MM-DD HH:MM:SS)</li>
+      <li>Födelseår (YYYY)</li>
+      <li>Referensnummer</li>
+      <li>Fysisk brevetkort (Ja/Nej eller 1/0)</li>
+      <li>Ytterligare information</li>
+    </ol>
+    <p class="mb-2"><strong>Exempel:</strong></p>
+    <code class="text-sm" style="background: #f5f5f5; padding: 0.5rem; display: block; border-radius: 4px;">
+      2002;Anna;Lindberg;Kvinna;Stockholm CK;Sveavägen 12;11157;Stockholm;Sverige;anna.lindberg&#64;example.se;0701234567;2023-05-12 14:22:00;1985;223344;Ja;Föredrar fysiskt brevetkort
+    </code>
+  </div>
+</p-overlayPanel>
 <div class="lg:col-5 md:col-12 sm:col-12">
   <brevet-tracks-for-event-selector [styleClass]="'lg:w-25 sm:w-full md:w-full'" (trackChange)="updateTtrack($event)"></brevet-tracks-for-event-selector>
 </div>
+
+<!-- Track Status Indicator -->
+<div *ngIf="trackuid && selectedTrack" class="mt-2 col-12">
+  <div class="flex align-items-center">
+    <p-tag
+      [severity]="selectedTrack.active ? 'success' : 'warning'"
+      [value]="selectedTrack.active ? 'Bana aktiv' : 'Bana inaktiv'"
+      [icon]="selectedTrack.active ? 'pi pi-check-circle' : 'pi pi-exclamation-triangle'">
+    </p-tag>
+    <span *ngIf="!selectedTrack.active" class="ml-2 text-sm text-orange-600">
+      <i class="pi pi-info-circle"></i> Upload av deltagare är inte tillåtet för inaktiva banor.
+    </span>
+  </div>
+</div>
+
 <hr>
 
 <div class="mt-3 col-12 lg:col-12 sm:col-12 ">
@@ -26,5 +78,105 @@
     </ng-container>
   </ng-template>
 </p-fileUpload>
+</div>
+
+<!-- Upload Statistics Display -->
+<div *ngIf="showStats && uploadStats" class="mt-4 col-12">
+  <div class="p-card" [ngClass]="'p-card--' + getSeverityClass()">
+    <div class="p-card__header">
+      <h3 class="p-card__title">
+        <i class="pi" [ngClass]="{
+          'pi-check-circle text-green-500': uploadStats.successful > 0 && uploadStats.failed === 0,
+          'pi-exclamation-triangle text-orange-500': uploadStats.skipped > 0,
+          'pi-times-circle text-red-500': uploadStats.failed > 0
+        }"></i>
+        Upload Resultat
+        <button
+          class="p-button p-button-text p-button-sm ml-auto"
+          (click)="hideStats()"
+          style="float: right;">
+          <i class="pi pi-times"></i>
+        </button>
+      </h3>
+    </div>
+
+    <div class="p-card__body">
+      <!-- Summary Statistics -->
+      <div class="grid">
+        <div class="col-12 md:col-3">
+          <div class="text-center p-3 border-round bg-blue-50">
+            <div class="text-2xl font-bold text-blue-600">{{uploadStats.total_rows}}</div>
+            <div class="text-sm text-blue-700">Totalt rader</div>
+          </div>
+        </div>
+        <div class="col-12 md:col-3">
+          <div class="text-center p-3 border-round bg-green-50">
+            <div class="text-2xl font-bold text-green-600">{{uploadStats.successful}}</div>
+            <div class="text-sm text-green-700">Framgångsrika</div>
+          </div>
+        </div>
+        <div class="col-12 md:col-3">
+          <div class="text-center p-3 border-round bg-orange-50">
+            <div class="text-2xl font-bold text-orange-600">{{uploadStats.skipped}}</div>
+            <div class="text-sm text-orange-700">Hoppade över</div>
+          </div>
+        </div>
+        <div class="col-12 md:col-3">
+          <div class="text-center p-3 border-round bg-red-50">
+            <div class="text-2xl font-bold text-red-600">{{uploadStats.failed}}</div>
+            <div class="text-sm text-red-700">Misslyckade</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Details -->
+      <div *ngIf="uploadStats.errors.length > 0" class="mt-4">
+        <h4 class="mb-3">Detaljerade fel:</h4>
+        <div class="max-h-20rem overflow-y-auto">
+          <div *ngFor="let error of uploadStats.errors" class="p-3 mb-2 border-round"
+               [ngClass]="{
+                 'bg-red-50 border-left-3 border-red-500': error.message.includes('Missing') || error.message.includes('Invalid'),
+                 'bg-orange-50 border-left-3 border-orange-500': error.message.includes('already exists')
+               }">
+            <div class="font-semibold text-sm">
+              Rad {{error.row}}: {{error.message}}
+            </div>
+            <div *ngIf="error.data" class="text-xs text-gray-600 mt-1">
+              <strong>Data:</strong> {{error.data.join('; ')}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Successfully Created Participants -->
+      <div *ngIf="uploadStats.participants.length > 0" class="mt-4">
+        <h4 class="mb-3">Skapade deltagare:</h4>
+        <div class="max-h-20rem overflow-y-auto">
+          <div *ngFor="let participant of uploadStats.participants" class="p-3 mb-2 border-round bg-green-50">
+            <div class="font-semibold">
+              <span class="text-lg">{{participant.startnumber}}</span> -
+              <span *ngIf="participant.competitor?.given_name && participant.competitor?.family_name">
+                {{participant.competitor.given_name}} {{participant.competitor.family_name}}
+              </span>
+              <span *ngIf="!participant.competitor?.given_name || !participant.competitor?.family_name">
+                Deltagare ({{participant.competitor_uid}})
+              </span>
+            </div>
+            <div class="text-sm text-gray-600 mt-1">
+              <span *ngIf="participant.use_physical_brevet_card" class="mr-3">
+                <i class="pi pi-id-card text-blue-500"></i> Fysiskt brevetkort
+              </span>
+              <span *ngIf="participant.additional_information" class="mr-3">
+                <i class="pi pi-info-circle text-orange-500"></i> {{participant.additional_information}}
+              </span>
+            </div>
+            <div class="text-xs text-gray-500 mt-1">
+              ({{participant.participant_uid}})
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 

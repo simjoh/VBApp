@@ -1,5 +1,5 @@
 <div class="summary-container">
-  <!-- Event Preview Card -->
+    <!-- Event Preview Card -->
   <div class="summary-card event-preview-card">
     <div class="card-header">
       <div class="header-icon">
@@ -55,15 +55,10 @@
                         <div class="detail-row">
               <span class="detail-label">Arrangör:</span>
               <span class="detail-value" [class.placeholder]="!hasOrganizer()">
-                <!-- Show organizer name for non-superusers when organizer is pre-selected -->
-                <div *ngIf="!isSuperUser && formData.organizer_id && organizer" class="organizer-display">
-                  <span class="organizer-name">{{ organizer.organization_name }}</span>
-                </div>
-                <!-- Show organizer link for superusers or when no organizer is selected -->
-                <a *ngIf="(isSuperUser || !formData.organizer_id) && hasOrganizer() && getOrganizerWebsite()" [href]="getOrganizerWebsite()" target="_blank" class="organizer-link">
+                <a *ngIf="hasOrganizer() && getOrganizerWebsite()" [href]="getOrganizerWebsite()" target="_blank" class="organizer-link">
                   {{ organizer?.organization_name }}
                 </a>
-                <span *ngIf="(isSuperUser || !formData.organizer_id) && hasOrganizer() && !getOrganizerWebsite()">{{ organizer?.organization_name }}</span>
+                <span *ngIf="hasOrganizer() && !getOrganizerWebsite()">{{ organizer?.organization_name }}</span>
                 <span *ngIf="!hasOrganizer()">{{ getOrganizerDisplayWithPlaceholder() }}</span>
               </span>
             </div>
@@ -105,7 +100,7 @@
       <div class="header-icon">
         <i class="pi pi-calendar"></i>
       </div>
-      <h3 class="card-title">Arrangemang</h3>
+      <h3 class="card-title">Arrangemangsgrupp</h3>
     </div>
     <div class="card-content">
       <ng-container *ngIf="event && event.title; else noEventTemplate">

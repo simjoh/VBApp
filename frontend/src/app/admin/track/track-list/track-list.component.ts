@@ -17,7 +17,8 @@ export class TrackListComponent implements OnInit {
   constructor(private trackadmincomponentservice: TrackAdminComponentService, private cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    this.trackadmincomponentservice.init();
+    // Parent component already calls init(), no need to call it again
+    // this.trackadmincomponentservice.init();
   }
 
   isPossibleToDelete(event: EventRepresentation) {

@@ -13,29 +13,32 @@ import { Role } from 'src/app/core/auth/roles';
   // Temporarily removed OnPush to test if change detection is the issue
 })
 export class EditUserDialogComponent implements OnInit {
-  @ViewChild('contactForm') contactForm!: NgForm;
 
   userForm: UserFormModel;
   originalUser: User;
-  isSuperUser = false;
 
-  constructor(
-    public ref: DynamicDialogRef,
-    public config: DynamicDialogConfig
-  ) {
+  constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig, private cdr: ChangeDetectorRef) {
     this.originalUser = this.config.data.user;
-    this.userForm = this.createObjectFromUser(this.originalUser);
-    this.checkUserRoles();
+    console.log('Edit dialog - Original user data:', this.originalUser);
   }
 
   ngOnInit(): void {
-    // Component initialization
-  }
+    this.userForm = this.createObjectFromUser(this.originalUser);
+    console.log('Edit dialog - User form created:', this.userForm);
+    console.log('Edit dialog - User form roles:', {
+      superuser: this.userForm.superuser,
+      admin: this.userForm.admin,
+      user: this.userForm.user,
+      developer: this.userForm.developer,
+      volonteer: this.userForm.volonteer
+    });
+    // Trigger change detection to ensure form is updated
+    this.cdr.detectChanges();
 
-  private checkUserRoles(): void {
-    const activeUser = JSON.parse(localStorage.getItem('activeUser') || '{}');
-    this.isSuperUser = activeUser.roles?.includes('SUPERUSER') || false;
-    console.log('Edit dialog - Is superuser:', this.isSuperUser);
+    // Add a small delay to ensure the form is fully initialized
+    setTimeout(() => {
+      this.cdr.detectChanges();
+    }, 100);
   }
 
   generatePassword() {
@@ -87,7 +90,7 @@ export class EditUserDialogComponent implements OnInit {
     if (form.controls.developer.value == true){
       roles.push({
         id: Roles.DEVELOPER.valueOf(),
-        role_name: Role.DEVELOPER
+        role_name: Role.ADMIN
       })
     }
 
@@ -195,49 +198,32 @@ export class EditUserDialogComponent implements OnInit {
       console.log('Edit dialog - Processing roles:', user.roles);
       user.roles.forEach((role: any) => {
         console.log('Edit dialog - Processing role:', role);
-
-        let roleName: string;
-        if (typeof role === 'string') {
-          // Handle roles as strings (new backend format)
-          roleName = role;
-        } else if (role && typeof role === 'object') {
-          // Handle roles as objects (legacy format)
-          roleName = role.role_name || role.id || role.role_id || '';
-        } else {
-          roleName = '';
-        }
-
-        console.log('Edit dialog - Role name:', roleName);
-
-        switch (roleName) {
-          case Role.SUPERUSER:
-          case 'SUPERUSER':
+        // Handle both role_id and id properties for compatibility
+        const roleId = role.id || role.role_id;
+        console.log('Edit dialog - Role ID:', roleId);
+        switch(roleId) {
+          case Roles.SUPERUSER.valueOf():
             console.log('Edit dialog - Setting superuser to true');
             userForm.superuser = true;
             break;
-          case Role.ADMIN:
-          case 'ADMIN':
+          case Roles.ADMIN.valueOf():
             console.log('Edit dialog - Setting admin to true');
             userForm.admin = true;
             break;
-          case Role.USER:
-          case 'USER':
+          case Roles.USER.valueOf():
             console.log('Edit dialog - Setting user to true');
             userForm.user = true;
             break;
-          case Role.DEVELOPER:
-          case 'DEVELOPER':
+          case Roles.DEVELOPER.valueOf():
             console.log('Edit dialog - Setting developer to true');
             userForm.developer = true;
             break;
-          case Role.VOLONTEER:
-          case 'VOLONTEER':
-          case 'VOLONTAR': // for legacy spelling
+          case Roles.VOLONTAR.valueOf():
             console.log('Edit dialog - Setting volonteer to true');
             userForm.volonteer = true;
             break;
           default:
-            console.log('Edit dialog - Unknown role name:', roleName);
+            console.log('Edit dialog - Unknown role ID:', roleId);
         }
       });
     } else {

@@ -136,7 +136,7 @@ export class ClubListComponent implements OnInit {
         this.clubService.deleteClub(club_uid);
       },
       reject: () => {
-        console.log("reject");
+        // User rejected deletion
       }
     });
   }

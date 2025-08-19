@@ -33,6 +33,7 @@ use League\Csv\Writer;
 use App\Domain\Model\Result\Repository\ResultRepository;
 use App\Domain\Model\Organizer\Repository\OrganizerRepository;
 use App\common\Service\EmailService;
+use App\common\Service\LoggerService;
 use App\Domain\Model\Track\Service\TrackService;
 use PDO;
 use PDOException;
@@ -60,6 +61,7 @@ class ParticipantService extends ServiceAbstract
     private $connection;
     private $emailService;
     private $trackService;
+    private $logger;
 
     public function __construct(
         ContainerInterface             $c,
@@ -81,7 +83,8 @@ class ParticipantService extends ServiceAbstract
         OrganizerRepository $organizerRepository,
         PDO $connection,
         EmailService $emailService,
-        TrackService $trackService
+        TrackService $trackService,
+        LoggerService $logger
     ) {
         $this->trackRepository = $trackRepository;
         $this->participantRepository = $participantRepository;
@@ -103,6 +106,7 @@ class ParticipantService extends ServiceAbstract
         $this->connection = $connection;
         $this->emailService = $emailService;
         $this->trackService = $trackService;
+        $this->logger = $logger;
     }
 
 
@@ -294,6 +298,12 @@ class ParticipantService extends ServiceAbstract
         if (!isset($track)) {
             throw new BrevetException("Finns ingen bana med det uidet" . $trackUid, 1, null);
         }
+
+        // Check if track is active before proceeding with upload
+        if (!$track->isActive()) {
+            throw new BrevetException("Banan är inte aktiv. Upload av deltagare är inte tillåtet för inaktiva banor.", 403, null);
+        }
+
         // Lös in filen som laddades upp
         //  $csv = Reader::createFromPath($this->settings['upload_directory']  . 'Deltagarlista-MSR-2022-test.csv', 'r');
         $csv = Reader::createFromPath($this->settings['upload_directory'] . $filename, 'r');
@@ -305,66 +315,173 @@ class ParticipantService extends ServiceAbstract
         $records = $stmt->process($csv);
 
         $createdParticipants = [];
+        $uploadStats = [
+            'total_rows' => 0,
+            'successful' => 0,
+            'failed' => 0,
+            'skipped' => 0,
+            'errors' => [],
+            'participants' => []
+        ];
+
+        $rowNumber = 0;
         foreach ($records as $record) {
+            $rowNumber++;
+            $uploadStats['total_rows']++;
 
-            // se om det finns en sådan deltagare först
-            $competitor = $this->competitorService->getCompetitorByNameAndBirthDate($record[1], $record[2], $record[12]);
-
-            if (!isset($competitor)) {
-                // createOne
-                $competitor = $this->competitorService->createCompetitor($record[1], $record[2], "", $record[12]);
-                if (isset($competitor)) {
-                    //  $compInfo = $this->competitorInfoRepository->getCompetitorInfoByCompetitorUid($competitor->getId());
-                    // if(!isset($compInfo)){
-                    $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParams($record[9], $record[10], $record[5], $record[6], $record[7], $record[8], $competitor->getId());
-                    // }
+            try {
+                // Validate required fields
+                if (empty($record[0]) || empty($record[1]) || empty($record[2])) {
+                    $uploadStats['failed']++;
+                    $uploadStats['errors'][] = [
+                        'row' => $rowNumber,
+                        'message' => 'Missing required fields: start number, first name, or last name',
+                        'data' => $record
+                    ];
+                    continue;
                 }
-            }
-            $existingParticipant = $this->participantRepository->participantForTrackAndCompetitor($trackUid, $competitor->getId());
 
+                // Convert birth year to proper date format (YYYY-01-01)
+                $birthYear = $record[12];
+                if (empty($birthYear) || !is_numeric($birthYear)) {
+                    $uploadStats['failed']++;
+                    $uploadStats['errors'][] = [
+                        'row' => $rowNumber,
+                        'message' => 'Invalid birth year: ' . $birthYear,
+                        'data' => $record
+                    ];
+                    continue;
+                }
+                $birthDate = $birthYear . '-01-01'; // Use January 1st as default date
 
-            if (!isset($existingParticipant)) {
-                $participant = new Participant();
+                // Check if start number is unique on this track
+                $startNumber = $record[0];
+                $existingParticipantWithStartNumber = $this->participantRepository->participantOntRackAndStartNumber($trackUid, $startNumber);
+                if (isset($existingParticipantWithStartNumber)) {
+                    $uploadStats['failed']++;
+                    $uploadStats['errors'][] = [
+                        'row' => $rowNumber,
+                        'message' => 'Start number already exists on this track: ' . $startNumber,
+                        'data' => $record
+                    ];
+                    continue;
+                }
 
-                $participant->setCompetitorUid($competitor->getId());
+                // Check if reference number is unique (if provided)
+                $referenceNumber = isset($record[13]) ? trim($record[13]) : null;
+                if (!empty($referenceNumber)) {
+                    $existingParticipantWithRefNr = $this->participantRepository->participantOnTrackAndRefNr($trackUid, $referenceNumber);
+                    if (isset($existingParticipantWithRefNr)) {
+                        $uploadStats['failed']++;
+                        $uploadStats['errors'][] = [
+                            'row' => $rowNumber,
+                            'message' => 'Reference number already exists on this track: ' . $referenceNumber,
+                            'data' => $record
+                        ];
+                        continue;
+                    }
+                }
 
-                $participant->setStartnumber($record[0]);
-                $participant->setFinished(false);
-                $participant->setTrackUid($track->getTrackUid());
-                $participant->setDnf(false);
-                $participant->setDns(false);
-                $participant->setTime(null);
-                $participant->setStarted(false);
-                $participant->setAcpkod("s");
+                // Process physical brevet card preference (column 14, index 14)
+                $physicalBrevetCard = false;
+                if (isset($record[14]) && !empty($record[14])) {
+                    $physicalBrevetCard = in_array(strtolower(trim($record[14])), ['ja', 'yes', '1', 'true']);
+                }
 
-                // kolla om klubben finns i databasen annars skapa vi en klubb
-                $existingClub = $this->clubrepository->getClubByTitle($record[4]);
+                // Process additional information (column 15, index 15)
+                $additionalInformation = isset($record[15]) ? trim($record[15]) : null;
 
-                if (!isset($existingClub)) {
-                    $clubUid = $this->createClubAndReturnUid("", $record[4]);
-                    $participant->setClubUid($clubUid);
+                // se om det finns en sådan deltagare först
+                $competitor = $this->competitorService->getCompetitorByNameAndBirthDate($record[1], $record[2], $birthDate);
+
+                if (!isset($competitor)) {
+                    // createOne
+                    $competitor = $this->competitorService->createCompetitor($record[1], $record[2], "", $birthDate);
+                    if (isset($competitor)) {
+                        //  $compInfo = $this->competitorInfoRepository->getCompetitorInfoByCompetitorUid($competitor->getId());
+                        // if(!isset($compInfo)){
+                        $this->competitorInfoRepository->creatCompetitorInfoForCompetitorParams($record[9], $record[10], $record[5], $record[6], $record[7], $record[8], $competitor->getId());
+                        // }
+                    }
+                }
+                $existingParticipant = $this->participantRepository->participantForTrackAndCompetitor($trackUid, $competitor->getId());
+
+                if (!isset($existingParticipant)) {
+                    $participant = new Participant();
+
+                    $participant->setCompetitorUid($competitor->getId());
+
+                    $participant->setStartnumber($record[0]);
+                    $participant->setFinished(false);
+                    $participant->setTrackUid($track->getTrackUid());
+                    $participant->setDnf(false);
+                    $participant->setDns(false);
+                    $participant->setTime(null);
+                    $participant->setStarted(false);
+                    $participant->setAcpkod("s");
+
+                    // kolla om klubben finns i databasen annars skapa vi en klubb
+                    $existingClub = $this->clubrepository->getClubByTitle($record[4]);
+
+                    if (!isset($existingClub)) {
+                        $clubUid = $this->createClubAndReturnUid("", $record[4]);
+                        $participant->setClubUid($clubUid);
+                    } else {
+                        $participant->setClubUid($existingClub->getClubUid());
+                    }
+                    $participant->setTrackUid($trackUid);
+                    $participant->setRegisterDateTime($record[11]);
+                    
+                    // Set physical brevet card preference and additional information
+                    $participant->setUsePhysicalBrevetCard($physicalBrevetCard);
+                    $participant->setAdditionalInformation($additionalInformation);
+
+                    $participantcreated = $this->participantRepository->createparticipant($participant);
+                    if (isset($participantcreated)) {
+
+                        $this->participantRepository->createTrackCheckpointsFor($participant, $this->trackRepository->checkpoints($trackUid));
+                    }
+
+                    array_push($createdParticipants, $participant);
+                    $uploadStats['successful']++;
                 } else {
-                    $participant->setClubUid($existingClub->getClubUid());
-                }
-                $participant->setTrackUid($trackUid);
-                $participant->setRegisterDateTime($record[11]);
-
-                $participantcreated = $this->participantRepository->createparticipant($participant);
-                if (isset($participantcreated)) {
-
-                    $this->participantRepository->createTrackCheckpointsFor($participant, $this->trackRepository->checkpoints($trackUid));
+                    $uploadStats['skipped']++;
+                    $uploadStats['errors'][] = [
+                        'row' => $rowNumber,
+                        'message' => 'Participant already exists on this track: ' . $record[1] . ' ' . $record[2],
+                        'data' => $record
+                    ];
                 }
 
-                array_push($createdParticipants, $participant);
-            }
+                if (isset($participantcreated) && isset($competitor)) {
+                    // skapa upp inloggning för cyklisten
+                    $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $record[0], $record[13]);
+                }
 
-            if (isset($participantcreated) && isset($competitor)) {
-                // skapa upp inloggning för cyklisten
-                $this->competitorService->createCredentialFor($competitor->getId(), $participant->getParticipantUid(), $record[0], $record[13]);
+            } catch (Exception $e) {
+                $uploadStats['failed']++;
+                $uploadStats['errors'][] = [
+                    'row' => $rowNumber,
+                    'message' => 'Error processing row: ' . $e->getMessage(),
+                    'data' => $record
+                ];
             }
         }
 
-        return $this->participantassembly->toRepresentations($createdParticipants, $currentUserUid);
+        // Add created participants to stats
+        $participantRepresentations = $this->participantassembly->toRepresentations($createdParticipants, $currentUserUid);
+        
+        // Add competitor information to each participant
+        foreach ($participantRepresentations as $participantRep) {
+            $competitor = $this->competitorService->getCompetitorByUid($participantRep->getCompetitorUid(), $currentUserUid);
+            if ($competitor) {
+                $participantRep->setCompetitor($competitor);
+            }
+        }
+        
+        $uploadStats['participants'] = $participantRepresentations;
+
+        return $uploadStats;
     }
 
 
@@ -728,6 +845,14 @@ class ParticipantService extends ServiceAbstract
 
     public function addParticipantOnTrackFromLoppservice(LoppservicePersonRepresentation $loppservicePersonRepresentation, string $track_uid, $loppserviceRegistrationRepresentation, $club, $medal): bool
     {
+        // Log the start of participant creation from loppservice
+        if (isset($this->logger)) {
+            $this->logger->info('Starting participant creation from loppservice', [
+                'track_uid' => $track_uid,
+                'person_uid' => $loppservicePersonRepresentation->person_uid ?? 'unknown',
+                'registration_uid' => $loppserviceRegistrationRepresentation->registration['registration_uid'] ?? 'unknown'
+            ]);
+        }
 
         $finnsitabell = GlobalConfig::get($track_uid);
 
@@ -752,6 +877,12 @@ class ParticipantService extends ServiceAbstract
 
             $track = $this->trackRepository->getTrackByUid($track_uid);
             if (!isset($track)) {
+                if (isset($this->logger)) {
+                    $this->logger->error('Track not found during participant creation', [
+                        'track_uid' => $track_uid,
+                        'person_uid' => $person_uid ?? 'unknown'
+                    ]);
+                }
                 throw new BrevetException("Track not exists", 5, null);
             }
 
@@ -788,6 +919,13 @@ class ParticipantService extends ServiceAbstract
                 );
                 
                 if (!$competitor) {
+                    if (isset($this->logger)) {
+                        $this->logger->error('Failed to create competitor', [
+                            'person_uid' => $person_uid,
+                            'firstname' => $participant_to_create['firstname'],
+                            'surname' => $participant_to_create['surname']
+                        ]);
+                    }
                     throw new BrevetException("Failed to create competitor for person_uid: " . $person_uid, 5, null);
                 }
 
@@ -856,6 +994,14 @@ class ParticipantService extends ServiceAbstract
             $participantcreated = $this->participantRepository->createparticipant($participant);
             
             if (!isset($participantcreated)) {
+                if (isset($this->logger)) {
+                    $this->logger->error('Failed to create participant record', [
+                        'registration_uid' => $registration_uid,
+                        'person_uid' => $person_uid,
+                        'track_uid' => $track_uid,
+                        'startnumber' => $registration['startnumber']
+                    ]);
+                }
                 throw new BrevetException("Failed to create participant record", 5, null);
             }
 
@@ -878,6 +1024,16 @@ class ParticipantService extends ServiceAbstract
             // Re-throw BrevetException as-is
             throw $e;
         } catch (Exception $e) {
+            if (isset($this->logger)) {
+                $this->logger->error('Unexpected error during participant creation from loppservice', [
+                    'error' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'track_uid' => $track_uid ?? 'unknown',
+                    'person_uid' => $person_uid ?? 'unknown',
+                    'registration_uid' => $registration_uid ?? 'unknown'
+                ]);
+            }
             throw new BrevetException("Unexpected error: " . $e->getMessage() . " at line " . $e->getLine() . " in " . $e->getFile(), 5, null);
         }
     }
@@ -1260,27 +1416,17 @@ class ParticipantService extends ServiceAbstract
     public function getParticipantStats(string $date): array
     {
         try {
-            // Get current user context to check if superuser and get organizer_id
-            $userContext = \App\common\Context\UserContext::getInstance();
-            $currentUserOrganizerId = $userContext->getOrganizerId();
-            
-            // Only filter by organizer if user is not a superuser
-            $organizerId = null;
-            if (!$userContext->isSuperUser() && $currentUserOrganizerId !== null) {
-                $organizerId = $currentUserOrganizerId;
-            }
-            
             // Get daily stats
-            $dailyStats = $this->participantRepository->getDailyStats($date, $organizerId);
+            $dailyStats = $this->getDailyStats($date);
             
             // Get weekly stats (last 7 days including today)
-            $weeklyStats = $this->participantRepository->getWeeklyStats($date, $organizerId);
+            $weeklyStats = $this->getWeeklyStats($date);
 
             // Get yearly stats
-            $yearlyStats = $this->participantRepository->getYearlyStats($date, $organizerId);
+            $yearlyStats = $this->getYearlyStats($date);
 
             // Get latest registration
-            $latestRegistration = $this->participantRepository->getLatestRegistration($organizerId);
+            $latestRegistration = $this->getLatestRegistration();
             
             return [
                 'daily' => $dailyStats,
@@ -1289,7 +1435,6 @@ class ParticipantService extends ServiceAbstract
                 'latest_registration' => $latestRegistration
             ];
         } catch (PDOException $e) {
-            error_log("Error getting participant stats: " . $e->getMessage());
             return [
                 'daily' => [
                     'countparticipants' => 0,
@@ -1317,23 +1462,152 @@ class ParticipantService extends ServiceAbstract
         }
     }
 
+    private function getDailyStats(string $date): array
+    {
+        $sql = "SELECT 
+                COUNT(DISTINCT CASE WHEN DATE(p.register_date_time) = DATE(:date) THEN p.participant_uid END) as countparticipants,
+                COALESCE(SUM(CASE WHEN DATE(p.register_date_time) = DATE(:date) AND p.started = 1 THEN 1 ELSE 0 END), 0) as started,
+                COALESCE(SUM(CASE WHEN DATE(p.finished_timestamp) = DATE(:date) THEN 1 ELSE 0 END), 0) as completed,
+                COALESCE(SUM(CASE WHEN DATE(p.dnf_timestamp) = DATE(:date) THEN 1 ELSE 0 END), 0) as dnf,
+                COALESCE(SUM(CASE WHEN DATE(p.dns_timestamp) = DATE(:date) THEN 1 ELSE 0 END), 0) as dns
+            FROM participant p
+            JOIN track t ON t.track_uid = p.track_uid";
+
+        // Get daily stats for date
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute(['date' => $date]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    private function getWeeklyStats(string $date): array
+    {
+        $sql = "SELECT 
+                COUNT(DISTINCT CASE WHEN p.register_date_time >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.register_date_time < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN p.participant_uid END) as countparticipants,
+                COALESCE(SUM(CASE WHEN p.register_date_time >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.register_date_time < DATE_ADD(DATE(:date), INTERVAL 1 DAY) AND p.started = 1 THEN 1 ELSE 0 END), 0) as started,
+                COALESCE(SUM(CASE WHEN p.finished_timestamp >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.finished_timestamp < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN 1 ELSE 0 END), 0) as completed,
+                COALESCE(SUM(CASE WHEN p.dnf_timestamp >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.dnf_timestamp < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN 1 ELSE 0 END), 0) as dnf,
+                COALESCE(SUM(CASE WHEN p.dns_timestamp >= DATE_SUB(:date, INTERVAL 6 DAY) AND p.dns_timestamp < DATE_ADD(DATE(:date), INTERVAL 1 DAY) THEN 1 ELSE 0 END), 0) as dns
+            FROM participant p
+            JOIN track t ON t.track_uid = p.track_uid";
+
+        // Get weekly stats for date
+        
+        $statement = $this->connection->prepare($sql);
+        $statement->bindParam(':date', $date);
+        $statement->execute();
+        
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        
+        return $result ?: [
+            'countparticipants' => 0,
+            'started' => 0,
+            'completed' => 0,
+            'dnf' => 0,
+            'dns' => 0
+        ];
+    }
+
+    private function getYearlyStats(string $date): array
+    {
+        $sql = "SELECT 
+                COUNT(DISTINCT CASE WHEN YEAR(p.register_date_time) = YEAR(:date) THEN p.participant_uid END) as countparticipants,
+                COALESCE(SUM(CASE WHEN YEAR(p.register_date_time) = YEAR(:date) AND p.started = 1 THEN 1 ELSE 0 END), 0) as started,
+                COALESCE(SUM(CASE WHEN YEAR(p.finished_timestamp) = YEAR(:date) THEN 1 ELSE 0 END), 0) as completed,
+                COALESCE(SUM(CASE WHEN YEAR(p.dnf_timestamp) = YEAR(:date) THEN 1 ELSE 0 END), 0) as dnf,
+                COALESCE(SUM(CASE WHEN YEAR(p.dns_timestamp) = YEAR(:date) THEN 1 ELSE 0 END), 0) as dns
+            FROM participant p
+            JOIN track t ON t.track_uid = p.track_uid";
+
+        // Get yearly stats for date
+        
+        $statement = $this->connection->prepare($sql);
+        $statement->bindParam(':date', $date);
+        $statement->execute();
+        
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        
+        return $result ?: [
+            'countparticipants' => 0,
+            'started' => 0,
+            'completed' => 0,
+            'dnf' => 0,
+            'dns' => 0
+        ];
+    }
+
+    private function getLatestRegistration(): ?array
+    {
+        $sql = "SELECT 
+                p.*,
+                c.given_name,
+                c.family_name,
+                cl.title as club_name,
+                t.title as track_name
+            FROM participant p
+            JOIN track t ON t.track_uid = p.track_uid
+            LEFT JOIN competitors c ON c.competitor_uid = p.competitor_uid
+            LEFT JOIN club cl ON cl.club_uid = p.club_uid
+            ORDER BY p.register_date_time DESC
+            LIMIT 1";
+
+        $statement = $this->connection->prepare($sql);
+        $statement->execute();
+        
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$result) {
+            return null;
+        }
+
+        return [
+            'participant_uid' => $result['participant_uid'],
+            'name' => $result['given_name'] . ' ' . $result['family_name'],
+            'club' => $result['club_name'] ?? 'No Club',
+            'track' => $result['track_name'],
+            'registration_time' => $result['register_date_time']
+        ];
+    }
+
     public function getTopTracks(): array
     {
         try {
-            // Get current user context to check if superuser and get organizer_id
-            $userContext = \App\common\Context\UserContext::getInstance();
-            $currentUserOrganizerId = $userContext->getOrganizerId();
+            $sql = "WITH recent_registrations AS (
+                SELECT 
+                    t.track_uid,
+                    t.title as track_name,
+                    COUNT(DISTINCT p.participant_uid) as total_participants,
+                    COUNT(DISTINCT CASE WHEN p.register_date_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN p.participant_uid END) as recent_registrations,
+                    MIN(CASE WHEN p.register_date_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN p.register_date_time END) as recent_first_registration,
+                    MAX(CASE WHEN p.register_date_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN p.register_date_time END) as recent_last_registration,
+                    o.organization_name as organizer_name,
+                    t.active
+                FROM track t
+                LEFT JOIN participant p ON t.track_uid = p.track_uid
+                LEFT JOIN organizers o ON t.organizer_id = o.id
+                GROUP BY t.track_uid, t.title, o.organization_name, t.active
+            )
+            SELECT 
+                track_name,
+                total_participants as participant_count,
+                recent_registrations as registrations_last_30_days,
+                recent_first_registration as first_registration,
+                recent_last_registration as last_registration,
+                organizer_name,
+                active
+            FROM recent_registrations 
+            WHERE recent_registrations > 0
+            ORDER BY total_participants DESC
+            LIMIT 5";
+
+            $statement = $this->connection->prepare($sql);
+            $statement->execute();
             
-            // Only filter by organizer if user is not a superuser
-            $organizerId = null;
-            if (!$userContext->isSuperUser() && $currentUserOrganizerId !== null) {
-                $organizerId = $currentUserOrganizerId;
-            }
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
             
-            return $this->participantRepository->getTopTracks($organizerId);
+            return $result;
             
         } catch (\Exception $e) {
-            error_log("Error in getTopTracks: " . $e->getMessage());
             return [];
         }
     }
@@ -1377,8 +1651,7 @@ class ParticipantService extends ServiceAbstract
             return $clubUid;
             
         } catch (\Exception $e) {
-            // Log error but don't fail the registration
-            error_log("Failed to sync club from loppservice: " . $e->getMessage());
+            // Failed to sync club from loppservice
             return null;
         }
     }
@@ -1395,6 +1668,7 @@ class ParticipantService extends ServiceAbstract
         // Get the participant to verify it exists
         $participant = $this->participantRepository->participantFor($participant_uid);
         if (!$participant) {
+            error_log('moveParticipantToTrack: participant not found ' . $participant_uid);
             throw new BrevetException("Participant not found with UID: " . $participant_uid, 404);
         }
         
@@ -1403,22 +1677,26 @@ class ParticipantService extends ServiceAbstract
         // Validate that the new track exists
         $newTrack = $this->trackRepository->getTrackByUid($new_track_uid);
         if (!$newTrack) {
+            error_log('moveParticipantToTrack: target track not found ' . $new_track_uid);
             throw new BrevetException("Target track not found with UID: " . $new_track_uid, 404);
         }
         
         // Check if participant has already started (has stamps, DNF, DNS, or finished)
         if ($participant->isStarted() || $participant->isFinished() || $participant->isDnf() || $participant->isDns()) {
+            error_log('moveParticipantToTrack: participant cannot be moved due to state (started/finished/DNF/DNS) uid=' . $participant_uid);
             throw new BrevetException("Cannot move participant who has already started, finished, DNF, or DNS", 9);
         }
         
         // Check if the participant is already on the target track
         if ($old_track_uid === $new_track_uid) {
+            error_log('moveParticipantToTrack: participant already on target track uid=' . $participant_uid . ' track=' . $new_track_uid);
             throw new BrevetException("Participant is already on the target track", 9);
         }
         
         // Check if there's already a participant with the same start number on the target track
         $existingParticipant = $this->participantRepository->participantOntRackAndStartNumber($new_track_uid, $participant->getStartnumber());
         if ($existingParticipant) {
+            error_log('moveParticipantToTrack: start number conflict uid=' . $participant_uid . ' startnumber=' . $participant->getStartnumber() . ' targetTrack=' . $new_track_uid);
             throw new BrevetException("A participant with start number " . $participant->getStartnumber() . " already exists on the target track", 9);
         }
         
@@ -1427,7 +1705,7 @@ class ParticipantService extends ServiceAbstract
         
         // Move the participant to the new track
         $participant->setTrackUid($new_track_uid);
-        $newStartNumber = $this->participantRepository->findNextAvailableStartNumber($new_track_uid);
+        $newStartNumber = $this->findNextAvailableStartNumber($new_track_uid);
         $participant->setStartnumber($newStartNumber);
         
         $updatedParticipant = $this->participantRepository->updateParticipant($participant);
@@ -1477,7 +1755,24 @@ class ParticipantService extends ServiceAbstract
         
         // Move all participants using the repository method
         $results = $this->participantRepository->moveAllParticipantsToTrack($from_track_uid, $to_track_uid);
-        
+
+        // Send move notification to all successfully moved participants
+        if (isset($results['success']) && is_array($results['success'])) {
+            foreach ($results['success'] as $successItem) {
+                try {
+                    $uid = $successItem['participant_uid'] ?? null;
+                    $start = (string)($successItem['startnumber'] ?? '');
+                    if ($uid) {
+                        // Use same old/new startnumber -> template will omit change section
+                        $this->sendStartNumberChangeNotification($uid, $start, $start);
+                    }
+                } catch (\Throwable $e) {
+                    // Avoid breaking the move flow due to email issues
+                    error_log('Bulk move email failed for participant ' . ($successItem['participant_uid'] ?? 'unknown') . ': ' . $e->getMessage());
+                }
+            }
+        }
+
         return $results;
     }
 
@@ -1510,7 +1805,7 @@ class ParticipantService extends ServiceAbstract
         $oldStartNumber = $participant->getStartnumber();
         
         // Automatically find the next available start number (no client control)
-        $new_startnumber = $this->participantRepository->findNextAvailableStartNumber($to_track_uid);
+        $new_startnumber = $this->findNextAvailableStartNumber($to_track_uid);
         
         // Move the participant with the automatically assigned start number
         $participant->setTrackUid($to_track_uid);
@@ -1535,7 +1830,50 @@ class ParticipantService extends ServiceAbstract
         return $this->participantassembly->toRepresentation($updatedParticipant, $permissions, $currentUserUid);
     }
     
-
+    /**
+     * Find the next available start number on a track by finding gaps in the sequence
+     * If there are gaps (e.g., 1001, 1003, 1004), it will return 1002
+     * If no gaps, it will return the next number after the highest
+     * Handles cases where start numbers begin at higher values (e.g., 4001, 4002, 4003)
+     */
+    private function findNextAvailableStartNumber(string $track_uid): string
+    {
+        $participants = $this->participantRepository->participantsOnTrack($track_uid);
+        $usedStartNumbers = [];
+        
+        foreach ($participants as $participant) {
+            $usedStartNumbers[] = (int)$participant->getStartnumber();
+        }
+        
+        if (empty($usedStartNumbers)) {
+            return "1001"; // Default start number if no participants exist
+        }
+        
+        // Sort the used start numbers
+        sort($usedStartNumbers);
+        
+        // Find the actual sequence range
+        $minNumber = $usedStartNumbers[0];
+        $maxNumber = $usedStartNumbers[count($usedStartNumbers) - 1];
+        
+        // If the sequence starts at a higher number (e.g., 4001), work within that range
+        // Otherwise, start from 1001 as the minimum
+        $sequenceStart = max(1001, $minNumber);
+        
+        // Find the first gap in the sequence starting from the sequence start
+        $expectedNumber = $sequenceStart;
+        
+        foreach ($usedStartNumbers as $usedNumber) {
+            if ($usedNumber > $expectedNumber) {
+                // Found a gap, return the expected number
+                return (string)$expectedNumber;
+            }
+            $expectedNumber = $usedNumber + 1;
+        }
+        
+        // No gaps found, return the next number after the highest
+        return (string)$expectedNumber;
+    }
 
     /**
      * Send email notification when a participant's start number changes
@@ -1551,27 +1889,23 @@ class ParticipantService extends ServiceAbstract
             // Get participant with all related data
             $participant = $this->participantRepository->participantFor($participant_uid);
             if (!$participant) {
-                error_log("Participant not found for email notification: " . $participant_uid);
                 return false;
             }
 
             // Get track information
             $track = $this->trackService->getTrackByUid($participant->getTrackUid());
             if (!$track) {
-                error_log("Track not found for email notification: " . $participant->getTrackUid());
                 return false;
             }
 
             // Get competitor info for email
             $competitor = $this->competitorService->getCompetitorByUid($participant->getCompetitorUid(), "");
             if (!$competitor) {
-                error_log("Competitor not found for email notification: " . $participant_uid);
                 return false;
             }
 
             $competitorInfo = $this->competitorInfoRepository->getCompetitorInfoByCompetitorUid($competitor->getCompetitorUid());
             if (!$competitorInfo || !$competitorInfo->getEmail()) {
-                error_log("No email found for participant: " . $participant_uid);
                 return false;
             }
 
@@ -1600,7 +1934,7 @@ class ParticipantService extends ServiceAbstract
             ];
 
             // Send email - check if we're in development (mailhog) or production mode
-            $subject = "Startnummer ändrat - " . $track->getTitle();
+            $subject = "Flytt av deltagande - " . $track->getTitle();
             
             // Get mail configuration
             $mailHost = $this->settings['mail']['mail_host'] ?? 'mailhog';
@@ -1609,28 +1943,20 @@ class ParticipantService extends ServiceAbstract
             // If mailhog is configured, send to mailhog for testing, otherwise send to actual competitor
             if ($mailHost === 'mailhog') {
                 $recipientEmail = 'receiverinbox@mailhog.local';
-                error_log("Development mode: Start number change email sent to mailhog (would be sent to: " . $competitorInfo->getEmail() . ")");
-            } else {
-                error_log("Production mode: Start number change email sent to competitor: " . $competitorInfo->getEmail());
             }
             
             $success = $this->emailService->sendEmailWithTemplate(
                 $recipientEmail,
                 $subject,
-                'startnumber-changed-email-template.php',
+                'participant-moved-email-template.php',
                 $emailData
             );
 
-            if ($success) {
-                error_log("Start number change notification sent successfully to: " . $competitorInfo->getEmail());
-            } else {
-                error_log("Failed to send start number change notification to: " . $competitorInfo->getEmail());
-            }
+            // Email notification sent
 
             return $success;
 
         } catch (\Exception $e) {
-            error_log("Error sending start number change notification: " . $e->getMessage());
             return false;
         }
     }

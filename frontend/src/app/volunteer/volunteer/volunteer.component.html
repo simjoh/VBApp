@@ -1,38 +1,208 @@
-<div class="grid">
-  <div class="ml-0 p-0 col-12 sm:col-12 lg:col-12">
-    <div class="p-2">
-      <h4>Välj event och bana
-        <button (click)="op.toggle($event)" pButton pRipple type="button"  icon="pi pi-info"
-                class="p-button-raised p-button-rounded p-button-sm "></button>
-      </h4>
-    </div>
-    <p-overlayPanel #op>
-      <ng-template pTemplate>
-        För att kunna se vilka deltagare som passerat eller ska passera vid din kontroll behöver du välja event och bana som kontrollen
-        finns på i rulllistan nedan <br><br>
-
-        När du valt kontroll visas en lista med deltagare som ska passera eller har passerat din kontroll <br><br>
-        Som volontär kan du
-        <ul>
-          <li>Checka in deltagare på din kontroll</li>
-          <li>Markera att deltagaren bryter loppet</li>
-          <li>Ångra incheckning och markering att deltagare bryter</li>
-        </ul>
-      </ng-template>
-    </p-overlayPanel>
-  </div>
-</div>
-
-<div class="grid">
-  <div class="col-12 lg:col-2 sm:col-12 md:col-12 mt-2">
-        <div class="grid">
-            <div class="col-12 lg:col-12 sm:col-12 md:col-12"> <brevet-tracks-for-event-selector [styleClass]="'lg:w-full'" (trackChange)="trackSelected($event)"></brevet-tracks-for-event-selector></div>
+<div class="container-fluid px-4">
+  <!-- Header Section -->
+  <div class="grid justify-content-center mb-3">
+    <div class="col-12">
+      <div class="flex align-items-center justify-content-between">
+        <div class="flex align-items-center">
+          <i class="pi pi-users text-3xl mr-3" style="color: var(--primary-color)"></i>
+          <div>
+            <h2 class="m-0 text-900">Volontär Kontroll</h2>
+            <p class="m-0 text-500">Hantera deltagare vid din kontroll</p>
+          </div>
         </div>
-    <div class="grid">
-         <div class="col-12 lg:col-12 sm:col-12 md:col-12"><brevet-checkpoint-selector-listbox></brevet-checkpoint-selector-listbox></div>
+        <button (click)="op.toggle($event)" pButton pRipple type="button" icon="pi pi-info-circle"
+                class="p-button-rounded p-button-text p-button-lg"
+                pTooltip="Hjälp och instruktioner" tooltipPosition="left"></button>
+      </div>
     </div>
   </div>
-  <div class="col-12 lg:col-10 sm:col-12 md:col-12">
-            <brevet-participant-list></brevet-participant-list>
+
+  <!-- Help Overlay -->
+  <p-overlayPanel #op>
+    <ng-template pTemplate>
+      <div class="p-3" style="max-width: 400px;">
+        <h4 class="mb-3">Hur fungerar det?</h4>
+        <div class="mb-3">
+          <p class="text-600 mb-2">För att se deltagare vid din kontroll:</p>
+          <ol class="text-600">
+            <li>Välj event och bana i sidopanelen</li>
+            <li>Välj din kontroll från listan</li>
+            <li>Se deltagare som ska passera eller har passerat</li>
+          </ol>
+        </div>
+        <div class="mb-3">
+          <p class="text-600 mb-2">Som volontär kan du:</p>
+          <ul class="text-600">
+            <li><i class="pi pi-check-circle text-green-500 mr-2"></i>Checka in deltagare</li>
+            <li><i class="pi pi-times-circle text-red-500 mr-2"></i>Markera DNF (Did Not Finish)</li>
+            <li><i class="pi pi-undo text-blue-500 mr-2"></i>Ångra tidigare åtgärder</li>
+          </ul>
+        </div>
+      </div>
+    </ng-template>
+  </p-overlayPanel>
+
+  <!-- Ultra Compact Selection Bar -->
+  <div class="grid mb-3">
+    <div class="col-12">
+      <div class="surface-0 shadow-1 border-1 border-50 border-round p-2">
+        <div class="flex align-items-center justify-content-between gap-3 responsive-selection-bar">
+          <!-- Event & Track Selection -->
+          <div class="flex align-items-center gap-2 flex-1 min-w-0 selection-group">
+            <i class="pi pi-calendar text-primary text-sm"></i>
+            <span class="font-medium text-600 text-sm selection-label">Event:</span>
+            <div class="flex-1 min-w-0">
+              <brevet-tracks-for-event-selector
+                [styleClass]="'w-full ultra-compact-selector'"
+                (trackChange)="trackSelected($event)">
+              </brevet-tracks-for-event-selector>
+            </div>
+          </div>
+
+          <!-- Checkpoint Selection -->
+          <div class="flex align-items-center gap-2 flex-1 min-w-0 selection-group">
+            <i class="pi pi-map-marker text-primary text-sm"></i>
+            <span class="font-medium text-600 text-sm selection-label">Kontroll:</span>
+            <div class="flex-1 min-w-0">
+              <brevet-checkpoint-selector></brevet-checkpoint-selector>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prominent Stats Section -->
+  <div class="grid mb-3" *ngIf="(participantStats$ | async) as stats">
+    <div class="col-12">
+      <div class="surface-0 shadow-2 border-1 border-50 border-round p-3">
+        <div class="flex align-items-center justify-content-center gap-4 stats-container">
+          <!-- Started Stats -->
+          <div class="flex align-items-center justify-content-center stats-card started">
+            <div class="flex align-items-center gap-3">
+              <div class="stats-icon bg-cyan-100 border-round">
+                <i class="pi pi-play-circle text-cyan-600 text-xl"></i>
+              </div>
+              <div class="flex flex-column">
+                <span class="stats-number text-cyan-600 font-bold">{{ stats.started || 0 }}</span>
+                <span class="stats-label text-600 text-sm">Startade</span>
+                <span class="stats-percentage text-cyan-600 text-xs font-medium">
+                  {{ getTotalParticipants(stats) > 0 ? (getTotalStartedParticipants(stats) / getTotalParticipants(stats) * 100).toFixed(1) : '0' }}% totalt
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Checked In Stats -->
+          <div class="flex align-items-center justify-content-center stats-card checked-in">
+            <div class="flex align-items-center gap-3">
+              <div class="stats-icon bg-green-100 border-round">
+                <i class="pi pi-check-circle text-green-600 text-xl"></i>
+              </div>
+              <div class="flex flex-column">
+                <span class="stats-number text-green-600 font-bold">{{ stats.countpassed || 0 }}</span>
+                <span class="stats-label text-600 text-sm">Checkade in</span>
+                <span class="stats-percentage text-green-600 text-xs font-medium">
+                  {{ getStartedParticipants(stats) > 0 ? ((stats.countpassed || 0) / getStartedParticipants(stats) * 100).toFixed(1) : '0' }}% av kvarvarande
+                </span>
+                <span class="stats-percentage text-green-600 text-xs font-medium opacity-60">
+                  {{ getTotalParticipants(stats) > 0 ? ((stats.countpassed || 0) / getTotalParticipants(stats) * 100).toFixed(1) : '0' }}% totalt
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- DNF Stats -->
+          <div class="flex align-items-center justify-content-center stats-card dnf">
+            <div class="flex align-items-center gap-3">
+              <div class="stats-icon bg-red-100 border-round">
+                <i class="pi pi-times-circle text-red-600 text-xl"></i>
+              </div>
+              <div class="flex flex-column">
+                <span class="stats-number text-red-600 font-bold">{{ stats.dnf || 0 }}</span>
+                <span class="stats-label text-600 text-sm">DNF</span>
+                <span class="stats-percentage text-red-600 text-xs font-medium">
+                  {{ getTotalParticipants(stats) > 0 ? ((stats.dnf || 0) / getTotalParticipants(stats) * 100).toFixed(1) : '0' }}% totalt
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Checked Out Stats -->
+          <div class="flex align-items-center justify-content-center stats-card checked-out">
+            <div class="flex align-items-center gap-3">
+              <div class="stats-icon bg-blue-100 border-round">
+                <i class="pi pi-sign-out text-blue-600 text-xl"></i>
+              </div>
+              <div class="flex flex-column">
+                <span class="stats-number text-blue-600 font-bold">{{ stats.checkedout || 0 }}</span>
+                <span class="stats-label text-600 text-sm">Checkade ut</span>
+                <span class="stats-percentage text-blue-600 text-xs font-medium">
+                  {{ getStartedParticipants(stats) > 0 ? ((stats.checkedout || 0) / getStartedParticipants(stats) * 100).toFixed(1) : '0' }}% av kvarvarande
+                </span>
+                <span class="stats-percentage text-blue-600 text-xs font-medium opacity-60">
+                  {{ getTotalParticipants(stats) > 0 ? ((stats.checkedout || 0) / getTotalParticipants(stats) * 100).toFixed(1) : '0' }}% totalt
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- At Checkpoint Stats -->
+          <div class="flex align-items-center justify-content-center stats-card at-checkpoint">
+            <div class="flex align-items-center gap-3">
+              <div class="stats-icon bg-orange-100 border-round">
+                <i class="pi pi-map-marker text-orange-600 text-xl"></i>
+              </div>
+              <div class="flex flex-column">
+                <span class="stats-number text-orange-600 font-bold">{{ (stats.countpassed || 0) - (stats.checkedout || 0) }}</span>
+                <span class="stats-label text-600 text-sm">Vid kontroll</span>
+                <span class="stats-percentage text-orange-600 text-xs font-medium">
+                  {{ getStartedParticipants(stats) > 0 ? (((stats.countpassed || 0) - (stats.checkedout || 0)) / getStartedParticipants(stats) * 100).toFixed(1) : '0' }}% av kvarvarande
+                </span>
+                <span class="stats-percentage text-orange-600 text-xs font-medium opacity-60">
+                  {{ getTotalParticipants(stats) > 0 ? (((stats.countpassed || 0) - (stats.checkedout || 0)) / getTotalParticipants(stats) * 100).toFixed(1) : '0' }}% totalt
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Expected to Come Stats -->
+          <div class="flex align-items-center justify-content-center stats-card expected">
+            <div class="flex align-items-center gap-3">
+              <div class="stats-icon bg-purple-100 border-round">
+                <i class="pi pi-clock text-purple-600 text-xl"></i>
+              </div>
+              <div class="flex flex-column">
+                <span class="stats-number text-purple-600 font-bold">{{ stats.expected || 0 }}</span>
+                <span class="stats-label text-600 text-sm">Förväntade</span>
+                <span class="stats-percentage text-purple-600 text-xs font-medium">
+                  {{ getExpectedPercentage(stats) }}% av {{ getExpectedPercentageText() }}
+                </span>
+                <span class="stats-percentage text-purple-600 text-xs font-medium opacity-60">
+                  {{ getTotalParticipants(stats) > 0 ? ((stats.expected || 0) / getTotalParticipants(stats) * 100).toFixed(1) : '0' }}% totalt
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content - Participant List -->
+  <div class="grid">
+    <div class="col-12">
+      <p-card styleClass="h-full">
+        <ng-template pTemplate="header">
+          <div class="flex align-items-center justify-content-between">
+            <div class="flex align-items-center">
+              <i class="pi pi-list text-xl mr-2"></i>
+              <span class="text-lg font-semibold">Deltagare</span>
+            </div>
+          </div>
+        </ng-template>
+        <brevet-participant-list></brevet-participant-list>
+      </p-card>
+    </div>
   </div>
 </div>

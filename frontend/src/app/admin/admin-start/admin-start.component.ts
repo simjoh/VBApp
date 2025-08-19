@@ -10,19 +10,12 @@ import { ParticipantService, ParticipantStats } from '../../shared/participant.s
 })
 export class AdminStartComponent implements OnInit {
   participantStats$: Observable<ParticipantStats>;
-  isSuperUser = false;
 
   constructor(private router: Router, private participantService: ParticipantService) {
     this.participantStats$ = this.participantService.getParticipantStats();
-    this.checkUserRoles();
   }
 
   ngOnInit(): void {
-  }
-
-  private checkUserRoles(): void {
-    const activeUser = JSON.parse(localStorage.getItem('activeUser') || '{}');
-    this.isSuperUser = activeUser.roles?.includes('SUPERUSER') || false;
   }
 
   navigate(path: string): void {

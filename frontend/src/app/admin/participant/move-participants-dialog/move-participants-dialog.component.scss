@@ -1,0 +1,449 @@
+.move-participants-dialog {
+  width: 100%;
+  max-width: 100%;
+  min-width: 600px;
+
+  &.compact {
+    min-width: 560px;
+    max-width: 100%;
+  }
+
+  .dialog-header {
+    border-bottom: 1px solid var(--surface-border);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+
+    .space-y-3 > * + * {
+    margin-top: 1rem;
+  }
+
+  .space-y-2 > * + * {
+    margin-top: 0.75rem;
+  }
+
+  .space-y-1 > * + * {
+    margin-top: 0.5rem;
+  }
+
+  // Compact dropdown styling
+  .p-dropdown {
+    .p-dropdown-label {
+      padding: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .p-dropdown-trigger {
+      width: 2.5rem;
+    }
+  }
+
+  .p-inputtext-sm {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+      // Standard table styling
+  .p-datatable {
+        .p-datatable-thead > tr > th {
+      padding: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .p-datatable-tbody > tr > td {
+      padding: 0.75rem;
+      font-size: 0.875rem;
+    }
+  }
+
+  // Compact card styling
+  .p-card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--surface-border);
+
+    .p-card-header {
+      background: var(--surface-section);
+      border-bottom: 1px solid var(--surface-border);
+      padding: 0.75rem;
+    }
+
+    .p-card-body {
+      padding: 1rem;
+    }
+  }
+
+  // Compact status tags
+  .p-tag {
+    font-size: 0.625rem;
+    font-weight: 500;
+    padding: 0.125rem 0.375rem;
+    border-radius: 3px;
+
+    &.text-xs {
+      font-size: 0.625rem;
+    }
+  }
+
+  // Compact buttons
+  .p-button {
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &.p-button-sm {
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+    }
+
+    &.p-button-success {
+      background: var(--green-500);
+      border-color: var(--green-500);
+
+      &:hover {
+        background: var(--green-600);
+        border-color: var(--green-600);
+      }
+    }
+
+    &.p-button-warning {
+      background: var(--orange-500);
+      border-color: var(--orange-500);
+
+      &:hover {
+        background: var(--orange-600);
+        border-color: var(--orange-600);
+      }
+    }
+
+    &.p-button-outlined {
+      background: transparent;
+
+      &.p-button-success {
+        color: var(--green-500);
+        border-color: var(--green-500);
+
+        &:hover {
+          background: var(--green-50);
+        }
+      }
+
+      &.p-button-warning {
+        color: var(--orange-500);
+        border-color: var(--orange-500);
+
+        &:hover {
+          background: var(--orange-50);
+        }
+      }
+
+      &.p-button-secondary {
+        color: var(--text-color-secondary);
+        border-color: var(--surface-border);
+
+        &:hover {
+          background: var(--surface-hover);
+        }
+      }
+    }
+  }
+
+  // Compact form styling
+  form {
+    .p-dropdown,
+    .p-multiselect {
+      width: 100%;
+    }
+
+    label {
+      font-weight: 500;
+      color: var(--text-color);
+      margin-bottom: 0.25rem;
+      display: block;
+
+      &.text-sm {
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  // Compact grid system
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -0.25rem;
+
+    .col-12 {
+      flex: 0 0 100%;
+      max-width: 100%;
+      padding: 0 0.25rem;
+    }
+
+    .col-6 {
+      flex: 0 0 50%;
+      max-width: 50%;
+      padding: 0 0.25rem;
+    }
+
+    .col-4 {
+      flex: 0 0 33.333333%;
+      max-width: 33.333333%;
+      padding: 0 0.25rem;
+    }
+
+    .col-3 {
+      flex: 0 0 25%;
+      max-width: 25%;
+      padding: 0 0.25rem;
+    }
+
+    @media (max-width: 768px) {
+      .col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+
+      .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+
+      .col-md-3 {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+    }
+  }
+
+  // Compact utility classes
+  .flex {
+    display: flex;
+  }
+
+  .flex-1 {
+    flex: 1;
+  }
+
+  .flex-column {
+    flex-direction: column;
+  }
+
+  .align-items-center {
+    align-items: center;
+  }
+
+  .justify-content-between {
+    justify-content: space-between;
+  }
+
+  .justify-content-end {
+    justify-content: flex-end;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .gap-1 {
+    gap: 0.25rem;
+  }
+
+  .gap-2 {
+    gap: 0.5rem;
+  }
+
+  .gap-3 {
+    gap: 0.75rem;
+  }
+
+  .mb-1 {
+    margin-bottom: 0.25rem;
+  }
+
+  .mb-3 {
+    margin-bottom: 0.75rem;
+  }
+
+  .mt-1 {
+    margin-top: 0.25rem;
+  }
+
+  .mt-3 {
+    margin-top: 0.75rem;
+  }
+
+  .mr-1 {
+    margin-right: 0.25rem;
+  }
+
+  .ml-1 {
+    margin-left: 0.25rem;
+  }
+
+  .p-1 {
+    padding: 0.25rem;
+  }
+
+  .p-2 {
+    padding: 0.5rem;
+  }
+
+  .p-3 {
+    padding: 0.75rem;
+  }
+
+  .pt-3 {
+    padding-top: 0.75rem;
+  }
+
+  .border-round {
+    border-radius: 4px;
+  }
+
+  .border-top-1 {
+    border-top: 1px solid var(--surface-border);
+  }
+
+  .surface-border {
+    border-color: var(--surface-border);
+  }
+
+  .text-900 {
+    color: var(--text-color);
+  }
+
+  .text-500 {
+    color: var(--text-color-secondary);
+  }
+
+  .text-xs {
+    font-size: 0.75rem;
+  }
+
+  .text-sm {
+    font-size: 0.875rem;
+  }
+
+  .text-lg {
+    font-size: 1.125rem;
+  }
+
+  .font-medium {
+    font-weight: 500;
+  }
+
+  .font-bold {
+    font-weight: 700;
+  }
+
+  .m-0 {
+    margin: 0;
+  }
+
+  .w-full {
+    width: 100%;
+  }
+
+  .block {
+    display: block;
+  }
+
+  .opacity-50 {
+    opacity: 0.5;
+  }
+
+  // Compact color utilities
+  .text-primary {
+    color: var(--primary-color);
+  }
+
+  .text-success {
+    color: var(--green-500);
+  }
+
+  .text-orange-500 {
+    color: var(--orange-500);
+  }
+
+  .text-orange-600 {
+    color: var(--orange-600);
+  }
+
+  .text-blue-500 {
+    color: var(--blue-500);
+  }
+
+  .text-blue-600 {
+    color: var(--blue-600);
+  }
+
+  .text-green-500 {
+    color: var(--green-500);
+  }
+
+  .text-green-600 {
+    color: var(--green-600);
+  }
+
+  // Compact responsive design
+  @media (max-width: 768px) {
+    min-width: 100%;
+    max-width: 100%;
+
+    .dialog-header {
+      .flex {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+    }
+
+    .p-card {
+      .p-card-body {
+        padding: 0.75rem;
+      }
+    }
+
+    .compact-table {
+      .p-datatable-thead > tr > th,
+      .p-datatable-tbody > tr > td {
+        padding: 0.375rem;
+      }
+    }
+  }
+
+  // Compact animation for loading states
+  .p-button[loading] {
+    position: relative;
+
+    .p-button-label {
+      opacity: 0;
+    }
+
+    .p-button-loading-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  // Compact hover effects
+  .p-card:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transition: box-shadow 0.2s ease;
+  }
+
+  // Compact focus states for accessibility
+  .p-dropdown:focus-within,
+  .p-button:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 1px;
+  }
+
+  // Compact scrollable container
+  .border-round.surface-border[style*="max-height"] {
+    border: 1px solid var(--surface-border);
+    border-radius: 4px;
+  }
+}

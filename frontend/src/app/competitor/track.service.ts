@@ -20,9 +20,6 @@ export class TrackService {
       map((checkpoints: any) => {
         return checkpoints;
       }),
-      tap((checkpoints: any) => {
-        console.log(checkpoints);
-      }),
       shareReplay(1)
     ) as Observable<any>;
   }

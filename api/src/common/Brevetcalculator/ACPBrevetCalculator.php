@@ -186,6 +186,11 @@ class ACPBrevetCalculator
         // Truncate to nearest kilometer
         $controlDistance = floor($controlDistance);
 
+        // Special case for start control (0 km): closing is 1 hour after start
+        if ($controlDistance == 0) {
+            return 1.0;
+        }
+
         // Special case for controls within 60km from start
         if ($controlDistance < 60) {
             // Relaxed closing times for early controls

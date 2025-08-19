@@ -20,8 +20,14 @@ import { EditTimeDialogComponent } from './edit-time-dialog/edit-time-dialog.com
 import { EditBrevenrDialogComponent } from './edit-brevenr-dialog/edit-brevenr-dialog.component';
 import { EditCheckpointTimeDialogComponent } from './edit-checkpoint-time-dialog/edit-checkpoint-time-dialog.component';
 import { EditCompetitorInfoDialogComponent } from './edit-competitor-info-dialog/edit-competitor-info-dialog.component';
+import { MoveParticipantsDialogComponent } from './move-participants-dialog/move-participants-dialog.component';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
+import { TableModule } from 'primeng/table';
+import { CheckboxModule } from 'primeng/checkbox';
+import { ButtonModule } from 'primeng/button';
+import { TagModule } from 'primeng/tag';
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
 
 @NgModule({
   declarations: [
@@ -34,7 +40,8 @@ import { CardModule } from 'primeng/card';
     EditTimeDialogComponent,
     EditBrevenrDialogComponent,
     EditCheckpointTimeDialogComponent,
-    EditCompetitorInfoDialogComponent
+    EditCompetitorInfoDialogComponent,
+    MoveParticipantsDialogComponent
   ],
   imports: [
     ParticipantRoutingModule,
@@ -47,8 +54,13 @@ import { CardModule } from 'primeng/card';
     DropdownModule,
     SharedModule,
     CalendarModule,
-    CardModule
+    CardModule,
+    TableModule,
+    CheckboxModule,
+    ButtonModule,
+    TagModule,
+    DynamicDialogModule
   ],
-  exports: []
+  exports: [MoveParticipantsDialogComponent]
 })
 export class ParticipantModule { }

@@ -1,0 +1,7 @@
+<p-card [styleClass]="'cursor-pointer hover:shadow-5' + (config.isActive ? ' border-primary border-3' : '')" (click)="onCardClick()">
+  <div class="flex align-items-center justify-content-center flex-column text-center p-2">
+    <i [class]="config.icon + ' text-3xl mb-2'" [ngStyle]="{'color': config.isActive ? 'var(--primary-color)' : 'var(--text-color)'}"></i>
+    <h3 class="m-2" [ngStyle]="{'color': config.isActive ? 'var(--primary-color)' : 'inherit'}">{{ config.title }}</h3>
+    <p class="m-0">{{ config.description }}</p>
+  </div>
+</p-card>

@@ -1,17 +1,19 @@
 <ng-container *ngIf="$tracks | async as tracks">
-
-<p-dropdown
-  pTooltip="Välj en bana som din kontroll finns utefter"
-  tooltipPosition="left" styleClass="col-12"
-  [options]="tracks" [(ngModel)]="choosentrack"
-  (ngModelChange)="valdBana()"
-  placeholder="Välj bana"
-  [virtualScroll]="true" [itemSize]="36"
-  [filter]="true"
-  appendTo="body"
-  [autoZIndex]="true"
-  baseZIndex="10000">
-
-</p-dropdown>
-
-  </ng-container>
+  <div class="track-selector">
+    <p-dropdown
+      pTooltip="Välj en bana som din kontroll finns utefter"
+      tooltipPosition="left"
+      styleClass="w-full modern-dropdown"
+      [options]="tracks"
+      [(ngModel)]="choosentrack"
+      (ngModelChange)="valdBana()"
+      placeholder="Välj bana"
+      [virtualScroll]="true"
+      [itemSize]="36"
+      [filter]="true"
+      appendTo="body"
+      [autoZIndex]="true"
+      baseZIndex="10000">
+    </p-dropdown>
+  </div>
+</ng-container>

@@ -49,18 +49,19 @@ RUN echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/docker-php-ext-
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
-
 # Apache configuration
 RUN a2enmod setenvif headers rewrite || true
 
 # Set working directory (optional but recommended)
 WORKDIR /var/www/html
 
-# Create uploads directory and set permissions
+# Create uploads and logs directories and set permissions
 RUN mkdir -p /var/www/html/api/uploads && \
+    mkdir -p /var/www/html/api/logs && \
     chown -R www-data:www-data /var/www/html/api/uploads && \
-    chmod -R 755 /var/www/html/api/uploads
+    chown -R www-data:www-data /var/www/html/api/logs && \
+    chmod -R 755 /var/www/html/api/uploads && \
+    chmod -R 755 /var/www/html/api/logs
 
 # Create entrypoint script to fix permissions on container start
 COPY docker/apache/entrypoint.sh /usr/local/bin/entrypoint.sh

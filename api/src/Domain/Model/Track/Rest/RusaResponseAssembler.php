@@ -188,32 +188,18 @@ class RusaResponseAssembler
                     $rusaControlRep->setCONTROLDISTANCEKM((float)$controlDistances[$index]);
                     $rusaControlRep->setCONTROLDISTANCEMILE((float)$controlDistances[$index] * 0.621371);
                     
-                    // Special handling for first control
-                    if ($index === 0 && $rusaControlRep->getCONTROLDISTANCEKM() < 1) {
-                        // First control is the start point, special handling
-                        $startDateTime = new \DateTime($rusaPlannnerInput->getStartDate() . ' ' . $rusaPlannnerInput->getStartTime());
-                        $openDateTime = clone $startDateTime;
-                        $closeDateTime = clone $startDateTime;
-                        $closeDateTime->modify('+1 hour'); // Start control is open for 1 hour
-                        
-                        $rusaControlRep->setOPEN($openDateTime->format('Y-m-d H:i'));
-                        $rusaControlRep->setCLOSE($closeDateTime->format('Y-m-d H:i'));
-                        $rusaControlRep->setRELATIVEOPEN("00:00");
-                        $rusaControlRep->setRELATIVECLOSE("01:00");
-                    } else {
-                        // Make sure the necessary keys exist
-                        if (isset($controlTimes['opening_datetime']) && $controlTimes['opening_datetime'] instanceof \DateTime) {
-                            $rusaControlRep->setOPEN($controlTimes['opening_datetime']->format('Y-m-d H:i'));
-                        }
-                        if (isset($controlTimes['closing_datetime']) && $controlTimes['closing_datetime'] instanceof \DateTime) {
-                            $rusaControlRep->setCLOSE($controlTimes['closing_datetime']->format('Y-m-d H:i'));
-                        }
-                        if (isset($controlTimes['opening_time'])) {
-                            $rusaControlRep->setRELATIVEOPEN($controlTimes['opening_time']);
-                        }
-                        if (isset($controlTimes['closing_time'])) {
-                            $rusaControlRep->setRELATIVECLOSE($controlTimes['closing_time']);
-                        }
+                    // Use ACPBrevetCalculator times for all controls
+                    if (isset($controlTimes['opening_datetime']) && $controlTimes['opening_datetime'] instanceof \DateTime) {
+                        $rusaControlRep->setOPEN($controlTimes['opening_datetime']->format('Y-m-d H:i'));
+                    }
+                    if (isset($controlTimes['closing_datetime']) && $controlTimes['closing_datetime'] instanceof \DateTime) {
+                        $rusaControlRep->setCLOSE($controlTimes['closing_datetime']->format('Y-m-d H:i'));
+                    }
+                    if (isset($controlTimes['opening_time'])) {
+                        $rusaControlRep->setRELATIVEOPEN($controlTimes['opening_time']);
+                    }
+                    if (isset($controlTimes['closing_time'])) {
+                        $rusaControlRep->setRELATIVECLOSE($controlTimes['closing_time']);
                     }
                     
                     // Set control meta name based on position

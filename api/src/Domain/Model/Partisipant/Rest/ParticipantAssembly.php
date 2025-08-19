@@ -51,6 +51,8 @@ class ParticipantAssembly
         $participantrepresentation->setDnsTimestamp($participant->getDnsTimestamp());
         $participantrepresentation->setDnfTimestamp($participant->getDnfTimestamp());
         $participantrepresentation->setFinishedTimestamp($participant->getFinishedTimestamp());
+        $participantrepresentation->setAdditionalInformation($participant->getAdditionalInformation());
+        $participantrepresentation->setUsePhysicalBrevetCard($participant->getUsePhysicalBrevetCard());
 
         $linkArray = array();
 //        foreach ($permissions as $x =>  $site) {

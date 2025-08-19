@@ -55,7 +55,6 @@ export class EventService {
       map((events: Array<EventRepresentation>) => {
         return events;
       }),
-      tap(events => console.log("All events", events)),
       shareReplay(1)
     );
   }
@@ -78,8 +77,7 @@ export class EventService {
     return await this.httpClient.post<EventRepresentation>(environment.backend_url + "event/", event).pipe(
       map((site: EventRepresentation) => {
         return event;
-      }),
-      tap(event => console.log(event))
+      })
     ).toPromise();
   }
 
@@ -107,8 +105,7 @@ export class EventService {
     return this.httpClient.put<EventRepresentation>(environment.backend_url + "event", {} as EventRepresentation).pipe(
       map((event: EventRepresentation) => {
         return event;
-      }),
-      tap(event => console.log(event))
+      })
     ) as Observable<EventRepresentation>
   }
 

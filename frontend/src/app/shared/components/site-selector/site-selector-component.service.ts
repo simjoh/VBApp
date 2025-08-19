@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {SiteService} from "../../../admin/shared/service/site.service";
-import {map, shareReplay, catchError, tap} from "rxjs/operators";
+import {map, shareReplay, catchError} from "rxjs/operators";
 import {BehaviorSubject, Observable, of} from "rxjs";
 import { Site } from '../../api/api';
 
@@ -10,11 +10,7 @@ export class SiteSelectorComponentService {
   $currentSiteSubject = new BehaviorSubject<Site>(null);
 
   $allSites = this.siteService.getAllSites().pipe(
-    tap(() => console.log('SiteSelectorComponentService: API call initiated')),
     map((sites) => {
-      console.log('SiteSelectorComponentService: Site selector service received sites:', sites);
-      console.log('SiteSelectorComponentService: Sites array length:', sites ? sites.length : 'null/undefined');
-      console.log('SiteSelectorComponentService: First few sites:', sites ? sites.slice(0, 3) : 'none');
       return sites;
     }),
     catchError(error => {
@@ -29,13 +25,10 @@ export class SiteSelectorComponentService {
   );
 
   constructor(private siteService: SiteService) {
-    console.log('SiteSelectorComponentService constructor called');
-
     // Force the observable to be subscribed to trigger the HTTP request
     this.$allSites.subscribe(
       sites => {
-        console.log('SiteSelectorComponentService: Force subscription - sites received:', sites);
-        console.log('SiteSelectorComponentService: Force subscription - sites count:', sites ? sites.length : 'null/undefined');
+        // Subscription for triggering HTTP request
       },
       error => {
         console.error('SiteSelectorComponentService: Force subscription - error:', error);

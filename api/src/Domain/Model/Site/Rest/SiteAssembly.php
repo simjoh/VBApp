@@ -45,7 +45,6 @@ class SiteAssembly
         $siteRepresentation->setLat($s->getLat() == null ? "" : strval($s->getLat()));
         $siteRepresentation->setLng($s->getLng() == null ? "" : strval($s->getLng()));
         $siteRepresentation->setCheckInDistance(strval($s->getCheckInDistance()));
-        $siteRepresentation->setOrganizerId($s->getOrganizerId());
         // bygg på med lite länkar
         $linkArray = array();
         foreach ($permissions as $x => $site) {
@@ -79,7 +78,6 @@ class SiteAssembly
         $siteRepresentation->setLat($s->getLat() == null ? "" : strval($s->getLat()));
         $siteRepresentation->setLng($s->getLng() == null ? "" : strval($s->getLng()));
         $siteRepresentation->setCheckInDistance(strval($s->getCheckInDistance()));
-        $siteRepresentation->setOrganizerId($s->getOrganizerId());
         // bygg på med lite länkar
         $linkArray = array();
         foreach ($permissions as $x => $site) {
@@ -106,7 +104,7 @@ class SiteAssembly
             $site->getAdress(), $site->getDescription()
             , $site->getLocation(), new DecimalNumber($site->getLat())
             , new DecimalNumber($site->getLng()), substr($site->getImage(), strrpos($site->getImage(), '/') + 1),
-            new DecimalNumber($site->getCheckInDistance()), $site->getOrganizerId());
+            new DecimalNumber($site->getCheckInDistance()));
     }
 
 

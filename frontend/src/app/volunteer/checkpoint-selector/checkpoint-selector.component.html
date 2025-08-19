@@ -1,15 +1,20 @@
 
 <ng-container *ngIf="$checkpoints | async as checkpoints">
-<p-dropdown
-  pTooltip="Välj den kontroll som du är på"
-  tooltipPosition="left" styleClass="col-12"
-  [options]="checkpoints" [(ngModel)]="selectedcheckpoint"
-  (ngModelChange)="valdKontroll()"
-  placeholder="Välj kontroll"
-  [virtualScroll]="true"
-  [itemSize]="36" [filter]="true"
-  appendTo="body"
-  [autoZIndex]="true"
-  baseZIndex="10000">
-  </p-dropdown>
+  <div class="checkpoint-selector">
+    <p-dropdown
+      pTooltip="Välj den kontroll som du är på"
+      tooltipPosition="left"
+      styleClass="w-full ultra-compact-selector"
+      [options]="checkpoints"
+      [(ngModel)]="selectedcheckpoint"
+      (ngModelChange)="valdKontroll()"
+      placeholder="Välj kontroll"
+      [virtualScroll]="true"
+      [itemSize]="36"
+      [filter]="true"
+      appendTo="body"
+      [autoZIndex]="true"
+      baseZIndex="10000">
+    </p-dropdown>
+  </div>
 </ng-container>

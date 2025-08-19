@@ -7,6 +7,7 @@ import {DialogService} from "primeng/dynamicdialog";
 import {EditTimeDialogComponent} from "../edit-time-dialog/edit-time-dialog.component";
 import {EditBrevenrDialogComponent} from "../edit-brevenr-dialog/edit-brevenr-dialog.component";
 import {EditCompetitorInfoDialogComponent} from "../edit-competitor-info-dialog/edit-competitor-info-dialog.component";
+import {MoveParticipantsDialogComponent} from "../move-participants-dialog/move-participants-dialog.component";
 import {environment} from "../../../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import { saveAs } from 'file-saver';
@@ -67,7 +68,6 @@ export class ParticipantTableComponent implements OnInit {
 
     // Subscribe to track representation changes
     this.trackService.currentTrackRepresentation$.subscribe(track => {
-      console.log('Track representation updated:', track);
       this.currentTrackRepresentation = track;
       this.cdr.detectChanges(); // Force change detection
     });
@@ -163,7 +163,6 @@ export class ParticipantTableComponent implements OnInit {
 
 
   editbrevenr(participant: ParticipantRepresentation) {
-    console.log(participant.brevenr);
     const ref = this.dialogService.open(EditBrevenrDialogComponent, {
       data: {
         brevenr: participant.brevenr
@@ -186,7 +185,6 @@ export class ParticipantTableComponent implements OnInit {
 
   exportHomologation() {
     const trackUid = this.participantComponentService.getCurrentTrackUid();
-    console.log('Track UID:', trackUid);
 
     if (!trackUid) {
       console.error('No track UID available');
@@ -194,7 +192,6 @@ export class ParticipantTableComponent implements OnInit {
     }
 
     const url = environment.backend_url + 'participants/track/' + trackUid + '/report/export';
-    console.log('Export URL:', url);
 
     this.http.get(url, {
       responseType: 'blob',
@@ -203,8 +200,6 @@ export class ParticipantTableComponent implements OnInit {
       }
     }).subscribe({
       next: (response: Blob) => {
-        console.log('Response received:', response);
-
         // Generate filename based on current date
         const date = new Date().toISOString().split('T')[0];
         const filename = `Homologation_${date}.csv`;
@@ -219,7 +214,6 @@ export class ParticipantTableComponent implements OnInit {
 
   exportStartList() {
     const trackUid = this.participantComponentService.getCurrentTrackUid();
-    console.log('Track UID for start list:', trackUid);
 
     if (!trackUid) {
       console.error('No track UID available');
@@ -227,7 +221,6 @@ export class ParticipantTableComponent implements OnInit {
     }
 
     const url = environment.backend_url + 'participants/track/' + trackUid + '/startlist/export';
-    console.log('Export Start List URL:', url);
 
     this.http.get(url, {
       responseType: 'blob',
@@ -236,8 +229,6 @@ export class ParticipantTableComponent implements OnInit {
       }
     }).subscribe({
       next: (response: Blob) => {
-        console.log('Start list response received:', response);
-
         // Generate filename based on current date
         const date = new Date().toISOString().split('T')[0];
         const filename = `Participant_List_${date}.csv`;
@@ -290,24 +281,12 @@ export class ParticipantTableComponent implements OnInit {
   }
 
   isCurrentTrackUnpublished(): boolean {
-    console.log('=== Checking if track is unpublished ===');
-    console.log('Current track representation:', this.currentTrackRepresentation);
-
     if (!this.currentTrackRepresentation) {
-      console.log('No track representation available');
       return false;
     }
 
-    console.log('Track links:', this.currentTrackRepresentation.links);
-    console.log('Detailed links:', JSON.stringify(this.currentTrackRepresentation.links, null, 2));
-
     // Check for publish link (means track is unpublished)
     const isUnpublished = this.linkService.exists(this.currentTrackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
-    console.log('Track unpublished status:', isUnpublished);
-
-    // Debug link service
-    const foundLink = this.linkService.findByRel(this.currentTrackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
-    console.log('Found publish link:', foundLink);
 
     return isUnpublished;
   }
@@ -317,15 +296,11 @@ export class ParticipantTableComponent implements OnInit {
    * This is used to show/hide the publish button
    */
   hasPublishLink(): boolean {
-    console.log('=== Checking for publish link ===');
-    console.log('Current track representation:', this.currentTrackRepresentation);
     if (!this.currentTrackRepresentation || !this.currentTrackRepresentation.links) {
-      console.log('No track representation or links available');
       return false;
     }
     // Check for undopublisresults link (means we can publish)
     const hasLink = this.linkService.exists(this.currentTrackRepresentation.links, 'relation.track.undopublisresults', HttpMethod.PUT);
-    console.log('Has publish link:', hasLink);
     return hasLink;
   }
 
@@ -334,15 +309,11 @@ export class ParticipantTableComponent implements OnInit {
    * This is used to show/hide the unpublish button
    */
   hasUnpublishLink(): boolean {
-    console.log('=== Checking for unpublish link ===');
-    console.log('Current track representation:', this.currentTrackRepresentation);
     if (!this.currentTrackRepresentation || !this.currentTrackRepresentation.links) {
-      console.log('No track representation or links available');
       return false;
     }
     // Check for publisresults link (means we can unpublish)
     const hasLink = this.linkService.exists(this.currentTrackRepresentation.links, 'relation.track.publisresults', HttpMethod.PUT);
-    console.log('Has unpublish link:', hasLink);
     return hasLink;
   }
 
@@ -361,11 +332,6 @@ export class ParticipantTableComponent implements OnInit {
     }
 
     try {
-      console.log('Publishing track - before API call:', {
-        trackUid: this.currentTrackRepresentation.track_uid,
-        links: this.currentTrackRepresentation.links?.map((l: any) => ({ rel: l.rel, method: l.method }))
-      });
-
       // Disable buttons during the operation to prevent double-clicks
       const trackUid = this.currentTrackRepresentation.track_uid;
       const publishButton = document.querySelector(`[data-track-uid="${trackUid}"].publish-btn`) as HTMLButtonElement;
@@ -388,8 +354,6 @@ export class ParticipantTableComponent implements OnInit {
           throw new Error('No publish or unpublish links available');
         }
 
-        console.log('Publishing track - API call successful:', updatedTrack);
-
         // Update the current track representation with the response
         this.currentTrackRepresentation = updatedTrack;
 
@@ -400,29 +364,56 @@ export class ParticipantTableComponent implements OnInit {
           detail: this.hasUnpublishLink() ? 'Track published successfully' : 'Track unpublished successfully'
         });
 
-        // Also reload the participant list
-        this.participantComponentService.reload();
-        this.cdr.detectChanges(); // Force change detection
+        // Force change detection
+        this.cdr.detectChanges();
 
       } catch (error) {
         console.error('Error publishing/unpublishing track:', error);
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'Failed to update track publish status'
+          detail: 'Failed to update track status'
         });
       } finally {
         // Re-enable buttons after operation
-        if (publishButton) publishButton.disabled = false;
-        if (unpublishButton) unpublishButton.disabled = false;
+        setTimeout(() => {
+          if (publishButton) publishButton.disabled = false;
+          if (unpublishButton) unpublishButton.disabled = false;
+        }, 200);
       }
     } catch (error) {
       console.error('Error in publish operation:', error);
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'An unexpected error occurred'
-      });
     }
+  }
+
+  openMoveParticipantsDialog(mode: 'single' | 'bulk', participant?: ParticipantInformationRepresentation): void {
+    const config = {
+      mode: mode,
+      participant: participant,
+      currentTrackUid: this.participantComponentService.getCurrentTrackUid()
+    };
+
+    const ref = this.dialogService.open(MoveParticipantsDialogComponent, {
+      data: config,
+      header: mode === 'single' ? 'Flytta Deltagare' : 'Flytta Deltagare Mellan Banor',
+      width: '55%',
+      modal: true,
+      closable: true,
+      maximizable: true
+    });
+
+    ref.onClose.subscribe((result: any) => {
+      if (result && result.success) {
+        this.participantComponentService.reload();
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Framgång',
+          detail: mode === 'single' ? 'Deltagare flyttad framgångsrikt' : 'Deltagare flyttade framgångsrikt'
+        });
+      } else if (result && result.reload) {
+        // Ensure list refresh if dialog signals a reload after bulk or conflict resolution
+        this.participantComponentService.reload();
+      }
+    });
   }
 }

@@ -48,9 +48,6 @@ class EventAssembly
         $eventrepresentation->setCompleted($event->isCompleted());
         $eventrepresentation->setStartdate($event->getStartdate());
         $eventrepresentation->setEnddate($event->getEnddate());
-        $eventrepresentation->setOrganizerId($event->getOrganizerId());
-        $eventrepresentation->setCreatedAt($event->getCreatedAt());
-        $eventrepresentation->setUpdatedAt($event->getUpdatedAt());
 
         $participantsarray = array();
         $linkArray = array();
@@ -80,10 +77,62 @@ class EventAssembly
 
             array_push($linkArray, new Link("relation.event.result", 'GET', $this->settings['path'] . 'results/event/' . $event->getEventUid()));
 
-            // Add organizer link if organizer_id exists
-            if($event->getOrganizerId() !== null){
-                array_push($linkArray, new Link("relation.event.organizer", 'GET', $this->settings['path'] . 'organizer/' . $event->getOrganizerId()));
-            }
+
+        }
+
+        $eventrepresentation->setLinks($linkArray);
+
+
+        return $eventrepresentation;
+    }
+
+    /**
+     * Create event representation with pre-fetched tracks to avoid N+1 queries
+     * 
+     * @param Event $event The event
+     * @param array $permissions User permissions
+     * @param array $prefetchedTracks Pre-fetched tracks for this event
+     * @return EventRepresentation
+     */
+    public function toRepresentationWithTracks(Event $event, array $permissions, array $prefetchedTracks): EventRepresentation {
+
+        $eventrepresentation = new EventRepresentation();
+        $eventrepresentation->setDescription($event->getDescription() == null ? 0 : $event->getDescription());
+        $eventrepresentation->setTitle($event->getTitle() == null ? null : $event->getTitle());
+        $eventrepresentation->setEventUid($event->getEventUid());
+        $eventrepresentation->setActive($event->isActive());
+        $eventrepresentation->setCanceled($event->isCanceled());
+        $eventrepresentation->setCompleted($event->isCompleted());
+        $eventrepresentation->setStartdate($event->getStartdate());
+        $eventrepresentation->setEnddate($event->getEnddate());
+
+        $participantsarray = array();
+        $linkArray = array();
+        foreach ($permissions as $x =>  $site) {
+          //  if($site->hasWritePermission()){
+                array_push($linkArray, new Link("relation.event.update", 'PUT', $this->settings['path'] .'event/' . $event->getEventUid()));
+                // ett event får inte tas bort om deltagare är tillagda
+              // Use pre-fetched tracks instead of calling tracksbyEvent
+              foreach ($prefetchedTracks as $track){
+                  $participants = $this->participantRepository->participantsOnTrack($track->getTrackUid());
+                  if(count($participants) > 0){
+                      array_push($participantsarray, $participants);
+                  }
+              }
+                if(count($participantsarray) == 0 && count($prefetchedTracks) == 0){
+                    array_push($linkArray, new Link("relation.event.delete", 'DELETE', $this->settings['path'] .'event/' . $event->getEventUid()));
+                }
+
+              //  break;
+           // }
+
+            if($site->hasReadPermission()){
+                array_push($linkArray, new Link("self", 'GET', $this->settings['path'] . 'user/' . $event->getEventUid()));
+
+                array_push($linkArray, new Link("relation.event.track", 'GET', $this->settings['path'] . 'tracker/event/' . $event->getEventUid()));
+            };
+
+            array_push($linkArray, new Link("relation.event.result", 'GET', $this->settings['path'] . 'results/event/' . $event->getEventUid()));
 
 
         }
@@ -97,18 +146,8 @@ class EventAssembly
 
     public function getPermissions($user_uid): array
     {
-        // If user_uid is null, try to get it from UserContext
-        if ($user_uid === null) {
-            $userContext = \App\common\Context\UserContext::getInstance();
-            $user_uid = $userContext->getUserId();
-        }
-        
-        // If still null, return empty permissions array
-        if ($user_uid === null) {
-            return [];
-        }
-        
         return $this->permissinrepository->getPermissionsTodata("EVENT",$user_uid);
+
     }
 
 

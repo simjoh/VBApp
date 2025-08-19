@@ -80,7 +80,6 @@ export interface EventRepresentation {
   canceled: boolean;
   completed: boolean;
   description: string;
-  organizer_id?: number;
   links: Link[];
 }
 
@@ -102,7 +101,6 @@ export interface  SiteRepresentation {
   lat: string;
   lng: string;
   check_in_distance: string;
-  organizer_id?: number;
   links: Link[];
 }
 
@@ -131,6 +129,7 @@ export interface ParticipantToPassCheckpointRepresentation {
   has_checkouted: boolean;
   volonteer_checkin: boolean;
   dnf: boolean;
+  started: boolean;
   link: Link[];
 }
 

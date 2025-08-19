@@ -252,6 +252,78 @@ class TrackAction
         return  $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
+    public function parseGpxFile(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $uploadDir = $this->settings['upload_directory'];
+        $uploadedFiles = $request->getUploadedFiles();
+        $gpxFile = null;
+        foreach ($uploadedFiles as $uploadedFile) {
+            $gpxFile = $this->moveUploadedFile($uploadDir, $uploadedFile);
+            break;
+        }
+        if (!$gpxFile) {
+            $response->getBody()->write(json_encode(['error' => 'No GPX file uploaded']));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+        $gpxService = new \App\common\Gpx\GpxService();
+        $gpxPath = $uploadDir . DIRECTORY_SEPARATOR . $gpxFile;
+        $gpx = $gpxService->parseGpxFile($gpxPath);
+        if (!$gpxService->validateGpx($gpx)) {
+            $response->getBody()->write(json_encode(['error' => 'Invalid GPX file']));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+        $track = $gpxService->gpxToTrackRepresentation($gpx);
+        $checkpoints = $gpxService->gpxToCheckpoints($gpx, "", floatval($track->getDistance()));
+        // Return as array for frontend
+        $result = [
+            'track' => [
+                'title' => $track->getTitle(),
+                'description' => $track->getDescriptions(),
+                'link' => $track->getLinktotrack(),
+                'distance' => $track->getDistance(),
+            ],
+            'checkpoints' => array_map(function($cp) {
+                return [
+                    'lat' => $cp->getSite()->getLat(),
+                    'lon' => $cp->getSite()->getLng(),
+                    'name' => $cp->getTitle(),
+                    'desc' => $cp->getDescription(),
+                    'distance' => $cp->getDistance(),
+                ];
+            }, $checkpoints)
+        ];
+        $response->getBody()->write(json_encode($result));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+    /**
+     * Create a track from GPX data
+     * 
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public function createTrackFromGpx(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        try {
+            $requestData = json_decode($request->getBody()->getContents(), true);
+            $currentuserUid = $request->getAttribute('currentuserUid');
+            $formData = $requestData['formData'] ?? null;
+            
+            $created = $this->trackService->createTrackFromGpxData($requestData, $currentuserUid, $formData);
+            
+            $response->getBody()->write(json_encode($created));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+            
+        } catch (\App\common\Exceptions\BrevetException $e) {
+            $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($e->getCode() ?: 400);
+        } catch (\Exception $e) {
+            $response->getBody()->write(json_encode(['error' => 'Internal server error: ' . $e->getMessage()]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
     function moveUploadedFile($directory, UploadedFile $uploadedFile)
     {
         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);

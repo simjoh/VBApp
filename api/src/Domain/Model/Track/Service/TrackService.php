@@ -67,19 +67,7 @@ class TrackService extends ServiceAbstract
     public function allTracks(string $currentuserUid): array
     {
         $permissions = $this->getPermissions($currentuserUid);
-        
-        // Get current user context to check if superuser and get organizer_id
-        $userContext = \App\common\Context\UserContext::getInstance();
-        $currentUserOrganizerId = $userContext->getOrganizerId();
-        
-        // Only filter by organizer if user is not a superuser
-        $organizerId = null;
-        if (!$userContext->isSuperUser() && $currentUserOrganizerId !== null) {
-            $organizerId = $currentUserOrganizerId;
-        }
-        
-        $trackArray = $this->trackRepository->allTracks($organizerId);
-        
+        $trackArray = $this->trackRepository->allTracks();
         // hämta checkpoints
         return $this->trackAssembly->toRepresentations($trackArray, $currentuserUid, $permissions);
     }
@@ -96,7 +84,6 @@ class TrackService extends ServiceAbstract
 
         $isracePassed = $this->trackRepository->isRacePassed($trackUid);
         
-        error_log("Final active status: " . var_export($track->isActive(), true));
         return $this->trackAssembly->toRepresentation($track, $permissions, $currentuserUid);
     }
 
@@ -114,18 +101,11 @@ class TrackService extends ServiceAbstract
     public function tracksForEvent(string $currentuserUid, string $event_uid): ?array
     {
         $permissions = $this->getPermissions($currentuserUid);
+        
         $tracks = $this->trackRepository->tracksbyEvent($event_uid);
+        $result = $this->trackAssembly->toRepresentations($tracks, $currentuserUid, $permissions);
 
-//        if (empty($track_uids)) {
-//            return array();
-//        }
-//        $test = [];
-//        foreach ($track_uids as $s => $ro) {
-//            $test[] = $ro[$s];
-//        }
-//        $tracks = $this->trackRepository->tracksOnEvent($test);
-
-        return $this->trackAssembly->toRepresentations($tracks, $currentuserUid, $permissions);
+        return $result;
     }
 
     public function createTrack(TrackRepresentation $trackrepresentation, string $currentuserUid): TrackRepresentation
@@ -452,33 +432,27 @@ class TrackService extends ServiceAbstract
             $deleteSuccess = $loppServiceClient->deleteEvent($track_uid);
             
             if ($deleteSuccess) {
-                error_log("Successfully deleted event from loppservice: " . $track_uid);
+                // Successfully deleted event from loppservice
             } else {
                 // Check if the event exists first to determine if the failure is due to "not found"
                 $existingEvent = $loppServiceClient->getEventById($track_uid);
                 if ($existingEvent === null) {
-                    error_log("Event not found in loppservice (this is OK): " . $track_uid);
+                    // Event not found in loppservice (this is OK)
                 } else {
-                    error_log("Failed to delete event from loppservice (event exists but deletion failed): " . $track_uid);
+                    // Failed to delete event from loppservice (event exists but deletion failed)
                 }
             }
         } catch (\Exception $e) {
-            // Log the error but don't fail the main deletion
-            error_log("Error deleting event in loppservice: " . $e->getMessage());
-            error_log("Track deletion completed locally, but loppservice sync failed for track: " . $track_uid);
+            // Track deletion completed locally, but loppservice sync failed
         }
     }
 
     public function publishResults(?string $track_uid, $publish, string $currentuserUid)
     {
-        error_log("publishResults called with track_uid: $track_uid, publish: " . var_export($publish, true) . ", user: $currentuserUid");
-        
         $track = $this->trackRepository->getTrackByUid($track_uid);
         if ($track == null) {
             throw new BrevetException("Finns ingen bana med angivet uid", 5);
         }
-
-        error_log("Track found - current active status: " . var_export($track->isActive(), true));
 
         // Get the database connection from the repository for transaction handling
         $connection = $this->trackRepository->getConnection();
@@ -490,13 +464,11 @@ class TrackService extends ServiceAbstract
             // When publishing (publish=true), set active=0 (published)
             // When unpublishing (publish=false), set active=1 (unpublished)
             $newActiveState = ($publish === true || $publish === "true") ? 0 : 1;
-            error_log("Setting track active state to: " . $newActiveState);
             
             $this->trackRepository->setInactive($track_uid, $newActiveState);
 
             // Commit the transaction
             $connection->commit();
-            error_log("Transaction committed successfully");
             
             // Return the updated track representation
             $permissions = $this->getPermissions($currentuserUid);
@@ -505,7 +477,6 @@ class TrackService extends ServiceAbstract
         } catch (\Exception $e) {
             // Rollback the transaction on any error
             $connection->rollBack();
-            error_log("Transaction rolled back due to error: " . $e->getMessage());
             
             if ($e instanceof BrevetException) {
                 throw $e;
@@ -526,8 +497,7 @@ class TrackService extends ServiceAbstract
                 return $this->rusaTimeTrackPlannerService->getresponseFromRusaTime($rusaPlannnerInput, $currentuserUid);
             }
         } catch (\Exception $e) {
-            // Log error and return empty response instead of letting the error bubble up
-            error_log("Error in planTrack: " . $e->getMessage());
+            // Return empty response instead of letting the error bubble up
             return new \App\Domain\Model\Track\Rest\RusaPlannerResponseRepresentation();
         }
     }
@@ -603,6 +573,74 @@ class TrackService extends ServiceAbstract
         } catch (\Exception $e) {
             throw $e;
         }
+    }
+
+    /**
+     * Create a track from GPX data with proper site matching and ACP time calculations
+     * 
+     * @param array $gpxData The GPX data from frontend containing track and checkpoint information
+     * @param string $currentUserUid The current user's UID
+     * @param mixed $formData Optional form data for loppservice integration
+     * @return TrackRepresentation The created track representation
+     * @throws BrevetException If required data is missing or track creation fails
+     */
+    public function createTrackFromGpxData(array $gpxData, string $currentUserUid, $formData = null): TrackRepresentation
+    {
+        // Validate required data
+        $eventUid = $gpxData['event_uid'] ?? null;
+        $startDate = $gpxData['track']['start_date'] ?? null;
+        $startTime = $gpxData['track']['start_time'] ?? null;
+        
+        if (!$eventUid || !$startDate || !$startTime) {
+            throw new BrevetException('Missing required data: event_uid, start_date, or start_time', 400, null);
+        }
+
+        // Extract track information
+        $trackTitle = $gpxData['track']['title'] ?? '';
+        $trackLink = $gpxData['track']['link'] ?? '';
+        $trackDistance = $gpxData['track']['distance'] ?? 0;
+        $checkpoints = $gpxData['checkpoints'] ?? [];
+
+        // Build rusaplannercontrols array with site matching
+        $rusaplannercontrols = [];
+        foreach ($checkpoints as $cp) {
+            // Create site representation
+            $siteRep = new \stdClass();
+            $siteRep->site_uid = $cp['site_uid'] ?? null; // Frontend should provide or backend should match/create
+            $siteRep->lat = $cp['lat'];
+            $siteRep->lng = $cp['lon'];
+            $siteRep->place = $cp['name'];
+            $siteRep->description = $cp['desc'];
+
+            // Create control representation
+            $rusaControlRep = new \stdClass();
+            $rusaControlRep->CONTROL_DISTANCE_KM = $cp['distance'];
+            $rusaControlRep->OPEN = $cp['open'] ?? '';
+            $rusaControlRep->CLOSE = $cp['close'] ?? '';
+
+            $rusaplannercontrols[] = (object)[
+                'siteRepresentation' => $siteRep,
+                'rusaControlRepresentation' => $rusaControlRep,
+            ];
+        }
+
+        // Build track representation
+        $trackrepresentation = (object)[
+            'rusaTrackRepresentation' => (object)[
+                'TRACK_TITLE' => $trackTitle,
+                'LINK_TO_TRACK' => $trackLink,
+                'EVENT_DISTANCE_KM' => $trackDistance,
+                'START_DATE' => $startDate,
+                'START_TIME' => $startTime,
+            ],
+            'eventRepresentation' => (object)[
+                'event_uid' => $eventUid,
+            ],
+            'rusaplannercontrols' => $rusaplannercontrols,
+        ];
+
+        // Use existing createTrackFromPlanner method
+        return $this->createTrackFromPlanner($trackrepresentation, $currentUserUid, $formData);
     }
 
     public function getTrackByUid(string $trackUid): ?Track
@@ -810,13 +848,11 @@ class TrackService extends ServiceAbstract
                 if ($createdEvent !== null) {
                     return true;
                 } else {
-                    error_log("Failed to create event in loppservice");
                     return false;
                 }
             } catch (\Exception $e) {
                 // Check if it's an "alreadyexists" error
                 if ($e->getMessage() === 'alreadyexists') {
-                    error_log("Event with this title already exists in loppservice");
                     throw new BrevetException("Ett event med detta namn finns redan i loppservice. Vänligen välj ett annat namn.", 9);
                 }
                 
@@ -825,9 +861,6 @@ class TrackService extends ServiceAbstract
             }
             
         } catch (\Exception $e) {
-            error_log("Exception in createEventInLoppservice: " . $e->getMessage());
-            error_log("Loppservice URL being used: " . $this->settings['loppserviceurl']);
-            
             // Re-throw the exception to let the calling code handle it
             throw $e;
         }
@@ -909,20 +942,15 @@ class TrackService extends ServiceAbstract
                 if ($updatedEvent !== null) {
                     return true;
                 } else {
-                    error_log("Failed to update event in loppservice");
                     return false;
                 }
             } catch (\Exception $e) {
-                error_log("Error updating event in loppservice: " . $e->getMessage());
                 // Don't throw exception for loppservice errors, just log and continue
                 return false;
             }
             
         } catch (\Exception $e) {
-            error_log("Exception in updateEventInLoppservice: " . $e->getMessage());
-            error_log("Loppservice URL being used: " . $this->settings['loppserviceurl']);
-            
-            // Don't throw exception for loppservice errors, just log and continue
+            // Don't throw exception for loppservice errors, just continue
             return false;
         }
     }
@@ -939,6 +967,14 @@ class TrackService extends ServiceAbstract
             // Create new participant checkpoints for this participant
             $this->participantRepository->createTrackCheckpointsFor($participant, $newCheckpointUids);
         }
+    }
+
+    public function getTrackRepository() {
+        return $this->trackRepository;
+    }
+
+    public function getTrackAssembly() {
+        return $this->trackAssembly;
     }
 
 }

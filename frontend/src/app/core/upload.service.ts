@@ -11,10 +11,10 @@ export class UploadService {
 
 
   public upload(url: string, files: Set<File>):
-    { [key: string]: { progress: Observable<number> } } {
+    { [key: string]: { progress: Observable<number>, response: Observable<any> } } {
 
     // this will be the our resulting map
-    const status: { [key: string]: { progress: Observable<number> } } = {};
+    const status: { [key: string]: { progress: Observable<number>, response: Observable<any> } } = {};
 
     files.forEach(file => {
       // create a new multipart-form for every file
@@ -29,6 +29,7 @@ export class UploadService {
 
       // create a new progress-subject for every file
       const progress = new Subject<number>();
+      const response = new Subject<any>();
 
       // send the http-request and subscribe for progress-updates
       this.http.request(req).subscribe(event => {
@@ -41,16 +42,20 @@ export class UploadService {
           progress.next(percentDone);
         } else if (event instanceof HttpResponse) {
 
-          console.log(event.body)
           // Close the progress-stream if we get an answer form the API
           // The upload is complete
           progress.complete();
+
+          // Pass the response data
+          response.next(event.body);
+          response.complete();
         }
       });
 
       // Save every progress-observable in a map of all observables
       status[file.name] = {
-        progress: progress.asObservable()
+        progress: progress.asObservable(),
+        response: response.asObservable()
       };
     });
 
