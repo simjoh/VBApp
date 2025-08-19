@@ -13,7 +13,7 @@ import {PageHeaderConfig} from '../../shared/components/page-header/page-header.
 export class EventAdminComponent implements OnInit {
 
   designTabs = [];
-  
+
   headerConfig: PageHeaderConfig = {
     icon: 'pi pi-calendar',
     title: 'Hantera Arrangemangsgrupp',

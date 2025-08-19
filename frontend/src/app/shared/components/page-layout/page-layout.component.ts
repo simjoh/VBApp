@@ -12,7 +12,7 @@ export class PageLayoutComponent {
   @Input() actionCards: ActionCardConfig[] = [];
   @Input() showActionCards = true;
   @Output() actionCardClick = new EventEmitter<string>();
-  
+
   @ContentChild('content') contentTemplate?: TemplateRef<any>;
 
   onActionCardClick(action: string) {

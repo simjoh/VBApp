@@ -15,7 +15,7 @@ import {ActionCardConfig} from '../../../shared/components/action-card/action-ca
 export class ParticipantComponent implements OnInit {
 
   designTabs = [];
-  
+
   headerConfig: PageHeaderConfig = {
     icon: 'pi pi-users',
     title: 'Hantera Deltagare',
@@ -50,7 +50,7 @@ export class ParticipantComponent implements OnInit {
         icon: 'pi pi-list'
       }
     ] as MenuItem[];
-    
+
     this.updateActionCardsActiveState();
   }
 
