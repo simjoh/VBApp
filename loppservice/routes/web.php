@@ -49,10 +49,14 @@ Route::post('/tool/event/{eventUid}', [ToolController::class, 'publishToCyclinga
 Route::get('/events/{uid}/register', [RegistrationController::class, 'index'])->name('register');
 Route::post('/events/{uid}/register', [RegistrationController::class, 'create']);
 Route::post('/events/{uid}/reserve', [RegistrationController::class, 'reserve']);
+
 Route::get('/events/{uid}/registration/{regsitrationUid}/complete', [RegistrationController::class, 'complete']);
 Route::get('/events/{uid}/registration/{registrationUid}/getregitration', [RegistrationController::class, 'existingregistration']);
 Route::put('registration.update', [RegistrationController::class, 'update']);
 Route::post('registration.create', [RegistrationController::class, 'create']);
+Route::post('registration.msrreserve', [RegistrationController::class, 'msrreserve'])->name('registration.msrreserve');
+Route::post('registration.msrcomplete', [RegistrationController::class, 'msrcomplete'])->name('registration.msrcomplete');
+Route::get('/events/{uid}/registration/{registration_uid}/msrcomplete', [RegistrationController::class, 'msrshowcomplete'])->name('registration.msrshowcomplete');
 
 Route::get('/checkout/create', [CheckoutController::class, 'create'])->name("checkout");
 Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkoutsuccess');

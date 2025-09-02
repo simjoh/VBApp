@@ -94,7 +94,7 @@ class RegistrationController extends Controller
                 'countries' => Country::all()->sortBy("country_name_sv"),
                 'event' => $event->event_uid,
                 'event_type' => $event->event_type,
-                'years' => range(date('Y', strtotime('-18 year')), 1950),
+                'years' => range(date('Y', strtotime('-18 year')), 1945),
                 'registrationproduct' => $registration_product->productID,
                 'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID,
                 'genders' => $this->gendersSv(),
@@ -113,44 +113,198 @@ class RegistrationController extends Controller
             'event_type' => $event->event_type,
             'startdate' => Carbon::parse($event->startdate)->format('Y-m-d'),
         ];
-        return view('registrations.show')->with([
-            'showreservationbutton' => $reservationactive,
-            'countries' => Country::all()->sortBy("country_name_en"),
-            'years' => range(date('Y', strtotime('-18 year')), 1950),
-            'registrationproduct' => $registration_product->productID,
-            'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID,
-            'genders' => $this->gendersEn(),
-            'isRegistrationOpen' => $isRegistrationOpen,
-            'availabledetails' => $registrationConfig
-        ]);
+
+
+        if ($reservationactive) {
+            return view('registrations.msr_reserve')->with([
+                'showreservationbutton' => $reservationactive,
+                'countries' => Country::all()->sortBy("country_name_en"),
+                'years' => range(date('Y', strtotime('-18 year')), 1945),
+                'registrationproduct' => $registration_product->productID,
+                'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID,
+                'genders' => $this->gendersEn(),
+                'isRegistrationOpen' => $isRegistrationOpen,
+                'availabledetails' => $registrationConfig
+            ]);
+
+        } else {
+
+
+            return view('registrations.show')->with([
+                'showreservationbutton' => $reservationactive,
+                'countries' => Country::all()->sortBy("country_name_en"),
+                'years' => range(date('Y', strtotime('-18 year')), 1945),
+                'registrationproduct' => $registration_product->productID,
+                'reservationproduct' => $reservationactive == false ? null : $resevation_product->productID,
+                'genders' => $this->gendersEn(),
+                'isRegistrationOpen' => $isRegistrationOpen,
+                'availabledetails' => $registrationConfig
+            ]);
+
+        }
     }
 
 
-    public function complete(Request $request)
+
+
+    public function msrshowcomplete(Request $request)
     {
-        $registration_uid = $request['regsitrationUid'];
+
+        $registration_uid = $request->route('registration_uid');
 
         $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
-        $current_event = Event::where('course_uid', $preregistration->course_uid);
+
+        if (!$preregistration) {
+            Log::error('Registration not found for UID: ' . $registration_uid);
+            abort(404, 'Registration not found');
+        }
+
+        $current_event = Event::where('event_uid', $preregistration->course_uid)->first();
+
+        if (!$current_event) {
+            Log::error('Event not found for course_uid: ' . $preregistration->course_uid);
+            abort(404, 'Event not found');
+        }
 
         $nowDate = Carbon::now();
-        $rerservationvlidto = Carbon::parse($current_event->eventconfiguration->reservationconfig->use_reservation_until);
-        if ($nowDate->gt($rerservationvlidto)) {
-            return view('registrations.updatesuccess')->with(['text' => 'Reservation link has expirered. Link was valid until end of ' . $rerservationvlidto]);
+        $reservationValidTo = Carbon::parse($current_event->eventconfiguration->reservationconfig->use_reservation_until);
+        if ($nowDate->gt($reservationValidTo->addHours(12))) {
+            return view('registrations.updatesuccess')->with(['text' => 'Reservation link has expired. Link was valid until end of ' . $reservationValidTo]);
         }
 
-        $preregistration->save();
-        $reg_product = Product::find($request->query('productID'));
+        $registrationopen = Carbon::parse($current_event->eventconfiguration->registration_opens);
+        $isRegistrationOpen = Carbon::now()->gt($registrationopen);
 
-        if (App::isProduction()) {
-            if (!$reg_product) {
-                return to_route('checkout', ["reg" => $registration_uid, 'is_final_registration_on_event' => true, 'price_id' => 'price_1NvL2CLnAzN3QPcUka5kMIwR']);
-            } else {
-                return to_route('checkout', ["reg" => $registration_uid, 'is_final_registration_on_event' => true, 'price_id' => $reg_product->price_id]);
-            }
-        } else {
-            return to_route('checkout', ["reg" => $registration_uid, 'is_final_registration_on_event' => true, 'price_id' => env("STRIPE_TEST_PRODUCT")]);
+        $registration_product = $current_event->eventconfiguration->products->where('categoryID', 6)->first();
+
+
+        $registrationConfig = [
+            'opens' => \strtoupper(Carbon::parse($current_event->eventconfiguration->registration_opens)->format('d F')),
+            'closes' => \strtoupper(Carbon::parse($current_event->eventconfiguration->registration_closes)->format('d F')),
+            'isRegistrationOpen' => $isRegistrationOpen,
+            'event_uid' => $current_event->event_uid,
+            'event_name' => $current_event->title,
+            'event_type' => $current_event->event_type,
+            'startdate' => Carbon::parse($current_event->startdate)->format('Y-m-d'),
+        ];
+
+
+        return view('registrations.msr_complete')->with([
+            'countries' => Country::all()->sortBy("country_name_en"),
+            'years' => range(date('Y', strtotime('-18 year')), 1945),
+            'registrationproduct' => $registration_product->productID,
+            'genders' => $this->gendersEn(),
+            'isRegistrationOpen' => $isRegistrationOpen,
+            'availabledetails' => $registrationConfig,
+            'registration_uid' => $registration_uid,
+            'reservation_expired' => $reservationValidTo->addHours(12)
+        ]);
+
+    }
+
+
+    public function msrreserve(Request $request)
+    {
+        // Debug: Log what we're receiving
+        Log::info('MSR Reserve method called with request data:', $request->all());
+
+
+
+        $event = $this->validateEventExists($request['uid']);
+        if (!$event) {
+            Log::error('Event not found for UID: ' . ($request['uid'] ?? 'NOT SET'));
+            abort(404, 'Event not found');
         }
+
+        // Check if reservation period is still active
+        $reservationValidTo = Carbon::parse($event->eventconfiguration->reservationconfig->use_reservation_until ?? null);
+        if (!$reservationValidTo || Carbon::now()->gt($reservationValidTo)) {
+            Log::warning('Reservation period has expired for event UID: ' . $event->event_uid);
+            return back()->withErrors(['reservation_expired' => 'Reservation period has expired.'])->withInput();
+        }
+
+        if (!$this->isRegistrationOpen($event)) {
+            return back()->withErrors(['registration_closes' => 'Registration is closed'])->withInput();
+        }
+
+        // Validate all form input
+        $this->validateMsrReservationRequest($request);
+
+
+
+        try {
+            // Use transaction only for the data creation part
+            $registration = DB::transaction(function () use ($request, $event) {
+                $person = $this->handlePersonData($request, $event);
+                $registration = $this->createRegistration($request, $event, $person);
+                $this->handleClubAssignment($request, $event, $registration);
+
+                return $registration;
+            });
+
+            // Handle payment redirect outside of transaction so registration is committed
+            return $this->handlePaymentRedirect($event, $registration, false);
+        } catch (\Exception $e) {
+            Log::error('Error in msrreserve: ' . $e->getMessage());
+            return back()->withErrors(['error' => $e->getMessage()])->withInput();
+        }
+    }
+
+
+    public function msrcomplete(Request $request)
+    {
+        $registration_uid = $request->input('registration_uid');
+
+        $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
+
+        if (!$preregistration) {
+            Log::error('Registration not found for UID: ' . $registration_uid);
+            abort(404, 'Registration not found');
+        }
+
+        $current_event = Event::where('event_uid', $preregistration->course_uid)->first();
+
+        if (!$current_event) {
+            Log::error('Event not found for course_uid: ' . $preregistration->course_uid);
+            abort(404, 'Event not found');
+        }
+
+        $nowDate = Carbon::now();
+        $reservationValidTo = Carbon::parse($current_event->eventconfiguration->reservationconfig->use_reservation_until);
+        if ($nowDate->gt($reservationValidTo->addHours(12))) {
+            return view('registrations.updatesuccess')->with(['text' => 'Reservation link has expired. Link was valid until end of ' . $reservationValidTo]);
+        }
+
+        return $this->complete($request, $current_event, $preregistration);
+    }
+
+
+    public function complete(Request $request, Event $current_event, Registration $preregistration)
+    {
+        $registration_uid = $request->input('registration_uid');
+
+        $preregistration = Registration::where('registration_uid', $registration_uid)->with(['person.adress', 'person.contactinformation'])->get()->first();
+
+        $current_event = Event::where('event_uid', $preregistration->course_uid)->first();
+
+        try {
+            // Use transaction to ensure data integrity
+            DB::transaction(function () use ($request, $preregistration) {
+                // Process optional products first
+                $this->processOptionalProducts($request, $preregistration);
+
+                // Save all changes including optionals
+                $preregistration->save();
+            });
+
+            // Handle payment redirect outside of transaction so registration is committed
+            return $this->handlePaymentRedirect($current_event, $preregistration, true);
+        } catch (\Exception $e) {
+            Log::error('Error in complete: ' . $e->getMessage());
+            return back()->withErrors(['error' => $e->getMessage()])->withInput();
+        }
+
+
     }
 
 
@@ -272,7 +426,7 @@ class RegistrationController extends Controller
 
         $viewData = [
             'countries' => Country::all()->sortByDesc("country_name_en"),
-            'years' => range(date('Y'), 1950),
+            'years' => range(date('Y'), 1945),
             'days' => $this->daysforSelect(),
             'months' => $this->monthsforSelect(),
             'registration' => $registration,
@@ -328,7 +482,7 @@ class RegistrationController extends Controller
             });
 
             // Handle payment redirect outside of transaction so registration is committed
-            return $this->handlePaymentRedirect($event, $registration);
+            return $this->handlePaymentRedirect($event, $registration, false);
         } catch (\Exception $e) {
             return back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
@@ -386,6 +540,77 @@ class RegistrationController extends Controller
             'year' => 'required|integer|between:1950,' . date('Y', strtotime('-10 year')),
             'month' => 'required|integer|between:1,12',
             'day' => 'required|integer|between:1,31'
+        ], $messages);
+    }
+
+    private function validateMsrReservationRequest(Request $request): array
+    {
+        // Convert string month to integer
+        if (isset($request['month'])) {
+            $request->merge(['month' => intval($request['month'])]);
+        }
+
+        $messages = [
+            'first_name.required' => 'First name is required',
+            'first_name.string' => 'First name must be text',
+            'first_name.max' => 'First name must not exceed 100 characters',
+            'last_name.required' => 'Last name is required',
+            'last_name.string' => 'Last name must be text',
+            'last_name.max' => 'Last name must not exceed 100 characters',
+            'email.required' => 'Email address is required',
+            'email.regex' => 'Please enter a valid email address',
+            'email-confirm.required' => 'Email confirmation is required',
+            'email-confirm.regex' => 'Please enter a valid confirmation email address',
+            'email-confirm.same' => 'Email confirmation must match email address',
+            'tel.required' => 'Mobile number is required',
+            'tel.string' => 'Mobile number must be text',
+            'tel.max' => 'Mobile number must not exceed 100 characters',
+            'street-address.required' => 'Street address is required',
+            'street-address.string' => 'Street address must be text',
+            'street-address.max' => 'Street address must not exceed 100 characters',
+            'postal-code.required' => 'Postal code is required',
+            'postal-code.string' => 'Postal code must be text',
+            'postal-code.max' => 'Postal code must not exceed 100 characters',
+            'city.required' => 'City is required',
+            'city.string' => 'City must be text',
+            'city.max' => 'City must not exceed 100 characters',
+            'country.required' => 'Please select a country',
+            'country.integer' => 'Please select a country from the list',
+            'country.exists' => 'Please select a valid country from the list',
+            'year.required' => 'Birth year is required',
+            'year.integer' => 'Please select a valid year',
+            'year.between' => 'Age must be at least 10 years old',
+            'month.required' => 'Birth month is required',
+            'month.integer' => 'Please select a valid month',
+            'month.between' => 'Month must be between 1 and 12',
+            'day.required' => 'Birth day is required',
+            'day.integer' => 'Please select a valid day',
+            'day.between' => 'Day must be between 1 and 31',
+            'gender.required' => 'Please select your gender',
+            'gender.string' => 'Gender must be a valid option',
+            'club.required' => 'Club name is required',
+            'club.string' => 'Club name must be text',
+            'club.max' => 'Club name must not exceed 100 characters',
+            'gdpr_consent.required' => 'You must consent to data processing to continue',
+            'gdpr_consent.accepted' => 'You must agree to the data processing terms'
+        ];
+
+        return $request->validate([
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'email' => 'required|regex:/(.+)@(.+)\.(.+)/i',
+            'email-confirm' => 'required|regex:/(.+)@(.+)\.(.+)/i|same:email',
+            'tel' => 'required|string|max:100',
+            'street-address' => 'required|string|max:100',
+            'postal-code' => 'required|string|max:100',
+            'city' => 'required|string|max:100',
+            'country' => 'required|integer|exists:countries,country_id',
+            'year' => 'required|integer|between:1950,' . date('Y', strtotime('-10 year')),
+            'month' => 'required|integer|between:1,12',
+            'day' => 'required|integer|between:1,31',
+            'gender' => 'required|string',
+            'club' => 'required|string|max:100',
+            'gdpr_consent' => 'required|accepted'
         ], $messages);
     }
 
@@ -586,6 +811,11 @@ class RegistrationController extends Controller
         $productIds = Product::pluck('productID')->toArray();
         $optionalFields = ['productID', 'dinner', 'medal', 'jersey'];
 
+        $opt = Optional::where('registration_uid', $registration->registration_uid)->get();
+        foreach ($opt as $o) {
+            $o->delete();
+        }
+
         foreach ($productIds as $productId) {
             $shouldAddOptional = false;
 
@@ -611,17 +841,29 @@ class RegistrationController extends Controller
         }
     }
 
-    private function handlePaymentRedirect(Event $event, Registration $registration): RedirectResponse
+    private function handlePaymentRedirect(Event $event, Registration $registration, bool $is_final_registration_on_event = false): RedirectResponse
     {
         $reg_product = Product::find(request()->input('save'));
         $use_stripe = $this->shouldUseStripe($event);
 
+
+
         if ($use_stripe) {
             $price_id = $this->getStripePrice($reg_product);
+
+
+            // If not in production, log a warning about using test Stripe price
+            if (!App::isProduction()) {
+
+                // mock stripe
+                Log::warning('Using test Stripe price for registration: ' . $registration->registration_uid);
+            }
+
             return to_route('checkout', [
                 "reg" => (string) $registration->registration_uid,
                 'price_id' => $price_id,
-                "event_type" => $event->event_type
+                "event_type" => $event->event_type,
+                'is_final_registration_on_event' => $is_final_registration_on_event
             ]);
         } else {
             event(new CompletedRegistrationSuccessEvent($registration));
@@ -665,4 +907,7 @@ class RegistrationController extends Controller
         }
         return false;
     }
+
+
+
 }

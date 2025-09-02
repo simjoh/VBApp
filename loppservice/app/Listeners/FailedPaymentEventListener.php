@@ -21,7 +21,7 @@ class FailedPaymentEventListener
     public function handle(FailedPaymentEvent $event): void
     {
         $registration = Registration::where('registration_uid', $event->registration_uid)->get()->first();
-        $current_event = Event::where('course_uid',$registration->course_uid)->get()->first();
+        $current_event = Event::where('event_uid',$registration->course_uid)->get()->first();
         if ($registration) {
             Log::debug("handle failed payment" . $registration->registration_uid);
             if (boolval($event->is_final_registration_on_event) == true) {
