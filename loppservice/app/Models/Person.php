@@ -23,12 +23,12 @@ class Person extends Model
 
     public function adress(): HasOne
     {
-        return $this->hasOne(Adress::class);
+        return $this->hasOne(Adress::class, 'person_person_uid', 'person_uid');
     }
 
     public function contactinformation(): HasOne
     {
-        return $this->hasOne(Contactinformation::class);
+        return $this->hasOne(Contactinformation::class, 'person_person_uid', 'person_uid');
     }
 
 

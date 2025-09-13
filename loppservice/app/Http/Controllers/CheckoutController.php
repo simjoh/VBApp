@@ -46,8 +46,8 @@ class CheckoutController extends Controller
                     array_push($line_items, array('price' => env('STRIPE_TEST_PRODUCT_JERSEY'), "quantity" => 1));
                 }
 
-                if ($product->categoryID == 2) {
-                    array_push($line_items, array('price' => 'price_1ORZvfLnAzN3QPcUjEIDAfvB', "quantity" => 1));
+                if ($product->categoryID == 2 && $product->productname == 'Buffet Dinner') {
+                    array_push($line_items, array('price' => 'price_1S3WroJLy5yXc4qVebfY11Pu', "quantity" => 1));
                 }
             }
         }

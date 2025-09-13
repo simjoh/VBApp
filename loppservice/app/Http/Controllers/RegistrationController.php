@@ -116,6 +116,7 @@ class RegistrationController extends Controller
 
 
         if ($reservationactive) {
+
             return view('registrations.msr_reserve')->with([
                 'showreservationbutton' => $reservationactive,
                 'countries' => Country::all()->sortBy("country_name_en"),
@@ -194,10 +195,12 @@ class RegistrationController extends Controller
             'years' => range(date('Y', strtotime('-18 year')), 1945),
             'registrationproduct' => $registration_product->productID,
             'genders' => $this->gendersEn(),
+            'registration' => $preregistration,
+            'person' => $preregistration->person,
             'isRegistrationOpen' => $isRegistrationOpen,
             'availabledetails' => $registrationConfig,
             'registration_uid' => $registration_uid,
-            'reservation_expired' => $reservationValidTo->addHours(12)
+            'reservation_expired' => $nowDate->gt($reservationValidTo->addHours(12))
         ]);
 
     }
@@ -287,13 +290,22 @@ class RegistrationController extends Controller
 
         $current_event = Event::where('event_uid', $preregistration->course_uid)->first();
 
+        // Validate the MSR complete request
+        $this->validateMsrCompleteRequest($request);
+
         try {
             // Use transaction to ensure data integrity
-            DB::transaction(function () use ($request, $preregistration) {
-                // Process optional products first
+            DB::transaction(function () use ($request, $preregistration, $current_event) {
+                // Update person data
+                $this->updatePersonDataFromRequest($request, $preregistration);
+
+                // Update registration data
+                $this->updateRegistrationDataFromRequest($request, $preregistration, $current_event);
+
+                // Process optional products
                 $this->processOptionalProducts($request, $preregistration);
 
-                // Save all changes including optionals
+                // Save all changes
                 $preregistration->save();
             });
 
@@ -303,8 +315,6 @@ class RegistrationController extends Controller
             Log::error('Error in complete: ' . $e->getMessage());
             return back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
-
-
     }
 
 
@@ -612,6 +622,120 @@ class RegistrationController extends Controller
             'club' => 'required|string|max:100',
             'gdpr_consent' => 'required|accepted'
         ], $messages);
+    }
+
+    private function validateMsrCompleteRequest(Request $request): array
+    {
+        $messages = [
+            'first_name.required' => 'First name is required',
+            'first_name.string' => 'First name must be text',
+            'first_name.max' => 'First name must not exceed 100 characters',
+            'last_name.required' => 'Last name is required',
+            'last_name.string' => 'Last name must be text',
+            'last_name.max' => 'Last name must not exceed 100 characters',
+            'email.required' => 'Email address is required',
+            'email.regex' => 'Please enter a valid email address',
+            'email-confirm.required' => 'Email confirmation is required',
+            'email-confirm.regex' => 'Please enter a valid email address',
+            'email-confirm.same' => 'Email addresses do not match',
+            'tel.required' => 'Mobile number is required',
+            'tel.string' => 'Mobile number must be text',
+            'tel.max' => 'Mobile number must not exceed 100 characters',
+            'street-address.required' => 'Street address is required',
+            'street-address.string' => 'Street address must be text',
+            'street-address.max' => 'Street address must not exceed 100 characters',
+            'postal-code.required' => 'Postal code is required',
+            'postal-code.string' => 'Postal code must be text',
+            'postal-code.max' => 'Postal code must not exceed 100 characters',
+            'city.required' => 'City is required',
+            'city.string' => 'City must be text',
+            'city.max' => 'City must not exceed 100 characters',
+            'country.required' => 'Please select your country',
+            'country.integer' => 'Please select a valid country',
+            'country.exists' => 'Please select a valid country from the list',
+            'year.required' => 'Birth year is required',
+            'year.integer' => 'Please select a valid year',
+            'year.between' => 'Age must be at least 10 years old',
+            'month.required' => 'Birth month is required',
+            'month.integer' => 'Please select a valid month',
+            'month.between' => 'Month must be between 1 and 12',
+            'day.required' => 'Birth day is required',
+            'day.integer' => 'Please select a valid day',
+            'day.between' => 'Day must be between 1 and 31',
+            'gender.required' => 'Please select your gender',
+            'gender.string' => 'Gender must be a valid option',
+            'club.required' => 'Club name is required',
+            'club.string' => 'Club name must be text',
+            'club.max' => 'Club name must not exceed 100 characters',
+            'gdpr_consent.required' => 'You must consent to data processing to continue',
+            'gdpr_consent.accepted' => 'You must agree to the data processing terms'
+        ];
+
+        return $request->validate([
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'email' => 'required|regex:/(.+)@(.+)\.(.+)/i',
+            'email-confirm' => 'required|regex:/(.+)@(.+)\.(.+)/i|same:email',
+            'tel' => 'required|string|max:100',
+            'street-address' => 'required|string|max:100',
+            'postal-code' => 'required|string|max:100',
+            'city' => 'required|string|max:100',
+            'country' => 'required|integer|exists:countries,country_id',
+            'year' => 'required|integer|between:1950,' . date('Y', strtotime('-10 year')),
+            'month' => 'required|integer|between:1,12',
+            'day' => 'required|integer|between:1,31',
+            'gender' => 'required|string',
+            'club' => 'required|string|max:100',
+            'gdpr_consent' => 'required|accepted'
+        ], $messages);
+    }
+
+    private function updatePersonDataFromRequest(Request $request, Registration $registration): void
+    {
+        $string_to_hash = strtolower($request['first_name']) . strtolower($request['last_name']) . strtolower($request['year'] . "-" . $request['month'] . "-" . $request['day']);
+
+        $person = $registration->person;
+        $person->checksum = $this->hashsumfor($string_to_hash);
+        $person->firstname = Str::ucfirst($request['first_name']);
+        $person->surname = Str::ucfirst($request['last_name']);
+        $person->gender = $request['gender'];
+        $person->birthdate = $request['year'] . "-" . str_pad($request['month'], 2, "0", STR_PAD_LEFT) . "-" . str_pad($request['day'], 2, "0", STR_PAD_LEFT);
+        $person->gdpr_approved = $request['gdpr_consent'] === 'on';
+
+        // Update address
+        $address = $person->adress;
+        if ($address) {
+            $address->adress = $request['street-address'];
+            $address->postal_code = $request['postal-code'];
+            $address->city = $request['city'];
+            $address->country_id = $request['country'];
+            $address->save();
+        }
+
+        // Update contact information
+        $contact = $person->contactinformation;
+        if ($contact) {
+            $contact->tel = $request['tel'];
+            $contact->email = $request['email']; // Fixed: now properly updates email
+            $contact->save();
+        }
+
+        $person->save();
+    }
+
+    private function updateRegistrationDataFromRequest(Request $request, Registration $registration, Event $event): void
+    {
+        $registration->additional_information = $request['extra-info'];
+
+        // Handle club assignment for MSR events
+        $this->handleMsrClubAssignment($request, $registration);
+
+        // Update use_physical_brevet_card field for BRM and BP events
+        if ($event && ($event->event_type === 'BRM' || $event->event_type === 'BP')) {
+            $registration->use_physical_brevet_card = $request->has('use_physical_brevet_card') && $request->input('use_physical_brevet_card') == '1';
+        }
+
+        $registration->save();
     }
 
     private function isRegistrationOpen(Event $event): bool

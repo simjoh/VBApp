@@ -63,7 +63,12 @@ class CompletedRegistrationSuccessEventListener
         $startlistlink = env("APP_URL") . '/public/startlist/event/' . $registration->course_uid . '/showall';
         $updatedetaillink = env("APP_URL") . '/public/events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/getregitration';
 
-        $dnslink = env("BREVET_APP_URL") . '/dns/participant/'. $registration->registration_uid;
+
+        if (App::isProduction()) {
+            $dnslink = env("BREVET_APP_URL") . '/dns/participant/' . $registration->registration_uid . '/setdns';
+        } else {
+            $dnslink = 'http://localhost:8090/api/dns/participant/' . $registration->registration_uid . '/setdns';
+        }
 
 
         if (!$registration->startnumber) {
