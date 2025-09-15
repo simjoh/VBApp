@@ -474,7 +474,9 @@
 		<tr style="height:22pt">
 			<td colspan="5"
 				style="width:227pt;padding-top: 5px">
-				<h2 style="padding-top: 10pt;ext-indent: 0pt;text-align: left;">MSR Jersey</h2>
+				@if(collect($optionals)->where('categoryID', 1)->count() > 0)
+				<h2 style="padding-top: 10pt;text-indent: 0pt;text-align: left;">MSR Jersey</h2>
+				@endif
 				@foreach ($optionals as $optional)
 				@if ($optional->categoryID === 1)
 				<p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">{{$optional->description}}</p>
