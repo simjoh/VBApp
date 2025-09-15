@@ -3,7 +3,7 @@
 <body class="bg-stone-100">
     <header class="bg-white py-4">
         <div class="container sm:p-1 mx-auto">
-            <img class="px-2" alt="MSR Logotyp" width="75%" height="800" src="{{ asset('logo2025.svg') }}" />
+            <img class="px-2" alt="MSR Logotyp" width="75%" height="800" src="{{ asset('logo2026.svg') }}" />
         </div>
     </header>
 
