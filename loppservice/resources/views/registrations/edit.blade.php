@@ -3,7 +3,7 @@
 @include('base')
 <header class="bg-white py-4">
 	<div class="container sm:p-1 mx-auto">
-		<img alt="msr logotyp" width="75%" height="800" src="{{ asset('logo2025.svg') }}"/>
+		<img alt="msr logotyp" width="75%" height="800" src="{{ asset('logo2026.svg') }}"/>
 	</div>
 </header>
 
