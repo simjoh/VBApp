@@ -1,8 +1,8 @@
-import {ChangeDetectionStrategy, Component, OnInit, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, OnDestroy, ChangeDetectorRef} from '@angular/core';
 import {ParticipantComponentService} from "../participant-component.service";
 import {map, startWith} from "rxjs/operators";
 import {ParticipantInformationRepresentation, ParticipantRepresentation, TrackRepresentation} from "../../../shared/api/api";
-import {BehaviorSubject, interval} from "rxjs";
+import {BehaviorSubject, interval, Subscription} from "rxjs";
 import {DialogService} from "primeng/dynamicdialog";
 import {EditTimeDialogComponent} from "../edit-time-dialog/edit-time-dialog.component";
 import {EditBrevenrDialogComponent} from "../edit-brevenr-dialog/edit-brevenr-dialog.component";
@@ -24,7 +24,7 @@ import { faTowerBroadcast } from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./participant-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ParticipantTableComponent implements OnInit {
+export class ParticipantTableComponent implements OnInit, OnDestroy {
 
   currentTrackRepresentation: TrackRepresentation;
 
@@ -44,7 +44,8 @@ export class ParticipantTableComponent implements OnInit {
 
   $dimmadnsbuttonSubject = new BehaviorSubject(true);
   $dimDns = this.$dimmadnsbuttonSubject.asObservable();
-  intervalSub: any;
+  intervalSub: Subscription;
+  private subscriptions: Subscription[] = [];
 
   faBroadcast = faTowerBroadcast;
 
@@ -67,10 +68,22 @@ export class ParticipantTableComponent implements OnInit {
     this.$serachDisabledSubject.next(true);
 
     // Subscribe to track representation changes
-    this.trackService.currentTrackRepresentation$.subscribe(track => {
-      this.currentTrackRepresentation = track;
-      this.cdr.detectChanges(); // Force change detection
-    });
+    this.subscriptions.push(
+      this.trackService.currentTrackRepresentation$.subscribe(track => {
+        this.currentTrackRepresentation = track;
+        this.cdr.detectChanges(); // Force change detection
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    // Clean up interval subscription
+    if (this.intervalSub) {
+      this.intervalSub.unsubscribe();
+    }
+    
+    // Clean up all other subscriptions
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   isPossibleToDelete(participant: ParticipantRepresentation) {

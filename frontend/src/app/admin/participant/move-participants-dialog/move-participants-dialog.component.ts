@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, Observable, combineLatest, of } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, of, Subscription } from 'rxjs';
 import { map, startWith, switchMap, tap } from 'rxjs/operators';
 import { MessageService } from 'primeng/api';
 import { HttpClient } from '@angular/common/http';
@@ -30,7 +30,7 @@ export interface MoveResult {
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ParticipantComponentService, TrackService, ParticipantService]
 })
-export class MoveParticipantsDialogComponent implements OnInit {
+export class MoveParticipantsDialogComponent implements OnInit, OnDestroy {
 
   moveForm: FormGroup;
   loading = false;
@@ -59,6 +59,7 @@ export class MoveParticipantsDialogComponent implements OnInit {
   showResolveButtons = false; // default to auto-resolve, hide buttons
   private autoResolvingBulk = false;
   private resolvingPerParticipant = new Set<string>();
+  private subscriptions: Subscription[] = [];
 
   constructor(
     public ref: DynamicDialogRef,
@@ -73,6 +74,11 @@ export class MoveParticipantsDialogComponent implements OnInit {
     this.dialogConfig = config.data;
     this.initializeForm();
     this.initializeObservables();
+  }
+
+  ngOnDestroy(): void {
+    // Clean up all subscriptions to prevent memory leaks
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   private async autoDiagnoseConflictsAfterBulk(fromUid: string, toUid: string): Promise<void> {
@@ -117,32 +123,40 @@ export class MoveParticipantsDialogComponent implements OnInit {
     console.log('Tracks observable:', this.$tracks);
 
     // Subscribe to participants observable for debugging
-    this.$participantsOnFromTrack.subscribe(participants => {
-      console.log('Participants loaded:', participants);
-      this.currentParticipants = participants;
-      if (participants.length > 0) {
-        console.log('First participant structure:', participants[0]);
-        console.log('First participant UID:', participants[0].participant?.participant_uid);
-      }
-    });
+    this.subscriptions.push(
+      this.$participantsOnFromTrack.subscribe(participants => {
+        console.log('Participants loaded:', participants);
+        this.currentParticipants = participants;
+        if (participants.length > 0) {
+          console.log('First participant structure:', participants[0]);
+          console.log('First participant UID:', participants[0].participant?.participant_uid);
+        }
+      })
+    );
 
     // Subscribe to selected participants observable for debugging
-    this.$selectedParticipants.subscribe(participants => {
-      console.log('Selected participants observable updated:', participants);
-    });
+    this.subscriptions.push(
+      this.$selectedParticipants.subscribe(participants => {
+        console.log('Selected participants observable updated:', participants);
+      })
+    );
 
     // Subscribe to can move observable for debugging
-    this.$canMove.subscribe(canMove => {
-      console.log('Can move:', canMove);
-      console.log('Selected participants count:', this.selectedParticipants.length);
-      console.log('Selected participants:', this.selectedParticipants);
-    });
+    this.subscriptions.push(
+      this.$canMove.subscribe(canMove => {
+        console.log('Can move:', canMove);
+        console.log('Selected participants count:', this.selectedParticipants.length);
+        console.log('Selected participants:', this.selectedParticipants);
+      })
+    );
 
     // Subscribe to form value changes for debugging
-    this.moveForm.valueChanges.subscribe(values => {
-      console.log('Form values:', values);
-      console.log('Form valid:', this.moveForm.valid);
-    });
+    this.subscriptions.push(
+      this.moveForm.valueChanges.subscribe(values => {
+        console.log('Form values:', values);
+        console.log('Form valid:', this.moveForm.valid);
+      })
+    );
   }
 
   private initializeForm(): void {
@@ -153,14 +167,18 @@ export class MoveParticipantsDialogComponent implements OnInit {
     });
 
     // Set up form value changes
-    this.moveForm.get('fromTrackUid')?.valueChanges.subscribe(trackUid => {
-      this.selectedFromTrackSubject.next(trackUid);
-      this.lastFromTrackUid = trackUid;
-    });
+    this.subscriptions.push(
+      this.moveForm.get('fromTrackUid')?.valueChanges.subscribe(trackUid => {
+        this.selectedFromTrackSubject.next(trackUid);
+        this.lastFromTrackUid = trackUid;
+      }) || new Subscription()
+    );
 
-    this.moveForm.get('toTrackUid')?.valueChanges.subscribe(trackUid => {
-      this.selectedToTrackSubject.next(trackUid);
-    });
+    this.subscriptions.push(
+      this.moveForm.get('toTrackUid')?.valueChanges.subscribe(trackUid => {
+        this.selectedToTrackSubject.next(trackUid);
+      }) || new Subscription()
+    );
   }
 
   private initializeObservables(): void {
