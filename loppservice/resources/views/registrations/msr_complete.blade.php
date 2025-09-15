@@ -33,7 +33,7 @@
         </div>
         @endif
 
-            @php
+<!--             @php
                 // Parse birthdate for the form dropdowns
                 $birthdate = $person->birthdate ?? '';
                 $birth_year = '';
@@ -55,7 +55,7 @@
                     $club = \App\Models\Club::where('club_uid', $registration->club_uid)->first();
                     $club_name = $club ? $club->name : '';
                 }
-            @endphp
+            @endphp -->
 
             <form method="post" action="{{url('registration.msrcomplete')}}" class="space-y-6">
                 @csrf

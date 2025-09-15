@@ -6,6 +6,8 @@ use App\Models\Event;
 use App\Models\Organizer;
 use App\Models\Person;
 use App\Models\Registration;
+use App\Models\Optional;
+use App\Services\VoucherService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Mail\Mailable;
@@ -27,9 +29,7 @@ class CompletedRegistrationEmail extends Mailable
     private Person $person;
     private Organizer $organizer;
     private string $dnslink;
-    /**
-     * Create a new message instance.
-     */
+
     public function __construct(Registration $registration, Collection $products, Event $event, string $club, string $country, string $startlistlink, string $updatelink, Person $person, Organizer $organizer, $dnslink)
     {
         $this->person = $person;
@@ -44,9 +44,6 @@ class CompletedRegistrationEmail extends Mailable
         $this->dnslink = $dnslink;
     }
 
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
@@ -54,23 +51,33 @@ class CompletedRegistrationEmail extends Mailable
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
+        // Assign voucher codes for products that need them
+        $voucherService = new VoucherService();
+        $productIds = $this->products->pluck('productID')->toArray();
+        $voucherCodes = $voucherService->assignVouchersForRegistration($this->registration, $productIds);
 
         return new Content(
             view: 'Mail.completedregistration-sucess-mail-template',
-            with: ['organizer' => $this->organizer->organization_name ,'country' => $this->country, 'club' => $this->club, 'startlistlink' => $this->startlistlink, 'registration' => $this->registration, 'adress' => $this->person->adress, 'contact' => $this->person->contactinformation, 'optionals' => $this->products, 'event' => $this->event, 'updatelink' => $this->updatelink, 'person' => $this->person, 'dnslink' => $this->dnslink],
+            with: [
+                'organizer' => $this->organizer->organization_name,
+                'country' => $this->country,
+                'club' => $this->club,
+                'startlistlink' => $this->startlistlink,
+                'registration' => $this->registration,
+                'adress' => $this->person->adress,
+                'contact' => $this->person->contactinformation,
+                'optionals' => $this->products,
+                'event' => $this->event,
+                'updatelink' => $this->updatelink,
+                'person' => $this->person,
+                'dnslink' => $this->dnslink,
+                'voucherCodes' => $voucherCodes
+            ],
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
     public function attachments(): array
     {
         return [];

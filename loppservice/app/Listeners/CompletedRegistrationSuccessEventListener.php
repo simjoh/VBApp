@@ -35,12 +35,11 @@ class CompletedRegistrationSuccessEventListener
     public function handle(CompletedRegistrationSuccessEvent $event): void
     {
         Log::debug("Handling: CompletedRegistrationSuccessEvent " . $event->registration->registration_uid);
-
+        $public_path = App::isProduction() ? '/public' : '';
         // sätt reservation till till false om man betalt och är klar
         $registration = Registration::where('registration_uid', $event->registration->registration_uid)->get()->first();
         $registration->reservation = false;
         $registration->reservation_valid_until = null;
-        Log::debug("Handling: CompletedRegistrationSuccessEvent " . $registration);
 
         if (!$registration->ref_nr) {
             $ref_nr = mt_rand(10000, 99999);
@@ -60,8 +59,11 @@ class CompletedRegistrationSuccessEventListener
 
         $organizer = Organizer::where('id', $event_event->organizer_id)->first();
 
-        $startlistlink = env("APP_URL") . '/public/startlist/event/' . $registration->course_uid . '/showall';
-        $updatedetaillink = env("APP_URL") . '/public/events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/getregitration';
+       /*  $startlistlink = env("APP_URL") . '/public/startlist/event/' . $registration->course_uid . '/showall';
+        $updatedetaillink = env("APP_URL") . '/public/events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/getregitration'; */
+
+        $startlistlink = env("APP_URL") . $public_path . '/startlist/event/' . $registration->course_uid . '/showall';
+        $updatedetaillink =  env("APP_URL") . $public_path . '/events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/getregitration';
 
 
         if (App::isProduction()) {

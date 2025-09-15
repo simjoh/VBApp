@@ -965,6 +965,46 @@ class RegistrationController extends Controller
         }
     }
 
+    /**
+     * Delete a registration and its related orders and optionals
+     */
+    public function delete(Request $request)
+    {
+        $registrationUid = $request->input('registration_uid');
+
+        if (!$registrationUid) {
+            return response()->json(['error' => 'Registration UID is required'], 400);
+        }
+
+        try {
+            DB::transaction(function () use ($registrationUid) {
+                // Find the registration
+                $registration = Registration::where('registration_uid', $registrationUid)->first();
+
+                if (!$registration) {
+                    throw new \Exception('Registration not found');
+                }
+
+                // Delete related optionals
+                Optional::where('registration_uid', $registrationUid)->delete();
+
+                // Delete related orders
+                DB::table('orders')->where('registration_uid', $registrationUid)->delete();
+
+                // Delete the registration
+                $registration->delete();
+            });
+
+            Log::info('Registration deleted successfully: ' . $registrationUid);
+            return response()->json(['message' => 'Registration deleted successfully'], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error deleting registration: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to delete registration: ' . $e->getMessage()], 500);
+        }
+    }
+
+
     private function handlePaymentRedirect(Event $event, Registration $registration, bool $is_final_registration_on_event = false): RedirectResponse
     {
         $reg_product = Product::find(request()->input('save'));

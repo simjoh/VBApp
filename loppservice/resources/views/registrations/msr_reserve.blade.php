@@ -33,14 +33,14 @@
         @endif
 
         <!-- Debug output -->
-        <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border: 1px solid #ccc;">
+<!--         <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border: 1px solid #ccc;">
             <strong>Debug Info:</strong><br>
             Event UID: {{ $availabledetails['event_uid'] ?? 'NOT SET' }}<br>
             Event Name: {{ $availabledetails['event_name'] ?? 'NOT SET' }}<br>
             Event Type: {{ $availabledetails['event_type'] ?? 'NOT SET' }}<br>
             Reservation Product: {{ $reservationproduct ?? 'NOT SET' }}<br>
             Full availabledetails: {{ print_r($availabledetails, true) }}
-        </div>
+        </div> -->
 
         <form method="post" action="{{url('registration.msrreserve')}}" class="space-y-6">
             @csrf

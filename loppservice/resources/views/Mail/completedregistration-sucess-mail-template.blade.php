@@ -477,9 +477,26 @@
 				<h2 style="padding-top: 10pt;ext-indent: 0pt;text-align: left;">MSR Jersey</h2>
 				@foreach ($optionals as $optional)
 				@if ($optional->categoryID === 1)
-				<p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">{{$optional->description}}</p><br>
-				<p class="s7" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">Your digital voucher will be sent in a separate
-					email.</p>
+				<p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">{{$optional->description}}</p>
+
+				@if(isset($voucherCodes[$optional->productID]))
+				<div style="background-color: #f8f9fa; border: 2px solid #007bff; border-radius: 8px; padding: 15px; margin: 10px 0;">
+					<p style="margin: 0; font-weight: bold; color: #007bff; font-size: 16px;">🎟️ Your Digital Voucher Code:</p>
+					<p style="margin: 5px 0; font-family: 'Courier New', monospace; font-size: 18px; font-weight: bold; color: #333; letter-spacing: 1px;">
+						{{ $voucherCodes[$optional->productID] }}
+					</p>
+					<p style="margin: 5px 0; font-size: 12px; color: #666;">
+						Use this code in the webshop when ordering your jersey.
+					</p>
+				</div>
+				@else
+				<div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 10px; margin: 10px 0;">
+					<p style="margin: 0; color: #856404; font-size: 14px;">
+						⚠️ No voucher code available at the moment. You will receive your voucher code via email once available.
+					</p>
+				</div>
+				@endif
+
 				@endif
 				@endforeach
 			</td>
