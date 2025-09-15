@@ -1,4 +1,4 @@
-import {Component, Injector, OnInit, OnDestroy} from '@angular/core';
+import {Component, Injector, OnInit, OnDestroy, ChangeDetectionStrategy} from '@angular/core';
 import {InititatedService} from "./core/inititated.service";
 import {ServiceLocator} from "./core/locator.service";
 import {AuthenticatedService} from "./core/auth/authenticated.service";
@@ -10,7 +10,8 @@ import {switchMap} from "rxjs/operators";
 @Component({
   selector: 'brevet-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent implements OnInit, OnDestroy{
   title = 'Västerbottenbrevet';

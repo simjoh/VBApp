@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { UserAdminComponentService } from "./user-admin-component.service";
 import { ConfirmationService, MessageService } from "primeng/api";
 import { Table } from 'primeng/table';
@@ -20,6 +20,7 @@ interface AdminUser extends User {
   selector: 'brevet-user-admin',
   templateUrl: './user-admin.component.html',
   styleUrls: ['./user-admin.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [UserAdminComponentService, ConfirmationService, MessageService, DialogService]
 })
 export class UserAdminComponent implements OnInit {
