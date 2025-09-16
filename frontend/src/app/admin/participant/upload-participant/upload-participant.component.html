@@ -1,14 +1,17 @@
-<div class="mt-4 col-12 lg:col-5 sm:col-12">
-  <h4>
-    Här kan du ladda upp deltagare med en csv fil
-    <span
-      class="pi pi-info-circle ml-2"
-      (click)="op.toggle($event)"
-      style="font-size: 1.2em; cursor: pointer; color: #1976d2;"
-      tabindex="0"
-    ></span>
-  </h4>
-</div>
+<div class="admin-card">
+  <div class="card-header">
+    <h3>
+      Ladda upp deltagare
+      <span
+        class="pi pi-info-circle ml-2"
+        (click)="op.toggle($event)"
+        style="font-size: 1.2em; cursor: pointer; color: #1976d2;"
+        tabindex="0"
+      ></span>
+    </h3>
+    <p>Här kan du ladda upp deltagare med en CSV-fil</p>
+  </div>
+  <div class="card-content">
 
 <p-overlayPanel #op>
   <div class="p-3">
@@ -177,6 +180,7 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 </div>
 

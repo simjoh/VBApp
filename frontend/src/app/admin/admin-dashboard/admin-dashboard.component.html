@@ -1,0 +1,229 @@
+<div class="admin-dashboard">
+  <ng-container *ngIf="stats$ | async as stats">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="page-header-content">
+        <div class="header-icon">
+          <i class="pi pi-chart-line"></i>
+        </div>
+        <div class="header-text">
+                    <h1>Admin Dashboard</h1>
+                    <p>Välkommen tillbaka! Här är din översikt</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card clickable" (click)="navigateTo('/admin/participant')">
+        <div class="stat-icon primary">
+          <i class="pi pi-users"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-value">{{stats.total | number}}</h3>
+                    <p class="stat-label">Totalt deltagare</p>
+          <div class="stat-details">
+            <span class="stat-change positive">Senaste 7 dagarna: {{stats.weeklyStats?.countparticipants}}</span>
+            <span class="stat-today">Idag: {{stats.dailyStats?.countparticipants}}</span>
+          </div>
+        </div>
+        <div class="stat-progress">
+          <div class="progress-bar" [style.width.%]="(stats.started / stats.total) * 100"></div>
+        </div>
+      </div>
+
+      <div class="stat-card clickable" (click)="navigateTo('/admin/banor')">
+        <div class="stat-icon success">
+          <i class="pi pi-map"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-value">{{stats.activeTracks}}</h3>
+          <p class="stat-label">Aktiva banor</p>
+          <span class="stat-change positive">Totalt: {{stats.totalTracks}} banor</span>
+        </div>
+        <div class="stat-actions">
+          <p-button icon="pi pi-plus" size="small" (onClick)="createNewTrack()"
+                    styleClass="p-button-text p-button-sm" pTooltip="Lägg till ny bana"></p-button>
+        </div>
+      </div>
+
+      <div class="stat-card clickable" (click)="navigateTo('/admin/eventadmin')">
+        <div class="stat-icon warning">
+          <i class="pi pi-calendar"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-value">{{stats.activeEvents}}</h3>
+          <p class="stat-label">Aktiva evenemang</p>
+          <span class="stat-change">Totalt: {{stats.totalEvents}} evenemang</span>
+        </div>
+        <div class="event-indicator">
+          <span>Aktiva evenemang körs</span>
+        </div>
+      </div>
+
+      <div class="stat-card clickable" (click)="navigateTo('/admin/participant')">
+        <div class="stat-icon" [class.danger]="stats.dnf > 0"
+             [class.success]="stats.dnf === 0">
+          <i class="pi pi-check-circle" *ngIf="stats.dnf === 0"></i>
+          <i class="pi pi-exclamation-triangle" *ngIf="stats.dnf > 0"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-value">{{stats.finished}}</h3>
+          <p class="stat-label">Slutförda</p>
+          <div class="stat-details">
+            <span class="stat-change" [class.negative]="stats.dnf > 0"
+                  [class.positive]="stats.dnf === 0">
+              DNF: {{stats.dnf}} | DNS: {{stats.dns}}
+            </span>
+            <span class="stat-today">Senaste 7 dagarna: {{stats.weeklyStats?.completed}}</span>
+            <span class="stat-year">Detta år: {{stats.yearlyStats?.completed}}</span>
+          </div>
+        </div>
+        <div class="health-indicator">
+          <div class="health-dot" [class.green]="stats.dnf === 0"
+               [class.red]="stats.dnf > 0"></div>
+        </div>
+      </div>
+
+      <!-- Registered Card -->
+      <div class="stat-card clickable" (click)="navigateTo('/admin/participant')">
+        <div class="stat-icon primary">
+          <i class="pi pi-users"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-value">{{stats.registered}}</h3>
+          <p class="stat-label">Registrerade</p>
+          <div class="stat-details">
+            <span class="stat-change">Senaste 7 dagarna: {{stats.weeklyStats?.countparticipants}}</span>
+            <span class="stat-today">Detta år: {{stats.yearlyStats?.countparticipants}}</span>
+          </div>
+        </div>
+        <div class="stat-actions">
+          <span class="activity-indicator">
+            <i class="pi pi-users"></i>
+            Totalt registrerade
+          </span>
+        </div>
+      </div>
+
+      <!-- DNS Card -->
+      <div class="stat-card clickable" (click)="navigateTo('/admin/participant')">
+        <div class="stat-icon danger">
+          <i class="pi pi-ban"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-value">{{stats.dns}}</h3>
+          <p class="stat-label">DNS</p>
+          <div class="stat-details">
+            <span class="stat-change">Senaste 7 dagarna: {{stats.weeklyStats?.dns}}</span>
+            <span class="stat-today">Detta år: {{stats.yearlyStats?.dns}}</span>
+          </div>
+        </div>
+        <div class="stat-actions">
+          <span class="activity-indicator">
+            <i class="pi pi-ban"></i>
+            Did not start
+          </span>
+        </div>
+      </div>
+
+      <!-- Latest Registration Card -->
+      <div class="stat-card clickable" (click)="navigateToLatestRegistration()">
+        <div class="stat-icon primary">
+          <i class="pi pi-user-plus"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-value" *ngIf="stats.latestRegistration; else noRegValue">1</h3>
+          <ng-template #noRegValue>
+            <h3 class="stat-value">0</h3>
+          </ng-template>
+          <p class="stat-label">Senaste registrering</p>
+          <div class="stat-details" *ngIf="stats.latestRegistration">
+            <span class="stat-change">{{stats.latestRegistration.name}}</span>
+            <span class="stat-today">{{stats.latestRegistration.club}}</span>
+            <span class="stat-track">{{stats.latestRegistration.track}}</span>
+          </div>
+          <div class="stat-details" *ngIf="!stats.latestRegistration">
+            <span class="stat-change">Inga registreringar än</span>
+          </div>
+        </div>
+        <div class="stat-actions">
+          <span class="activity-indicator">
+            <i class="pi pi-user-plus"></i>
+            Ny registrering
+          </span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Dashboard Grid -->
+    <div class="dashboard-grid">
+      <!-- Top Tracks -->
+      <div class="admin-card top-tracks-card">
+        <div class="card-header">
+                    <h3>Toppresterande banor</h3>
+                    <p>Mest populära banor (Senaste 30 dagarna)</p>
+        </div>
+        <div class="card-content">
+          <div class="tracks-list" *ngIf="stats.topTracks.length > 0; else noTracks">
+            <div class="track-item" *ngFor="let track of stats.topTracks; let i = index">
+              <div class="track-rank">{{i + 1}}</div>
+              <div class="track-info">
+                <span class="track-name">{{track.track_name}}</span>
+                <div class="track-details">
+                  <span class="track-organizer">{{track.organizer_name || 'No organizer'}}</span>
+                  <span class="track-dates">
+                    {{track.first_registration | date:'d MMM'}} - {{track.last_registration | date:'d MMM yyyy'}}
+                  </span>
+                </div>
+              </div>
+              <div class="track-stats">
+                        <span class="participant-count">{{track.participant_count}} deltagare</span>
+              </div>
+            </div>
+          </div>
+          <ng-template #noTracks>
+            <div class="no-tracks">
+              <i class="pi pi-info-circle"></i>
+                <p>Inga banor med deltagare de senaste 30 dagarna</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Today's Tracks -->
+      <div class="admin-card todays-tracks-card">
+        <div class="card-header">
+                    <h3>Dagens banor</h3>
+                    <p>Banor som körs idag</p>
+        </div>
+        <div class="card-content">
+          <div class="tracks-list" *ngIf="getTodaysTracks().length > 0; else noTodaysTracks">
+            <div class="track-item" *ngFor="let track of getTodaysTracks(); let i = index">
+              <div class="track-rank">{{i + 1}}</div>
+              <div class="track-info">
+                <span class="track-name">{{track.title}}</span>
+                <div class="track-details">
+                  <span class="track-distance">{{track.distance}} km</span>
+                  <span class="track-date">{{track.start_date_time | date:'short'}}</span>
+                </div>
+              </div>
+              <div class="track-stats">
+                        <span class="track-height">{{track.heightdifference}}m höjdskillnad</span>
+              </div>
+            </div>
+          </div>
+          <ng-template #noTodaysTracks>
+            <div class="empty-state">
+              <i class="pi pi-map text-400" style="font-size: 2rem"></i>
+                <p class="text-500 m-0 mt-2">Inga banor körs idag</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+    </div>
+
+  </ng-container>
+</div>

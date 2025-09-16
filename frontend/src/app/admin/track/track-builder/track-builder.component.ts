@@ -1,9 +1,10 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import {TrackBuilderComponentService} from "./track-builder-component.service";
 import {RusaTimeCalculationApiService} from "./rusa-time-calculation-api.service";
 import {RusaTimeAssemblerService} from "./rusa-time-assembler.service";
-import {Router} from "@angular/router";
-import {BehaviorSubject} from "rxjs";
+import {Router, ActivatedRoute, NavigationEnd} from "@angular/router";
+import {BehaviorSubject, Subscription} from "rxjs";
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'brevet-track-builder',
@@ -12,7 +13,7 @@ import {BehaviorSubject} from "rxjs";
   providers: [TrackBuilderComponentService,RusaTimeAssemblerService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TrackBuilderComponent implements OnInit {
+export class TrackBuilderComponent implements OnInit, OnDestroy {
 
   items = [];
   testa$ = this.test.aktuell;
@@ -21,10 +22,34 @@ export class TrackBuilderComponent implements OnInit {
   editModeSubject = new BehaviorSubject<boolean>(false);
   editMode$ = this.editModeSubject.asObservable();
 
+  currentMode: 'create' | 'gpx' | 'copy' = 'create';
+  private routerSubscription: Subscription;
 
-  constructor(private test: TrackBuilderComponentService,private router: Router) { }
+  constructor(
+    private test: TrackBuilderComponentService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit(): void {
+    // Check for mode parameter in URL
+    this.route.queryParams.subscribe(params => {
+      const mode = params['mode'];
+      if (mode === 'gpx') {
+        // Show coming soon alert and go back
+        alert('Denna funktion kommer snart!');
+        this.router.navigate(['/admin/banor']);
+        return;
+      } else if (mode === 'copy') {
+        // Show coming soon alert and go back
+        alert('Denna funktion kommer snart!');
+        this.router.navigate(['/admin/banor']);
+        return;
+      } else {
+        this.currentMode = 'create';
+        this.editModeSubject.next(true); // Go directly to form for create
+      }
+    });
 
     this.items = [
       {label: 'Step 1'},
@@ -34,8 +59,26 @@ export class TrackBuilderComponent implements OnInit {
      // this.test.read();
   }
 
-  setMode() {
-    // this.router.navigate(['/admin/clubadmin'])
-    this.editModeSubject.next(!this.editModeSubject.value)
+  ngOnDestroy(): void {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
+  }
+
+  setMode(mode: 'create' | 'gpx' | 'copy') {
+    this.currentMode = mode;
+    if (mode === 'gpx' || mode === 'copy') {
+      // Show coming soon message for these modes
+      alert('Denna funktion kommer snart!');
+      return;
+    }
+    if (mode === 'create') {
+      this.editModeSubject.next(true);
+    }
+  }
+
+  goBack() {
+    this.editModeSubject.next(false);
+    this.currentMode = 'create';
   }
 }

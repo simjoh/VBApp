@@ -3,11 +3,126 @@
     <main id="main" role="main" class="flex-shrink-0 mb-0">
 <!--      Lägg in topbanner med info om vem som är inloggad språkval samt logga ut länk-->
 <!--      <brevet-menu></brevet-menu>-->
-      <div class="container-fluid pr-0 pl-0">
-      <brevet-menu></brevet-menu>
+      <!-- Admin Header - Only for Competitors -->
+      <div class="admin-header" *ngIf="!(isAdminUser$ | async)">
+        <brevet-menu></brevet-menu>
       </div>
-      <div class="container-fluid  pt-4 justify-content-center">
-        <router-outlet></router-outlet>
+
+      <!-- Admin Layout -->
+      <div class="admin-layout" [class.competitor-layout]="!(isAdminUser$ | async)">
+        <!-- Sidebar Navigation - Only for Admin Users -->
+        <div class="admin-sidebar" *ngIf="isAdminUser$ | async">
+          <div class="sidebar-content">
+            <div class="sidebar-header">
+              <img src="./assets/ebrevet-prod.svg" height="50" width="60" class="sidebar-logo" alt="Ebrevet logotyp">
+              <h3>Admin Panel</h3>
+            </div>
+            <nav class="sidebar-nav">
+                  <a routerLink="/admin/brevet-admin-start" routerLinkActive="active" class="nav-item">
+                    <i class="pi pi-home"></i>
+                    <span>Översikt</span>
+                  </a>
+              <div class="nav-group">
+                <div class="nav-group-header">
+                  <i class="pi pi-users"></i>
+                  <span>Deltagare</span>
+                </div>
+                <div class="nav-group-items">
+                  <a routerLink="/admin/participant" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
+                    <i class="pi pi-list"></i>
+                    <span>Deltagarlista</span>
+                  </a>
+                  <a routerLink="/admin/participant/brevet-participant-upload" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
+                    <i class="pi pi-upload"></i>
+                    <span>Ladda upp deltagare</span>
+                  </a>
+                </div>
+              </div>
+              <div class="nav-group">
+                <div class="nav-group-header">
+                  <i class="pi pi-map"></i>
+                  <span>Banor</span>
+                </div>
+                <div class="nav-group-items">
+                  <a routerLink="/admin/banor" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
+                    <i class="pi pi-list"></i>
+                    <span>Banalista</span>
+                  </a>
+                  <a routerLink="/admin/banor/brevet-track-builder" [queryParams]="{mode: 'create'}" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
+                    <i class="pi pi-plus-circle"></i>
+                    <span>Skapa nytt arrangemang</span>
+                  </a>
+                  <a routerLink="/admin/banor/brevet-track-builder" [queryParams]="{mode: 'gpx'}" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item coming-soon">
+                    <i class="pi pi-file"></i>
+                    <span>GPX Import</span>
+                    <span class="coming-soon-badge">Kommer snart</span>
+                  </a>
+                  <a routerLink="/admin/banor/brevet-track-builder" [queryParams]="{mode: 'copy'}" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item coming-soon">
+                    <i class="pi pi-copy"></i>
+                    <span>Kopiera bana</span>
+                    <span class="coming-soon-badge">Kommer snart</span>
+                  </a>
+                </div>
+              </div>
+                  <div class="nav-group">
+                    <div class="nav-group-header">
+                      <i class="pi pi-file-pdf"></i>
+                      <span>Rapportera</span>
+                    </div>
+                    <div class="nav-group-items">
+                      <a routerLink="/admin/acp-rapport" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
+                        <i class="pi pi-file-export"></i>
+                        <span>Rapport till ACP</span>
+                      </a>
+                    </div>
+                  </div>
+
+                  <div class="nav-group">
+                    <div class="nav-group-header">
+                      <i class="pi pi-cog"></i>
+                      <span>System</span>
+                    </div>
+                    <div class="nav-group-items">
+                      <a routerLink="/admin/useradmin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
+                        <i class="pi pi-user"></i>
+                        <span>Användare</span>
+                      </a>
+                      <a routerLink="/admin/eventadmin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
+                        <i class="pi pi-calendar"></i>
+                        <span>Evenemang</span>
+                      </a>
+                      <a routerLink="/admin/clubadmin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
+                        <i class="pi pi-shield"></i>
+                        <span>Klubbar</span>
+                      </a>
+                      <a routerLink="/admin/organizeradmin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
+                        <i class="pi pi-users"></i>
+                        <span>Arrangörer</span>
+                      </a>
+                      <a routerLink="/admin/siteadmin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
+                        <i class="pi pi-map-marker"></i>
+                        <span>Kontrollpunkter</span>
+                      </a>
+                    </div>
+                  </div>
+
+              <!-- Logout Section -->
+              <div class="sidebar-footer">
+                <button (click)="logout()" class="logout-button">
+                  <i class="pi pi-sign-out"></i>
+                  <span>Logga ut</span>
+                </button>
+              </div>
+            </nav>
+          </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="admin-main" [class.full-width]="!(isAdminUser$ | async)">
+          <div class="admin-content">
+            <router-outlet></router-outlet>
+          </div>
+        </div>
       </div>
     </main>
   </ng-container>

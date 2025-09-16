@@ -1,71 +1,94 @@
-<div class="card">
-  <p-table
-    #dt
-    [value]="$eventsandtrack | async"
-    dataKey="event.title"
-    [tableStyle]="{'min-width': '60rem', 'width': '100%'}"
-    styleClass="p-datatable-sm"
-    [rowHover]="true"
-    [rows]="10"
-    [showCurrentPageReport]="true"
-    [loading]="false"
-    [scrollable]="true"
-    scrollHeight="flex">
-    <ng-template pTemplate="caption">
-      <div class="flex justify-content-between align-items-center px-3">
-        <div class="flex align-items-center gap-2">
-          <span class="p-input-icon-left">
-            <i class="pi pi-search"></i>
-            <input
-              pInputText
-              #filter
-              (input)="dt.filterGlobal($event.target.value, 'contains')"
-              placeholder="Sök banor..."
-              class="p-inputtext-sm"/>
-          </span>
-        </div>
-      </div>
-    </ng-template>
+<div class="admin-card">
+  <div class="card-header">
+    <h3>Banlista</h3>
+    <p>Hantera och visa alla banor</p>
+  </div>
+  <div class="card-content">
+    <p-table
+        #dt
+        [value]="$eventsandtrack | async"
+        dataKey="event.title"
+        [tableStyle]="{'width': '100%'}"
+        styleClass="p-datatable-sm p-datatable-responsive"
+        [rowHover]="true"
+        [rows]="10"
+        [showCurrentPageReport]="true"
+        [loading]="false"
+        [scrollable]="true"
+        scrollHeight="flex"
+        responsiveLayout="scroll"
+        breakpoint="960px">
+        <ng-template pTemplate="caption">
+          <div class="flex justify-content-between align-items-center px-3">
+            <div class="flex align-items-center gap-2">
+              <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input
+                  pInputText
+                  #filter
+                  (input)="dt.filterGlobal($event.target.value, 'contains')"
+                  placeholder="Sök banor..."
+                  class="p-inputtext-sm"/>
+              </span>
+            </div>
+            <div class="flex align-items-center gap-2">
+              <button
+                pButton
+                pRipple
+                label="Banbyggare"
+                icon="pi pi-map"
+                class="p-button-primary p-button-sm"
+                (click)="navigateToBuilder()"
+                pTooltip="Öppna banbyggare"
+                tooltipPosition="top">
+              </button>
+            </div>
+          </div>
+        </ng-template>
 
     <ng-template pTemplate="header">
       <tr>
-        <th style="width: 4rem">
-          <div class="flex align-items-center">
+        <th style="width: 3rem" class="text-center">
+          <div class="flex align-items-center justify-content-center">
             <span></span>
           </div>
         </th>
-        <th style="width: 25%">
+        <th style="min-width: 180px" class="event-column">
           <div class="flex align-items-center gap-2">
             <span>Event</span>
             <p-sortIcon field="event.title"></p-sortIcon>
           </div>
         </th>
-        <th style="width: 15%">
+        <th style="min-width: 120px" class="date-column">
           <div class="flex align-items-center gap-2">
-            <span>Startdatum</span>
+            <span class="d-none d-lg-inline">Startdatum</span>
+            <span class="d-lg-none">Start</span>
             <p-sortIcon field="event.startdate"></p-sortIcon>
           </div>
         </th>
-        <th style="width: 15%">
+        <th style="min-width: 120px" class="date-column">
           <div class="flex align-items-center gap-2">
-            <span>Slutdatum</span>
+            <span class="d-none d-lg-inline">Slutdatum</span>
+            <span class="d-lg-none">Slut</span>
             <p-sortIcon field="event.enddate"></p-sortIcon>
           </div>
         </th>
-        <th style="width: 10%">
+        <th style="min-width: 100px" class="status-column">
           <div class="flex align-items-center gap-2">
             <span>Status</span>
             <p-sortIcon field="event.status"></p-sortIcon>
           </div>
         </th>
-        <th style="width: 20%">
+        <th style="min-width: 140px" class="link-column">
           <div class="flex align-items-center">
-            <span>Länk till trackingsida</span>
+            <span class="d-none d-lg-inline">Länk till trackingsida</span>
+            <span class="d-lg-none">Tracking</span>
           </div>
         </th>
-        <th style="width: 11%">
+        <th style="width: 80px" class="action-column">
           <div class="flex align-items-center justify-content-center">
-            <span>Åtgärd</span>
+            <span class="d-none d-md-inline">Åtgärd</span>
+            <span class="d-md-none"></span>
           </div>
         </th>
       </tr>
@@ -159,7 +182,5 @@
       </tr>
     </ng-template>
   </p-table>
+  </div>
 </div>
-
-
-

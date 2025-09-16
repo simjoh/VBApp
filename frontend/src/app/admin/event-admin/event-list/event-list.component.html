@@ -1,11 +1,12 @@
-<div class="card">
-  <ng-container *ngIf="events$ | async as events">
+<ng-container *ngIf="events$ | async as events">
     <p-table
       #dt
       [value]="events"
       dataKey="id"
-      [tableStyle]="{'min-width': '60rem', 'width': '100%'}"
-      styleClass="p-datatable-sm"
+      [tableStyle]="{'width': '100%'}"
+      styleClass="p-datatable-sm p-datatable-responsive modern-table"
+      responsiveLayout="scroll"
+      breakpoint="960px"
       [rowHover]="true"
       [scrollable]="true"
       scrollHeight="flex"
@@ -31,6 +32,15 @@
               icon="pi pi-plus"
               class="p-button-success p-button-sm"
               (click)="openNew()">
+            </button>
+            <button
+              pButton
+              pRipple
+              icon="pi pi-refresh"
+              class="p-button-text p-button-rounded p-button-sm"
+              (click)="dt.reset()"
+              pTooltip="Uppdatera"
+              tooltipPosition="top">
             </button>
           </div>
         </div>
@@ -120,7 +130,6 @@
     </p-table>
     <p-confirmDialog [style]="{width: '450px'}" [baseZIndex]="10000"></p-confirmDialog>
   </ng-container>
-</div>
 
 <style>
 .status-tag {

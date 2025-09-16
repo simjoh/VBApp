@@ -1,58 +1,150 @@
+.admin-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--surface-border);
+  margin-bottom: 1.5rem;
+
+  .card-header {
+    padding: 1.5rem 1.5rem 0 1.5rem;
+    border-bottom: 1px solid var(--surface-border);
+    margin-bottom: 1rem;
+
+    h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    p {
+      margin: 0 0 1rem 0;
+      color: var(--text-color-secondary);
+      font-size: 0.9rem;
+    }
+  }
+
+  .card-content {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+  }
+}
+
 :host {
     display: block;
     width: 100%;
+    max-width: 100%;
+    overflow: hidden;
 
     ::ng-deep {
-        .card {
-            padding: 0;
-            margin-bottom: 0;
-            border-radius: 6px;
-            background: var(--surface-card);
-            border: 1px solid var(--surface-border);
-        }
 
         .p-datatable {
+            width: 100%;
+            table-layout: auto;
+            border-radius: 12px;
+            background: var(--surface-card);
+            border: 1px solid var(--surface-border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+
             .p-datatable-wrapper {
                 border-radius: 6px;
-                overflow: hidden;
+                overflow-x: auto;
+                overflow-y: hidden;
+                max-width: 100%;
+            }
+
+            // Responsive table styles
+            &.p-datatable-responsive {
+                .p-datatable-wrapper {
+                    overflow-x: auto;
+                }
             }
 
             // Header styles
             .p-datatable-thead > tr > th {
-                background: var(--surface-ground) !important;
-                color: var(--text-color-secondary) !important;
-                font-weight: 600;
-                padding: 0.75rem 1rem;
-                font-size: 0.875rem;
+                background: linear-gradient(135deg, var(--surface-50) 0%, var(--surface-100) 100%) !important;
+                color: var(--text-color) !important;
+                font-weight: 700;
+                padding: 1rem 0.75rem;
+                font-size: 0.9rem;
                 text-transform: uppercase;
-                letter-spacing: 0.5px;
+                letter-spacing: 0.8px;
                 border: none;
-                border-bottom: 1px solid var(--surface-border);
+                border-bottom: 2px solid var(--primary-200);
                 white-space: nowrap;
+                position: relative;
 
                 .flex {
                     min-height: 1.5rem;
+                }
+
+                // Column-specific styles
+                &.event-column {
+                    max-width: 200px;
+                    white-space: normal;
+                    word-wrap: break-word;
+                }
+
+                &.date-column {
+                    text-align: center;
+                }
+
+                &.status-column {
+                    text-align: center;
+                }
+
+                &.link-column {
+                    max-width: 150px;
+                    white-space: normal;
+                }
+
+                &.action-column {
+                    text-align: center;
+                    min-width: 80px;
                 }
             }
 
             // Body styles
             .p-datatable-tbody > tr {
                 background: var(--surface-card);
-                transition: background-color 0.2s;
+                transition: background-color 0.2s ease;
 
                 &:hover {
                     background: var(--surface-hover);
                 }
 
                 > td {
-                    padding: 0.75rem 1rem;
+                    padding: 1rem 0.75rem;
                     border: none;
                     border-bottom: 1px solid var(--surface-border);
                     color: var(--text-color);
                     vertical-align: middle;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    transition: all 0.2s ease;
 
                     .font-medium {
                         color: var(--text-color);
+                        font-weight: 500;
+                    }
+
+                    // Ensure icons and text are properly aligned
+                    .flex {
+                        gap: 0.5rem;
+                        align-items: center;
+                    }
+
+                    // Center content in specific columns
+                    &:first-child {
+                        text-align: center;
+                    }
+
+                    &:nth-child(3), &:nth-child(4), &:nth-child(5) { // Date and status columns
+                        text-align: center;
+                    }
+
+                    &:last-child { // Action column
+                        text-align: center;
                     }
 
                     // Expanded row content
@@ -139,12 +231,23 @@
         .p-input-icon-left {
             > .p-inputtext {
                 padding-left: 2.5rem;
-                min-width: 240px;
+                min-width: 280px;
+                border-radius: 8px;
+                border: 2px solid var(--surface-border);
+                transition: all 0.2s ease;
+                font-size: 0.9rem;
+
+                &:focus {
+                    border-color: var(--primary-color);
+                    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+                    outline: none;
+                }
             }
 
             > i {
                 left: 0.75rem;
-                color: var(--text-color-secondary);
+                color: var(--primary-color);
+                font-size: 1rem;
             }
         }
     }
@@ -156,6 +259,108 @@
             color: #9ca3af !important;
             opacity: 0.5 !important;
             cursor: not-allowed !important;
+        }
+    }
+
+    // Responsive breakpoints
+    @media (max-width: 1200px) {
+        .p-datatable .p-datatable-thead > tr > th {
+            padding: 0.5rem 0.25rem;
+            font-size: 0.8rem;
+        }
+
+        .p-datatable .p-datatable-tbody > tr > td {
+            padding: 0.5rem 0.25rem;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .p-datatable .p-datatable-thead > tr > th {
+            padding: 0.5rem 0.2rem;
+            font-size: 0.75rem;
+        }
+
+        .p-datatable .p-datatable-tbody > tr > td {
+            padding: 0.5rem 0.2rem;
+            font-size: 0.85rem;
+        }
+
+        .p-input-icon-left > .p-inputtext {
+            min-width: 180px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .p-datatable {
+            border-radius: 0 !important;
+            border-left: none !important;
+            border-right: none !important;
+        }
+
+        .p-datatable .p-datatable-thead > tr > th {
+            padding: 0.4rem 0.15rem;
+            font-size: 0.7rem;
+        }
+
+        .p-datatable .p-datatable-tbody > tr > td {
+            padding: 0.4rem 0.15rem;
+            font-size: 0.8rem;
+
+            .flex {
+                gap: 0.25rem;
+            }
+
+            .pi {
+                font-size: 0.9rem;
+            }
+        }
+
+        .p-input-icon-left > .p-inputtext {
+            min-width: 150px;
+        }
+
+        .p-tag {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.65rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .p-datatable .p-datatable-header {
+            padding: 0.5rem;
+        }
+
+        .p-datatable .p-datatable-thead > tr > th {
+            padding: 0.3rem 0.1rem;
+            font-size: 0.65rem;
+        }
+
+        .p-datatable .p-datatable-tbody > tr > td {
+            padding: 0.3rem 0.1rem;
+            font-size: 0.75rem;
+
+            .pi {
+                font-size: 0.8rem;
+            }
+        }
+
+        .p-input-icon-left > .p-inputtext {
+            min-width: 120px;
+            font-size: 0.85rem;
+        }
+
+        .p-button.p-button-sm {
+            padding: 0.3rem 0.5rem;
+            font-size: 0.75rem;
+
+            &.p-button-icon-only {
+                width: 1.8rem;
+                height: 1.8rem;
+            }
+
+            .pi {
+                font-size: 0.8rem;
+            }
         }
     }
 }

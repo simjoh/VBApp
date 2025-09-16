@@ -1,7 +1,8 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
+import {Router, ActivatedRoute} from '@angular/router';
 import {MenuItem} from 'primeng/api';
 import {ParticipantComponentService} from "../participant-component.service";
+import {TrackService} from '../../../shared/track-service';
 import {PageHeaderConfig} from '../../../shared/components/page-header/page-header.component';
 import {ActionCardConfig} from '../../../shared/components/action-card/action-card.component';
 
@@ -39,7 +40,9 @@ export class ParticipantComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private participantService: ParticipantComponentService
+    private route: ActivatedRoute,
+    private participantService: ParticipantComponentService,
+    private trackService: TrackService
   ) { }
 
   ngOnInit(): void {
@@ -52,6 +55,21 @@ export class ParticipantComponent implements OnInit {
     ] as MenuItem[];
 
     this.updateActionCardsActiveState();
+
+    // Check for track query parameter
+    this.route.queryParams.subscribe(params => {
+      console.log('Participant component received query params:', params);
+      if (params['track']) {
+        console.log('Setting track in track service:', params['track']);
+        // Set the track in the track service (this is what the participant service listens to)
+        this.trackService.currentTrack(params['track']);
+        // Navigate to the list view to show the filtered participants
+        this.router.navigate(['/admin/participant/brevet-participant-list'], {
+          queryParams: { track: params['track'] },
+          replaceUrl: true
+        });
+      }
+    });
   }
 
   navigateToTab(tab: string): void {

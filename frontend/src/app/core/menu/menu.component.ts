@@ -22,12 +22,20 @@ export class MenuComponent implements OnInit{
 
   items: MenuItem[] = [];
 
+  // Check if user is admin
+  isAdminUser = false;
+
   $activeUser = this.menucomponentService.$activeuser.pipe(
     map(user =>{
+      // Check if user is admin
+      this.isAdminUser = user.roles.includes("ADMIN") || user.roles.includes("SUPERUSER");
 
+      // Clear items for non-admin users
+      if (!this.isAdminUser) {
+        this.items = [];
+      }
 
-
-      if (user.roles.includes("ADMIN") || user.roles.includes("SUPERUSER")) {
+      if (this.isAdminUser) {
 
         if (!this.items.some(item => item.label === 'Start')) {
           this.items.push({

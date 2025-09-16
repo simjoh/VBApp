@@ -4,6 +4,8 @@ import {AdminComponent} from "./admin.component";
 import {AuthenticatedGuard} from "../core/auth/authenticated.guard";
 import {AdminStartComponent} from "./admin-start/admin-start.component";
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
+import { AcpRapportComponent } from './acp-rapport/acp-rapport.component';
 
 const routes: Routes = [{
   path: 'admin',
@@ -42,8 +44,9 @@ const routes: Routes = [{
       path: 'organizeradmin',
       loadChildren: () => import('./organizer-admin/organizer-admin.module').then(m => m.OrganizerAdminModule),
     },
-    { path: 'brevet-admin-start', component: AdminStartComponent },
-    { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+    { path: 'acp-rapport', component: AcpRapportComponent },
+    { path: 'brevet-admin-start', component: AdminDashboardComponent },
+    { path: '', redirectTo: 'brevet-admin-start', pathMatch: 'full' }
   ]
 }
 ];

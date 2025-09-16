@@ -1,29 +1,60 @@
 
 
-<div class="login-form" >
-  <form name="form" #form="ngForm"  *ngIf="loginModel$ | async as model" (ngSubmit)="login()" >
-	  <div class="text-center sm:text-center lg:text-center text-xs mb-1">Certifierad av Audax Club Parisien</div>
-	  <div class="text-center sm:text-center lg:text-center text-xs mb-2">DIGITALT BREVET-KORT MED GPS VALIDERING</div>
-    <brevet-logo  [heigth]="320" [width]="320"></brevet-logo>
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="certification-text">
+        <div class="certification-main">Certifierad av Audax Club Parisien</div>
+        <div class="certification-sub">DIGITALT BREVET-KORT MED GPS VALIDERING</div>
+      </div>
+      <div class="logo-container">
+        <brevet-logo [heigth]="280" [width]="280"></brevet-logo>
+      </div>
+    </div>
 
-<br>
-    <div class="form-group">
-		<div *ngIf="!prod" class="text-center sm:text-center lg:text-center text-xs mb-2"></div>
-      <input type="text" class="form-control" placeholder="Username"  name="usernam"  [(ngModel)]="model.username" required>
-    </div>
-    <div class="form-group mt-2">
-      <input type="password" class="form-control" placeholder="Password" name="password" [(ngModel)]="model.password" required>
-    </div>
-    <div class="form-group">
-		<button class="btn btn-primary btn-block mb-2 mt-2" label="Sign in" [disabled]="!form.valid">Sign in</button>
-		<div *ngIf="loginerror$ | async as error">
-			<div class="alert alert-primary" role="alert">
-				{{error.meddelande.data}}
-			</div>
+    <form name="form" #form="ngForm" *ngIf="loginModel$ | async as model" (ngSubmit)="login()" class="login-form">
+      <div class="form-group">
+        <div class="input-container">
+          <i class="pi pi-user input-icon"></i>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Användarnamn"
+            name="username"
+            [(ngModel)]="model.username"
+            required>
+        </div>
+      </div>
 
-		</div>
-    </div>
-  </form>
+      <div class="form-group">
+        <div class="input-container">
+          <i class="pi pi-lock input-icon"></i>
+          <input
+            type="password"
+            class="form-control"
+            placeholder="Lösenord"
+            name="password"
+            [(ngModel)]="model.password"
+            required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <button
+          class="login-button"
+          type="submit"
+          [disabled]="!form.valid">
+          <i class="pi pi-sign-in"></i>
+          <span>Logga in</span>
+        </button>
+
+        <div *ngIf="loginerror$ | async as error" class="error-message">
+          <i class="pi pi-exclamation-triangle"></i>
+          <span>{{error.meddelande.data}}</span>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
 
 

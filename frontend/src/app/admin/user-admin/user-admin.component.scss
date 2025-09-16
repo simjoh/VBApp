@@ -1,17 +1,92 @@
-.container {
-  padding: 20px;
-}
+.admin-dashboard {
+  .page-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-600) 100%);
+    color: white;
+    padding: 1.25rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
 
-.table {
-  margin-top: 20px;
-}
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 120px;
+      height: 120px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transform: translate(50%, -50%);
+    }
 
-.form-group {
-  margin-bottom: 20px;
-}
+    .page-header-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: relative;
+      z-index: 1;
 
-.btn {
-  margin-right: 5px;
+      .header-icon {
+        font-size: 1.5rem;
+        opacity: 0.9;
+      }
+
+      .header-text {
+        flex: 1;
+
+        h1 {
+          font-size: 1.75rem;
+          font-weight: 700;
+          margin: 0;
+        }
+
+        p {
+          font-size: 0.95rem;
+          margin: 0.25rem 0 0 0;
+          opacity: 0.9;
+        }
+      }
+    }
+  }
+
+  .admin-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--surface-border);
+    margin-bottom: 1.5rem;
+
+    .card-header {
+      padding: 1.5rem 1.5rem 0 1.5rem;
+      border-bottom: 1px solid var(--surface-border);
+      margin-bottom: 1rem;
+
+      h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      p {
+        margin: 0 0 1rem 0;
+        color: var(--text-color-secondary);
+        font-size: 0.9rem;
+      }
+    }
+
+    .card-content {
+      padding: 0 1.5rem 1.5rem 1.5rem;
+    }
+  }
+
+  .admin-main {
+    .admin-content {
+      background: transparent;
+      padding: 0;
+    }
+  }
 }
 
 :host ::ng-deep {

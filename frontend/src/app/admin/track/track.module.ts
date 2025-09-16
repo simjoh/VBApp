@@ -37,6 +37,7 @@ import { TrackBuilderSummaryComponent } from './track-builder/track-builder-summ
     TrackInfoPopoverComponent
   ],
   imports: [
+    CommonModule,
     TabMenuModule,
     TrackRoutingModule,
     FileUploadModule,
