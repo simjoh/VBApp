@@ -1,14 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import {BehaviorSubject, combineLatest, forkJoin, merge, Observable, of, Subject, throwError} from "rxjs";
 import {User} from "../../shared/api/api";
 import {environment} from "../../../environments/environment";
-import {catchError, map, shareReplay, startWith, switchMap, tap} from "rxjs/operators";
+import {catchError, map, shareReplay, startWith, switchMap, tap, takeUntil, debounceTime} from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class UserService implements OnDestroy {
+  private destroy$ = new Subject<void>();
 
   removeSubject = new Subject<string>()
   relaod$ = this.removeSubject.asObservable().pipe(
@@ -48,6 +49,7 @@ private userInsertedSubject = new Subject<User>();
   //   );
 
   usersWithAdd$ = combineLatest([this.allUsers$, this.userInsertedAction$, this.relaod$, this.userUpdatedAction$]).pipe(
+    debounceTime(100), // Add debouncing to prevent excessive updates
     map(([all, insert, del, update]) =>  {
          if(insert){
           return  [...all, insert]
@@ -67,6 +69,7 @@ private userInsertedSubject = new Subject<User>();
          }
          return this.deepCopyProperties(all);
     }),
+    takeUntil(this.destroy$)
   );
   $usercount = this.usersWithAdd$.pipe(
     map(users => {
@@ -155,4 +158,8 @@ private userInsertedSubject = new Subject<User>();
     return obj === null || obj === undefined ? obj : JSON.parse(JSON.stringify(obj));
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

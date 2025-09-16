@@ -1,11 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import {SiteService} from "../../../admin/shared/service/site.service";
-import {map, shareReplay, catchError} from "rxjs/operators";
-import {BehaviorSubject, Observable, of} from "rxjs";
+import {map, shareReplay, catchError, takeUntil} from "rxjs/operators";
+import {BehaviorSubject, Observable, of, Subject} from "rxjs";
 import { Site } from '../../api/api';
 
 @Injectable()
-export class SiteSelectorComponentService {
+export class SiteSelectorComponentService implements OnDestroy {
+  private destroy$ = new Subject<void>();
 
   $currentSiteSubject = new BehaviorSubject<Site>(null);
 
@@ -21,19 +22,17 @@ export class SiteSelectorComponentService {
       // Return empty array instead of throwing
       return of([]);
     }),
-    shareReplay(1)
+    shareReplay(1),
+    takeUntil(this.destroy$)
   );
 
   constructor(private siteService: SiteService) {
-    // Force the observable to be subscribed to trigger the HTTP request
-    this.$allSites.subscribe(
-      sites => {
-        // Subscription for triggering HTTP request
-      },
-      error => {
-        console.error('SiteSelectorComponentService: Force subscription - error:', error);
-      }
-    );
+    // Remove the force subscription that was causing memory leak
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   currentEvent(selectedSite: Site) {

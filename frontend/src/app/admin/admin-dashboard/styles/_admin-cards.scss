@@ -1,0 +1,140 @@
+// Admin Cards Styles
+.admin-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--surface-border);
+  overflow: hidden;
+  margin-bottom: 2rem;
+
+  .card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--surface-border);
+    background: var(--surface-50);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    p {
+      margin: 0.25rem 0 0 0;
+      color: var(--text-color-secondary);
+      font-size: 0.9rem;
+    }
+
+    .chart-controls,
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status-indicator {
+      font-size: 0.85rem;
+      font-weight: 600;
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+
+      &.healthy .status-dot { background: var(--green-500); }
+      &.warning .status-dot { background: var(--yellow-500); }
+      &.critical .status-dot { background: var(--red-500); }
+    }
+  }
+
+  .card-content {
+    padding: 1.5rem;
+  }
+}
+
+// Quick Actions Grid
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+
+  .quick-action {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--surface-50);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    border: 1px solid var(--surface-border);
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+      background: var(--primary-50);
+      border-color: var(--primary-200);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+
+      .action-arrow {
+        transform: translateX(4px);
+        color: var(--primary-color);
+      }
+
+      .action-icon {
+        transform: scale(1.1);
+      }
+    }
+
+    .action-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .action-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      .action-title {
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--text-color);
+      }
+
+      .action-description {
+        font-size: 0.85rem;
+        color: var(--text-color-secondary);
+        line-height: 1.4;
+      }
+    }
+
+    .action-arrow {
+      color: var(--text-color-secondary);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,0 +1,94 @@
+// Dashboard Layout Styles
+.admin-dashboard {
+  .page-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-600) 100%);
+    color: white;
+    padding: 1.25rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 120px;
+      height: 120px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transform: translate(50%, -50%);
+    }
+
+    .page-header-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: relative;
+      z-index: 1;
+
+      .header-icon {
+        font-size: 1.5rem;
+        opacity: 0.9;
+      }
+
+      .header-text {
+        flex: 1;
+
+        h1 {
+          font-size: 1.75rem;
+          font-weight: 700;
+          margin: 0;
+        }
+
+        p {
+          font-size: 0.95rem;
+          margin: 0.25rem 0 0 0;
+          opacity: 0.9;
+        }
+      }
+    }
+  }
+
+  // Dashboard Grid Layouts
+  .dashboard-grid {
+    display: grid;
+    gap: 2rem;
+    margin-bottom: 2rem;
+
+    &:not(.two-column) {
+      grid-template-columns: 2fr 1fr;
+
+      @media (max-width: 1024px) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    &.two-column {
+      grid-template-columns: 1fr 1fr;
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-dashboard {
+    .page-header {
+      padding: 1.5rem;
+
+      .page-header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+
+        h1 {
+          font-size: 2rem;
+        }
+      }
+    }
+  }
+}
