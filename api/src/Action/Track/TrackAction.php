@@ -334,7 +334,45 @@ class TrackAction
         return $filename;
     }
 
-
-
+    /**
+     * Check if a track is ready to receive participants
+     * 
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public function isReadyForRegistration(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        try {
+            $routeContext = RouteContext::fromRequest($request);
+            $route = $routeContext->getRoute();
+            $trackUid = $route->getArgument('trackUid');
+            
+            $isReady = $this->trackService->isTrackReadyForRegistration($trackUid);
+            
+            $response->getBody()->write(json_encode([
+                'trackUid' => $trackUid,
+                'isReady' => $isReady['isReady'],
+                'reason' => $isReady['reason'] ?? null
+            ]));
+            
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+            
+        } catch (\App\common\Exceptions\BrevetException $e) {
+            $response->getBody()->write(json_encode([
+                'trackUid' => $trackUid ?? null,
+                'isReady' => false,
+                'reason' => $e->getMessage()
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($e->getCode() ?: 400);
+        } catch (\Exception $e) {
+            $response->getBody()->write(json_encode([
+                'trackUid' => $trackUid ?? null,
+                'isReady' => false,
+                'reason' => 'Internal server error: ' . $e->getMessage()
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
 
 }
