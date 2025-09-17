@@ -56,3 +56,10 @@ When logging.
 
 Dont spam the log with unneccessary logs.
 Log important things for system
+
+
+if not stripe cli has correct forward try to run this
+stripe listen --forward-to http://localhost:8082/payments/events 
+
+Test trigger event do 
+stripe trigger payment_intent.succeeded

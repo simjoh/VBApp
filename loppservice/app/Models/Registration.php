@@ -24,7 +24,7 @@ class Registration extends Model
 
     public function person(): BelongsTo
     {
-        return $this->belongsTo(Person::class);
+        return $this->belongsTo(Person::class, 'person_uid', 'person_uid');
     }
 
     //protected $with = ['person'];

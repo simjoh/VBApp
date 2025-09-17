@@ -15,7 +15,8 @@ const routes: Routes = [
       { path: 'brevet-track-builder', component:  TrackBuilderComponent},
       { path: '**', redirectTo: 'brevet-track-list'},
     ]
-  }];
+  }
+];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

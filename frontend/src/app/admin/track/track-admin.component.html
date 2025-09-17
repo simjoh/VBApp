@@ -1,34 +1,22 @@
-<div class="container-fluid px-4">
-  <!-- Compact Page Header -->
-  <div class="grid justify-content-center mb-3">
-    <div class="col-12 md:col-8 lg:col-6">
-      <app-compact-page-header [config]="headerConfig"></app-compact-page-header>
-    </div>
-  </div>
-
-  <!-- Compact Action Cards Grid -->
-  <div class="grid justify-content-center mb-3">
-    <div class="col-12 md:col-8 lg:col-6">
-      <div class="grid">
-        <!-- Track List -->
-        <div class="col-12 sm:col-6">
-          <app-compact-action-card [config]="actionCards[0]" (cardClick)="onActionCardClick($event)"></app-compact-action-card>
-        </div>
-
-        <!-- Track Builder -->
-        <div class="col-12 sm:col-6">
-          <app-compact-action-card [config]="actionCards[1]" (cardClick)="onActionCardClick($event)"></app-compact-action-card>
-        </div>
+<div class="admin-dashboard">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="header-icon">
+        <i class="pi pi-map"></i>
+      </div>
+      <div class="header-text">
+        <h1>Hantera Banor</h1>
+        <p>Hantera banor, kontrollpunkter och evenemang</p>
       </div>
     </div>
   </div>
 
-  <!-- Content Area -->
-  <div class="grid justify-content-center mt-4">
-    <div class="col-12 md:col-8 lg:col-6">
-      <p-card>
-        <router-outlet></router-outlet>
-      </p-card>
+
+  <!-- Main Content -->
+  <div class="admin-main">
+    <div class="admin-content">
+      <router-outlet></router-outlet>
     </div>
   </div>
 </div>

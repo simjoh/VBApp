@@ -9,6 +9,7 @@ use App\Events\PreRegistrationSuccessEvent;
 use App\Models\NonParticipantOptionals;
 use App\Models\Order;
 use App\Models\Registration;
+use App\Models\WebhookEvent;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Ramsey\Uuid\Uuid;
@@ -44,10 +45,19 @@ class WebhookController extends Controller
             return response('', 400);
         }
 
+        // Check if we've already processed this event
+        if ($this->isEventAlreadyProcessed($event->id)) {
+            Log::debug("Stripe webhooks: Event {$event->id} already processed, skipping");
+            return response('', 200);
+        }
+
+        // Mark event as being processed
+        $this->markEventAsProcessed($event->id, $event->type);
+
         switch ($event->type) {
             case 'checkout.session.completed':
                 $session = $event->data->object;
-                Log::debug("$session" . 'session.completed');
+                Log::debug("Processing session.completed for event {$event->id}");
 
                 // tex middagar mm
                 if (filter_var($session->metadata->no_participant_order, FILTER_VALIDATE_BOOLEAN)) {
@@ -91,7 +101,7 @@ class WebhookController extends Controller
 
             case 'checkout.session.async_payment_succeeded':
                 $session = $event->data->object;
-                Log::debug("$session" . 'async_payment_succeeded');
+                Log::debug("Processing async_payment_succeeded for event {$event->id}");
 
                 // tex middagar mm
                 if (filter_var($session->metadata->no_participant_order, FILTER_VALIDATE_BOOLEAN)) {
@@ -126,21 +136,22 @@ class WebhookController extends Controller
 
             case 'checkout.session.async_payment_failed':
                 $session = $event->data->object;
+                Log::debug("Processing async_payment_failed for event {$event->id}");
                 $this->failed_order($session);
                 break;
 
             case 'checkout.session.expired':
                 $session = $event->data->object;
-                Log::debug("Stripe webhooks: Session expirered " . $session->client_reference_id);
+                Log::debug("Processing session.expired for event {$event->id}");
                 $this->session_expirered($session);
                 break;
             case 'payment_intent.canceled':
                 $session = $event->data->object;
-                Log::debug("Stripe webhooks: cancel " . $session);
+                Log::debug("Processing payment_intent.canceled for event {$event->id}");
                 break;
 
             default:
-                Log::debug("Stripe webhooks: Received unknown event type");
+                Log::debug("Stripe webhooks: Received unknown event type {$event->type} for event {$event->id}");
         }
 
         return response('', 200);
@@ -304,8 +315,25 @@ class WebhookController extends Controller
             }
         }
         return false;
-
     }
 
+    /**
+     * Check if event has already been processed
+     */
+    private function isEventAlreadyProcessed(string $eventId): bool
+    {
+        return WebhookEvent::where('event_id', $eventId)->exists();
+    }
 
+    /**
+     * Mark event as processed
+     */
+    private function markEventAsProcessed(string $eventId, string $eventType): void
+    {
+        WebhookEvent::create([
+            'event_id' => $eventId,
+            'event_type' => $eventType,
+            'processed_at' => now()
+        ]);
+    }
 }

@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import {TrackAdminComponentService} from "../track-admin-component.service";
 import {EventRepresentation} from "../../../shared/api/api";
 import {map} from "rxjs/operators";
@@ -14,7 +15,11 @@ export class TrackListComponent implements OnInit {
 
   $eventsandtrack = this.trackadmincomponentservice.$eventsAndTrack;
 
-  constructor(private trackadmincomponentservice: TrackAdminComponentService, private cd: ChangeDetectorRef) { }
+  constructor(
+    private trackadmincomponentservice: TrackAdminComponentService,
+    private cd: ChangeDetectorRef,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     // Parent component already calls init(), no need to call it again
@@ -41,5 +46,9 @@ export class TrackListComponent implements OnInit {
   deepCopyProperties(obj: any): any {
     // Konverterar till och från JSON, kopierar properties men tappar bort metoder
     return obj === null || obj === undefined ? obj : JSON.parse(JSON.stringify(obj));
+  }
+
+  navigateToBuilder() {
+    this.router.navigate(['/admin/banor/brevet-track-builder'], { queryParams: { mode: 'create' } });
   }
 }

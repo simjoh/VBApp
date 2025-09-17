@@ -157,7 +157,7 @@
 </head>
 
 <body>
-  <h1 style="padding-top: 4pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">Midnight Sun Randonnée 2024</h1>
+  <h1 style="padding-top: 4pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">Midnight Sun Randonnée 2026</h1>
   <p style="text-indent: 0pt;text-align: left;"><br /></p>
   <h2 style="padding-left: 10pt;text-indent: 0pt;text-align: left;">Receipt for payment of reservation fee</h2>
   <p style="text-indent: 0pt;text-align: left;"><br /></p>
@@ -435,32 +435,7 @@
     </tr>
   </table>
   <p>&nbsp;</p>
-  <h2 style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">Carpool from Europe</h2>
-  @foreach ($optionals as $optional)
-  @if ($optional->categoryID === 4)
-  <p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">{{$optional->description}}</p>
-  @endif
-  @endforeach
 
-  <p style="text-indent: 0pt;text-align: left;"><br /></p>
-  <h2 style="padding-left: 10pt;text-indent: 0pt;text-align: left;">Event program</h2>
-  @foreach ($optionals as $optional)
-  @if ($optional->categoryID === 3 || $optional->categoryID === 2 || $optional->categoryID === 5)
-  <p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;line-height: 133%;text-align: left;">{{$optional->description}}</p>
-  @endif
-  @endforeach
-
-  <p style="text-indent: 0pt;text-align: left;"><br /></p>
-  <h2 style="padding-left: 10pt;text-indent: 0pt;text-align: left;">MSR Jersey</h2>
-
-  @foreach ($optionals as $optional)
-  @if ($optional->categoryID === 1)
-  <p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">{{$optional->description}}</p>
-  @endif
-  @endforeach
-  <p class="s7" style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">Your digital voucher will
-    be sent in a separate email.<br />
-  </p>
   <p style="text-indent: 0pt;text-align: left;">&nbsp;</p>
   <p class="s9" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">&nbsp;</p>
   <p class="s9" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">&nbsp;</p>

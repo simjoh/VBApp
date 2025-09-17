@@ -1,13 +1,17 @@
 <ng-container *ngIf="($activeUser | async) as user">
-    <p-menubar class="hide"  [styleClass]="" [autoDisplay]="false" [model]="$menuitems | async">
+    <p-menubar
+      [styleClass]="'responsive-menubar'"
+      [autoDisplay]="true"
+      [model]="$menuitems | async"
+      [baseZIndex]="1000">
       <ng-template  pTemplate="start">
-        <img  src="./assets/ebrevet-sidhuvud.svg" height="50"  width="100"  class="mr-2" alt="Ebrevet logotyp">
+        <img *ngIf="!isAdminUser" src="./assets/ebrevet-prod.svg" height="45"  width="55"  class="mr-2" alt="Ebrevet logotyp">
         <span *ngIf="$logedinas | async as num" class="text-xl font-bold ml-6">
           {{num}}
         </span>
       </ng-template>
       <ng-template pTemplate="end">
-        <div>
+        <div *ngIf="!isAdminUser">
             <a class="ml-2 float-right text-base text-bold linkunde" href="" (click)="logout()">LOG OUT</a>
         </div>
       </ng-template>

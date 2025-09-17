@@ -1,16 +1,22 @@
-<div class="container-fluid px-4">
-  <!-- Compact Page Header -->
-  <div class="grid justify-content-center mb-3">
-    <div class="col-12 md:col-8 lg:col-6">
-      <app-compact-page-header [config]="headerConfig"></app-compact-page-header>
+<div class="admin-dashboard">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="header-icon">
+        <i class="pi pi-user-edit"></i>
+      </div>
+      <div class="header-text">
+        <h1>Användarhantering</h1>
+        <p>Hantera och organisera alla användare</p>
+      </div>
     </div>
   </div>
 
-  <!-- Content Area -->
-  <div class="grid justify-content-center">
-    <div class="col-12 md:col-8 lg:col-6">
-      <p-card>
-        <div class="card">
+  <!-- Main Content -->
+  <div class="admin-main">
+    <div class="admin-content">
+      <div class="admin-card">
+        <div class="card-content">
           <ng-container *ngIf="users$ | async as users">
             <p-table
               #dt
@@ -43,6 +49,15 @@
                       icon="pi pi-plus"
                       class="p-button-success p-button-sm"
                       (click)="openNew()">
+                    </button>
+                    <button
+                      pButton
+                      pRipple
+                      icon="pi pi-refresh"
+                      class="p-button-text p-button-rounded p-button-sm"
+                      (click)="dt.reset()"
+                      pTooltip="Uppdatera"
+                      tooltipPosition="top">
                     </button>
                   </div>
                 </div>
@@ -133,7 +148,7 @@
             <p-confirmDialog [style]="{width: '450px'}" [baseZIndex]="10000"></p-confirmDialog>
           </ng-container>
         </div>
-      </p-card>
+      </div>
     </div>
   </div>
 </div>

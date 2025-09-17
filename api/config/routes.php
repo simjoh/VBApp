@@ -48,6 +48,7 @@ return function (App $app) {
   $app->get('/track/{trackUid}/participant/{participantUid}/checkpoints', \App\Controller\ResultsController::class . ':gettrackranonneurcheckpoints');
   $app->post('/participant/addparticipant/track/{trackUid}', \App\Action\Participant\ParticipantAction::class . ':addParticipantOntrack2');
 
+  $app->get('/track/{trackUid}/isReadyForRegistration', \App\Action\Track\TrackAction::class . ':isReadyForRegistration');
 
   $app->get('/dns/participant/{uid}/setdns', \App\Action\Participant\ParticipantAction::class . ':participantclickeddnsinmail');
 

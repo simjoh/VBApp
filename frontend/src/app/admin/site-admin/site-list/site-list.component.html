@@ -1,14 +1,15 @@
-<div class="card">
-  <ng-container *ngIf="sites$ | async as sites">
+<ng-container *ngIf="sites$ | async as sites">
     <p-table
       #dt
       [value]="sites"
       dataKey="id"
-      [tableStyle]="{'min-width': '60rem', 'width': '100%'}"
-      styleClass="p-datatable-sm"
+      [tableStyle]="{'width': '100%'}"
+      styleClass="p-datatable-sm p-datatable-responsive modern-table"
       [rowHover]="true"
       [scrollable]="true"
       scrollHeight="flex"
+      responsiveLayout="scroll"
+      breakpoint="960px"
       [sortField]="'title'"
       [sortOrder]="1"
       [globalFilterFields]="['title', 'place', 'adress']">
@@ -31,6 +32,15 @@
               icon="pi pi-plus"
               class="p-button-success p-button-sm"
               (click)="openNew()">
+            </button>
+            <button
+              pButton
+              pRipple
+              icon="pi pi-refresh"
+              class="p-button-text p-button-rounded p-button-sm"
+              (click)="dt.reset()"
+              pTooltip="Uppdatera"
+              tooltipPosition="top">
             </button>
           </div>
         </div>
@@ -146,7 +156,6 @@
     </p-table>
     <p-confirmDialog [style]="{width: '450px'}" [baseZIndex]="10000"></p-confirmDialog>
   </ng-container>
-</div>
 
 <!-- Image Preview Dialog -->
 <p-dialog

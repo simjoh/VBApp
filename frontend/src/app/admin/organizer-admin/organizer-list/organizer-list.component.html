@@ -1,17 +1,18 @@
-<div class="card">
-  <ng-container *ngIf="organizers$ | async as organizers">
-    <p-table
-      #dt
-      [value]="organizers"
-      dataKey="id"
-      [tableStyle]="{'min-width': '60rem', 'width': '100%'}"
-      styleClass="p-datatable-sm"
-      [rowHover]="true"
-      [scrollable]="true"
-      scrollHeight="flex"
-      [sortField]="'organization_name'"
-      [sortOrder]="1"
-      [globalFilterFields]="['organization_name', 'contact_person_name']">
+<ng-container *ngIf="organizers$ | async as organizers">
+  <p-table
+    #dt
+    [value]="organizers"
+    dataKey="id"
+    [tableStyle]="{'width': '100%'}"
+    styleClass="p-datatable-sm p-datatable-responsive modern-table"
+    [rowHover]="true"
+    [scrollable]="true"
+    scrollHeight="flex"
+    responsiveLayout="scroll"
+    breakpoint="960px"
+    [sortField]="'organization_name'"
+    [sortOrder]="1"
+    [globalFilterFields]="['organization_name', 'contact_person_name']">
       <ng-template pTemplate="caption">
         <div class="flex justify-content-between align-items-center px-3">
           <span class="p-input-icon-left">
@@ -31,6 +32,15 @@
               icon="pi pi-plus"
               class="p-button-success p-button-sm"
               (click)="openNew()">
+            </button>
+            <button
+              pButton
+              pRipple
+              icon="pi pi-refresh"
+              class="p-button-text p-button-rounded p-button-sm"
+              (click)="dt.reset()"
+              pTooltip="Uppdatera"
+              tooltipPosition="top">
             </button>
           </div>
         </div>
@@ -107,10 +117,9 @@
           </td>
         </tr>
       </ng-template>
-    </p-table>
-    <p-confirmDialog [style]="{width: '450px'}" [baseZIndex]="10000"></p-confirmDialog>
-  </ng-container>
-</div>
+  </p-table>
+  <p-confirmDialog [style]="{width: '450px'}" [baseZIndex]="10000"></p-confirmDialog>
+</ng-container>
 
 <style>
 .status-tag {

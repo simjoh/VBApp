@@ -18,6 +18,8 @@ use App\Http\Controllers\ToolController;
 use App\Http\Controllers\EventGroupController;
 use App\Http\Controllers\OrganizerController;
 use App\Http\Controllers\ClubController;
+use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\PersonController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +49,12 @@ Route::prefix('/api')->group(function () {
             });
             Route::get('/{registrationUid}/registration', function () {
             });
+            Route::delete('/{registrationUid}', [RegistrationController::class, 'delete'])->name('api.registration.delete');
+        });
+
+        Route::prefix('/person')->group(function () {
+            Route::get('/{personUid}', [PersonController::class, 'get'])->name('api.person.get');
+            Route::delete('/forget', [PersonController::class, 'forget'])->name('api.person.forget');
         });
 
         Route::prefix('/event')->group(function () {

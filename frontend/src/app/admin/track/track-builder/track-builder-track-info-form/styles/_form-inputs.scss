@@ -1,0 +1,263 @@
+// Form Input Styles
+:host ::ng-deep {
+  // Universal input height
+  .form-input {
+    .p-inputtext,
+    .p-dropdown,
+    textarea,
+    input[type="number"] {
+      height: 36px !important;
+      min-height: 36px !important;
+      padding: 0.5rem 0.75rem !important;
+      border: 1px solid #d1d5db !important;
+      border-radius: 6px !important;
+      font-size: 0.85rem !important;
+      line-height: 1.2 !important;
+      transition: all 0.2s ease;
+      box-sizing: border-box !important;
+
+      &:focus {
+        border-color: #667eea !important;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+        outline: none !important;
+      }
+
+      &::placeholder {
+        color: #9ca3af;
+        font-size: 0.8rem;
+      }
+    }
+
+    // Number input specific styling
+    input[type="number"] {
+      -moz-appearance: textfield !important; // Firefox - hide spinner
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none !important; // Chrome/Safari - hide spinner
+        margin: 0 !important;
+      }
+
+      // Number validation styling
+      &:invalid {
+        border-color: #ef4444 !important;
+
+        &:focus {
+          border-color: #ef4444 !important;
+          box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1) !important;
+        }
+      }
+
+      &:valid {
+        border-color: #10b981 !important;
+
+        &:focus {
+          border-color: #667eea !important;
+          box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+        }
+      }
+    }
+
+    // Textarea specific
+    textarea.p-inputtext {
+      height: 72px !important;
+      min-height: 72px !important;
+      resize: vertical;
+      line-height: 1.4 !important;
+    }
+  }
+
+  // Calendar component styling
+  .p-calendar {
+    width: 100% !important;
+
+    .p-inputtext {
+      height: 36px !important;
+      min-height: 36px !important;
+      padding: 0.5rem 0.75rem !important;
+      border: 1px solid #d1d5db !important;
+      border-radius: 6px !important;
+      font-size: 0.85rem !important;
+      line-height: 1.2 !important;
+      transition: all 0.2s ease;
+
+      &:focus {
+        border-color: #667eea !important;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+        outline: none !important;
+      }
+    }
+
+    .p-datepicker-trigger {
+      height: 36px !important;
+      width: 2rem !important;
+      border: 1px solid #d1d5db !important;
+      border-left: none !important;
+      border-radius: 0 6px 6px 0 !important;
+      background: #f9fafb !important;
+
+      &:hover {
+        background: #f3f4f6 !important;
+      }
+
+      .p-icon {
+        color: #6b7280 !important;
+        font-size: 0.8rem !important;
+      }
+    }
+  }
+
+  // Dropdown specific - exact height matching
+  .form-input .p-dropdown,
+  brevet-event-selector .p-dropdown,
+  .p-dropdown {
+    width: 100% !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    max-height: 36px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+
+    &:focus-within {
+      border-color: #667eea !important;
+      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1) !important;
+    }
+
+    .p-dropdown-label {
+      padding: 0.5rem 0.75rem !important;
+      height: 34px !important;
+      min-height: 34px !important;
+      max-height: 34px !important;
+      line-height: 1.2 !important;
+      display: flex !important;
+      align-items: center !important;
+      font-size: 0.85rem !important;
+      color: #111827 !important;
+      flex: 1 !important;
+      border: none !important;
+      background: transparent !important;
+
+      &.p-placeholder {
+        color: #9ca3af !important;
+        font-size: 0.8rem !important;
+      }
+    }
+
+    .p-dropdown-trigger {
+      width: 2rem !important;
+      height: 34px !important;
+      min-height: 34px !important;
+      max-height: 34px !important;
+      padding: 0 !important;
+      border: none !important;
+      background: transparent !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+
+      .p-dropdown-trigger-icon {
+        font-size: 0.7rem !important;
+        color: #6b7280 !important;
+      }
+    }
+
+    // Editable input styling
+    .p-dropdown-label-container input {
+      height: 34px !important;
+      min-height: 34px !important;
+      max-height: 34px !important;
+      padding: 0.5rem 0.75rem !important;
+      border: none !important;
+      font-size: 0.85rem !important;
+      line-height: 1.2 !important;
+      background: transparent !important;
+
+      &:focus {
+        outline: none !important;
+        box-shadow: none !important;
+      }
+    }
+  }
+
+  // Checkbox styling
+  .p-checkbox {
+    margin-bottom: 0;
+
+    .p-checkbox-box {
+      width: 16px !important;
+      height: 16px !important;
+      border: 1px solid #d1d5db !important;
+      border-radius: 3px !important;
+
+      &.p-highlight {
+        background: #667eea !important;
+        border-color: #667eea !important;
+      }
+
+      .p-checkbox-icon {
+        font-size: 0.7rem !important;
+      }
+    }
+
+    .p-checkbox-label {
+      font-size: 0.85rem !important;
+      color: #374151 !important;
+      margin-left: 0.5rem !important;
+      font-weight: 500 !important;
+    }
+  }
+
+  // Force 24-hour format for time inputs
+  input[type="time"] {
+    // Hide AM/PM completely
+    &::-webkit-datetime-edit-ampm-field {
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      height: 0 !important;
+      opacity: 0 !important;
+    }
+
+    &::-webkit-inner-spin-button {
+      display: none !important;
+    }
+
+    // Hide any text that might contain AM/PM
+    &::-webkit-datetime-edit-text {
+      &[aria-label*="AM"],
+      &[aria-label*="PM"] {
+        display: none !important;
+        visibility: hidden !important;
+        width: 0 !important;
+      }
+    }
+
+    // Force locale to 24-hour format
+    -webkit-locale: "sv-SE" !important;
+
+    // Additional browser support
+    &::-moz-time-picker-ampm {
+      display: none !important;
+    }
+
+    // Specific styling for our time-24h class
+    &.time-24h {
+      font-family: 'Courier New', monospace !important;
+      letter-spacing: 0.5px !important;
+
+      // Ensure no AM/PM artifacts
+      &::after,
+      &::before {
+        content: none !important;
+        display: none !important;
+      }
+    }
+  }
+}
+
+label .required-asterisk {
+  color: #dc2626;
+  font-weight: 700;
+}

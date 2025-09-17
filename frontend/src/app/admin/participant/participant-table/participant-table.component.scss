@@ -1,0 +1,67 @@
+.admin-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--surface-border);
+  margin-bottom: 1.5rem;
+
+  .card-header {
+    padding: 1.5rem 1.5rem 0 1.5rem;
+    border-bottom: 1px solid var(--surface-border);
+    margin-bottom: 1rem;
+
+    h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    p {
+      margin: 0 0 1rem 0;
+      color: var(--text-color-secondary);
+      font-size: 0.9rem;
+    }
+  }
+
+  .card-content {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+  }
+}
+
+:host ::ng-deep {
+  .p-datatable {
+    .p-datatable-header {
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+
+    .p-datatable-thead > tr > th {
+      background: var(--surface-50);
+      border-color: var(--surface-border);
+      color: var(--text-color);
+      font-weight: 600;
+      padding: 1rem 0.75rem;
+    }
+
+    .p-datatable-tbody > tr {
+      border-color: var(--surface-border);
+
+      &:hover {
+        background: var(--surface-hover);
+      }
+
+      > td {
+        padding: 1rem 0.75rem;
+        border-color: var(--surface-border);
+      }
+    }
+
+    .p-paginator {
+      background: transparent;
+      border: none;
+      padding: 1rem 0 0 0;
+    }
+  }
+}

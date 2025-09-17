@@ -1,3 +1,63 @@
+.admin-dashboard {
+  .page-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-600) 100%);
+    color: white;
+    padding: 1.25rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 120px;
+      height: 120px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transform: translate(50%, -50%);
+    }
+
+    .page-header-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: relative;
+      z-index: 1;
+
+      .header-icon {
+        font-size: 1.5rem;
+        opacity: 0.9;
+      }
+
+      .header-text {
+        flex: 1;
+
+        h1 {
+          font-size: 1.75rem;
+          font-weight: 700;
+          margin: 0;
+        }
+
+        p {
+          font-size: 0.95rem;
+          margin: 0.25rem 0 0 0;
+          opacity: 0.9;
+        }
+      }
+    }
+  }
+
+  .admin-main {
+    .admin-content {
+      background: transparent;
+      padding: 0;
+    }
+  }
+}
+
 :host ::ng-deep {
   .p-paginator {
     .p-paginator-current {
@@ -64,10 +124,10 @@
       border: none;
       background: transparent;
       border-bottom: 2px solid var(--surface-border, #dee2e6);
-      
+
       .p-tabmenuitem {
         margin: 0 2px -2px 0;
-        
+
         .p-menuitem-link {
           background: transparent;
           border: 2px solid transparent;
@@ -81,30 +141,30 @@
           margin-bottom: 0;
           min-width: 120px;
           text-align: center;
-          
+
           &:not(.p-disabled):focus {
             box-shadow: inset 0 0 0 1px var(--primary-light, rgba(99, 102, 241, 0.2));
           }
-          
+
           &:hover {
             background: var(--surface-hover, #e9ecef);
             color: var(--text-color, #495057);
             border-color: var(--surface-hover, #e9ecef);
           }
-          
+
           .p-menuitem-icon {
             margin-right: 0.5rem;
             font-size: 1rem;
           }
         }
-        
+
         &.p-highlight {
           .p-menuitem-link {
             background: var(--surface-card, #ffffff);
             color: var(--primary-color, #6366f1);
             border-color: var(--surface-border, #dee2e6);
             border-bottom-color: var(--surface-card, #ffffff);
-            
+
             &:hover {
               border-color: var(--surface-border, #dee2e6);
               border-bottom-color: var(--surface-card, #ffffff);

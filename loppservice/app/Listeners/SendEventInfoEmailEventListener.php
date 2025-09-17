@@ -30,12 +30,12 @@ class SendEventInfoEmailEventListener
         $person = Person::find($registration->person_uid);
         if (App::isProduction()) {
             if ($event_event->event_type === 'BRM' || $event_event->event_type === 'BP') {
-               Mail::to($person->contactinformation->email)
-                    ->send(new EventInfoEmail($registration, $event_event));
+             /*   Mail::to($person->contactinformation->email)
+                    ->send(new EventInfoEmail($registration, $event_event)); */
             }
         } else {
-            Mail::to('receiverinbox@mailhog.local')
-                ->send(new EventInfoEmail($registration, $event_event));
+          /*   Mail::to('receiverinbox@mailhog.local')
+                ->send(new EventInfoEmail($registration, $event_event)); */
         }
     }
 }

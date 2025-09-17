@@ -32,38 +32,39 @@ class CheckoutController extends Controller
 
         if ($request['is_final_registration_on_event'] != null && $request->boolean('is_final_registration_on_event')) {
             Log::debug("Sending final registration payment reguest for " . $request["reg"]);
-            $line_items = [["price" => $request->price_id, "quantity" => 1]];
+           $line_items = [["price" => $request->price_id, "quantity" => 1]];
         }
 
-//        if ($registration->reservation) {
-//            Log::debug("Sending reservation payment reguest for " . $request["reg"]);
-//            $line_items = [["price" => "price_1NvL3BLnAzN3QPcU8FcaSorF", "quantity" => 1]];
-//        } else {
-//            Log::debug("Sending registration payment reguest for " . $request["reg"]);
-//            $line_items = [["price" => "price_1NvL2CLnAzN3QPcUka5kMIwR", "quantity" => 1]];
-//        }
-//
-//        // den högre summan ska betalas vid slutförande
-//        if ($request['is_final_registration_on_event'] != null && $request->boolean('is_final_registration_on_event')) {
-//            Log::debug("Sending final registration payment reguest for " . $request["reg"]);
-//            $line_items = [["price" => "price_1NvL2CLnAzN3QPcUka5kMIwR", "quantity" => 1]];
-//        }
-
-//        if(!App::isProduction()){
-//            $line_items = [["price" => .env("STRIPE_TEST_PRODUCT"), "quantity" => 1]];
-//            if(!$request->boolean('is_final_registration_on_event')){
-//                array_push($line_items, array('price' => .env('STRIPE_TEST_PRODUCT_JERSEY'),"quantity" => 1));
-//                array_push($line_items, array('price' => 'price_1ORZvfLnAzN3QPcUjEIDAfvB',"quantity" => 1));
-//            }
-//        }
 
         $optionals = Optional::where('registration_uid', $registration->registration_uid)->get();
-        foreach ($optionals as $option) {
-            $product = Product::find($option->productID);
-            if ($product->price_id && !$request->boolean('is_final_registration_on_event')) {
-                array_push($line_items, array("price" => $product->price_id, "quantity" => 1));
+
+        if (!App::isProduction()) {
+            foreach ($optionals as $option) {
+                $product = Product::find($option->productID);
+
+                if ($product->categoryID == 1) {
+                    array_push($line_items, array('price' => env('STRIPE_TEST_PRODUCT_JERSEY'), "quantity" => 1));
+                }
+
+                if ($product->categoryID == 2 && $product->productname == 'Buffet Dinner') {
+                    array_push($line_items, array('price' => 'price_1S3WroJLy5yXc4qVebfY11Pu', "quantity" => 1));
+                }
             }
         }
+
+
+
+        foreach ($optionals as $option) {
+            $product = Product::find($option->productID);
+            if ($product->price_id) {
+                // Skip category 1 products when not in production
+                if (App::isProduction()) {
+                    array_push($line_items, array("price" => $product->price_id, "quantity" => 1));
+                }
+            }
+        }
+
+
         //behöver hantera cancel
         Session::put('registration', $request["reg"]);
         $YOUR_DOMAIN = env("APP_URL");
@@ -96,7 +97,7 @@ class CheckoutController extends Controller
 
     public function success(Request $request)
     {
-        if($request['event_type'] === 'MSR') {
+        if ($request['event_type'] === 'MSR') {
             return view('checkout.success', ['message' => 'Thank you for your registration/reservation. We have sent a confirmation by email to the address you provided in the registration form.', 'checkemailmessage' => 'Please check that you have received an email. If not then check your spam folder and if found there, please change your spam filter settings for the address "info@midnightsunrandonnee.se" so you will not miss future emails.']); // , compact('customer'));
         } else {
             return view('checkout.brmsuccess', ['message' => 'Tack för din anmälan. Ett bekräftelsemail har skickats till den epostadress du angav i anmälningsformuläret.', 'checkemailmessage' => 'Kontrollera att du fått ett mail med uppgifter om din anmälan. Om inte kontrollera om mailet hamnat i skräpposten.']);

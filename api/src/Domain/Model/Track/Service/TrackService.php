@@ -977,4 +977,37 @@ class TrackService extends ServiceAbstract
         return $this->trackAssembly;
     }
 
+    /**
+     * Check if a track is ready to receive participants
+     * 
+     * @param string $trackUid
+     * @return array
+     * @throws BrevetException
+     */
+    public function isTrackReadyForRegistration(string $trackUid): array
+    {
+        // First check if the track exists
+        $track = $this->trackRepository->getTrackByUid($trackUid);
+        
+        if ($track === null) {
+            throw new BrevetException("Track not found with ID: " . $trackUid, 404);
+        }
+        
+        // Check if the track has checkpoints
+        $checkpoints = $this->trackRepository->checkpoints($trackUid);
+        
+        if (empty($checkpoints)) {
+            return [
+                'isReady' => false,
+                'reason' => 'Track has no checkpoints. A track must have at least one checkpoint to be ready for participant registration.'
+            ];
+        }
+        
+        // Track exists and has checkpoints, so it's ready
+        return [
+            'isReady' => true,
+            'reason' => 'Track is ready for participant registration. Track exists and has ' . count($checkpoints) . ' checkpoint(s).'
+        ];
+    }
+
 }

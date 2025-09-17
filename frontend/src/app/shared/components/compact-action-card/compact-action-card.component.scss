@@ -1,27 +1,74 @@
 .compact-action-card {
   background: var(--surface-card);
   border: 1px solid var(--surface-border);
-  border-radius: var(--border-radius);
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-400) 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--card-shadow);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    border-color: var(--primary-200);
+
+    &::before {
+      transform: scaleX(1);
+    }
   }
 
   &.active {
     border-color: var(--primary-color);
-    background: var(--primary-50);
+    background: linear-gradient(135deg, var(--primary-50) 0%, var(--surface-card) 100%);
+    box-shadow: 0 4px 15px rgba(var(--primary-color-rgb), 0.15);
+
+    &::before {
+      transform: scaleX(1);
+    }
   }
 
   h4 {
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
+    transition: color 0.2s ease;
   }
 
   p {
     color: var(--text-color-secondary);
-    line-height: 1.2;
+    line-height: 1.4;
+    margin: 0.25rem 0 0 0;
+    font-size: 0.9rem;
+  }
+
+  i {
+    transition: all 0.2s ease;
+  }
+
+  &:hover i {
+    transform: scale(1.1);
+  }
+
+  @media (max-width: 768px) {
+    h4 {
+      font-size: 1rem;
+    }
+
+    p {
+      font-size: 0.85rem;
+    }
   }
 }

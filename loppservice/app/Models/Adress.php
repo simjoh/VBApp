@@ -16,7 +16,7 @@ class Adress extends Model
 
     public function person(): BelongsTo
     {
-        return $this->belongsTo(Person::class);
+        return $this->belongsTo(Person::class, 'person_person_uid', 'person_uid');
     }
 
     protected $table = 'adress';

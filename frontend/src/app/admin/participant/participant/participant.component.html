@@ -1,31 +1,22 @@
-<div class="container-fluid px-4">
-  <!-- Compact Page Header -->
-  <div class="grid justify-content-center mb-3">
-    <div class="col-12 md:col-8 lg:col-6">
-      <app-compact-page-header [config]="headerConfig"></app-compact-page-header>
-    </div>
-  </div>
-
-  <!-- Compact Action Cards Grid -->
-  <div class="grid justify-content-center mb-3">
-    <div class="col-12 md:col-8 lg:col-6">
-      <div class="grid">
-        <div class="col-12 sm:col-6" *ngFor="let card of actionCards">
-          <app-compact-action-card
-            [config]="card"
-            (cardClick)="onActionCardClick($event)">
-          </app-compact-action-card>
-        </div>
+<div class="admin-dashboard">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <div class="header-icon">
+        <i class="pi pi-users"></i>
+      </div>
+      <div class="header-text">
+        <h1>Hantera Deltagare</h1>
+        <p>Hantera deltagare, registreringar och resultat för evenemang</p>
       </div>
     </div>
   </div>
 
-  <!-- Content Area -->
-  <div class="grid justify-content-center mt-4">
-    <div class="col-12 md:col-6">
-      <p-card>
-        <router-outlet></router-outlet>
-      </p-card>
+
+  <!-- Main Content -->
+  <div class="admin-main">
+    <div class="admin-content">
+      <router-outlet></router-outlet>
     </div>
   </div>
 </div>

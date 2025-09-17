@@ -1,0 +1,184 @@
+// Stat Cards Styles
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--surface-border);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  &.clickable {
+    cursor: pointer;
+  }
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary-color);
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 1rem;
+
+    &.primary { background: var(--primary-color); }
+    &.success { background: var(--green-500); }
+    &.warning { background: var(--yellow-500); }
+    &.danger { background: var(--red-500); }
+    &.info { background: var(--blue-500); }
+  }
+
+  .stat-content {
+    flex: 1;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0;
+  }
+
+  .stat-label {
+    color: var(--text-color-secondary);
+    font-size: 0.9rem;
+    margin: 0.25rem 0 0 0;
+  }
+
+  .stat-change {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    display: block;
+
+    &.positive { color: var(--green-600); }
+    &.negative { color: var(--red-600); }
+  }
+
+  .stat-details {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .stat-today {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+    font-weight: 500;
+  }
+
+  .stat-track {
+    font-size: 0.7rem;
+    color: var(--text-color-secondary);
+    font-weight: 500;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .stat-year {
+    font-size: 0.75rem;
+    color: var(--text-color-secondary);
+    font-weight: 500;
+  }
+
+  .stat-progress {
+    margin-top: 1rem;
+    height: 4px;
+    background: var(--surface-200);
+    border-radius: 2px;
+    overflow: hidden;
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary-color), var(--primary-400));
+      transition: width 0.3s ease;
+    }
+  }
+
+  .stat-actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+
+    .activity-indicator {
+      font-size: 0.75rem;
+      color: var(--text-color-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+
+      i {
+        color: var(--green-500);
+      }
+    }
+  }
+
+  .event-indicator {
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    i {
+      color: var(--yellow-600);
+    }
+
+    &.urgent {
+      background: var(--red-100);
+      color: var(--red-700);
+    }
+  }
+
+  .health-indicator {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+
+    .health-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+
+      &.green { background: var(--green-500); }
+      &.red { background: var(--red-500); }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

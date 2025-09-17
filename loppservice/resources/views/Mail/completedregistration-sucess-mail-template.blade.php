@@ -157,7 +157,7 @@
 </head>
 
 <body>
-	<h1 style="padding-top: 4pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">Midnight Sun Randonnée 2025</h1>
+	<h1 style="padding-top: 4pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">Midnight Sun Randonnée 2026</h1>
 	<h2 style="padding-left: 10pt;padding-top:10pt; padding-bottom:15pt;text-indent: 0pt;text-align: left;">Receipt for payment of entry
 		fee</h2>
 	<table style="border-collapse:collapse;margin-left:6.0245pt" cellspacing="0">
@@ -199,7 +199,7 @@
 			<td style="width:14pt">
 			</td>
 			<td style="width:227pt">
-				<p class="s3" style="padding-left: 4pt;text-indent: 0pt;text-align: left;">Midnight Sun Randonnée 2025</p>
+				<p class="s3" style="padding-left: 4pt;text-indent: 0pt;text-align: left;">Midnight Sun Randonnée 2026</p>
 			</td>
 		</tr>
 		<tr style="height:26pt">
@@ -474,12 +474,31 @@
 		<tr style="height:22pt">
 			<td colspan="5"
 				style="width:227pt;padding-top: 5px">
-				<h2 style="padding-top: 10pt;ext-indent: 0pt;text-align: left;">MSR Jersey</h2>
+				@if(collect($optionals)->where('categoryID', 1)->count() > 0)
+				<h2 style="padding-top: 10pt;text-indent: 0pt;text-align: left;">MSR Jersey</h2>
+				@endif
 				@foreach ($optionals as $optional)
 				@if ($optional->categoryID === 1)
-				<p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">{{$optional->description}}</p><br>
-				<p class="s7" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">Your digital voucher will be sent in a separate
-					email.</p>
+				<p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">{{$optional->description}}</p>
+
+				@if(isset($voucherCodes[$optional->productID]))
+				<div style="background-color: #f8f9fa; border: 2px solid #007bff; border-radius: 8px; padding: 15px; margin: 10px 0;">
+					<p style="margin: 0; font-weight: bold; color: #007bff; font-size: 16px;">🎟️ Your Digital Voucher Code:</p>
+					<p style="margin: 5px 0; font-family: 'Courier New', monospace; font-size: 18px; font-weight: bold; color: #333; letter-spacing: 1px;">
+						{{ $voucherCodes[$optional->productID] }}
+					</p>
+					<p style="margin: 5px 0; font-size: 12px; color: #666;">
+						Use this code in the webshop when ordering your jersey.
+					</p>
+				</div>
+				@else
+				<div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 10px; margin: 10px 0;">
+					<p style="margin: 0; color: #856404; font-size: 14px;">
+						⚠️ No voucher code available at the moment. You will receive your voucher code via email once available.
+					</p>
+				</div>
+				@endif
+
 				@endif
 				@endforeach
 			</td>
@@ -517,12 +536,12 @@
 		<tr style="height:22pt">
 			<td colspan="5"
 				style="width: 227pt">
-				<p class="s3"><span style="width:227pt">Thank you for registering to Midnight Sun Randonnée 2025. You will recieve further information concerning the ride and the event program in separate emails during the spring leading up to the event.</span>
+				<p class="s3"><span style="width:227pt">Thank you for registering to Midnight Sun Randonnée 2026. You will recieve further information concerning the ride and the event program in separate emails during the spring leading up to the event.</span>
 				</p>
 				<p>&nbsp;</p>
 				<p class="s3"><strong>Travel &amp; Accommodation</strong><br />
 					If you are planning to travel by train we recommend that you book tickets as soon as they become available in April
-					2025. Hotels for overnight stays in Umeå before and after the event, private accommodation on route at checkpoints as
+					2026. Hotels for overnight stays in Umeå before and after the event, private accommodation on route at checkpoints as
 					well as private accommodation on route at checkpoints can be booked on the event website.</p>
 				<p>&nbsp;</p>
 				<p class="s3"><strong>Roadworks</strong><br />
@@ -541,45 +560,23 @@
 				<p class="s3"><strong>High-Visibility Vest</strong><br />
 					Bad weather may create low light conditions. On roads with tunnels and/or traffic a high visibility vest is therefore
 					always useful. The international cycling clothing brand Sigr (based in Umeå) is offering a special edition of their
-					light weight high visibility reflective vest Siljan to participants in MSR 2025 at a pre-event discount rate.</p>
+					light weight high visibility reflective vest Siljan to participants in MSR 2026 at a pre-event discount rate.</p>
 				<p>&nbsp;</p>
 			</td>
 		</tr>
 		<tr style="height:22pt">
-			<td colspan="3"
-				style="width:227pt">
-				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="{{$updatelink}}" style="font-size: 12pt">Change registered information </a></p>
+			<td colspan="5" style="width:227pt">
+				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="{{$updatelink}}" style="font-size: 12pt">Change registered information</a></p>
+
+				@if(isset($dnslink) && !empty($dnslink))
+				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;">If you do not want to participate: <a href="{{ $dnslink }}" style="font-size: 12pt">Click here</a></p>
+				@endif
+
 				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://www.midnightsunrandonnee.se/program" style="font-size: 12pt">Event program 14-20 June</a></p>
 				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://cycling.lachemise.se/collections/midnight-sun" style="font-size: 12pt">La Chemise webshop for jersey</a></p>
-				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://sigr.cc" style="font-size: 12pt">Sigr webshop for high-visibility vest</a><br /></p>
-				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://www.ebrevet.org/datapolicy" style="font-size: 12pt">General terms and conditions</a></p><br />
-				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="{{$startlistlink}}" style="font-size: 12pt">Starting list MSR 2025</a></p>
+				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://sigr.cc" style="font-size: 12pt">Sigr webshop for high-visibility vest</a></p>
+				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="{{$startlistlink}}" style="font-size: 12pt">Starting list {{$event->title}}</a></p>
 			</td>
-			style="width:227pt"><p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="{{$updatelink}}"
-					style="font-size: 12pt">Change
-					registered information </a></p>
-
-
-			@if(isset($dnslink) && !empty($dnslink))
-			<p>
-				If you do not want to participate: <a href="{{ $dnslink }}">Click here</a>
-			</p>
-			@endif
-			<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a
-					href="https://www.midnightsunrandonnee.se/program" style="font-size: 12pt">Event program 14-20 June</a></p>
-			<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a
-					href="https://cycling.lachemise.se/collections/midnight-sun" style="font-size: 12pt">La Chemise webshop for
-					jersey</a></p>
-			<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://sigr.cc"
-					style="font-size: 12pt">Sigr webshop for
-					high-visibility vest</a><br />
-			</p>
-			<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="{{$startlistlink}}"
-					style="font-size: 12pt">Starting list MSR
-					2025</a></p>
-			</td>
-			<td style="width:14pt">&nbsp;</td>
-			<td style="width:227pt">&nbsp;</td>
 		</tr>
 	</table>
 </body>

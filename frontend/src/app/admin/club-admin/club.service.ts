@@ -1,14 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { combineLatest, Observable, Subject, throwError } from "rxjs";
-import { catchError, map, shareReplay, startWith, tap } from "rxjs/operators";
+import { catchError, map, shareReplay, startWith, tap, takeUntil, debounceTime } from "rxjs/operators";
 import { ClubRepresentation } from "../../shared/api/api";
 import { environment } from "../../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
 })
-export class ClubService {
+export class ClubService implements OnDestroy {
+  private destroy$ = new Subject<void>();
 
   removeSubject = new Subject<string>()
   reload$ = this.removeSubject.asObservable().pipe(
@@ -28,6 +29,7 @@ export class ClubService {
   );
 
   clubsWithAdd$ = combineLatest([this.getAllClubs(), this.clubInsertedAction$, this.reload$, this.$clubReload]).pipe(
+    debounceTime(100), // Add debouncing to prevent excessive updates
     map(([all, insert, del, clubReload]) => {
       // Handle deletion first (del will be a club_uid string when deletion occurs)
       if (del && del !== '') {
@@ -56,6 +58,7 @@ export class ClubService {
 
       return this.deepCopyProperties(all);
     }),
+    takeUntil(this.destroy$)
   );
 
   constructor(private httpClient: HttpClient) { }
@@ -117,5 +120,10 @@ export class ClubService {
   deepCopyProperties(obj: any): any {
     // Converts to and from JSON, copies properties but loses methods
     return obj === null || obj === undefined ? obj : JSON.parse(JSON.stringify(obj));
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

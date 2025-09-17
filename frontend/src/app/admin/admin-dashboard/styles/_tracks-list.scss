@@ -1,0 +1,154 @@
+// Tracks List Styles
+.top-tracks-card {
+  .tracks-list {
+    .track-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--surface-border);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .track-rank {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+      }
+
+      .track-info {
+        flex: 1;
+
+        .track-name {
+          font-weight: 600;
+          color: var(--text-color);
+          display: block;
+          margin-bottom: 0.25rem;
+        }
+
+        .track-details {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+
+          .track-organizer {
+            font-size: 0.85rem;
+            color: var(--text-color-secondary);
+          }
+
+          .track-dates {
+            font-size: 0.8rem;
+            color: var(--text-color-secondary);
+          }
+        }
+      }
+
+      .track-stats {
+        .participant-count {
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: var(--primary-color);
+        }
+      }
+    }
+  }
+
+  .no-tracks {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--text-color-secondary);
+
+    i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+  }
+}
+
+// Today's Tracks Card
+.todays-tracks-card {
+  .tracks-list {
+    .track-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--surface-border);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .track-rank {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+      }
+
+      .track-info {
+        flex: 1;
+
+        .track-name {
+          font-weight: 600;
+          color: var(--text-color);
+          display: block;
+          margin-bottom: 0.25rem;
+        }
+
+        .track-details {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+
+          .track-distance {
+            font-size: 0.85rem;
+            color: var(--text-color-secondary);
+          }
+
+          .track-date {
+            font-size: 0.8rem;
+            color: var(--text-color-secondary);
+          }
+        }
+      }
+
+      .track-stats {
+        .track-height {
+          font-size: 0.8rem;
+          color: var(--text-color-secondary);
+        }
+      }
+    }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--text-color-secondary);
+
+    i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+  }
+}

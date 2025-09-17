@@ -1,547 +1,421 @@
+.volunteer-container {
+  min-height: 100vh;
+  background: var(--surface-ground);
+  padding: 1.5rem;
+}
 
+.volunteer-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-600) 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--surface-border);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border-radius: 50%;
+    transform: translate(30px, -30px);
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    z-index: 2;
+
+    .header-icon {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-text {
+      flex: 1;
+
+      h1 {
+        margin: 0;
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: white;
+      }
+
+      p {
+        margin: 0.25rem 0 0 0;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
+      }
+    }
+
+    .help-button {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+      }
+    }
+  }
+}
+
+.selection-card {
+  background: var(--surface-card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--surface-border);
+
+  .selection-content {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+
+    .selection-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1;
+
+      .selection-icon {
+        color: var(--primary-color);
+        font-size: 1rem;
+        width: 1.5rem;
+        text-align: center;
+      }
+
+      .selection-label {
+        font-weight: 500;
+        color: var(--text-color-secondary);
+        font-size: 0.9rem;
+        white-space: nowrap;
+      }
+
+      .selection-input {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+  }
+}
+
+.stats-card {
+  background: var(--surface-card);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--surface-border);
+
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .stat-icon {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+      }
+
+      .stat-content {
+        flex: 1;
+        min-width: 0;
+
+        .stat-number {
+          font-size: 1.5rem;
+          font-weight: 700;
+          line-height: 1;
+          margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: var(--text-color-secondary);
+          margin-bottom: 0.25rem;
+        }
+
+        .stat-percentage {
+          font-size: 0.75rem;
+          font-weight: 500;
+          opacity: 0.8;
+        }
+      }
+
+      &.started {
+        background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%);
+        border: 1px solid rgba(6, 182, 212, 0.2);
+
+        .stat-icon {
+          background: rgba(6, 182, 212, 0.1);
+          color: #06b6d4;
+        }
+
+        .stat-number {
+          color: #06b6d4;
+        }
+
+        .stat-percentage {
+          color: #06b6d4;
+        }
+      }
+
+      &.checked-in {
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+
+        .stat-icon {
+          background: rgba(34, 197, 94, 0.1);
+          color: #22c55e;
+        }
+
+        .stat-number {
+          color: #22c55e;
+        }
+
+        .stat-percentage {
+          color: #22c55e;
+        }
+      }
+
+      &.dnf {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+
+        .stat-icon {
+          background: rgba(239, 68, 68, 0.1);
+          color: #ef4444;
+        }
+
+        .stat-number {
+          color: #ef4444;
+        }
+
+        .stat-percentage {
+          color: #ef4444;
+        }
+      }
+
+      &.checked-out {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+
+        .stat-icon {
+          background: rgba(59, 130, 246, 0.1);
+          color: #3b82f6;
+        }
+
+        .stat-number {
+          color: #3b82f6;
+        }
+
+        .stat-percentage {
+          color: #3b82f6;
+        }
+      }
+
+      &.at-checkpoint {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+
+        .stat-icon {
+          background: rgba(245, 158, 11, 0.1);
+          color: #f59e0b;
+        }
+
+        .stat-number {
+          color: #f59e0b;
+        }
+
+        .stat-percentage {
+          color: #f59e0b;
+        }
+      }
+
+      &.expected {
+        background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%);
+        border: 1px solid rgba(147, 51, 234, 0.2);
+
+        .stat-icon {
+          background: rgba(147, 51, 234, 0.1);
+          color: #9333ea;
+        }
+
+        .stat-number {
+          color: #9333ea;
+        }
+
+        .stat-percentage {
+          color: #9333ea;
+        }
+      }
+    }
+  }
+}
+
+.participant-card {
+  background: var(--surface-card);
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--surface-border);
+  overflow: hidden;
+
+  .card-header {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--surface-border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .header-icon {
+      background: var(--primary-color);
+      color: white;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .header-text {
+      h3 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      p {
+        margin: 0.25rem 0 0 0;
+        color: var(--text-color-secondary);
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .card-content {
+    padding: 1.5rem;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .volunteer-container {
+    padding: 1rem;
+  }
+
+  .selection-card .selection-content {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+
+    .selection-group {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.5rem;
+
+      .selection-icon,
+      .selection-label {
+        align-self: flex-start;
+      }
+    }
+  }
+
+  .stats-card .stats-container {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+
+    .stat-item {
+      padding: 0.75rem;
+    }
+  }
+}
 
 :host ::ng-deep {
-  // Responsive design improvements
-  @media screen and (max-width: 1024px) {
-    .p-card {
-      margin-bottom: 1rem;
-    }
+  /* Modern selector styling */
+  .modern-selector {
+    .p-dropdown {
+      border-radius: 8px;
+      border: 2px solid var(--surface-border);
+      transition: all 0.3s ease;
 
-    .p-dropdown,
-    .p-listbox {
-      width: 100%;
-    }
-  }
+      &:hover {
+        border-color: var(--primary-color);
+      }
 
-  @media screen and (max-width: 768px) {
-    .container-fluid {
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
+      &.p-focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
+      }
 
-    h2 {
-      font-size: 1.5rem;
-    }
+      .p-dropdown-label {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+      }
 
-    .text-xl {
-      font-size: 1.25rem;
-    }
-  }
-
-  // Ultra compact selection bar styling
-  .ultra-compact-selector {
-    height: 32px !important;
-    min-height: 32px !important;
-
-    .p-dropdown-label {
-      padding: 0.375rem 0.5rem !important;
-      height: 30px !important;
-      min-height: 30px !important;
-      font-size: 0.875rem !important;
-    }
-
-    .p-dropdown-trigger {
-      height: 30px !important;
-      min-height: 30px !important;
-      width: 1.75rem !important;
+      .p-dropdown-trigger {
+        width: 2rem;
+      }
     }
   }
 
-  // Compact selection bar styling (fallback)
-  .compact-selector {
-    height: 36px !important;
-    min-height: 36px !important;
-
-    .p-dropdown-label {
-      padding: 0.5rem 0.75rem !important;
-      height: 34px !important;
-      min-height: 34px !important;
-      font-size: 0.875rem !important;
-    }
-
-    .p-dropdown-trigger {
-      height: 34px !important;
-      min-height: 34px !important;
-      width: 2rem !important;
-    }
-  }
-
-  // Compact listbox styling
-  .modern-listbox {
-    max-height: 120px !important;
-    overflow-y: auto;
-
-    .p-listbox-item {
-      padding: 0.5rem 0.75rem !important;
-      min-height: 36px !important;
-      font-size: 0.875rem !important;
-    }
-  }
-
-  // Card styling improvements
-  .p-card {
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.2s ease;
-
-    &:hover {
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-  }
-
-  // Button styling improvements
-  .p-button.p-button-icon-only.p-button-rounded {
-    border-radius: 50%;
-    height: 2.5rem;
-    width: 2.5rem;
-    transition: all 0.2s ease;
-
-    &:hover {
-      transform: scale(1.05);
-    }
-  }
-
-  // Stats cards styling
-  .surface-0.shadow-2 {
-    border-radius: 8px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-  }
-
-  // Badge styling
-  .p-badge {
-    font-weight: 600;
-    font-size: 0.875rem;
-  }
-
-  // Form controls styling
-  .p-dropdown,
-  .p-listbox {
-    border-radius: 6px;
-    border: 1px solid #e5e7eb;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-    &:hover {
-      border-color: var(--primary-color);
-    }
-
-    &.p-focus {
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
-    }
-  }
-
-  // Label styling
-  label {
-    font-weight: 500;
-    color: var(--text-color-secondary);
-  }
-
-  // Icon styling
-  .pi {
-    &.text-3xl {
-      font-size: 2rem;
-    }
-
-    &.text-xl {
-      font-size: 1.25rem;
-    }
-  }
-
-  // Grid improvements
-  .grid {
-    gap: 1rem;
-  }
-
-  // Overlay panel styling
+  /* Overlay panel styling */
   .p-overlaypanel {
-    border-radius: 8px;
+    border-radius: 12px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 
     .p-overlaypanel-content {
       padding: 1.5rem;
-    }
-  }
-
-  // Prominent Stats Section Styling
-  .stats-container {
-    // Default desktop layout
-    flex-direction: row;
-    flex-wrap: nowrap;
-  }
-
-  .stats-card {
-    padding: 1rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    min-width: 140px;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    &.checked-in {
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
-      border: 1px solid rgba(34, 197, 94, 0.2);
-
-      &:hover {
-        background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.1) 100%);
-        border-color: rgba(34, 197, 94, 0.3);
-      }
-    }
-
-    &.started {
-      background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%);
-      border: 1px solid rgba(6, 182, 212, 0.2);
-
-      &:hover {
-        background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(6, 182, 212, 0.1) 100%);
-        border-color: rgba(6, 182, 212, 0.3);
-      }
-    }
-
-    &.dnf {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
-      border: 1px solid rgba(239, 68, 68, 0.2);
-
-      &:hover {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.1) 100%);
-        border-color: rgba(239, 68, 68, 0.3);
-      }
-    }
-
-    &.checked-out {
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
-      border: 1px solid rgba(59, 130, 246, 0.2);
-
-      &:hover {
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
-        border-color: rgba(59, 130, 246, 0.3);
-      }
-    }
-
-    &.at-checkpoint {
-      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
-      border: 1px solid rgba(245, 158, 11, 0.2);
-
-      &:hover {
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%);
-        border-color: rgba(245, 158, 11, 0.3);
-      }
-    }
-
-    &.expected {
-      background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%);
-      border: 1px solid rgba(147, 51, 234, 0.2);
-
-      &:hover {
-        background: linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.1) 100%);
-        border-color: rgba(147, 51, 234, 0.3);
-      }
-    }
-  }
-
-  .stats-icon {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-  }
-
-  .stats-number {
-    font-size: 1.75rem;
-    line-height: 1;
-    margin-bottom: 0.25rem;
-  }
-
-  .stats-label {
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.25rem;
-  }
-
-  .stats-percentage {
-    font-weight: 500;
-    opacity: 0.8;
-    line-height: 1;
-  }
-
-  // Responsive selection bar classes
-  .responsive-selection-bar {
-    // Default desktop layout
-    flex-direction: row;
-    flex-wrap: nowrap;
-  }
-
-  .selection-group {
-    // Default desktop layout
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .selection-label {
-    // Default desktop layout
-    white-space: nowrap;
-  }
-
-  .stats-group {
-    // Default desktop layout
-    flex-direction: row;
-    align-items: center;
-  }
-
-  // Improved responsive design for iPad and smaller screens
-  @media screen and (max-width: 1200px) {
-    .responsive-selection-bar {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 0.75rem;
-    }
-
-    .selection-group {
-      flex-direction: row;
-      align-items: center;
-      gap: 0.75rem;
-
-      .flex-1 {
-        min-width: 0;
-      }
-    }
-
-    .stats-group {
-      justify-content: center;
-      align-self: center;
-    }
-
-    // Stats responsive for medium screens
-    .stats-container {
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .stats-card {
-      flex: 1;
-      min-width: 120px;
-    }
-  }
-
-  // iPad and tablet optimization
-  @media screen and (max-width: 1024px) and (min-width: 768px) {
-    .responsive-selection-bar {
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .selection-group {
-      flex: 1;
-      min-width: 200px;
-
-      .flex-1 {
-        min-width: 0;
-      }
-    }
-
-    .stats-group {
-      flex-shrink: 0;
-      flex-direction: row;
-    }
-
-    // Make selectors slightly larger on iPad for better touch interaction
-    .ultra-compact-selector {
-      height: 36px !important;
-      min-height: 36px !important;
-
-      .p-dropdown-label {
-        padding: 0.5rem 0.75rem !important;
-        height: 34px !important;
-        min-height: 34px !important;
-        font-size: 0.875rem !important;
-      }
-
-      .p-dropdown-trigger {
-        height: 34px !important;
-        min-height: 34px !important;
-        width: 2rem !important;
-      }
-    }
-
-    // Stats for iPad
-    .stats-container {
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-
-    .stats-card {
-      flex: 1;
-      min-width: 140px;
-      padding: 0.75rem;
-    }
-
-    .stats-icon {
-      width: 40px;
-      height: 40px;
-    }
-
-    .stats-number {
-      font-size: 1.5rem;
-    }
-
-    .stats-percentage {
-      font-size: 0.7rem;
-    }
-  }
-
-  // Mobile optimization
-  @media screen and (max-width: 767px) {
-    .responsive-selection-bar {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 0.75rem;
-    }
-
-    .selection-group {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 0.5rem;
-
-      .flex.align-items-center.gap-2 {
-        justify-content: flex-start;
-        flex-direction: row;
-        gap: 0.5rem;
-      }
-
-      .flex-1 {
-        min-width: 0;
-      }
-    }
-
-    .stats-group {
-      justify-content: center;
-      align-self: center;
-      flex-direction: row;
-    }
-
-    // Smaller selectors on mobile to save space
-    .ultra-compact-selector {
-      height: 36px !important;
-      min-height: 36px !important;
-
-      .p-dropdown-label {
-        padding: 0.5rem 0.75rem !important;
-        height: 34px !important;
-        min-height: 34px !important;
-        font-size: 0.875rem !important;
-      }
-
-      .p-dropdown-trigger {
-        height: 34px !important;
-        min-height: 34px !important;
-        width: 2rem !important;
-      }
-    }
-
-    // Stats for mobile
-    .stats-container {
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .stats-card {
-      width: 100%;
-      padding: 1rem;
-    }
-
-    .stats-icon {
-      width: 44px;
-      height: 44px;
-    }
-
-    .stats-number {
-      font-size: 1.5rem;
-    }
-
-    .stats-percentage {
-      font-size: 0.75rem;
-    }
-  }
-
-  // Small mobile optimization
-  @media screen and (max-width: 480px) {
-    .responsive-selection-bar {
-      gap: 0.5rem;
-    }
-
-    .selection-group {
-      gap: 0.25rem;
-
-      .flex.align-items-center.gap-2 {
-        gap: 0.25rem;
-      }
-    }
-
-    .stats-group {
-      flex-direction: row;
-      gap: 0.5rem;
-
-      .flex.align-items-center {
-        gap: 0.25rem;
-      }
-    }
-
-    // Even smaller selectors on very small screens
-    .ultra-compact-selector {
-      height: 32px !important;
-      min-height: 32px !important;
-
-      .p-dropdown-label {
-        padding: 0.375rem 0.5rem !important;
-        height: 30px !important;
-        min-height: 30px !important;
-        font-size: 0.75rem !important;
-      }
-
-      .p-dropdown-trigger {
-        height: 30px !important;
-        min-height: 30px !important;
-        width: 1.75rem !important;
-      }
-    }
-
-    // Stats for small mobile
-    .stats-container {
-      gap: 0.5rem;
-    }
-
-    .stats-card {
-      padding: 0.75rem;
-    }
-
-    .stats-icon {
-      width: 36px;
-      height: 36px;
-    }
-
-    .stats-number {
-      font-size: 1.25rem;
-    }
-
-    .stats-label {
-      font-size: 0.75rem;
-    }
-
-    .stats-percentage {
-      font-size: 0.65rem;
     }
   }
 }

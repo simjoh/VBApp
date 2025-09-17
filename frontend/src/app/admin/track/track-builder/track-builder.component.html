@@ -5,7 +5,7 @@
     <!-- Track Building Options -->
     <ng-container *ngIf="(editMode$ | async) === false">
       <div class="building-options">
-        <div class="option-card selected" (click)="setMode()">
+        <div class="option-card" [class.selected]="currentMode === 'create'" (click)="setMode('create')">
           <div class="option-icon">
             <i class="pi pi-plus"></i>
           </div>
@@ -13,7 +13,7 @@
           <p class="option-description">Skapa ett helt nytt arrangemang i loppservice med kalenderpost</p>
         </div>
 
-        <div class="option-card disabled">
+        <div class="option-card" [class.disabled]="true" (click)="setMode('gpx')">
           <div class="option-icon">
             <i class="pi pi-file"></i>
           </div>
@@ -22,7 +22,7 @@
           <span class="upcoming-badge">Kommande funktion</span>
         </div>
 
-        <div class="option-card disabled">
+        <div class="option-card" [class.disabled]="true" (click)="setMode('copy')">
           <div class="option-icon">
             <i class="pi pi-copy"></i>
           </div>
@@ -37,12 +37,6 @@
     <ng-container *ngIf="(editMode$ | async) === true">
       <!-- Header -->
       <div class="flex align-items-center gap-3 mb-4">
-        <button pButton
-          icon="pi pi-arrow-left"
-          label="Tillbaka"
-          class="p-button-text"
-          (click)="setMode()">
-        </button>
         <div>
           <h2 class="text-900 m-0 mb-2">Skapa nytt arrangemang</h2>
           <p class="text-700 m-0">Fyll i informationen nedan för att skapa ditt arrangemang och bana</p>
