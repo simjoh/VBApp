@@ -19,7 +19,7 @@ return new class extends Migration {
 
             $eventconfi = $event->eventconfiguration;
             $reservationconfig = $eventconfi->reservationconfig;
-            $reservationconfig->use_reservation_until = '2026-06-30';
+            $reservationconfig->use_reservation_until = '2026-05-30';
             $reservationconfig->use_reservation_on_event = true;
             $eventconfi->reservationconfig()->save($reservationconfig);
         });
