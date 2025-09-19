@@ -61,12 +61,14 @@ return function (App $app) {
     $app->get('/randonneur/preview/checkpoints/track/{track_uid}', \App\Action\Randonneur\RandonneurAction::class . ':getCheckpointPreView');
     $app->get('/randonneur/track/{track_uid}', \App\Action\Randonneur\RandonneurAction::class . ':getTrack');
     $app->get('/randonneur/trackfor/{track_uid}/startnumber/{startnumber}', \App\Action\Randonneur\RandonneurAction::class . ':getTrackOnly');
+    $app->get('/randonneur/state/{track_uid}/startnumber/{startnumber}', \App\Action\Randonneur\RandonneurAction::class . ':getParticipantState');
     $app->post('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/stamp', \App\Action\Randonneur\RandonneurAction::class . ':stamp');
     $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/markasdnf', \App\Action\Randonneur\RandonneurAction::class . ':markasDNF');
-    $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/rollbackdnf', \App\Action\Randonneur\RandonneurAction::class . ':rollbackDNF');
-    $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/rollback', \App\Action\Randonneur\RandonneurAction::class . ':rollbackStamp');
     $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/checkoutFrom', \App\Action\Randonneur\RandonneurAction::class . ':checkoutFrom');
     $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/undocheckoutFrom', \App\Action\Randonneur\RandonneurAction::class . ':undocheckoutFrom');
+
+    $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/rollbackdnf', \App\Action\Randonneur\RandonneurAction::class . ':rollbackDNF');
+    $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/rollback', \App\Action\Randonneur\RandonneurAction::class . ':rollbackStamp');
 
     // ingångar som används av en volontär
     $app->get('/volonteer/track/{trackUid}/checkpoint/{checkpointUid}', \App\Action\Volonteer\VolonteerAction::class . ':getCheckpoint');

@@ -65,6 +65,24 @@ class RandonneurAction
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
+    public function getParticipantState(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('track_uid');
+        $startnumber = $route->getArgument('startnumber');
+        
+        $state = $this->randonneurService->getParticipantState($track_uid, $startnumber, $request->getAttribute('currentuserUid'));
+        
+        if ($state === null) {
+            $response->getBody()->write(json_encode(['error' => 'Participant not found']));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
+        
+        $response->getBody()->write(json_encode($state));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
     public function stamp(ServerRequestInterface $request, ResponseInterface $response)
     {
         //skicka tillbacka checkpoints med ny status

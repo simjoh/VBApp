@@ -4,30 +4,94 @@
 }
 
 .track-info-section {
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 1rem 2rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 2rem;
+  color: #1e293b;
 
   .track-info {
     max-width: 1200px;
     margin: 0 auto;
 
-    .track-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #1f2937;
-      margin: 0 0 0.5rem 0;
-      line-height: 1.3;
-    }
-
-    .track-details {
+    .track-header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
+      gap: 1.5rem;
 
-      .track-distance {
-        font-size: 1rem;
-        color: #6b7280;
-        font-weight: 500;
+      .track-icon {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 60px;
+        height: 60px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+        i {
+          font-size: 1.5rem;
+          color: white;
+        }
+
+        &.loading {
+          background: linear-gradient(135deg, #94a3b8, #64748b);
+
+          i {
+            font-size: 1.2rem;
+          }
+        }
+      }
+
+      .track-content {
+        flex: 1;
+        min-width: 0;
+
+        .track-title {
+          font-size: 1.75rem;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0 0 1rem 0;
+          line-height: 1.2;
+          letter-spacing: -0.025em;
+        }
+
+        .track-details {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1.5rem;
+          align-items: center;
+
+          .track-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+
+            &:hover {
+              background: #f8fafc;
+              transform: translateY(-1px);
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            }
+
+            i {
+              font-size: 0.9rem;
+              color: #3b82f6;
+            }
+
+            .track-distance {
+              font-size: 1rem;
+              color: #1e293b;
+              font-weight: 600;
+            }
+
+          }
+        }
       }
     }
   }
@@ -145,9 +209,80 @@
 
   .checkpoints-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+    gap: 2.5rem;
     margin-bottom: 2rem;
+
+    // Responsive grid for smaller screens
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 2rem;
+    }
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+
+  .loading-checkpoints {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+    grid-column: 1 / -1; // Span all columns
+
+    p {
+      font-size: 1.1rem;
+      color: #6b7280;
+      margin-bottom: 1rem;
+    }
+
+    i {
+      font-size: 2rem;
+      color: #6366f1;
+    }
+  }
+
+  .no-checkpoints {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    padding: 2rem;
+    grid-column: 1 / -1; // Span all columns
+
+    .no-checkpoints-content {
+      text-align: center;
+      background: #dbeafe;
+      border: 1px solid #3b82f6;
+      border-radius: 8px;
+      padding: 2rem;
+      max-width: 400px;
+
+      i {
+        font-size: 3rem;
+        color: #3b82f6;
+        margin-bottom: 1rem;
+        display: block;
+      }
+
+      h3 {
+        margin: 0 0 0.5rem 0;
+        color: #1e40af;
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+
+      p {
+        margin: 0;
+        color: #1e40af;
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+    }
   }
 
   .abandon-section {
@@ -193,6 +328,49 @@
 
 // Mobile responsiveness
 @media (max-width: 768px) {
+  .track-info-section {
+    padding: 1.5rem 1rem;
+
+    .track-info .track-header {
+      gap: 1rem;
+
+      .track-icon {
+        min-width: 50px;
+        height: 50px;
+        padding: 0.75rem;
+
+        i {
+          font-size: 1.25rem;
+        }
+      }
+
+      .track-content {
+        .track-title {
+          font-size: 1.5rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .track-details {
+          gap: 1rem;
+
+          .track-detail-item {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+
+            i {
+              font-size: 0.8rem;
+            }
+
+            .track-distance {
+              font-size: 0.9rem;
+            }
+
+          }
+        }
+      }
+    }
+  }
+
   .permission-required .permission-card {
     margin: 0.5rem;
     padding: 1.5rem;
@@ -220,23 +398,6 @@
     }
   }
 
-
-  .track-info-section {
-    padding: 0.75rem 1rem;
-
-    .track-info {
-      .track-title {
-        font-size: 1.25rem;
-      }
-
-      .track-details {
-        .track-distance {
-          font-size: 0.9rem;
-        }
-      }
-    }
-  }
-
   .competitor-main {
     padding: 1rem;
   }
@@ -249,7 +410,7 @@
 
     .checkpoints-grid {
       grid-template-columns: 1fr;
-      gap: 1rem;
+      gap: 1.5rem;
     }
 
     .abandon-section {

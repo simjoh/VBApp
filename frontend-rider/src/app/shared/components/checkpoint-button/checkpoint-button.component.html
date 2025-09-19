@@ -1,0 +1,32 @@
+<div class="checkpoint-button-container">
+  <!-- Single button that changes function and text based on state -->
+  <button
+    [class]="buttonClass"
+    [disabled]="isButtonDisabled"
+    (click)="onButtonClick()"
+  >
+    @if (loading) {
+      <i class="pi pi-spin pi-spinner button-icon"></i>
+    } @else {
+      <i [class]="buttonIcon + ' button-icon'"></i>
+    }
+    <span class="button-text">{{ buttonText }}</span>
+  </button>
+
+  <!-- Remove redundant timestamp info since checkpoint card already shows "Time:" -->
+
+  <!-- Status indicator for completed states -->
+  @if (checkpoint.isFirst && checkpoint.status === 'checked-in') {
+    <div class="status-indicator started">
+      <i class="pi pi-check-circle"></i>
+      <span>Brevet Started</span>
+    </div>
+  }
+
+  @if (checkpoint.isLast && checkpoint.status === 'checked-in') {
+    <div class="status-indicator finished">
+      <i class="pi pi-flag"></i>
+      <span>Brevet Completed!</span>
+    </div>
+  }
+</div>

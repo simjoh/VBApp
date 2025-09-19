@@ -36,6 +36,23 @@
         <strong>Time:</strong> {{ checkpoint.time }}
       </div>
     </div>
+
+    <!-- Checkpoint Action Button -->
+    <app-checkpoint-button
+      [checkpoint]="{
+        checkpoint_uid: checkpoint.checkpoint_uid,
+        name: checkpoint.name,
+        status: checkpoint.status,
+        timestamp: checkpoint.timestamp,
+        checkoutTimestamp: checkpoint.checkoutTimestamp,
+        isFirst: isFirst,
+        isLast: isLast
+      }"
+      [trackUid]="trackUid"
+      [participantUid]="participantUid"
+      [startNumber]="startNumber"
+      (actionCompleted)="onActionCompleted($event)"
+    ></app-checkpoint-button>
   </div>
 
 </div>

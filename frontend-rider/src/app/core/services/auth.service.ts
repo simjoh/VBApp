@@ -64,13 +64,14 @@ export class AuthService {
         map(response => {
           console.log('Login response:', response);
 
-          // Check if user has COMPETITOR role
-          if (!response.roles || !response.roles.includes('COMPETITOR')) {
-            console.log('User does not have COMPETITOR role. Roles:', response.roles);
+          // Check if user has COMPETITOR role (allow ADMIN for testing)
+          if (!response.roles || (!response.roles.includes('COMPETITOR') && !response.roles.includes('ADMIN'))) {
+            console.log('User does not have COMPETITOR or ADMIN role. Roles:', response.roles);
             return false;
           }
 
-          localStorage.setItem('loggedInUser', JSON.stringify(response.token));
+          console.log('Storing token:', response.token);
+          localStorage.setItem('loggedInUser', response.token);
           this.authenticatedSubject.next(true);
           this.setActiveUser(response);
           return true;
@@ -84,15 +85,43 @@ export class AuthService {
   }
 
   private setActiveUser(data: any): void {
+    console.log('Setting active user with data:', data);
+
+    // Handle different possible name formats from backend
+    let userName = 'Unknown User';
+    if (data.givenname && data.familyname) {
+      userName = data.givenname + " " + data.familyname;
+    } else if (data.name) {
+      userName = data.name;
+    } else if (data.username) {
+      userName = data.username;
+    } else if (data.email) {
+      userName = data.email;
+    } else if (data.startnumber) {
+      // For competitor users, use startnumber as display name
+      userName = `Rider #${data.startnumber}`;
+    }
+
+    // Use the actual data from the backend response
+    let startnumber = data.startnumber;
+    let trackuid = data.trackuid;
+
+    console.log('User data from backend:', {
+      startnumber: startnumber,
+      trackuid: trackuid,
+      roles: data.roles
+    });
+
     const activeUser: ActiveUser = {
-      name: data.givenname + " " + data.familyname,
-      roles: data.roles,
-      id: data.id,
-      startnumber: data.startnumber,
-      trackuid: data.trackuid,
+      name: userName,
+      roles: data.roles || [],
+      id: data.id || data.uid || 'unknown',
+      startnumber: startnumber,
+      trackuid: trackuid,
       organizer_id: data.organizer_id || data.organizerId
     };
 
+    console.log('Created active user object:', activeUser);
     localStorage.setItem('activeUser', JSON.stringify(activeUser));
   }
 
@@ -129,5 +158,18 @@ export class AuthService {
     localStorage.removeItem('loggedInUser');
     localStorage.removeItem('activeUser');
     this.changeStatus(false);
+  }
+
+  getActiveUser(): ActiveUser | null {
+    const activeUserData = localStorage.getItem('activeUser');
+    if (activeUserData) {
+      try {
+        return JSON.parse(activeUserData) as ActiveUser;
+      } catch (error) {
+        console.error('Error parsing active user data:', error);
+        return null;
+      }
+    }
+    return null;
   }
 }

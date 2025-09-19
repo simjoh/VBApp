@@ -12,9 +12,22 @@ import { LogoComponent } from '../logo/logo.component';
 export class CompetitorHeaderComponent {
   @Input() startNumber: string = '#123';
   @Input() riderName: string = 'John Andersson';
+  @Input() locationStatus: 'granted' | 'denied' | 'unknown' = 'unknown';
   @Output() logout = new EventEmitter<void>();
 
   onLogout() {
     this.logout.emit();
+  }
+
+  getLocationStatusText(): string {
+    switch (this.locationStatus) {
+      case 'granted':
+        return 'Location access granted';
+      case 'denied':
+        return 'Location access denied';
+      case 'unknown':
+      default:
+        return 'Location status unknown';
+    }
   }
 }

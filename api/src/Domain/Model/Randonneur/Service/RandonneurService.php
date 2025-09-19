@@ -112,6 +112,94 @@ class RandonneurService
         return $randonneurcheckpoints;
     }
 
+    public function getParticipantState(?string $track_uid, $startnumber, string $current_user_uid): ?array
+    {
+        $participant = $this->participantRepository->participantOntRackAndStartNumber($track_uid, $startnumber);
+        
+        if (empty($participant)) {
+            return null;
+        }
+
+        // Get participant name from competitor
+        $participantName = 'Rider #' . $startnumber; // Default fallback
+        if ($participant->getCompetitorUid()) {
+            $competitor = $this->repository->getCompetitorByUID($participant->getCompetitorUid());
+            if ($competitor) {
+                $givenName = $competitor->getGivenName();
+                $familyName = $competitor->getFamilyName();
+                if ($givenName && $familyName) {
+                    $participantName = $givenName . ' ' . $familyName;
+                } elseif ($givenName) {
+                    $participantName = $givenName;
+                } elseif ($familyName) {
+                    $participantName = $familyName;
+                }
+            }
+        }
+
+        // Get participant overall status
+        $hasDnf = $this->participantRepository->hasDnf($participant->getParticipantUid());
+        
+        // Determine participant status
+        $participantStatus = 'active';
+        if ($hasDnf) {
+            $participantStatus = 'dnf';
+        }
+        
+        // TODO: Add logic for 'dns' and 'finished' statuses when available
+        // For now, we'll just use 'active' and 'dnf'
+
+        // Get checkpoint states
+        $checkpoints = $this->checkpointService->checkpointForTrack($track_uid);
+        $checkpointStates = [];
+
+        foreach ($checkpoints as $checkpoint) {
+            $checkpointUid = $checkpoint->getCheckPointUId();
+            
+            // Get stamp and checkout status
+            $stamped = $this->participantRepository->hasStampOnCheckpoint($participant->getParticipantUid(), $checkpointUid);
+            $hasCheckout = $this->participantRepository->hasCheckedOut($participant->getParticipantUid(), $checkpointUid);
+            
+            // Get timestamps
+            $participant_checkpoint = $this->participantRepository->stampTimeOnCheckpoint($participant->getParticipantUid(), $checkpointUid);
+
+            $status = 'not-visited';
+            $timestamp = null;
+            $checkoutTimestamp = null;
+
+            // Determine checkpoint status
+            if ($stamped) {
+                $status = $hasCheckout ? 'checked-out' : 'checked-in';
+            }
+
+            // Get timestamps if available
+            if ($participant_checkpoint != null) {
+                if ($participant_checkpoint->getPassededDateTime() != null) {
+                    $timestamp = $participant_checkpoint->getPassededDateTime();
+                }
+                if ($participant_checkpoint->getCheckoutDateTime() != null) {
+                    $checkoutTimestamp = $participant_checkpoint->getCheckoutDateTime();
+                }
+            }
+
+            $checkpointStates[$checkpointUid] = [
+                'status' => $status,
+                'timestamp' => $timestamp,
+                'checkoutTimestamp' => $checkoutTimestamp
+            ];
+        }
+
+        return [
+            'participantStatus' => $participantStatus,
+            'participantUid' => $participant->getParticipantUid(),
+            'participantName' => $participantName,
+            'trackUid' => $track_uid,
+            'startnumber' => $startnumber,
+            'checkpointStates' => $checkpointStates,
+            'lastUpdated' => date('Y-m-d H:i:s') // Current timestamp for cache invalidation
+        ];
+    }
+
     public function checkoutFromCheckpoint(?string $track_uid, $checkpoint_uid, string $startnumber)
     {
 

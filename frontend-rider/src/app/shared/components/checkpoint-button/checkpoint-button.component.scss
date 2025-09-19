@@ -1,0 +1,281 @@
+.checkpoint-button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.checkpoint-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border: none; // No border
+  border-radius: 0; // No rounded corners - sharp edges
+  font-size: 1.2rem; // Larger font size for better visibility
+  font-weight: 900; // Extra bold for outdoor visibility
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.75px; // Increased letter spacing for clarity
+  min-height: 54px;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); // Strong shadow for depth
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4); // Text shadow for better readability
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .button-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .button-text {
+    font-size: 1.1rem; // Larger text for better readability
+    font-weight: 900; // Extra bold for outdoor visibility
+    letter-spacing: 0.75px; // Increased spacing for clarity
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4); // Strong text shadow
+  }
+
+  // State-specific styling - HIGH CONTRAST for outdoor visibility with black outline
+  &.start {
+    background: #343a40; // Dark gray for start state
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #2c3136;
+      box-shadow: 0 6px 20px rgba(52, 58, 64, 0.4);
+    }
+
+    &.completed {
+      background: #374151; // Dark gray
+      color: #f9fafb;
+      cursor: default;
+
+      &:hover {
+        transform: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+
+  &.check-in {
+    background: #343a40; // Dark gray for check in state
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #2c3136;
+      box-shadow: 0 6px 20px rgba(52, 58, 64, 0.4);
+    }
+  }
+
+  &.checked-in {
+    background: #343a40; // Dark gray for checked in state
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #2c3136;
+      box-shadow: 0 6px 20px rgba(52, 58, 64, 0.4);
+    }
+  }
+
+  // Override for start checkpoint checked-in state
+  &.start.checked-in {
+    background: #16a34a !important; // Green for checked in state on start checkpoint
+    color: white !important;
+    cursor: default;
+
+    &:hover {
+      transform: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  // Additional specific override for start checkpoint - FORCE GREEN
+  &.checkpoint-button.start.checked-in {
+    background: #16a34a !important;
+    color: white !important;
+  }
+
+  // Override for start checkpoint checked-out state (shows CHECKED IN text)
+  &.start.checked-out {
+    background: #16a34a !important; // Green for start checkpoint even when checked-out
+    color: white !important;
+    cursor: default;
+
+    &:hover {
+      transform: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  &.check-out {
+    background: #343a40; // Dark gray for check out state
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #2c3136;
+      box-shadow: 0 6px 20px rgba(52, 58, 64, 0.4);
+    }
+  }
+
+  &.checked-out {
+    background: #f97316; // Orange for checked out state
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #ea580c;
+      box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+    }
+  }
+
+  &.undo {
+    background: #16a34a; // Green for undo actions
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #15803d;
+      box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
+    }
+  }
+
+  &.undo-checkin {
+    background: #dc2626; // Solid bright red
+    color: white;
+    margin-top: 0.5rem; // Small gap from main button
+
+    &:hover:not(:disabled) {
+      background: #b91c1c;
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+    }
+  }
+
+  &.finish {
+    background: #16a34a; // Green for finished state
+    color: white;
+    cursor: default;
+
+    &:hover {
+      transform: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+
+/* Removed timestamp-info styles - redundant with checkpoint card "Time:" field */
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0; // Sharp corners to match button
+  font-weight: 600;
+  font-size: 0.9rem;
+
+  i {
+    font-size: 1.1rem;
+  }
+
+  &.started {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 2px solid rgba(16, 185, 129, 0.2);
+
+    i {
+      color: #10b981;
+    }
+  }
+
+  &.finished {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(124, 58, 237, 0.1));
+    color: #7c3aed;
+    border: 2px solid rgba(139, 92, 246, 0.2);
+    animation: celebrate 2s ease-in-out;
+
+    i {
+      color: #8b5cf6;
+      animation: pulse 1.5s infinite;
+    }
+  }
+}
+
+@keyframes celebrate {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+// Mobile responsiveness - Enhanced for outdoor visibility
+@media (max-width: 768px) {
+  .checkpoint-button {
+    padding: 1rem 1.25rem; // Keep larger padding for easier touch
+    font-size: 1.2rem; // Larger font for mobile visibility
+    min-height: 52px; // Slightly larger for outdoor use
+    border: none; // No border on mobile
+    border-radius: 0; // Maintain sharp corners
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4); // Stronger shadow
+
+    .button-icon {
+      font-size: 1.3rem; // Larger icon for mobile
+    }
+
+    .button-text {
+      font-size: 1.1rem; // Larger text for mobile readability
+      font-weight: 900;
+      text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.6); // Even stronger text shadow
+    }
+  }
+
+  /* Removed timestamp-info mobile styles */
+
+  .status-indicator {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.85rem;
+
+    i {
+      font-size: 1rem;
+    }
+  }
+}
+
+// Extra small screens
+@media (max-width: 480px) {
+  .checkpoint-button {
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+
+    .button-text {
+      font-size: 0.8rem;
+      letter-spacing: 0.25px;
+    }
+  }
+}

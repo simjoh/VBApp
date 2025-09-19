@@ -22,17 +22,45 @@
     </div>
   } @else {
     <app-competitor-header
-      [startNumber]="'#123'"
-      [riderName]="'John Andersson'"
+      [startNumber]="currentUser?.startnumber ? '#' + currentUser?.startnumber : '#000'"
+      [riderName]="getParticipantName()"
+      [locationStatus]="getLocationStatus()"
       (logout)="logout()">
     </app-competitor-header>
 
     <div class="track-info-section">
       <div class="track-info">
-        <h2 class="track-title">BRM 200K VINDELN BOTSMARK</h2>
-        <div class="track-details">
-          <span class="track-distance">200 km</span>
-        </div>
+        @if (trackInfo(); as track) {
+          <div class="track-header">
+            <div class="track-icon">
+              <i class="pi pi-flag"></i>
+            </div>
+            <div class="track-content">
+              <h2 class="track-title">{{ track.title }}</h2>
+              <div class="track-details">
+                <div class="track-detail-item">
+                  <i class="pi pi-map-marker"></i>
+                  <span class="track-distance">{{ track.distance }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="track-header">
+            <div class="track-icon loading">
+              <i class="pi pi-spin pi-spinner"></i>
+            </div>
+            <div class="track-content">
+              <h2 class="track-title">Loading track information...</h2>
+              <div class="track-details">
+                <div class="track-detail-item">
+                  <i class="pi pi-map-marker"></i>
+                  <span class="track-distance">-- km</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
       </div>
     </div>
 
@@ -40,16 +68,37 @@
       <div class="checkpoints-section">
         <h2 class="section-title">Checkpoints</h2>
         <div class="checkpoints-grid">
-          @for (checkpoint of checkpoints; track checkpoint.name) {
-            <app-checkpoint-card [checkpoint]="checkpoint"></app-checkpoint-card>
+          @if (checkpoints().length > 0) {
+            @for (checkpoint of checkpoints(); track checkpoint.checkpoint_uid; let i = $index) {
+              <app-checkpoint-card
+                [checkpoint]="checkpoint"
+                [trackUid]="currentUser?.trackuid || ''"
+                [participantUid]="currentUser?.id || ''"
+                [startNumber]="currentUser?.startnumber || ''"
+                [isFirst]="i === 0"
+                [isLast]="i === checkpoints().length - 1"
+                [totalCheckpoints]="checkpoints().length"
+                (actionCompleted)="onCheckpointActionCompleted($event)"
+              ></app-checkpoint-card>
+            }
+          } @else {
+            <div class="no-checkpoints">
+              <div class="no-checkpoints-content">
+                <i class="pi pi-info-circle"></i>
+                <h3>Checkpoints Coming Soon</h3>
+                <p>Checkpoints for this track will be available soon. Please check back later.</p>
+              </div>
+            </div>
           }
         </div>
-        <div class="abandon-section">
-          <button class="abandon-button" (click)="abandonBrevet()">
-            <i class="pi pi-times"></i>
-            <span>ABANDON BREVET</span>
-          </button>
-        </div>
+        @if (checkpoints().length > 0) {
+          <div class="abandon-section">
+            <button class="abandon-button" (click)="abandonBrevet()">
+              <i class="pi pi-times"></i>
+              <span>ABANDON BREVET</span>
+            </button>
+          </div>
+        }
       </div>
     </main>
   }
