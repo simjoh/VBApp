@@ -1,0 +1,77 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+        <div class="certification-text">
+          <h2>Certifierad av Audax Club Parisien</h2>
+          <p>DIGITALT BREVET-KORT MED GPS VALIDERING</p>
+        </div>
+        <div class="logo-container">
+          <app-logo [height]="160" [width]="160" [rolling]="true"></app-logo>
+        </div>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      @if (loginError) {
+        <div class="error-message">
+          <i class="pi pi-exclamation-triangle"></i>
+          <span>{{ loginError }}</span>
+        </div>
+      }
+
+      <div class="form-group">
+        <div class="input-container">
+          <i class="pi pi-user input-icon"></i>
+          <input
+            id="username"
+            type="text"
+            formControlName="username"
+            class="form-control"
+            placeholder="Username"
+            autocomplete="username"
+            [class.error]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+          />
+        </div>
+        @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+          <div class="field-error">
+            <i class="pi pi-exclamation-circle"></i>
+            <span>Username is required</span>
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <div class="input-container">
+          <i class="pi pi-lock input-icon"></i>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            class="form-control"
+            placeholder="Password"
+            autocomplete="current-password"
+            [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+          />
+        </div>
+        @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+          <div class="field-error">
+            <i class="pi pi-exclamation-circle"></i>
+            <span>Password is required</span>
+          </div>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="login-button"
+        [disabled]="loginForm.invalid"
+      >
+        <i class="pi pi-sign-in"></i>
+        <span>Login</span>
+      </button>
+    </form>
+
+    <div class="app-footer">
+      <p>Riders App</p>
+    </div>
+  </div>
+</div>

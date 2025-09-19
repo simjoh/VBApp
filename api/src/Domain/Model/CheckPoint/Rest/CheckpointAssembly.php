@@ -26,6 +26,15 @@ class CheckpointAssembly
         return $checkpoints;
     }
 
+    public function toRepresentationsOnly(array $checkpointsArray): array
+    {
+        $checkpoints = array();
+        foreach ($checkpointsArray as $x => $checkpoint) {
+            array_push($checkpoints, (object) $this->toRepresentationOnly($checkpoint));
+        }
+        return $checkpoints;
+    }
+
     public function toRepresentation(Checkpoint $checkpoint): CheckpointRepresentation
     {
         $checkpointRepresentation = new CheckpointRepresentation();
@@ -40,6 +49,25 @@ class CheckpointAssembly
         }
 
         $checkpointRepresentation->setSite($this->siteservice->siteFor($checkpoint->getSiteUid(), 's'));
+        return $checkpointRepresentation;
+    }
+
+    public function toRepresentationOnly(Checkpoint $checkpoint): CheckpointRepresentation
+    {
+        $checkpointRepresentation = new CheckpointRepresentation();
+        $checkpointRepresentation->setCheckpointUid($checkpoint->getCheckpointUid());
+        $checkpointRepresentation->setDescription($checkpoint->getDescription());
+        $checkpointRepresentation->setTitle($checkpoint->getTitle());
+        $checkpointRepresentation->setDistance($checkpoint->getDistance());
+        $checkpointRepresentation->setOpens($checkpoint->getOpens());
+        
+        if ($checkpoint->getClosing() !== null) {
+            $checkpointRepresentation->setClosing($checkpoint->getClosing());
+        }
+
+        // Include site information but no state data
+        $checkpointRepresentation->setSite($this->siteservice->siteFor($checkpoint->getSiteUid(), 's'));
+        
         return $checkpointRepresentation;
     }
 

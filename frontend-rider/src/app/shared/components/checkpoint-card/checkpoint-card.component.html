@@ -1,0 +1,41 @@
+<div class="checkpoint-card" [class]="statusClass">
+  <div class="checkpoint-header">
+    <div class="checkpoint-logo" *ngIf="logoUrl">
+      <img [src]="logoUrl" [alt]="checkpoint.name + ' logo'" />
+    </div>
+    <div class="checkpoint-logo-placeholder" *ngIf="!logoUrl">
+      <i class="pi pi-map-marker"></i>
+    </div>
+  </div>
+
+  <div class="checkpoint-content">
+    <h3 class="checkpoint-name">{{ checkpoint.name }}</h3>
+
+    <div class="checkpoint-details">
+      <div class="detail-line">
+        <strong>Distance:</strong> {{ checkpoint.distance }} Km
+      </div>
+
+      <div class="detail-line">
+        <strong>To next:</strong> {{ checkpoint.toNext }} Km
+      </div>
+
+      <div class="detail-line">
+        <strong>Opens:</strong> {{ checkpoint.opens }}
+      </div>
+
+      <div class="detail-line">
+        <strong>Closes:</strong> {{ checkpoint.closes }}
+      </div>
+
+      <div class="detail-line">
+        <strong>Service:</strong> {{ checkpoint.service }}
+      </div>
+
+      <div class="detail-line" *ngIf="checkpoint.time">
+        <strong>Time:</strong> {{ checkpoint.time }}
+      </div>
+    </div>
+  </div>
+
+</div>

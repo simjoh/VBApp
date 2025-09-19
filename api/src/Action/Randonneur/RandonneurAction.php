@@ -55,6 +55,16 @@ class RandonneurAction
         return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
     }
 
+    public function getTrackOnly(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        $routeContext = RouteContext::fromRequest($request);
+        $route = $routeContext->getRoute();
+        $track_uid = $route->getArgument('track_uid');
+        $startnumber = $route->getArgument('startnumber');
+        $response->getBody()->write(json_encode($this->trackservice->getTrackOnlyByTrackUid($track_uid, $startnumber)));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
     public function stamp(ServerRequestInterface $request, ResponseInterface $response)
     {
         //skicka tillbacka checkpoints med ny status

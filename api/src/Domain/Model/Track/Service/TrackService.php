@@ -87,6 +87,19 @@ class TrackService extends ServiceAbstract
         return $this->trackAssembly->toRepresentation($track, $permissions, $currentuserUid);
     }
 
+    public function getTrackOnlyByTrackUid(string $trackUid, string $startnumber): TrackRepresentation
+    {
+        $track = $this->trackRepository->getTrackByUid($trackUid);
+
+        // If track is not found, throw an exception
+        if ($track === null) {
+            throw new BrevetException("Track not found with ID: " . $trackUid, 404);
+        }
+
+        // Return track and checkpoints without any state information
+        return $this->trackAssembly->toRepresentationOnly($track);
+    }
+
     public function updateTrack(TrackRepresentation $trackrepresentation, string $currentuserUid): ?TrackRepresentation
     {
         $permissions = $this->getPermissions($currentuserUid);

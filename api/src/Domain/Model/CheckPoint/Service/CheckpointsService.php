@@ -51,6 +51,12 @@ class CheckpointsService extends ServiceAbstract
         return $this->checkpointAssembly->toRepresentations($checkpoints);
     }
 
+    public function checkpointsOnly(array $checkpoints_uid): array
+    {
+        $checkpoints = $this->checkpointRepository->checkpointsFor($checkpoints_uid);
+        return $this->checkpointAssembly->toRepresentationsOnly($checkpoints);
+    }
+
     public function checkpointFor(?string $checkpoint_uid): CheckpointRepresentation
     {
         return $this->checkpointAssembly->toRepresentation($this->checkpointRepository->checkpointFor($checkpoint_uid));

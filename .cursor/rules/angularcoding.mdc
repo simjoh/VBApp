@@ -8,3 +8,8 @@ https://angular.dev/style-guide
 
 
 dont use older angular coding style and and example. i dont want example earlier then angular 15
+
+
+
+
+brevet-rider project should use angular 20 coding standards with standalone component and signals if possible

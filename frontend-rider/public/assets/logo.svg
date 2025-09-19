@@ -1,0 +1,35 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="60" cy="60" r="55" fill="url(#gradient1)" stroke="url(#gradient2)" stroke-width="2"/>
+
+  <!-- Bicycle icon -->
+  <g transform="translate(30, 40)">
+    <!-- Wheels -->
+    <circle cx="15" cy="35" r="12" fill="none" stroke="#667eea" stroke-width="3"/>
+    <circle cx="45" cy="35" r="12" fill="none" stroke="#667eea" stroke-width="3"/>
+
+    <!-- Frame -->
+    <path d="M15 35 L25 20 L35 25 L45 35" stroke="#667eea" stroke-width="3" fill="none"/>
+    <path d="M25 20 L45 20" stroke="#667eea" stroke-width="3" fill="none"/>
+    <path d="M35 25 L35 35" stroke="#667eea" stroke-width="3" fill="none"/>
+
+    <!-- Handlebars -->
+    <path d="M25 20 L20 15" stroke="#667eea" stroke-width="2" fill="none"/>
+    <path d="M25 20 L30 15" stroke="#667eea" stroke-width="2" fill="none"/>
+  </g>
+
+  <!-- Text -->
+  <text x="60" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#667eea">RIDER</text>
+
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e9ecef;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

@@ -97,6 +97,34 @@ class TrackAssembly
         return $trackRepresentation;
     }
 
+    public function toRepresentationOnly(Track $track): TrackRepresentation
+    {
+        $trackRepresentation = new TrackRepresentation();
+        $trackRepresentation->setTrackUid($track->getTrackUid());
+        $trackRepresentation->setDescriptions($track->getDescription());
+        $trackRepresentation->setLinktotrack($track->getLink());
+        $trackRepresentation->setTitle($track->getTitle());
+        $trackRepresentation->setHeightdifference("");
+        $trackRepresentation->setDistance($track->getDistance());
+        $trackRepresentation->setEventUid($track->getEventUid());
+        $trackRepresentation->setActive($track->isActive());
+        $trackRepresentation->setOrganizerId($track->getOrganizerId());
+        
+        if($track->getStartDateTime() !== null){
+            $trackRepresentation->setStartDateTime($track->getStartDateTime());
+        }
+
+        // Get checkpoints without any state information
+        if(!empty($track->getCheckpoints())){
+            $trackRepresentation->setCheckpoints($this->checkpointService->checkpointsOnly($track->getCheckpoints()));
+        }
+
+        // No links, no participant data, no state information
+        $trackRepresentation->setLinks([]);
+
+        return $trackRepresentation;
+    }
+
     public function totrack(TrackRepresentation $trackrepresentation): Track
     {
         $track = new Track();

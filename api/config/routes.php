@@ -60,6 +60,7 @@ return function (App $app) {
     $app->get('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}', \App\Action\Randonneur\RandonneurAction::class . ':getCheckpoint');
     $app->get('/randonneur/preview/checkpoints/track/{track_uid}', \App\Action\Randonneur\RandonneurAction::class . ':getCheckpointPreView');
     $app->get('/randonneur/track/{track_uid}', \App\Action\Randonneur\RandonneurAction::class . ':getTrack');
+    $app->get('/randonneur/trackfor/{track_uid}/startnumber/{startnumber}', \App\Action\Randonneur\RandonneurAction::class . ':getTrackOnly');
     $app->post('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/stamp', \App\Action\Randonneur\RandonneurAction::class . ':stamp');
     $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/markasdnf', \App\Action\Randonneur\RandonneurAction::class . ':markasDNF');
     $app->put('/randonneur/{uid}/track/{track_uid}/startnumber/{startnumber}/checkpoint/{checkpointUid}/rollbackdnf', \App\Action\Randonneur\RandonneurAction::class . ':rollbackDNF');

@@ -1,0 +1,56 @@
+<div class="competitor-app">
+  @if (isCheckingPermission()) {
+    <div class="loading-container">
+      <div class="loading-spinner">
+        <i class="pi pi-spin pi-spinner"></i>
+      </div>
+      <p>Checking location permissions...</p>
+    </div>
+  } @else if (hasGeolocationPermission() === false) {
+    <div class="permission-required">
+      <div class="permission-card">
+        <div class="permission-icon">
+          <i class="pi pi-map-marker"></i>
+        </div>
+        <h2>Location Access Required</h2>
+        <p>This app requires location access to function properly. Please enable location permissions to continue.</p>
+        <button class="permission-button" (click)="requestLocationPermission()">
+          <i class="pi pi-map-marker"></i>
+          <span>Enable Location Access</span>
+        </button>
+      </div>
+    </div>
+  } @else {
+    <app-competitor-header
+      [startNumber]="'#123'"
+      [riderName]="'John Andersson'"
+      (logout)="logout()">
+    </app-competitor-header>
+
+    <div class="track-info-section">
+      <div class="track-info">
+        <h2 class="track-title">BRM 200K VINDELN BOTSMARK</h2>
+        <div class="track-details">
+          <span class="track-distance">200 km</span>
+        </div>
+      </div>
+    </div>
+
+    <main class="competitor-main">
+      <div class="checkpoints-section">
+        <h2 class="section-title">Checkpoints</h2>
+        <div class="checkpoints-grid">
+          @for (checkpoint of checkpoints; track checkpoint.name) {
+            <app-checkpoint-card [checkpoint]="checkpoint"></app-checkpoint-card>
+          }
+        </div>
+        <div class="abandon-section">
+          <button class="abandon-button" (click)="abandonBrevet()">
+            <i class="pi pi-times"></i>
+            <span>ABANDON BREVET</span>
+          </button>
+        </div>
+      </div>
+    </main>
+  }
+</div>
