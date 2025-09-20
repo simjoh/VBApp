@@ -115,7 +115,6 @@ export class CompetitorPollingService {
     startNumber: string,
     pollingConfig: Partial<PollingConfig> = {}
   ): void {
-    console.log(`[CompetitorPolling] Starting for track: ${trackUid}, start: ${startNumber}`);
 
     this.isLoading.set(true);
     this.hasError.set(null);
@@ -133,14 +132,11 @@ export class CompetitorPollingService {
   private loadTrackData(trackUid: string, startNumber: string): void {
     const url = `${environment.backend_url}randonneur/trackfor/${trackUid}/startnumber/${startNumber}`;
 
-    console.log(`[CompetitorPolling] Loading track data from: ${url}`);
 
     this.pollingService.refreshImmediately<TrackData>(url).pipe(
       tap(data => {
-        console.log(`[CompetitorPolling] Track data loaded:`, data);
         this.trackData$.next(data);
         this.isLoading.set(false);
-        console.log(`[CompetitorPolling] Track data set in BehaviorSubject`);
       }),
       catchError(error => {
         console.error(`[CompetitorPolling] Failed to load track data:`, error);
@@ -174,7 +170,6 @@ export class CompetitorPollingService {
       ...pollingConfig
     };
 
-    console.log(`[CompetitorPolling] Starting state polling with config:`, config);
 
     this.pollingService.startPolling<ParticipantState>(
       'competitor-state',
@@ -183,10 +178,8 @@ export class CompetitorPollingService {
     ).pipe(
       tap(state => {
         if (state) {
-          console.log(`[CompetitorPolling] State updated:`, state);
           this.participantState$.next(state);
           this.hasError.set(null);
-          console.log(`[CompetitorPolling] State data set in BehaviorSubject`);
         }
       }),
       catchError(error => {
@@ -212,7 +205,6 @@ export class CompetitorPollingService {
     if (currentState) {
       const url = `${environment.backend_url}randonneur/state/${currentState.trackUid}/startnumber/${currentState.startnumber}`;
 
-      console.log(`[CompetitorPolling] Force refreshing state`);
 
       this.pollingService.refreshImmediately<ParticipantState>(url).pipe(
         tap(state => {
@@ -232,7 +224,6 @@ export class CompetitorPollingService {
    * Stop all competitor polling
    */
   stopPolling(): void {
-    console.log(`[CompetitorPolling] Stopping all polling`);
     this.pollingService.stopPolling('competitor-state');
   }
 

@@ -14,10 +14,19 @@ import { LanguageService } from './core/services/language.service';
 })
 export class App implements OnInit {
   protected readonly title = signal('Rider App');
+
   private languageService = inject(LanguageService);
 
+  constructor() {
+    // App component initialization
+  }
+
   ngOnInit() {
-    // Initialize language service - this will set the language based on localStorage or default
-    this.languageService.setLanguage(this.languageService.getCurrentLanguage());
+    // Initialize language service
+    try {
+      this.languageService.setLanguage(this.languageService.getCurrentLanguage());
+    } catch (error) {
+      console.error('Language service initialization failed:', error);
+    }
   }
 }

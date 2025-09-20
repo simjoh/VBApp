@@ -60,6 +60,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/app/rider/",
               "budgets": [
                 {
                   "type": "initial",

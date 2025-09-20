@@ -6,8 +6,114 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    /* Initial loading screen to prevent white flash */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    .initial-loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f8f9fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .loading-content {
+      text-align: center;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e9ecef;
+      border-top: 3px solid #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem auto;
+    }
+
+    .loading-text {
+      color: #6c757d;
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Hide loading screen when Angular takes over */
+    app-root:not(:empty) + .initial-loading-screen {
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <app-root></app-root>
+
+  <!-- Initial loading screen shown until Angular loads -->
+  <div class="initial-loading-screen" id="initial-loader">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Loading Rider App...</p>
+    </div>
+  </div>
+
+  <script>
+    // Remove loading screen when Angular app is ready
+    document.addEventListener('DOMContentLoaded', function() {
+
+      // Hide loader when app-root has content
+      const checkAppReady = setInterval(function() {
+        const appRoot = document.querySelector('app-root');
+        const hasContent = appRoot && (appRoot.children.length > 0 || appRoot.innerHTML.trim().length > 0);
+        const routerOutlet = document.querySelector('router-outlet');
+        const hasRouterContent = routerOutlet && routerOutlet.nextElementSibling;
+
+        if (hasContent || hasRouterContent) {
+          const loader = document.getElementById('initial-loader');
+          if (loader) {
+            loader.style.opacity = '0';
+            loader.style.transition = 'opacity 0.2s ease';
+            setTimeout(() => loader.remove(), 200);
+          }
+          clearInterval(checkAppReady);
+        }
+      }, 25);
+
+      // Optimized for real 4G/fast connections - shorter timeout
+      setTimeout(function() {
+        const loader = document.getElementById('initial-loader');
+        if (loader) {
+          loader.style.opacity = '0';
+          loader.style.transition = 'opacity 0.2s ease';
+          setTimeout(() => loader.remove(), 200);
+        }
+        clearInterval(checkAppReady);
+      }, 800);
+
+      // Emergency escape: click to dismiss
+      document.addEventListener('click', function() {
+        const loader = document.getElementById('initial-loader');
+        if (loader) {
+          loader.style.opacity = '0';
+          loader.style.transition = 'opacity 0.3s ease';
+          setTimeout(() => loader.remove(), 300);
+          clearInterval(checkAppReady);
+        }
+      });
+    });
+  </script>
 </body>
 </html>

@@ -53,7 +53,7 @@ export class CompetitorComponent implements OnInit, OnDestroy {
   private loadCompetitorData() {
     // Get authenticated user data
     const activeUser = this.authService.getActiveUser();
-    const token = localStorage.getItem('loggedInUser');
+    const token = localStorage.getItem('riderToken');
 
     console.log('Active user data:', activeUser);
     console.log('Token in localStorage:', token ? 'Present' : 'Missing');

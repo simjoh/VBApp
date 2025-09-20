@@ -41,13 +41,16 @@ export class VisibilityAwarePollingService {
   private activePolls = new Map<string, Subject<void>>();
 
   constructor() {
-    this.setupVisibilityListeners();
+    // Service initialization
   }
 
   /**
    * Setup visibility change listeners for app wake/sleep detection
    */
   private setupVisibilityListeners(): void {
+    // Visibility polling temporarily disabled
+    return;
+
     // Document visibility API (works on most browsers)
     const visibilityChange$ = fromEvent(document, 'visibilitychange').pipe(
       startWith(null), // Emit initial state
@@ -83,7 +86,8 @@ export class VisibilityAwarePollingService {
    * Update app visibility state and notify subscribers
    */
   private updateVisibility(isVisible: boolean): void {
-    console.log(`[VisibilityPolling] App ${isVisible ? 'visible' : 'hidden'}`);
+    // Temporarily disable all logging to fix white screen issue
+    // console.log(`[VisibilityPolling] App ${isVisible ? 'visible' : 'hidden'}`);
 
     this.isAppVisible.set(isVisible);
     this.pollingState.update(state => ({
@@ -106,6 +110,8 @@ export class VisibilityAwarePollingService {
     url: string,
     config: Partial<PollingConfig> = {}
   ): Observable<T> {
+    // Simplified polling without visibility detection
+
     // Default configuration
     const defaultConfig: PollingConfig = {
       interval: 30000, // 30 seconds
@@ -117,7 +123,6 @@ export class VisibilityAwarePollingService {
 
     const finalConfig = { ...defaultConfig, ...config };
 
-    console.log(`[VisibilityPolling] Starting polling for ${pollId}`, finalConfig);
 
     // Create cleanup subject for this polling instance
     const cleanup$ = new Subject<void>();
@@ -154,7 +159,6 @@ export class VisibilityAwarePollingService {
       this.visibilityChange$.pipe(
         switchMap(isVisible => {
           if (isVisible && config.immediateOnWakeup) {
-            console.log(`[VisibilityPolling] App woke up - immediate poll`);
             return timer(0);
           }
           return EMPTY;
@@ -164,11 +168,9 @@ export class VisibilityAwarePollingService {
       // Only poll when app is visible
       switchMap(() => {
         if (!this.isAppVisible()) {
-          console.log(`[VisibilityPolling] Skipping poll - app not visible`);
           return EMPTY;
         }
 
-        console.log(`[VisibilityPolling] Making API call to: ${url}`);
         return this.http.get<T>(url).pipe(
           tap((data) => {
             // Reset error count on success
@@ -191,7 +193,6 @@ export class VisibilityAwarePollingService {
               );
             }
           }),
-          tap(() => console.log(`[VisibilityPolling] Poll successful`)),
           // Handle errors
           tap({
             error: (error) => {
@@ -232,7 +233,6 @@ export class VisibilityAwarePollingService {
    * Stop polling for a specific poll ID
    */
   stopPolling(pollId: string): void {
-    console.log(`[VisibilityPolling] Stopping polling for ${pollId}`);
 
     const cleanup$ = this.activePolls.get(pollId);
     if (cleanup$) {
@@ -254,7 +254,6 @@ export class VisibilityAwarePollingService {
    * Stop all active polling
    */
   stopAllPolling(): void {
-    console.log(`[VisibilityPolling] Stopping all polling`);
 
     this.activePolls.forEach((cleanup$, pollId) => {
       cleanup$.next();
@@ -273,7 +272,6 @@ export class VisibilityAwarePollingService {
    * Force immediate refresh for a specific URL
    */
   refreshImmediately<T>(url: string): Observable<T> {
-    console.log(`[VisibilityPolling] Force refresh: ${url}`);
     return this.http.get<T>(url);
   }
 

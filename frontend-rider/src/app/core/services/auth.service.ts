@@ -32,7 +32,7 @@ export class AuthService {
   authenticated$ = this.authenticatedSubject.asObservable();
 
   private isAuthenticated(): boolean {
-    const token = localStorage.getItem("loggedInUser");
+    const token = localStorage.getItem("riderToken");
     return token !== null && token !== undefined && token !== 'null';
   }
 
@@ -71,7 +71,7 @@ export class AuthService {
           }
 
           console.log('Storing token:', response.token);
-          localStorage.setItem('loggedInUser', response.token);
+          localStorage.setItem('riderToken', response.token);
           this.authenticatedSubject.next(true);
           this.setActiveUser(response);
           return true;
@@ -122,11 +122,11 @@ export class AuthService {
     };
 
     console.log('Created active user object:', activeUser);
-    localStorage.setItem('activeUser', JSON.stringify(activeUser));
+    localStorage.setItem('activeRider', JSON.stringify(activeUser));
   }
 
   private mockLogin(): void {
-    localStorage.setItem('loggedInUser', 'fake_token');
+    localStorage.setItem('riderToken', 'fake_token');
     this.authenticatedSubject.next(true);
   }
 
@@ -155,13 +155,22 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem('loggedInUser');
-    localStorage.removeItem('activeUser');
+    // Clear authentication data
+    localStorage.removeItem('riderToken');
+    localStorage.removeItem('activeRider');
+
+    // Clear geolocation permissions (user-specific)
+    localStorage.removeItem('geolocationPermissionGranted');
+    localStorage.removeItem('geolocationJustGranted');
+
+    // Note: Language preference is preserved across logins
+    // as it's a user preference, not session data
+
     this.changeStatus(false);
   }
 
   getActiveUser(): ActiveUser | null {
-    const activeUserData = localStorage.getItem('activeUser');
+    const activeUserData = localStorage.getItem('activeRider');
     if (activeUserData) {
       try {
         return JSON.parse(activeUserData) as ActiveUser;

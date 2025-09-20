@@ -1,8 +1,8 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { environment } from '../../../../environments/environment';
 import { CheckpointButtonComponent } from '../checkpoint-button/checkpoint-button.component';
 import { TranslationPipe } from '../../pipes/translation.pipe';
+import { AssetService } from '../../../core/services/asset.service';
 
 export interface CheckpointData {
   checkpoint_uid: string;
@@ -38,9 +38,11 @@ export class CheckpointCardComponent {
 
   @Output() actionCompleted = new EventEmitter<any>();
 
+  private assetService = inject(AssetService);
+
   get logoUrl(): string | null {
     if (this.checkpoint.logoFileName) {
-      return `${environment.pictureurl}/${this.checkpoint.logoFileName}`;
+      return this.assetService.getCheckpointLogoUrl(this.checkpoint.logoFileName);
     }
     return null;
   }

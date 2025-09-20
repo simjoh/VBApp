@@ -66,7 +66,7 @@ export class GeolocationPermissionComponent {
           localStorage.setItem('geolocationJustGranted', 'true');
           localStorage.setItem('geolocationPermissionGranted', 'true');
           // Use direct window.location for immediate redirect
-          window.location.href = '/dashboard';
+          this.router.navigateByUrl('/dashboard', { replaceUrl: true });
         } catch (posError) {
           console.error('Failed to get initial position:', posError);
           this.messageService.showWarning('Location', 'Permission granted but unable to get your current location');
@@ -75,7 +75,8 @@ export class GeolocationPermissionComponent {
           setTimeout(() => {
             localStorage.setItem('geolocationJustGranted', 'true');
             localStorage.setItem('geolocationPermissionGranted', 'true');
-            window.location.href = '/dashboard';
+            this.router.navigateByUrl('/dashboard');
+
           }, 2000);
         } finally {
           this.isDetectingLocation.set(false);

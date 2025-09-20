@@ -1,7 +1,7 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
 export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
-  const token = localStorage.getItem('loggedInUser');
+  const token = localStorage.getItem('riderToken');
 
   console.log(`[TokenInterceptor] Request to: ${req.url}`);
   console.log(`[TokenInterceptor] Token from localStorage:`, token ? `Present (${token.substring(0, 20)}...)` : 'Missing');

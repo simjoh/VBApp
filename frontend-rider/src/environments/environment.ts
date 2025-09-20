@@ -5,6 +5,8 @@ export const environment = {
   backend_url: '/api/',
   mock_login: false,
   mockbackendurl: '/fejk-fejk',
-  pictureurl: '../../../../../../api/uploads',
-  http_url: 'http://localhost:8090'
+  pictureurl: 'http://localhost:8090/app/api/uploads', // Backend uploaded files (checkpoint logos)
+  http_url: 'http://localhost:8090',
+  assets_url: '/assets/', // Static app assets
+  logo_path: '/assets/ebrevet-prod.svg' // Main app logo
 };

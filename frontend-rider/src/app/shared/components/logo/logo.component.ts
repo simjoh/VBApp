@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AssetService } from '../../../core/services/asset.service';
 
 @Component({
   selector: 'app-logo',
@@ -13,8 +14,9 @@ export class LogoComponent {
   @Input() width: number = 120;
   @Input() rolling: boolean = false;
 
+  private assetService = inject(AssetService);
+
   get logoUrl(): string {
-    // Use the ebrevet-prod.svg logo
-    return '/assets/ebrevet-prod.svg';
+    return this.assetService.getLogoUrl();
   }
 }

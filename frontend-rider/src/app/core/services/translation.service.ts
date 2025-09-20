@@ -58,6 +58,13 @@ export interface TranslationKeys {
   'message.checkpointsComingSoon': string;
   'message.locationAccessGranted': string;
   'message.locationAccessDenied': string;
+
+  // Connection
+  'connection.offline': string;
+  'connection.slowConnection': string;
+  'connection.loading': string;
+  'connection.initializing': string;
+  'connection.almostReady': string;
 }
 
 @Injectable({
@@ -112,7 +119,12 @@ export class TranslationService {
       'message.undoFailed': 'Failed to undo brevet abandonment. Please try again.',
       'message.checkpointsComingSoon': 'Checkpoints for this track will be available soon.',
       'message.locationAccessGranted': 'Location access granted',
-      'message.locationAccessDenied': 'Location access denied'
+      'message.locationAccessDenied': 'Location access denied',
+      'connection.offline': 'You are currently offline',
+      'connection.slowConnection': 'Slow connection detected - Loading may take longer',
+      'connection.loading': 'Loading...',
+      'connection.initializing': 'Initializing...',
+      'connection.almostReady': 'Almost ready...'
     },
     sv: {
       'common.loading': 'Laddar...',
@@ -159,7 +171,12 @@ export class TranslationService {
       'message.undoFailed': 'Misslyckades att ångra övergivandet av brevet. Försök igen.',
       'message.checkpointsComingSoon': 'Kontrollpunkter för denna bana kommer snart.',
       'message.locationAccessGranted': 'Platsåtkomst beviljad',
-      'message.locationAccessDenied': 'Platsåtkomst nekad'
+      'message.locationAccessDenied': 'Platsåtkomst nekad',
+      'connection.offline': 'Du är för närvarande offline',
+      'connection.slowConnection': 'Långsam anslutning upptäckt - Laddning kan ta längre tid',
+      'connection.loading': 'Laddar...',
+      'connection.initializing': 'Initialiserar...',
+      'connection.almostReady': 'Nästan klar...'
     },
     fr: {
       'common.loading': 'Chargement...',
@@ -206,7 +223,12 @@ export class TranslationService {
       'message.undoFailed': 'Échec de l\'annulation de l\'abandon du brevet. Veuillez réessayer.',
       'message.checkpointsComingSoon': 'Les points de contrôle pour cette piste seront bientôt disponibles.',
       'message.locationAccessGranted': 'Accès localisation accordé',
-      'message.locationAccessDenied': 'Accès localisation refusé'
+      'message.locationAccessDenied': 'Accès localisation refusé',
+      'connection.offline': 'Vous êtes actuellement hors ligne',
+      'connection.slowConnection': 'Connexion lente détectée - Le chargement peut prendre plus de temps',
+      'connection.loading': 'Chargement...',
+      'connection.initializing': 'Initialisation...',
+      'connection.almostReady': 'Presque prêt...'
     },
     de: {
       'common.loading': 'Wird geladen...',
@@ -253,7 +275,12 @@ export class TranslationService {
       'message.undoFailed': 'Fehler beim Rückgängigmachen des Brevet-Aufgebens. Bitte versuchen Sie es erneut.',
       'message.checkpointsComingSoon': 'Kontrollpunkte für diese Strecke werden bald verfügbar sein.',
       'message.locationAccessGranted': 'Standortzugriff gewährt',
-      'message.locationAccessDenied': 'Standortzugriff verweigert'
+      'message.locationAccessDenied': 'Standortzugriff verweigert',
+      'connection.offline': 'Sie sind derzeit offline',
+      'connection.slowConnection': 'Langsame Verbindung erkannt - Laden kann länger dauern',
+      'connection.loading': 'Wird geladen...',
+      'connection.initializing': 'Initialisierung...',
+      'connection.almostReady': 'Fast fertig...'
     }
   };
 
