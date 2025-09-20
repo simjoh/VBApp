@@ -33,6 +33,7 @@ export class CheckpointCardComponent {
   @Input({ required: true }) isFirst!: boolean;
   @Input({ required: true }) isLast!: boolean;
   @Input({ required: true }) totalCheckpoints!: number;
+  @Input() disabled: boolean = false;
 
   @Output() actionCompleted = new EventEmitter<any>();
 

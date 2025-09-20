@@ -65,6 +65,18 @@
     </div>
 
     <main class="competitor-main">
+      @if (isAbandoned()) {
+        <div class="abandoned-banner">
+          <div class="abandoned-content">
+            <i class="pi pi-exclamation-triangle"></i>
+            <div class="abandoned-text">
+              <h3>Brevet Abandoned</h3>
+              <p>You have abandoned this brevet. Check-in/check-out buttons are disabled.</p>
+            </div>
+          </div>
+        </div>
+      }
+
       <div class="checkpoints-section">
         <h2 class="section-title">Checkpoints</h2>
         <div class="checkpoints-grid">
@@ -78,6 +90,7 @@
                 [isFirst]="i === 0"
                 [isLast]="i === checkpoints().length - 1"
                 [totalCheckpoints]="checkpoints().length"
+                [disabled]="isAbandoned()"
                 (actionCompleted)="onCheckpointActionCompleted($event)"
               ></app-checkpoint-card>
             }
@@ -93,9 +106,12 @@
         </div>
         @if (checkpoints().length > 0) {
           <div class="abandon-section">
-            <button class="abandon-button" (click)="abandonBrevet()">
-              <i class="pi pi-times"></i>
-              <span>ABANDON BREVET</span>
+            <button
+              class="abandon-button"
+              [class.undo-abandon]="isAbandoned()"
+              (click)="abandonBrevet()">
+              <i [class]="isAbandoned() ? 'pi pi-undo' : 'pi pi-times'"></i>
+              <span>{{ isAbandoned() ? 'UNDO ABANDON' : 'ABANDON BREVET' }}</span>
             </button>
           </div>
         }

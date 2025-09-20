@@ -5,6 +5,112 @@
   margin-top: 1rem;
 }
 
+// Timer and Progress Bar Styles
+.timer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background: transparent;
+  margin-bottom: 0.25rem;
+
+  .timer-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6b7280;
+    padding: 0.25rem 0.5rem;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    border: 1px solid rgba(209, 213, 219, 0.5);
+    opacity: 0.8;
+
+    &.over-time {
+      color: #dc2626;
+      background: rgba(254, 242, 242, 0.9);
+      border-color: rgba(254, 202, 202, 0.7);
+    }
+
+    i {
+      font-size: 0.7rem;
+    }
+
+    .over-time-warning {
+      color: #dc2626;
+      font-weight: 600;
+      font-size: 0.7rem;
+    }
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(229, 231, 235, 0.5);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    opacity: 0.7;
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #059669);
+      border-radius: 2px;
+      transition: width 0.3s ease, background 0.3s ease;
+      position: relative;
+
+      &.over-time {
+        background: linear-gradient(90deg, #ef4444, #dc2626);
+        animation: pulse 1s infinite;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        animation: shimmer 2s infinite;
+      }
+    }
+  }
+
+  .progress-label {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-weight: 500;
+
+    .over-time-text {
+      color: #dc2626;
+      font-weight: 600;
+    }
+  }
+}
+
+// Animations
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 .checkpoint-button {
   display: flex;
   align-items: center;

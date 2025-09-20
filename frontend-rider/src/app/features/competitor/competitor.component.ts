@@ -1,6 +1,7 @@
 import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { GeolocationService } from '../../core/services/geolocation.service';
 import { MessageService } from '../../core/services/message.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -8,6 +9,7 @@ import { CompetitorHeaderComponent } from '../../shared/components/competitor-he
 import { CheckpointCardComponent, CheckpointData } from '../../shared/components/checkpoint-card/checkpoint-card.component';
 import { CompetitorPollingService, CombinedCheckpointData } from '../../core/services/competitor-polling.service';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-competitor',
@@ -22,6 +24,7 @@ export class CompetitorComponent implements OnInit, OnDestroy {
   private messageService = inject(MessageService);
   private authService = inject(AuthService);
   private competitorService = inject(CompetitorPollingService);
+  private http = inject(HttpClient);
 
   hasGeolocationPermission = signal<boolean | null>(null);
   isCheckingPermission = signal(true);
@@ -32,6 +35,7 @@ export class CompetitorComponent implements OnInit, OnDestroy {
   trackInfo = signal<any>(null);
   participantInfo = signal<any>(null);
   participantName = signal<string>('Loading...');
+  isAbandoned = signal<boolean>(false);
 
   ngOnInit() {
     this.checkGeolocationPermission();
@@ -146,6 +150,9 @@ export class CompetitorComponent implements OnInit, OnDestroy {
                 uid: data.participantUid,
                 lastUpdated: data.lastUpdated
               });
+
+              // Update abandon status
+              this.isAbandoned.set(data.participantStatus === 'dnf');
 
               // Update participant name
               this.participantName.set(data.participantName || 'Rider #' + (this.currentUser?.startnumber || '000'));
@@ -276,10 +283,93 @@ export class CompetitorComponent implements OnInit, OnDestroy {
     this.router.navigate(['/login']);
   }
 
-  abandonBrevet() {
-    console.log('Abandoning brevet...');
-    // TODO: Implement abandon brevet logic
-    this.messageService.showWarning('Abandon Brevet', 'Brevet abandonment functionality will be implemented soon');
+  async abandonBrevet() {
+    if (this.isAbandoned()) {
+      await this.undoAbandonBrevet();
+      return;
+    }
+
+    const confirmed = confirm('Are you sure you want to abandon the brevet? This action cannot be undone easily.');
+    if (!confirmed) return;
+
+    const currentUser = this.currentUser;
+    console.log('Current user data for abandon:', currentUser);
+    if (!currentUser?.trackuid || !currentUser?.startnumber || !currentUser?.id) {
+      console.error('Missing user data:', {
+        trackuid: currentUser?.trackuid,
+        startnumber: currentUser?.startnumber,
+        id: currentUser?.id,
+        fullUser: currentUser
+      });
+      this.messageService.showError('Error', 'Missing user data for abandon operation');
+      return;
+    }
+
+    try {
+      // Use the first checkpoint for the DNF call (as per backend API)
+      const firstCheckpoint = this.checkpoints()[0];
+      if (!firstCheckpoint) {
+        this.messageService.showError('Error', 'No checkpoints available for abandon operation');
+        return;
+      }
+
+      const url = `${environment.backend_url}randonneur/${currentUser.id}/track/${currentUser.trackuid}/startnumber/${currentUser.startnumber}/checkpoint/${firstCheckpoint.checkpoint_uid}/markasdnf`;
+
+      const response = await firstValueFrom(this.http.put(url, {}));
+
+      console.log('Abandon brevet response:', response);
+
+      // Update local state optimistically
+      this.isAbandoned.set(true);
+
+      this.messageService.showSuccess('Brevet Abandoned', 'You have successfully abandoned the brevet');
+
+    } catch (error) {
+      console.error('Error abandoning brevet:', error);
+      this.messageService.showError('Abandon Failed', 'Failed to abandon brevet. Please try again.');
+    }
+  }
+
+  async undoAbandonBrevet() {
+    const confirmed = confirm('Are you sure you want to undo the brevet abandonment?');
+    if (!confirmed) return;
+
+    const currentUser = this.currentUser;
+    console.log('Current user data for undo abandon:', currentUser);
+    if (!currentUser?.trackuid || !currentUser?.startnumber || !currentUser?.id) {
+      console.error('Missing user data for undo abandon:', {
+        trackuid: currentUser?.trackuid,
+        startnumber: currentUser?.startnumber,
+        id: currentUser?.id,
+        fullUser: currentUser
+      });
+      this.messageService.showError('Error', 'Missing user data for undo abandon operation');
+      return;
+    }
+
+    try {
+      // Use the first checkpoint for the rollback DNF call (as per backend API)
+      const firstCheckpoint = this.checkpoints()[0];
+      if (!firstCheckpoint) {
+        this.messageService.showError('Error', 'No checkpoints available for undo abandon operation');
+        return;
+      }
+
+      const url = `${environment.backend_url}randonneur/${currentUser.id}/track/${currentUser.trackuid}/startnumber/${currentUser.startnumber}/checkpoint/${firstCheckpoint.checkpoint_uid}/rollbackdnf`;
+
+      const response = await firstValueFrom(this.http.put(url, {}));
+
+      console.log('Undo abandon brevet response:', response);
+
+      // Update local state optimistically
+      this.isAbandoned.set(false);
+
+      this.messageService.showSuccess('Abandon Undone', 'Brevet abandonment has been successfully undone');
+
+    } catch (error) {
+      console.error('Error undoing abandon brevet:', error);
+      this.messageService.showError('Undo Failed', 'Failed to undo brevet abandonment. Please try again.');
+    }
   }
 
   onCheckpointActionCompleted(event: any) {

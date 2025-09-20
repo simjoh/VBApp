@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject, signal, computed, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, signal, computed, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from '../../../core/services/message.service';
@@ -28,7 +28,7 @@ export interface ButtonActionResponse {
   templateUrl: './checkpoint-button.component.html',
   styleUrl: './checkpoint-button.component.scss'
 })
-export class CheckpointButtonComponent implements OnChanges {
+export class CheckpointButtonComponent implements OnChanges, OnDestroy {
   @Input({ required: true }) checkpoint!: CheckpointButtonData;
   @Input({ required: true }) trackUid!: string;
   @Input({ required: true }) participantUid!: string;
@@ -52,6 +52,41 @@ export class CheckpointButtonComponent implements OnChanges {
 
   // Track which action to show for checked-in state
   private currentActionIndex = signal(0);
+
+  // Timer and progress bar state
+  private timerInterval: any = null;
+  private timeAtCheckpoint = signal<number>(0); // Time in seconds
+  private maxStayTime = 30 * 60; // 30 minutes in seconds
+  private checkInStartTime: number | null = null; // Local check-in time
+  private wasClickedForCheckIn = signal<boolean>(false); // Track if this checkpoint was clicked for check-in
+
+  // Computed properties for timer display
+  get timerDisplay(): string {
+    const totalSeconds = this.timeAtCheckpoint();
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  get progressPercentage(): number {
+    return Math.min((this.timeAtCheckpoint() / this.maxStayTime) * 100, 100);
+  }
+
+  get isOverTime(): boolean {
+    return this.timeAtCheckpoint() > this.maxStayTime;
+  }
+
+  get showTimer(): boolean {
+    const checkpoint = this.checkpointSignal();
+    const wasClicked = this.wasClickedForCheckIn();
+    const shouldShow = checkpoint?.status === 'checked-in' && wasClicked;
+    console.log('Show timer check:', {
+      status: checkpoint?.status,
+      wasClicked,
+      shouldShow
+    });
+    return shouldShow;
+  }
 
   // Computed button state based on checkpoint status and position
   private buttonState = computed(() => {
@@ -85,7 +120,62 @@ export class CheckpointButtonComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['checkpoint'] && changes['checkpoint'].currentValue) {
-      this.checkpointSignal.set(changes['checkpoint'].currentValue);
+      const newCheckpoint = changes['checkpoint'].currentValue;
+      this.checkpointSignal.set(newCheckpoint);
+
+      // Start/stop timer based on status
+      this.updateTimer(newCheckpoint);
+    }
+  }
+
+  private updateTimer(checkpoint: CheckpointButtonData) {
+    console.log('Updating timer for checkpoint:', checkpoint.name, 'Status:', checkpoint.status, 'Timestamp:', checkpoint.timestamp);
+
+    // Clear existing timer
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+
+    // Reset click flag when status changes away from checked-in
+    if (checkpoint.status !== 'checked-in') {
+      this.wasClickedForCheckIn.set(false);
+    }
+
+    // Start timer if checked in AND was clicked for check-in
+    if (checkpoint.status === 'checked-in' && this.wasClickedForCheckIn()) {
+      console.log('Starting timer for checked-in checkpoint that was clicked');
+      this.startTimerFromZero();
+    } else {
+      console.log('Stopping timer - not checked in or not clicked for check-in');
+      this.timeAtCheckpoint.set(0);
+      this.checkInStartTime = null;
+    }
+  }
+
+  private startTimerFromZero() {
+    console.log('Starting timer from 0');
+
+    // Set the start time to now
+    this.checkInStartTime = new Date().getTime();
+    this.timeAtCheckpoint.set(0);
+
+    // Update timer every second
+    this.timerInterval = setInterval(() => {
+      if (this.checkInStartTime) {
+        const now = new Date().getTime();
+        const timeDiff = Math.floor((now - this.checkInStartTime) / 1000);
+        this.timeAtCheckpoint.set(Math.max(0, timeDiff));
+        console.log('Timer running - elapsed seconds:', timeDiff);
+      }
+    }, 1000);
+  }
+
+  ngOnDestroy() {
+    // Clean up timer when component is destroyed
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
     }
   }
 
@@ -285,6 +375,9 @@ export class CheckpointButtonComponent implements OnChanges {
 
     this.isLoading.set(true);
 
+    // Reset click flag when undoing check-in
+    this.wasClickedForCheckIn.set(false);
+
     // Optimistic update - update UI immediately
     this.updateCheckpointStatusOptimistically(checkpoint, 'not-visited');
 
@@ -300,6 +393,8 @@ export class CheckpointButtonComponent implements OnChanges {
       // Error message will be shown by feedbackInterceptor
       // Revert optimistic update on error
       this.updateCheckpointStatusOptimistically(checkpoint, 'checked-in');
+      // Restore click flag on error
+      this.wasClickedForCheckIn.set(true);
     }).finally(() => {
       this.isLoading.set(false);
     });
@@ -316,6 +411,9 @@ export class CheckpointButtonComponent implements OnChanges {
 
     if (checkpoint.status === 'not-visited') {
       // First time: check in and then check out
+      // Mark this checkpoint as clicked for check-in
+      this.wasClickedForCheckIn.set(true);
+
       this.updateCheckpointStatusOptimistically(checkpoint, 'checked-in');
 
       this.actionCompleted.emit({
@@ -329,6 +427,8 @@ export class CheckpointButtonComponent implements OnChanges {
         console.error('Start sequence failed:', error);
         // Error message will be shown by feedbackInterceptor
         this.updateCheckpointStatusOptimistically(checkpoint, 'not-visited');
+        // Reset the click flag on error
+        this.wasClickedForCheckIn.set(false);
       }).finally(() => {
         this.isLoading.set(false);
       });
@@ -353,6 +453,9 @@ export class CheckpointButtonComponent implements OnChanges {
     const checkpoint = this.checkpointSignal();
     if (!checkpoint) return;
 
+    // Mark this checkpoint as clicked for check-in
+    this.wasClickedForCheckIn.set(true);
+
     // Optimistic update - update UI immediately
     this.updateCheckpointStatusOptimistically(checkpoint, 'checked-in');
 
@@ -368,6 +471,8 @@ export class CheckpointButtonComponent implements OnChanges {
       // Error message will be shown by feedbackInterceptor
       // Revert optimistic update on error
       this.updateCheckpointStatusOptimistically(checkpoint, 'not-visited');
+      // Reset the click flag on error
+      this.wasClickedForCheckIn.set(false);
     }).finally(() => {
       this.isLoading.set(false);
     });
@@ -381,6 +486,9 @@ export class CheckpointButtonComponent implements OnChanges {
 
     const checkpoint = this.checkpointSignal();
     if (!checkpoint) return;
+
+    // Reset click flag when checking out
+    this.wasClickedForCheckIn.set(false);
 
     // Optimistic update - update UI immediately
     this.updateCheckpointStatusOptimistically(checkpoint, 'checked-out');
@@ -397,6 +505,8 @@ export class CheckpointButtonComponent implements OnChanges {
       // Error message will be shown by feedbackInterceptor
       // Revert optimistic update on error
       this.updateCheckpointStatusOptimistically(checkpoint, 'checked-in');
+      // Restore click flag on error
+      this.wasClickedForCheckIn.set(true);
     }).finally(() => {
       this.isLoading.set(false);
     });

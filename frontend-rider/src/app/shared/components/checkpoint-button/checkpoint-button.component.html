@@ -1,4 +1,24 @@
 <div class="checkpoint-button-container">
+  <!-- Timer and Progress Bar (only shown when checked in) -->
+  @if (showTimer) {
+    <div class="timer-section">
+      <div class="timer-display" [class.over-time]="isOverTime">
+        <i class="pi pi-clock"></i>
+        <span>{{ timerDisplay }}</span>
+        @if (isOverTime) {
+          <span class="over-time-warning">(Over Time!)</span>
+        }
+      </div>
+      <div class="progress-bar">
+        <div
+          class="progress-fill"
+          [class.over-time]="isOverTime"
+          [style.width.%]="progressPercentage">
+        </div>
+      </div>
+    </div>
+  }
+
   <!-- Single button that changes function and text based on state -->
   <button
     [class]="buttonClass"
