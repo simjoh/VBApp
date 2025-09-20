@@ -1,12 +1,4 @@
-.competitor-header {
-  background: white;
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 4px solid transparent;
-  transition: border-bottom-color 0.3s ease;
+.header-container {
   width: 100vw;
   margin: 0;
   box-sizing: border-box;
@@ -15,26 +7,24 @@
   right: 50%;
   margin-left: -50vw;
   margin-right: -50vw;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 
-  &.status-granted {
-    border-bottom-color: #10b981; // Green
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 0 0 1px rgba(16, 185, 129, 0.2);
-  }
-
-  &.status-denied {
-    border-bottom-color: #ef4444; // Red
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 0 0 1px rgba(239, 68, 68, 0.2);
-  }
-
-  &.status-unknown {
-    border-bottom-color: #6b7280; // Gray
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 0 0 1px rgba(107, 114, 128, 0.2);
-  }
+.competitor-header {
+  background: white;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
   .header-left {
-    flex: 0 0 auto;
+    flex: 1;
     display: flex;
     align-items: center;
+    justify-content: flex-start;
+    min-width: 0; // Allow flex shrinking
   }
 
   .header-center {
@@ -64,9 +54,11 @@
   }
 
   .header-right {
-    flex: 0 0 auto;
+    flex: 1;
     display: flex;
     align-items: center;
+    justify-content: flex-end;
+    min-width: 0; // Allow flex shrinking
 
     .logout-button {
       display: flex;
@@ -90,6 +82,70 @@
       }
     }
   }
+
+.toolbar {
+  background: #f8fafc;
+  padding: 0.75rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #e5e7eb;
+
+  .toolbar-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .toolbar-center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .toolbar-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .location-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: default;
+
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+
+      &.status-granted {
+        background: #10b981; // Green
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+      }
+
+      &.status-denied {
+        background: #ef4444; // Red
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+      }
+
+      &.status-unknown {
+        background: #6b7280; // Gray
+        box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.2);
+      }
+    }
+
+    .status-text {
+      font-size: 0.85rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+  }
 }
 
 // Mobile responsiveness
@@ -97,22 +153,56 @@
   .competitor-header {
     padding: 0.75rem 1rem;
 
-    .header-center .rider-info {
-      .start-number {
-        font-size: 1.25rem;
-      }
+    .header-left {
+      flex: 0 0 auto;
+    }
 
-      .rider-name {
-        font-size: 0.9rem;
+    .header-center {
+      flex: 1;
+
+      .rider-info {
+        .start-number {
+          font-size: 1.25rem;
+        }
+
+        .rider-name {
+          font-size: 0.9rem;
+        }
       }
     }
 
-    .header-right .logout-button {
-      padding: 0.4rem 0.8rem;
-      font-size: 0.8rem;
+    .header-right {
+      flex: 0 0 auto;
 
-      span {
-        display: none; // Hide text on mobile, show only icon
+      .logout-button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+
+        span {
+          display: none; // Hide text on mobile, show only icon
+        }
+      }
+    }
+  }
+
+  .toolbar {
+    padding: 0.5rem 1rem;
+
+    .toolbar-left {
+      flex: 0 0 auto;
+    }
+
+    .toolbar-center {
+      flex: 1;
+    }
+
+    .toolbar-right {
+      flex: 0 0 auto;
+    }
+
+    .location-status {
+      .status-text {
+        display: none; // Hide text on mobile, show only dot
       }
     }
   }

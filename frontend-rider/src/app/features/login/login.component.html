@@ -26,7 +26,7 @@
             type="text"
             formControlName="username"
             class="form-control"
-            placeholder="Username"
+            [placeholder]="'login.username' | translate"
             autocomplete="username"
             [class.error]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
           />
@@ -34,7 +34,7 @@
         @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
           <div class="field-error">
             <i class="pi pi-exclamation-circle"></i>
-            <span>Username is required</span>
+            <span>{{ 'login.username' | translate }} is required</span>
           </div>
         }
       </div>
@@ -47,7 +47,7 @@
             type="password"
             formControlName="password"
             class="form-control"
-            placeholder="Password"
+            [placeholder]="'login.password' | translate"
             autocomplete="current-password"
             [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
           />
@@ -55,7 +55,7 @@
         @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
           <div class="field-error">
             <i class="pi pi-exclamation-circle"></i>
-            <span>Password is required</span>
+            <span>{{ 'login.password' | translate }} is required</span>
           </div>
         }
       </div>
@@ -66,12 +66,12 @@
         [disabled]="loginForm.invalid"
       >
         <i class="pi pi-sign-in"></i>
-        <span>Login</span>
+        <span>{{ 'login.loginButton' | translate }}</span>
       </button>
     </form>
 
     <div class="app-footer">
-      <p>Riders App</p>
+      <p>{{ 'login.subtitle' | translate }}</p>
     </div>
   </div>
 </div>

@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 import { CheckpointButtonComponent } from '../checkpoint-button/checkpoint-button.component';
+import { TranslationPipe } from '../../pipes/translation.pipe';
 
 export interface CheckpointData {
   checkpoint_uid: string;
@@ -21,7 +22,7 @@ export interface CheckpointData {
 @Component({
   selector: 'app-checkpoint-card',
   standalone: true,
-  imports: [CommonModule, CheckpointButtonComponent],
+  imports: [CommonModule, CheckpointButtonComponent, TranslationPipe],
   templateUrl: './checkpoint-card.component.html',
   styleUrl: './checkpoint-card.component.scss'
 })

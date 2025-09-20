@@ -8,13 +8,15 @@ import { AuthService } from '../../core/services/auth.service';
 import { CompetitorHeaderComponent } from '../../shared/components/competitor-header/competitor-header.component';
 import { CheckpointCardComponent, CheckpointData } from '../../shared/components/checkpoint-card/checkpoint-card.component';
 import { CompetitorPollingService, CombinedCheckpointData } from '../../core/services/competitor-polling.service';
+import { TranslationService } from '../../core/services/translation.service';
+import { TranslationPipe } from '../../shared/pipes/translation.pipe';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-competitor',
   standalone: true,
-  imports: [CommonModule, CompetitorHeaderComponent, CheckpointCardComponent],
+  imports: [CommonModule, CompetitorHeaderComponent, CheckpointCardComponent, TranslationPipe],
   templateUrl: './competitor.component.html',
   styleUrl: './competitor.component.scss'
 })
@@ -25,6 +27,7 @@ export class CompetitorComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private competitorService = inject(CompetitorPollingService);
   private http = inject(HttpClient);
+  private translationService = inject(TranslationService);
 
   hasGeolocationPermission = signal<boolean | null>(null);
   isCheckingPermission = signal(true);
@@ -289,7 +292,7 @@ export class CompetitorComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const confirmed = confirm('Are you sure you want to abandon the brevet? This action cannot be undone easily.');
+    const confirmed = confirm(this.translationService.translate('competitor.abandonConfirm'));
     if (!confirmed) return;
 
     const currentUser = this.currentUser;
@@ -301,7 +304,10 @@ export class CompetitorComponent implements OnInit, OnDestroy {
         id: currentUser?.id,
         fullUser: currentUser
       });
-      this.messageService.showError('Error', 'Missing user data for abandon operation');
+      this.messageService.showError(
+        this.translationService.translate('common.error'),
+        'Missing user data for abandon operation'
+      );
       return;
     }
 
@@ -309,7 +315,10 @@ export class CompetitorComponent implements OnInit, OnDestroy {
       // Use the first checkpoint for the DNF call (as per backend API)
       const firstCheckpoint = this.checkpoints()[0];
       if (!firstCheckpoint) {
-        this.messageService.showError('Error', 'No checkpoints available for abandon operation');
+        this.messageService.showError(
+          this.translationService.translate('common.error'),
+          'No checkpoints available for abandon operation'
+        );
         return;
       }
 
@@ -322,16 +331,22 @@ export class CompetitorComponent implements OnInit, OnDestroy {
       // Update local state optimistically
       this.isAbandoned.set(true);
 
-      this.messageService.showSuccess('Brevet Abandoned', 'You have successfully abandoned the brevet');
+      this.messageService.showSuccess(
+        this.translationService.translate('competitor.abandonBrevet'),
+        this.translationService.translate('message.brevetAbandoned')
+      );
 
     } catch (error) {
       console.error('Error abandoning brevet:', error);
-      this.messageService.showError('Abandon Failed', 'Failed to abandon brevet. Please try again.');
+      this.messageService.showError(
+        this.translationService.translate('competitor.abandonBrevet'),
+        this.translationService.translate('message.abandonFailed')
+      );
     }
   }
 
   async undoAbandonBrevet() {
-    const confirmed = confirm('Are you sure you want to undo the brevet abandonment?');
+    const confirmed = confirm(this.translationService.translate('competitor.undoAbandonConfirm'));
     if (!confirmed) return;
 
     const currentUser = this.currentUser;
@@ -343,7 +358,10 @@ export class CompetitorComponent implements OnInit, OnDestroy {
         id: currentUser?.id,
         fullUser: currentUser
       });
-      this.messageService.showError('Error', 'Missing user data for undo abandon operation');
+      this.messageService.showError(
+        this.translationService.translate('common.error'),
+        'Missing user data for undo abandon operation'
+      );
       return;
     }
 
@@ -351,7 +369,10 @@ export class CompetitorComponent implements OnInit, OnDestroy {
       // Use the first checkpoint for the rollback DNF call (as per backend API)
       const firstCheckpoint = this.checkpoints()[0];
       if (!firstCheckpoint) {
-        this.messageService.showError('Error', 'No checkpoints available for undo abandon operation');
+        this.messageService.showError(
+          this.translationService.translate('common.error'),
+          'No checkpoints available for undo abandon operation'
+        );
         return;
       }
 
@@ -364,11 +385,17 @@ export class CompetitorComponent implements OnInit, OnDestroy {
       // Update local state optimistically
       this.isAbandoned.set(false);
 
-      this.messageService.showSuccess('Abandon Undone', 'Brevet abandonment has been successfully undone');
+      this.messageService.showSuccess(
+        this.translationService.translate('competitor.undoAbandon'),
+        this.translationService.translate('message.abandonUndone')
+      );
 
     } catch (error) {
       console.error('Error undoing abandon brevet:', error);
-      this.messageService.showError('Undo Failed', 'Failed to undo brevet abandonment. Please try again.');
+      this.messageService.showError(
+        this.translationService.translate('competitor.undoAbandon'),
+        this.translationService.translate('message.undoFailed')
+      );
     }
   }
 

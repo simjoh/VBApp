@@ -4,7 +4,7 @@
       <div class="loading-spinner">
         <i class="pi pi-spin pi-spinner"></i>
       </div>
-      <p>Checking location permissions...</p>
+      <p>{{ 'common.loading' | translate }}</p>
     </div>
   } @else if (hasGeolocationPermission() === false) {
     <div class="permission-required">
@@ -12,11 +12,11 @@
         <div class="permission-icon">
           <i class="pi pi-map-marker"></i>
         </div>
-        <h2>Location Access Required</h2>
-        <p>This app requires location access to function properly. Please enable location permissions to continue.</p>
+        <h2>{{ 'geolocation.title' | translate }}</h2>
+        <p>{{ 'geolocation.message' | translate }}</p>
         <button class="permission-button" (click)="requestLocationPermission()">
           <i class="pi pi-map-marker"></i>
-          <span>Enable Location Access</span>
+          <span>{{ 'geolocation.allowButton' | translate }}</span>
         </button>
       </div>
     </div>
@@ -70,15 +70,15 @@
           <div class="abandoned-content">
             <i class="pi pi-exclamation-triangle"></i>
             <div class="abandoned-text">
-              <h3>Brevet Abandoned</h3>
-              <p>You have abandoned this brevet. Check-in/check-out buttons are disabled.</p>
+            <h3>{{ 'competitor.abandonBrevet' | translate }}</h3>
+            <p>{{ 'message.brevetAbandoned' | translate }}</p>
             </div>
           </div>
         </div>
       }
 
       <div class="checkpoints-section">
-        <h2 class="section-title">Checkpoints</h2>
+        <h2 class="section-title">{{ 'competitor.checkpoints' | translate }}</h2>
         <div class="checkpoints-grid">
           @if (checkpoints().length > 0) {
             @for (checkpoint of checkpoints(); track checkpoint.checkpoint_uid; let i = $index) {
@@ -98,8 +98,8 @@
             <div class="no-checkpoints">
               <div class="no-checkpoints-content">
                 <i class="pi pi-info-circle"></i>
-                <h3>Checkpoints Coming Soon</h3>
-                <p>Checkpoints for this track will be available soon. Please check back later.</p>
+                <h3>{{ 'message.checkpointsComingSoon' | translate }}</h3>
+                <p>{{ 'message.checkpointsComingSoon' | translate }}</p>
               </div>
             </div>
           }
@@ -111,7 +111,7 @@
               [class.undo-abandon]="isAbandoned()"
               (click)="abandonBrevet()">
               <i [class]="isAbandoned() ? 'pi pi-undo' : 'pi pi-times'"></i>
-              <span>{{ isAbandoned() ? 'UNDO ABANDON' : 'ABANDON BREVET' }}</span>
+              <span>{{ isAbandoned() ? ('competitor.undoAbandon' | translate) : ('competitor.abandonBrevet' | translate) }}</span>
             </button>
           </div>
         }

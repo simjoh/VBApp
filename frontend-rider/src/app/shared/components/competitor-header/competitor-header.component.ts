@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LogoComponent } from '../logo/logo.component';
+import { FlagLanguageSelectorComponent } from '../flag-language-selector/flag-language-selector.component';
 
 @Component({
   selector: 'app-competitor-header',
   standalone: true,
-  imports: [CommonModule, LogoComponent],
+  imports: [CommonModule, LogoComponent, FlagLanguageSelectorComponent],
   templateUrl: './competitor-header.component.html',
   styleUrl: './competitor-header.component.scss'
 })

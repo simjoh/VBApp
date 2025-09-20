@@ -1,22 +1,41 @@
-<header class="competitor-header" [class]="'competitor-header status-' + locationStatus" [title]="getLocationStatusText()">
-  <div class="header-left">
-    <app-logo [height]="40" [width]="40" [rolling]="false"></app-logo>
-  </div>
+<div class="header-container">
+  <header class="competitor-header">
+    <div class="header-left">
+      <app-logo [height]="40" [width]="40" [rolling]="false"></app-logo>
+    </div>
 
-  <div class="header-center">
-    <div class="rider-info">
-      <span class="start-number">{{ startNumber }}</span>
-      <span class="rider-name">{{ riderName }}</span>
+    <div class="header-center">
+      <div class="rider-info">
+        <span class="start-number">{{ startNumber }}</span>
+        <span class="rider-name">{{ riderName }}</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button
+        class="logout-button"
+        (click)="onLogout()"
+      >
+        <i class="pi pi-sign-out"></i>
+        <span>Logout</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="location-status" [title]="getLocationStatusText()">
+        <div class="status-dot" [class]="'status-' + locationStatus"></div>
+        <span class="status-text">Location</span>
+      </div>
+    </div>
+
+    <div class="toolbar-center">
+      <!-- Reserved for future toolbar items -->
+    </div>
+
+    <div class="toolbar-right">
+      <app-flag-language-selector></app-flag-language-selector>
     </div>
   </div>
-
-  <div class="header-right">
-    <button
-      class="logout-button"
-      (click)="onLogout()"
-    >
-      <i class="pi pi-sign-out"></i>
-      <span>Logout</span>
-    </button>
-  </div>
-</header>
+</div>

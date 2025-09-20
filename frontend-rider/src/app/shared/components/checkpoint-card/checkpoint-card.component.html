@@ -13,27 +13,27 @@
 
     <div class="checkpoint-details">
       <div class="detail-line">
-        <strong>Distance:</strong> {{ checkpoint.distance }} Km
+        <strong>{{ 'checkpoint.distance' | translate }}:</strong> {{ checkpoint.distance }} Km
       </div>
 
       <div class="detail-line">
-        <strong>To next:</strong> {{ checkpoint.toNext }} Km
+        <strong>{{ 'checkpoint.toNext' | translate }}:</strong> {{ checkpoint.toNext }} Km
       </div>
 
       <div class="detail-line">
-        <strong>Opens:</strong> {{ checkpoint.opens }}
+        <strong>{{ 'checkpoint.opens' | translate }}:</strong> {{ checkpoint.opens }}
       </div>
 
       <div class="detail-line">
-        <strong>Closes:</strong> {{ checkpoint.closes }}
+        <strong>{{ 'checkpoint.closes' | translate }}:</strong> {{ checkpoint.closes }}
       </div>
 
       <div class="detail-line">
-        <strong>Service:</strong> {{ checkpoint.service }}
+        <strong>{{ 'checkpoint.service' | translate }}:</strong> {{ checkpoint.service }}
       </div>
 
       <div class="detail-line" *ngIf="checkpoint.time">
-        <strong>Time:</strong> {{ checkpoint.time }}
+        <strong>{{ 'checkpoint.time' | translate }}:</strong> {{ checkpoint.time }}
       </div>
     </div>
 

@@ -4,12 +4,14 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { MessageService } from '../../core/services/message.service';
+import { TranslationService } from '../../core/services/translation.service';
+import { TranslationPipe } from '../../shared/pipes/translation.pipe';
 import { LogoComponent } from '../../shared/components/logo/logo.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, LogoComponent],
+  imports: [CommonModule, ReactiveFormsModule, LogoComponent, TranslationPipe],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -18,6 +20,7 @@ export class LoginComponent {
   private router = inject(Router);
   private authService = inject(AuthService);
   private messageService = inject(MessageService);
+  private translationService = inject(TranslationService);
 
   loginForm: FormGroup;
   loginError: string | null = null;

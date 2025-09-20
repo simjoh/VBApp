@@ -2,6 +2,8 @@ import { Component, Input, Output, EventEmitter, inject, signal, computed, OnCha
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from '../../../core/services/message.service';
+import { TranslationService } from '../../../core/services/translation.service';
+import { TranslationPipe } from '../../pipes/translation.pipe';
 import { environment } from '../../../../environments/environment';
 import { firstValueFrom } from 'rxjs';
 
@@ -24,7 +26,7 @@ export interface ButtonActionResponse {
 @Component({
   selector: 'app-checkpoint-button',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslationPipe],
   templateUrl: './checkpoint-button.component.html',
   styleUrl: './checkpoint-button.component.scss'
 })
@@ -43,6 +45,7 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
 
   private http = inject(HttpClient);
   private messageService = inject(MessageService);
+  private translationService = inject(TranslationService);
 
   // Loading state
   private isLoading = signal(false);
@@ -190,25 +193,25 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
       case 'start':
         // First checkpoint shows actual status
         if (checkpoint?.status === 'not-visited') {
-          return 'CHECK IN';
+          return this.translationService.translate('checkpoint.checkIn');
         } else if (checkpoint?.status === 'checked-in') {
-          return 'CHECKED IN';
+          return this.translationService.translate('checkpoint.checkedIn');
         } else if (checkpoint?.status === 'checked-out') {
-          return 'CHECKED IN';
+          return this.translationService.translate('checkpoint.checkedIn');
         }
-        return 'CHECK IN';
+        return this.translationService.translate('checkpoint.checkIn');
       case 'finish':
-        return 'FINISHED';
+        return this.translationService.translate('checkpoint.finished');
       case 'check-in':
-        return 'CHECK IN';
+        return this.translationService.translate('checkpoint.checkIn');
       case 'check-out':
-        return 'CHECK OUT';
+        return this.translationService.translate('checkpoint.checkOut');
       case 'undo-checkout':
-        return 'UNDO CHECK OUT';
+        return this.translationService.translate('checkpoint.undoCheckOut');
       case 'undo-checkin':
-        return 'UNDO CHECK IN';
+        return this.translationService.translate('checkpoint.undoCheckIn');
       default:
-        return 'CHECK IN';
+        return this.translationService.translate('checkpoint.checkIn');
     }
   }
 
