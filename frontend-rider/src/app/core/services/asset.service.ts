@@ -58,4 +58,42 @@ export class AssetService {
 
     return `${baseUrl}/${cleanFilename}`;
   }
+
+  /**
+   * Get a checkpoint/site logo URL from backend relative path
+   * @param relativePath - The relative path from backend (e.g., '/api/uploads/umea.svg')
+   * @returns The full URL to the checkpoint logo
+   */
+  getCheckpointLogoFromBackendPath(relativePath: string): string {
+    if (!relativePath) {
+      return this.getLogoUrl(); // Fallback to main logo
+    }
+
+    // In development, convert /api/uploads/ to /app/api/uploads/ to match backend structure
+    if (!environment.production && relativePath.startsWith('/api/uploads/')) {
+      const filename = relativePath.replace('/api/uploads/', '');
+      const devPath = `/app/api/uploads/${filename}`;
+      return devPath;
+    }
+
+    // In production or for non-API paths, construct the full URL
+    if (relativePath.startsWith('/api/uploads/')) {
+      // Extract just the filename and use pictureurl base
+      const filename = relativePath.replace('/api/uploads/', '');
+
+      // Use pictureurl directly (it already contains the full base URL)
+      const baseUrl = environment.pictureurl.endsWith('/')
+        ? environment.pictureurl.slice(0, -1)
+        : environment.pictureurl;
+      const finalUrl = `${baseUrl}/${filename}`;
+      return finalUrl;
+    } else if (relativePath.startsWith('/')) {
+      // For other absolute paths, use the http_url + path
+      const finalUrl = `${environment.http_url}${relativePath}`;
+      return finalUrl;
+    } else {
+      // Treat as filename and use the standard method
+      return this.getCheckpointLogoUrl(relativePath);
+    }
+  }
 }

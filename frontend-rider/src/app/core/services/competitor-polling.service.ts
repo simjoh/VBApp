@@ -139,7 +139,7 @@ export class CompetitorPollingService {
         this.isLoading.set(false);
       }),
       catchError(error => {
-        console.error(`[CompetitorPolling] Failed to load track data:`, error);
+        // Failed to load track data
         this.hasError.set('Failed to load track information');
         this.isLoading.set(false);
         this.messageService.showError('Loading Error', 'Failed to load track information');
@@ -164,7 +164,7 @@ export class CompetitorPollingService {
       progressiveSlowdown: true,
       maxInterval: 120000, // 2 minutes max
       onError: (error) => {
-        console.error(`[CompetitorPolling] State polling error:`, error);
+        // State polling error
         this.hasError.set('Failed to update participant state');
       },
       ...pollingConfig
@@ -183,14 +183,7 @@ export class CompetitorPollingService {
         }
       }),
       catchError(error => {
-        console.error(`[CompetitorPolling] State polling stream error:`, error);
-        console.error(`[CompetitorPolling] Error details:`, {
-          status: error.status,
-          statusText: error.statusText,
-          url: error.url,
-          errorBody: error.error,
-          headers: error.headers
-        });
+        // State polling stream error
         this.hasError.set(`Failed to load participant state (${error.status})`);
         return of(null);
       })
@@ -213,7 +206,7 @@ export class CompetitorPollingService {
           }
         }),
         catchError(error => {
-          console.error(`[CompetitorPolling] Force refresh failed:`, error);
+          // Force refresh failed
           return of(null);
         })
       ).subscribe();
@@ -234,10 +227,10 @@ export class CompetitorPollingService {
     track: TrackData | null,
     state: ParticipantState | null
   ): CombinedCompetitorData | null {
-    console.log(`[CompetitorPolling] Combining data - Track: ${!!track}, State: ${!!state}`);
+    // Combining data
 
     if (!track || !state) {
-      console.log(`[CompetitorPolling] Missing data - Track: ${!!track}, State: ${!!state}`);
+      // Missing data
       return null;
     }
 

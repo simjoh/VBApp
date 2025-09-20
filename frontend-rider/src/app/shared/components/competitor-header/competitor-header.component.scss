@@ -118,25 +118,58 @@
     gap: 0.5rem;
     cursor: default;
 
-    .status-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
+    .status-icon {
+      font-size: 1.1rem;
       transition: all 0.3s ease;
 
       &.status-granted {
-        background: #10b981; // Green
-        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        color: #10b981; // Green
+        text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
       }
 
       &.status-denied {
-        background: #ef4444; // Red
-        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+        color: #ef4444; // Red
+        text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
       }
 
       &.status-unknown {
-        background: #6b7280; // Gray
-        box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.2);
+        color: #6b7280; // Gray
+        text-shadow: 0 0 8px rgba(107, 114, 128, 0.3);
+      }
+
+      // Fresh location state (1 minute or less old)
+      &.fresh {
+        color: #22c55e !important; // Bright green for fresh location
+        text-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
+        animation: pulse-fresh 2s infinite;
+      }
+
+      // Rotation animation for location updates
+      &.updating {
+        animation: globe-rotate 1s ease-in-out;
+      }
+    }
+
+    @keyframes globe-rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+      50% {
+        transform: rotate(180deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes pulse-fresh {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.8;
+        transform: scale(1.1);
       }
     }
 

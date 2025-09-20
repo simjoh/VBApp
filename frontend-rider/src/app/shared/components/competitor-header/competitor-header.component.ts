@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LogoComponent } from '../logo/logo.component';
 import { FlagLanguageSelectorComponent } from '../flag-language-selector/flag-language-selector.component';
@@ -14,21 +14,54 @@ export class CompetitorHeaderComponent {
   @Input() startNumber: string = '#123';
   @Input() riderName: string = 'John Andersson';
   @Input() locationStatus: 'granted' | 'denied' | 'unknown' = 'unknown';
+  @Input() currentCoordinates: { latitude: number; longitude: number } | null = null;
+  @Input() isLocationFresh: boolean = false;
   @Output() logout = new EventEmitter<void>();
+
+  isUpdating = signal(false);
 
   onLogout() {
     this.logout.emit();
   }
 
+  /**
+   * Trigger rotation animation for location updates
+   */
+  triggerLocationUpdate() {
+    this.isUpdating.set(true);
+    // Reset animation after completion
+    setTimeout(() => this.isUpdating.set(false), 1000);
+  }
+
   getLocationStatusText(): string {
+    let baseText = '';
+
     switch (this.locationStatus) {
       case 'granted':
-        return 'Location access granted';
+        baseText = 'Location access granted';
+        break;
       case 'denied':
-        return 'Location access denied';
+        baseText = 'Location access denied';
+        break;
       case 'unknown':
       default:
-        return 'Location status unknown';
+        baseText = 'Location status unknown';
+        break;
     }
+
+    // Add coordinates and freshness info if available
+    if (this.currentCoordinates && this.locationStatus === 'granted') {
+      const lat = this.currentCoordinates.latitude.toFixed(6);
+      const lng = this.currentCoordinates.longitude.toFixed(6);
+      baseText += `\nCurrent position: ${lat}, ${lng}`;
+
+      if (this.isLocationFresh) {
+        baseText += '\n🟢 Location is fresh (≤1 min old)';
+      } else {
+        baseText += '\n🟡 Location may be outdated (>1 min old)';
+      }
+    }
+
+    return baseText;
   }
 }

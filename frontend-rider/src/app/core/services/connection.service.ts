@@ -113,15 +113,7 @@ export class ConnectionService {
     const isHighRTT = info.rtt > 0 && info.rtt > 1000; // Only check RTT if we have data
     const isLowDownlink = info.downlink > 0 && info.downlink < 0.5; // Only check downlink if we have data
 
-    console.log('🔍 Connection detection:', {
-      effectiveType: info.effectiveType,
-      downlink: info.downlink,
-      rtt: info.rtt,
-      isSlowType,
-      isHighRTT,
-      isLowDownlink,
-      result: isSlowType || isHighRTT || isLowDownlink
-    });
+    // Connection detection completed
 
     return isSlowType || isHighRTT || isLowDownlink;
   }

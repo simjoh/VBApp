@@ -45,47 +45,45 @@ export class AuthService {
   }
 
   login(loginModel: LoginModel): Observable<boolean> {
-    console.log('AuthService.login called with:', loginModel);
+    // Login attempt initiated
 
     if (this.isMockedLogin()) {
-      console.log('Using mock login');
+      // Using mock login
       this.mockLogin();
       return of(true);
     }
 
     const url = this.getBackendUrl() + "login";
     const payload = this.createPayload(loginModel);
-    console.log('Making login request to:', url);
-    console.log('With payload:', payload);
+    // Making login request
 
     return this.httpClient.post<any>(url, payload)
       .pipe(
 
         map(response => {
-          console.log('Login response:', response);
+          // Login response received
 
           // Check if user has COMPETITOR role (allow ADMIN for testing)
           if (!response.roles || (!response.roles.includes('COMPETITOR') && !response.roles.includes('ADMIN'))) {
-            console.log('User does not have COMPETITOR or ADMIN role. Roles:', response.roles);
+            // User does not have required role
             return false;
           }
 
-          console.log('Storing token:', response.token);
+          // Storing authentication token
           localStorage.setItem('riderToken', response.token);
           this.authenticatedSubject.next(true);
           this.setActiveUser(response);
           return true;
         }),
         catchError((error: HttpErrorResponse) => {
-          console.error('Login error:', error);
-          console.error('Error details:', error.error);
+          // Login error occurred
           return of(false);
         })
       );
   }
 
   private setActiveUser(data: any): void {
-    console.log('Setting active user with data:', data);
+    // Setting active user data
 
     // Handle different possible name formats from backend
     let userName = 'Unknown User';
@@ -106,11 +104,7 @@ export class AuthService {
     let startnumber = data.startnumber;
     let trackuid = data.trackuid;
 
-    console.log('User data from backend:', {
-      startnumber: startnumber,
-      trackuid: trackuid,
-      roles: data.roles
-    });
+    // User data processed from backend
 
     const activeUser: ActiveUser = {
       name: userName,
@@ -121,7 +115,7 @@ export class AuthService {
       organizer_id: data.organizer_id || data.organizerId
     };
 
-    console.log('Created active user object:', activeUser);
+    // Active user object created
     localStorage.setItem('activeRider', JSON.stringify(activeUser));
   }
 
@@ -175,7 +169,7 @@ export class AuthService {
       try {
         return JSON.parse(activeUserData) as ActiveUser;
       } catch (error) {
-        console.error('Error parsing active user data:', error);
+        // Error parsing active user data
         return null;
       }
     }

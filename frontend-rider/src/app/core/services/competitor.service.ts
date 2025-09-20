@@ -109,7 +109,7 @@ export class CompetitorService {
         this.messageService.showSuccess('Track Loaded', `Loaded track: ${track.name}`);
       }
     } catch (error) {
-      console.error('Error loading track:', error);
+      // Error loading track
       this.messageService.showError('Error', 'Failed to load track');
     }
   }
@@ -123,7 +123,7 @@ export class CompetitorService {
         this.messageService.showSuccess('Competitor Info', `Loaded info for ${competitor.name}`);
       }
     } catch (error) {
-      console.error('Error loading competitor info:', error);
+      // Error loading competitor info
       this.messageService.showError('Error', 'Failed to load competitor info');
     }
   }
@@ -153,7 +153,7 @@ export class CompetitorService {
         this._stampTimestamps.set(stampTimestamps);
       }
     } catch (error) {
-      console.error('Error loading checkpoint states:', error);
+      // Error loading checkpoint states
       this.messageService.showError('Error', 'Failed to load checkpoint states');
     }
   }
@@ -188,7 +188,7 @@ export class CompetitorService {
       }
       return false;
     } catch (error) {
-      console.error('Error stamping checkpoint:', error);
+      // Error stamping checkpoint
       this.messageService.showError('Error', 'Failed to stamp checkpoint');
       return false;
     }
@@ -223,7 +223,7 @@ export class CompetitorService {
       }
       return false;
     } catch (error) {
-      console.error('Error rolling back stamp:', error);
+      // Error rolling back stamp
       this.messageService.showError('Error', 'Failed to rollback stamp');
       return false;
     }
@@ -256,7 +256,7 @@ export class CompetitorService {
       }
       return false;
     } catch (error) {
-      console.error('Error setting DNF status:', error);
+      // Error setting DNF status
       this.messageService.showError('Error', 'Failed to update DNF status');
       return false;
     }
@@ -289,7 +289,7 @@ export class CompetitorService {
       }
       return false;
     } catch (error) {
-      console.error('Error setting checkout status:', error);
+      // Error setting checkout status
       this.messageService.showError('Error', 'Failed to update checkout status');
       return false;
     }

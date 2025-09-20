@@ -118,7 +118,9 @@ export class VisibilityAwarePollingService {
       immediateOnWakeup: true,
       progressiveSlowdown: false,
       maxInterval: 120000, // 2 minutes max
-      onError: (error) => console.error(`[VisibilityPolling] Error for ${pollId}:`, error)
+      onError: (error) => {
+        // Silent fail for polling errors
+      }
     };
 
     const finalConfig = { ...defaultConfig, ...config };

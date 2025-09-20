@@ -13,10 +13,16 @@ export interface CheckpointData {
   closes: string;
   service: string;
   time: string;
-  logoFileName?: string;
+  logoFileName?: string; // Keep for backward compatibility
   status: 'checked-in' | 'checked-out' | 'not-visited';
   timestamp?: string;
   checkoutTimestamp?: string;
+  site?: {
+    image?: string;
+    adress?: string;
+    place?: string;
+    description?: string;
+  };
 }
 
 @Component({
@@ -41,9 +47,16 @@ export class CheckpointCardComponent {
   private assetService = inject(AssetService);
 
   get logoUrl(): string | null {
+    // Prioritize site.image from backend
+    if (this.checkpoint.site?.image) {
+      return this.assetService.getCheckpointLogoFromBackendPath(this.checkpoint.site.image);
+    }
+
+    // Fallback to logoFileName for backward compatibility
     if (this.checkpoint.logoFileName) {
       return this.assetService.getCheckpointLogoUrl(this.checkpoint.logoFileName);
     }
+
     return null;
   }
 
@@ -63,7 +76,7 @@ export class CheckpointCardComponent {
    * Handle action completed from checkpoint button
    */
   onActionCompleted(event: any) {
-    console.log('Checkpoint action completed:', event);
+    // Checkpoint action completed
     this.actionCompleted.emit(event);
   }
 }

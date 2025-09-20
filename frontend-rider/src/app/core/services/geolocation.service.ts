@@ -130,7 +130,7 @@ export class GeolocationService {
       })
     ).pipe(
       catchError(error => {
-        console.error('Geolocation error:', error);
+        // Silent fail for geolocation errors
         return throwError(() => error);
       })
     );
@@ -293,7 +293,6 @@ export class GeolocationService {
   // Background tracking methods
   async startBackgroundTracking(config: BackgroundLocationConfig): Promise<void> {
     if (this._isBackgroundTracking()) {
-      this.messageService.showWarning('Background Tracking', 'Already running background tracking');
       return;
     }
 
@@ -306,7 +305,7 @@ export class GeolocationService {
       if (config.wakeLockEnabled && 'wakeLock' in navigator) {
         this._wakeLock = await (navigator as any).wakeLock.request('screen');
         this._wakeLock?.addEventListener('release', () => {
-          console.log('Wake lock released');
+          // Wake lock released
         });
       }
 
@@ -316,7 +315,6 @@ export class GeolocationService {
       }
 
       this._isBackgroundTracking.set(true);
-      this.messageService.showSuccess('Background Tracking', 'Started background location tracking');
 
       // Start interval for position updates
       this._backgroundInterval = setInterval(async () => {
@@ -331,7 +329,7 @@ export class GeolocationService {
             await this.sendPositionToServer(position, config.apiEndpoint);
           }
         } catch (error) {
-          console.error('Background tracking error:', error);
+          // Background tracking error - silent fail
           this.messageService.showError('Background Tracking', 'Failed to get location');
         }
       }, config.intervalMinutes * 60 * 1000);
@@ -389,9 +387,9 @@ export class GeolocationService {
 
     try {
       await firstValueFrom(this.httpClient.post(endpoint, payload));
-      console.log('Position sent to server:', payload);
+      // Position sent to server successfully
     } catch (error) {
-      console.error('Failed to send position to server:', error);
+      // Failed to send position to server - silent fail
       // Store for retry later
       this.storePositionForRetry(payload);
     }
@@ -415,9 +413,9 @@ export class GeolocationService {
     if ('serviceWorker' in navigator) {
       try {
         const registration = await navigator.serviceWorker.register('/sw.js');
-        console.log('Service Worker registered:', registration);
+        // Service Worker registered successfully
       } catch (error) {
-        console.error('Service Worker registration failed:', error);
+        // Service Worker registration failed - silent fail
       }
     }
   }
@@ -515,11 +513,7 @@ export class GeolocationService {
       distance
     };
 
-    console.log(`Geofence ${eventType}:`, {
-      geofence: geofence.name,
-      distance: Math.round(distance),
-      position: `${position.coords.latitude}, ${position.coords.longitude}`
-    });
+    // Geofence event detected
 
     // Show notification
     const message = `${eventType === 'enter' ? 'Entered' : 'Exited'} ${geofence.name} (${Math.round(distance)}m away)`;
@@ -537,9 +531,9 @@ export class GeolocationService {
     if (apiEndpoint) {
       try {
         await firstValueFrom(this.httpClient.post(apiEndpoint, event));
-        console.log(`Geofence ${eventType} sent to API:`, apiEndpoint);
+        // Geofence event sent to API
       } catch (error) {
-        console.error(`Failed to send geofence ${eventType} to API:`, error);
+        // Failed to send geofence event to API
         this.messageService.showError('Geofence', `Failed to send ${eventType} event`);
       }
     }
@@ -573,7 +567,7 @@ export class GeolocationService {
           }
         }
       } catch (error) {
-        console.error('Background tracking with geofencing error:', error);
+        // Background tracking with geofencing error
         this.messageService.showError('Background Tracking', 'Failed to get location');
       }
     }, config.intervalMinutes * 60 * 1000);

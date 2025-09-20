@@ -26,7 +26,7 @@ export class App implements OnInit {
     try {
       this.languageService.setLanguage(this.languageService.getCurrentLanguage());
     } catch (error) {
-      console.error('Language service initialization failed:', error);
+      // Language service initialization failed
     }
   }
 }

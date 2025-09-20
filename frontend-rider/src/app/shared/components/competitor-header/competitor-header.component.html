@@ -25,7 +25,8 @@
   <div class="toolbar">
     <div class="toolbar-left">
       <div class="location-status" [title]="getLocationStatusText()">
-        <div class="status-dot" [class]="'status-' + locationStatus"></div>
+        <i class="pi pi-globe status-icon"
+           [class]="'status-' + locationStatus + (isUpdating() ? ' updating' : '') + (isLocationFresh ? ' fresh' : '')"></i>
         <span class="status-text">Location</span>
       </div>
     </div>

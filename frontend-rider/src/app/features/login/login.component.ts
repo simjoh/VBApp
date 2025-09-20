@@ -49,7 +49,7 @@ export class LoginComponent {
           }
         },
         error: (error) => {
-          console.error('Login failed:', error);
+          // Login failed
           this.loginError = 'Login failed. Please check your credentials and try again.';
         }
       });

@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy, ViewChild, AfterViewInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -20,7 +20,9 @@ import { environment } from '../../../environments/environment';
   templateUrl: './competitor.component.html',
   styleUrl: './competitor.component.scss'
 })
-export class CompetitorComponent implements OnInit, OnDestroy {
+export class CompetitorComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('headerComponent') headerComponent!: CompetitorHeaderComponent;
+
   private router = inject(Router);
   private geolocationService = inject(GeolocationService);
   private messageService = inject(MessageService);
@@ -31,6 +33,13 @@ export class CompetitorComponent implements OnInit, OnDestroy {
 
   hasGeolocationPermission = signal<boolean | null>(null);
   isCheckingPermission = signal(true);
+  currentCoordinates = signal<{ latitude: number; longitude: number } | null>(null);
+  lastPositionUpdate = signal<Date | null>(null);
+  private freshnessCheckInterval: any = null;
+
+  // Memory leak prevention
+  private effectRef?: any;
+  private subscriptions: any[] = [];
 
   // Backend data
   competitorData$ = this.competitorService.combinedData$;
@@ -40,14 +49,124 @@ export class CompetitorComponent implements OnInit, OnDestroy {
   participantName = signal<string>('Loading...');
   isAbandoned = signal<boolean>(false);
 
+  constructor() {
+    // Initialize position updates subscription in constructor (injection context)
+    this.effectRef = effect(() => {
+      const position = this.geolocationService.currentPosition$();
+      if (position) {
+        const now = new Date();
+        this.currentCoordinates.set({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        });
+        this.lastPositionUpdate.set(now);
+      }
+    });
+  }
+
   ngOnInit() {
     this.checkGeolocationPermission();
     this.loadCompetitorData();
+    this.startLocationTracking();
+    this.startFreshnessCheck();
+  }
+
+  ngAfterViewInit() {
+    // Component view initialized
+  }
+
+  /**
+   * Trigger the globe rotation animation to indicate location update
+   */
+  triggerLocationUpdateAnimation() {
+    if (this.headerComponent) {
+      this.headerComponent.triggerLocationUpdate();
+    }
+  }
+
+  /**
+   * Start background location tracking every 10 minutes
+   */
+  private startLocationTracking() {
+    // Only start if geolocation permission is granted
+    if (this.hasGeolocationPermission() === true) {
+      // Get initial position to display coordinates
+      this.updateCurrentCoordinates();
+
+      this.geolocationService.startBackgroundTracking({
+        enabled: true,
+        intervalMinutes: 10, // Every 10 minutes
+        apiEndpoint: this.getLocationUpdateEndpoint(),
+        wakeLockEnabled: false, // Don't keep screen awake
+        backgroundSyncEnabled: true // Enable offline sync
+      }).catch(error => {
+        console.error('Failed to start location tracking:', error);
+        // Don't show error to user as this is background functionality
+      });
+    }
+  }
+
+
+  /**
+   * Update current coordinates from geolocation service
+   */
+  private updateCurrentCoordinates() {
+    const subscription = this.geolocationService.getCurrentPosition().subscribe({
+      next: (position) => {
+        const now = new Date();
+        this.currentCoordinates.set({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        });
+        this.lastPositionUpdate.set(now);
+      },
+      error: (error) => {
+        console.warn('Failed to get current position:', error);
+      }
+    });
+    this.subscriptions.push(subscription);
+  }
+
+  /**
+   * Stop background location tracking
+   */
+  private stopLocationTracking() {
+    this.geolocationService.stopBackgroundTracking();
+  }
+
+  /**
+   * Get the location update API endpoint
+   */
+  private getLocationUpdateEndpoint(): string {
+    const activeUser = this.authService.getActiveUser();
+    if (!activeUser?.id || !activeUser?.trackuid || !activeUser?.startnumber) {
+      return '';
+    }
+
+    // Use a generic location update endpoint
+    // This can be adjusted when the backend endpoint is defined
+    return `${environment.backend_url}randonneur/${activeUser.id}/track/${activeUser.trackuid}/startnumber/${activeUser.startnumber}/location`;
   }
 
   ngOnDestroy() {
     // Stop polling when component is destroyed
     this.competitorService.stopPolling();
+    this.stopLocationTracking();
+    this.stopFreshnessCheck();
+
+    // Clean up all subscriptions to prevent memory leaks
+    this.subscriptions.forEach(subscription => {
+      if (subscription && typeof subscription.unsubscribe === 'function') {
+        subscription.unsubscribe();
+      }
+    });
+    this.subscriptions = [];
+
+    // Clean up effect to prevent memory leaks
+    if (this.effectRef && typeof this.effectRef.destroy === 'function') {
+      this.effectRef.destroy();
+      this.effectRef = undefined;
+    }
   }
 
   private loadCompetitorData() {
@@ -55,34 +174,19 @@ export class CompetitorComponent implements OnInit, OnDestroy {
     const activeUser = this.authService.getActiveUser();
     const token = localStorage.getItem('riderToken');
 
-    console.log('Active user data:', activeUser);
-    console.log('Token in localStorage:', token ? 'Present' : 'Missing');
     // Check authentication status
     const isAuthenticated = !!token && !!activeUser;
 
     if (!activeUser) {
-      console.error('No authenticated user found');
       this.messageService.showError('Authentication', 'No user session found. Please login again.');
       this.router.navigate(['/login']);
       return;
     }
 
     if (!activeUser.trackuid || !activeUser.startnumber) {
-      console.error('Missing track or start number data for authenticated user:', {
-        trackuid: activeUser.trackuid,
-        startnumber: activeUser.startnumber,
-        fullUser: activeUser
-      });
       this.messageService.showError('Missing Data', 'Unable to load competitor information. User missing track or start number data.');
       return;
     }
-
-    console.log('Loading competitor data for:', {
-      trackUid: activeUser.trackuid,
-      startNumber: activeUser.startnumber,
-      participantId: activeUser.id,
-      userName: activeUser.name
-    });
 
     // Start polling for competitor data using real backend
     this.competitorService.startCompetitorPolling(
@@ -97,17 +201,9 @@ export class CompetitorComponent implements OnInit, OnDestroy {
     );
 
     // Subscribe to combined data
-    this.competitorData$.subscribe({
+    const dataSubscription = this.competitorData$.subscribe({
       next: (data) => {
-        console.log('Competitor data subscription received:', data);
-        console.log('Data type:', typeof data);
-        console.log('Data is null?', data === null);
-        console.log('Data is undefined?', data === undefined);
-
         if (data) {
-          console.log('Processing competitor data from backend:', data);
-          console.log('Track data:', data.track);
-          console.log('Checkpoints data:', data.checkpoints);
 
           // Update track info
           this.trackInfo.set({
@@ -131,10 +227,11 @@ export class CompetitorComponent implements OnInit, OnDestroy {
                 closes: cp.closing || cp.closes, // Backend uses 'closing' field
                 service: cp.site?.description || 'Checkpoint',
                 time: cp.timestamp || '', // Use timestamp as time if available
-                logoFileName: cp.site?.image ? cp.site.image.replace('/api/uploads/', '') : undefined,
+                logoFileName: cp.site?.image ? cp.site.image.replace('/api/uploads/', '') : undefined, // Keep for backward compatibility
                 status: cp.status || 'not-visited',
                 timestamp: cp.timestamp,
                 checkoutTimestamp: cp.checkoutTimestamp,
+                site: cp.site, // Preserve the full site object with original image path
                 isFirst: index === 0,
                 isLast: index === data.checkpoints.length - 1
               };
@@ -142,7 +239,6 @@ export class CompetitorComponent implements OnInit, OnDestroy {
             this.checkpoints.set(transformedCheckpoints);
           } else {
             // Handle case when track has no checkpoints
-            console.warn('Track has no checkpoints:', data);
             this.checkpoints.set([]);
             this.messageService.showInfo('Checkpoints Coming Soon', 'Checkpoints for this track will be available soon.');
           }
@@ -159,15 +255,13 @@ export class CompetitorComponent implements OnInit, OnDestroy {
 
               // Update participant name
               this.participantName.set(data.participantName || 'Rider #' + (this.currentUser?.startnumber || '000'));
-        } else {
-          console.log('No data received from competitor service');
         }
       },
       error: (error) => {
-        console.error('Error in competitor data subscription:', error);
         this.messageService.showError('Data Error', 'Failed to load competitor data');
       }
     });
+    this.subscriptions.push(dataSubscription);
   }
 
   // Get current user data for templates
@@ -196,6 +290,38 @@ export class CompetitorComponent implements OnInit, OnDestroy {
     return this.participantName();
   }
 
+  // Check if location is fresh (1 minute or less old)
+  isLocationFresh(): boolean {
+    const lastUpdate = this.lastPositionUpdate();
+    if (!lastUpdate) return false;
+
+    const now = new Date();
+    const diffInMinutes = (now.getTime() - lastUpdate.getTime()) / (1000 * 60);
+    return diffInMinutes <= 1;
+  }
+
+  /**
+   * Start periodic freshness check
+   */
+  private startFreshnessCheck() {
+    // Check every 30 seconds to update freshness status
+    this.freshnessCheckInterval = setInterval(() => {
+      // Force change detection by updating a signal
+      // This will trigger the isLocationFresh() method to re-evaluate
+      this.lastPositionUpdate.set(this.lastPositionUpdate());
+    }, 30000);
+  }
+
+  /**
+   * Stop periodic freshness check
+   */
+  private stopFreshnessCheck() {
+    if (this.freshnessCheckInterval) {
+      clearInterval(this.freshnessCheckInterval);
+      this.freshnessCheckInterval = null;
+    }
+  }
+
   private async checkGeolocationPermission() {
     this.isCheckingPermission.set(true);
 
@@ -211,64 +337,56 @@ export class CompetitorComponent implements OnInit, OnDestroy {
       const permissionGranted = localStorage.getItem('geolocationPermissionGranted');
       const justGranted = localStorage.getItem('geolocationJustGranted');
 
-      if (permissionGranted === 'true') {
-        console.log('Permission previously granted, showing dashboard');
-        this.hasGeolocationPermission.set(true);
+        if (permissionGranted === 'true') {
+          this.hasGeolocationPermission.set(true);
 
-        if (justGranted === 'true') {
-          console.log('User just granted permission');
-          localStorage.removeItem('geolocationJustGranted');
-        } else {
-          console.log('Using previously stored permission');
+          if (justGranted === 'true') {
+            localStorage.removeItem('geolocationJustGranted');
+          }
+
+          this.isCheckingPermission.set(false);
+          this.startLocationTracking();
+          return;
         }
 
-        this.isCheckingPermission.set(false);
-        return;
-      }
-
-      if (justGranted === 'true') {
-        console.log('User just granted permission, skipping permission check redirect');
-        localStorage.removeItem('geolocationJustGranted');
-        this.hasGeolocationPermission.set(true);
-        this.isCheckingPermission.set(false);
-        return;
-      }
+        if (justGranted === 'true') {
+          localStorage.removeItem('geolocationJustGranted');
+          this.hasGeolocationPermission.set(true);
+          this.isCheckingPermission.set(false);
+          this.startLocationTracking();
+          return;
+        }
 
       // Check current permission status
       const permission = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
-      console.log('Current geolocation permission state:', permission.state);
 
-          if (permission.state === 'granted') {
-            this.hasGeolocationPermission.set(true);
-            console.log('Permission already granted, showing dashboard');
+      if (permission.state === 'granted') {
+        this.hasGeolocationPermission.set(true);
 
-            // Try to get current position to verify it actually works
-            try {
-              const position = await firstValueFrom(this.geolocationService.getCurrentPosition());
-              console.log('Location verified successfully:', position);
-            } catch (error) {
-              console.warn('Failed to get current position despite permission granted:', error);
-            }
-          } else if (permission.state === 'denied') {
-            this.hasGeolocationPermission.set(false);
-            console.log('Permission denied, redirecting to permission page');
-            // Only redirect if not coming from permission page
-            setTimeout(() => {
-              this.router.navigate(['/geolocation-permission']);
-            }, 100);
-          } else {
-            // Permission is 'prompt' - first time or reset
-            console.log('Permission is prompt (first time or reset), redirecting to permission page');
-            console.log('Current URL:', window.location.href);
-            // Only redirect if not already on permission page
-            if (!window.location.pathname.includes('geolocation-permission')) {
-              setTimeout(() => {
-                this.router.navigate(['/geolocation-permission']);
-              }, 100);
-            }
-          }
+        // Try to get current position to verify it actually works
+        try {
+          await firstValueFrom(this.geolocationService.getCurrentPosition());
+        } catch (error) {
+          // Silent fail - permission granted but position unavailable
+        }
+
+        this.startLocationTracking();
+      } else if (permission.state === 'denied') {
+        this.hasGeolocationPermission.set(false);
+        // Only redirect if not coming from permission page
+        setTimeout(() => {
+          this.router.navigate(['/geolocation-permission']);
+        }, 100);
+      } else {
+        // Permission is 'prompt' - first time or reset
+        // Only redirect if not already on permission page
+        if (!window.location.pathname.includes('geolocation-permission')) {
+          setTimeout(() => {
+            this.router.navigate(['/geolocation-permission']);
+          }, 100);
+        }
+      }
     } catch (error) {
-      console.error('Error checking geolocation permission:', error);
       this.hasGeolocationPermission.set(false);
       this.router.navigate(['/geolocation-permission']);
     } finally {
@@ -281,7 +399,6 @@ export class CompetitorComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    console.log('Logging out...');
     this.authService.logout();
     this.router.navigate(['/login']);
   }
@@ -296,14 +413,7 @@ export class CompetitorComponent implements OnInit, OnDestroy {
     if (!confirmed) return;
 
     const currentUser = this.currentUser;
-    console.log('Current user data for abandon:', currentUser);
     if (!currentUser?.trackuid || !currentUser?.startnumber || !currentUser?.id) {
-      console.error('Missing user data:', {
-        trackuid: currentUser?.trackuid,
-        startnumber: currentUser?.startnumber,
-        id: currentUser?.id,
-        fullUser: currentUser
-      });
       this.messageService.showError(
         this.translationService.translate('common.error'),
         'Missing user data for abandon operation'
@@ -326,8 +436,6 @@ export class CompetitorComponent implements OnInit, OnDestroy {
 
       const response = await firstValueFrom(this.http.put(url, {}));
 
-      console.log('Abandon brevet response:', response);
-
       // Update local state optimistically
       this.isAbandoned.set(true);
 
@@ -337,7 +445,6 @@ export class CompetitorComponent implements OnInit, OnDestroy {
       );
 
     } catch (error) {
-      console.error('Error abandoning brevet:', error);
       this.messageService.showError(
         this.translationService.translate('competitor.abandonBrevet'),
         this.translationService.translate('message.abandonFailed')
@@ -350,14 +457,7 @@ export class CompetitorComponent implements OnInit, OnDestroy {
     if (!confirmed) return;
 
     const currentUser = this.currentUser;
-    console.log('Current user data for undo abandon:', currentUser);
     if (!currentUser?.trackuid || !currentUser?.startnumber || !currentUser?.id) {
-      console.error('Missing user data for undo abandon:', {
-        trackuid: currentUser?.trackuid,
-        startnumber: currentUser?.startnumber,
-        id: currentUser?.id,
-        fullUser: currentUser
-      });
       this.messageService.showError(
         this.translationService.translate('common.error'),
         'Missing user data for undo abandon operation'
@@ -380,8 +480,6 @@ export class CompetitorComponent implements OnInit, OnDestroy {
 
       const response = await firstValueFrom(this.http.put(url, {}));
 
-      console.log('Undo abandon brevet response:', response);
-
       // Update local state optimistically
       this.isAbandoned.set(false);
 
@@ -391,7 +489,6 @@ export class CompetitorComponent implements OnInit, OnDestroy {
       );
 
     } catch (error) {
-      console.error('Error undoing abandon brevet:', error);
       this.messageService.showError(
         this.translationService.translate('competitor.undoAbandon'),
         this.translationService.translate('message.undoFailed')
@@ -400,8 +497,6 @@ export class CompetitorComponent implements OnInit, OnDestroy {
   }
 
   onCheckpointActionCompleted(event: any) {
-    console.log('Checkpoint action completed:', event);
-
     // Update the local checkpoint data optimistically
     this.updateCheckpointOptimistically(event.checkpoint, event.action);
 
@@ -440,7 +535,6 @@ export class CompetitorComponent implements OnInit, OnDestroy {
     });
 
     this.checkpoints.set(updatedCheckpoints);
-    console.log(`Parent optimistic update: ${checkpoint.name} -> ${action}`);
   }
 
 }

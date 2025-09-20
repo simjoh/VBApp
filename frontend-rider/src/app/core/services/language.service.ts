@@ -89,12 +89,12 @@ export class LanguageService {
 
       // Check if we support this language
       if (this.isSupportedLanguage(langCode)) {
-        console.log(`🌍 Detected browser language: ${browserLang} -> ${langCode}`);
+        // Browser language detected
         return langCode as SupportedLanguage;
       }
     }
 
-    console.log(`🌍 No supported browser language found in: ${browserLanguages.join(', ')}`);
+    // No supported browser language found
     return null;
   }
 

@@ -83,11 +83,7 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
     const checkpoint = this.checkpointSignal();
     const wasClicked = this.wasClickedForCheckIn();
     const shouldShow = checkpoint?.status === 'checked-in' && wasClicked;
-    console.log('Show timer check:', {
-      status: checkpoint?.status,
-      wasClicked,
-      shouldShow
-    });
+    // Show timer check
     return shouldShow;
   }
 
@@ -132,7 +128,7 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
   }
 
   private updateTimer(checkpoint: CheckpointButtonData) {
-    console.log('Updating timer for checkpoint:', checkpoint.name, 'Status:', checkpoint.status, 'Timestamp:', checkpoint.timestamp);
+    // Updating timer for checkpoint
 
     // Clear existing timer
     if (this.timerInterval) {
@@ -147,17 +143,17 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
 
     // Start timer if checked in AND was clicked for check-in
     if (checkpoint.status === 'checked-in' && this.wasClickedForCheckIn()) {
-      console.log('Starting timer for checked-in checkpoint that was clicked');
+      // Starting timer for checked-in checkpoint that was clicked
       this.startTimerFromZero();
     } else {
-      console.log('Stopping timer - not checked in or not clicked for check-in');
+      // Stopping timer - not checked in or not clicked for check-in
       this.timeAtCheckpoint.set(0);
       this.checkInStartTime = null;
     }
   }
 
   private startTimerFromZero() {
-    console.log('Starting timer from 0');
+    // Starting timer from 0
 
     // Set the start time to now
     this.checkInStartTime = new Date().getTime();
@@ -169,7 +165,7 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
         const now = new Date().getTime();
         const timeDiff = Math.floor((now - this.checkInStartTime) / 1000);
         this.timeAtCheckpoint.set(Math.max(0, timeDiff));
-        console.log('Timer running - elapsed seconds:', timeDiff);
+        // Timer running
       }
     }, 1000);
   }
@@ -317,13 +313,7 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
     const state = this.buttonState();
     const checkpoint = this.checkpointSignal();
 
-    console.log('Button clicked! State:', state);
-    console.log('Button data:', {
-      checkpoint: checkpoint,
-      trackUid: this.trackUid,
-      participantUid: this.participantUid,
-      startNumber: this.startNumber
-    });
+    // Button clicked
 
     // For checked-in state, cycle to next action after performing current one
     if (checkpoint?.status === 'checked-in' && !checkpoint?.isFirst && !checkpoint?.isLast) {
@@ -360,7 +350,7 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
         await this.onUndoCheckInClick();
         break;
       default:
-        console.warn('Unknown button state:', state);
+        // Unknown button state
     }
   }
 
@@ -392,7 +382,7 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
 
     // Make the actual request in the background
     this.performUndoCheckIn().catch(error => {
-      console.error('Undo check-in failed:', error);
+      // Undo check-in failed
       // Error message will be shown by feedbackInterceptor
       // Revert optimistic update on error
       this.updateCheckpointStatusOptimistically(checkpoint, 'checked-in');
@@ -427,7 +417,7 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
 
       // Perform check-in then check-out in background
       this.performStartSequence().catch(error => {
-        console.error('Start sequence failed:', error);
+        // Start sequence failed
         // Error message will be shown by feedbackInterceptor
         this.updateCheckpointStatusOptimistically(checkpoint, 'not-visited');
         // Reset the click flag on error
@@ -439,7 +429,7 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
       // Already checked in: just perform check-out in background
 
       this.performCheckOut().catch(error => {
-        console.error('Check-out failed:', error);
+        // Check-out failed
         // Error message will be shown by feedbackInterceptor
       }).finally(() => {
         this.isLoading.set(false);
@@ -470,7 +460,7 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
 
     // Make the actual request in the background
     this.performCheckIn().catch(error => {
-      console.error('Check-in failed:', error);
+      // Check-in failed
       // Error message will be shown by feedbackInterceptor
       // Revert optimistic update on error
       this.updateCheckpointStatusOptimistically(checkpoint, 'not-visited');
@@ -504,7 +494,7 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
 
     // Make the actual request in the background
     this.performCheckOut().catch(error => {
-      console.error('Check-out failed:', error);
+      // Check-out failed
       // Error message will be shown by feedbackInterceptor
       // Revert optimistic update on error
       this.updateCheckpointStatusOptimistically(checkpoint, 'checked-in');
@@ -538,7 +528,7 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
 
     // Make the actual request in the background
     this.performUndoCheckout().catch(error => {
-      console.error('Undo check-out failed:', error);
+      // Undo check-out failed
       // Error message will be shown by feedbackInterceptor
       // Revert optimistic update on error
       this.updateCheckpointStatusOptimistically(checkpoint, 'checked-out');
@@ -553,7 +543,7 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
   private updateCheckpointStatusOptimistically(checkpoint: CheckpointButtonData, newStatus: 'checked-in' | 'checked-out' | 'not-visited') {
     const updatedCheckpoint = { ...checkpoint, status: newStatus };
     this.checkpointSignal.set(updatedCheckpoint);
-    console.log(`Optimistic update: ${checkpoint.name} -> ${newStatus}`);
+    // Optimistic update
   }
 
   /**
@@ -565,19 +555,13 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
 
     const url = `${environment.backend_url}randonneur/${this.participantUid}/track/${this.trackUid}/startnumber/${this.startNumber}/checkpoint/${checkpoint.checkpoint_uid}/checkoutFrom`;
 
-    console.log('Making check-out request to:', url);
-    console.log('Request data:', {
-      participantUid: this.participantUid,
-      trackUid: this.trackUid,
-      startNumber: this.startNumber,
-      checkpointUid: checkpoint.checkpoint_uid
-    });
+    // Making check-out request
 
     const response = await firstValueFrom(
       this.http.put<ButtonActionResponse>(url, {})
     );
 
-    console.log('Check-out response:', response);
+    // Check-out response received
     return response;
   }
 
@@ -590,19 +574,13 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
 
     const url = `${environment.backend_url}randonneur/${this.participantUid}/track/${this.trackUid}/startnumber/${this.startNumber}/checkpoint/${checkpoint.checkpoint_uid}/undocheckoutFrom`;
 
-    console.log('Making undo check-out request to:', url);
-    console.log('Request data:', {
-      participantUid: this.participantUid,
-      trackUid: this.trackUid,
-      startNumber: this.startNumber,
-      checkpointUid: checkpoint.checkpoint_uid
-    });
+    // Making undo check-out request
 
     const response = await firstValueFrom(
       this.http.put<ButtonActionResponse>(url, {})
     );
 
-    console.log('Undo check-out response:', response);
+    // Undo check-out response received
     return response;
   }
 
@@ -613,20 +591,18 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
     const checkpoint = this.checkpointSignal();
     if (!checkpoint) throw new Error('No checkpoint data available');
 
-    console.log(`Performing start sequence for: ${checkpoint.name}`);
+    // Performing start sequence
 
     try {
       // Step 1: Check in
-      console.log('Step 1: Checking in...');
       await this.performCheckIn();
 
       // Step 2: Check out immediately after
-      console.log('Step 2: Checking out...');
       await this.performCheckOut();
 
-      console.log('Start sequence completed successfully');
+      // Start sequence completed successfully
     } catch (error) {
-      console.error('Start sequence failed:', error);
+      // Start sequence failed
       throw error;
     }
   }
@@ -640,19 +616,13 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
 
     const url = `${environment.backend_url}randonneur/${this.participantUid}/track/${this.trackUid}/startnumber/${this.startNumber}/checkpoint/${checkpoint.checkpoint_uid}/rollback`;
 
-    console.log('Making undo check-in request to:', url);
-    console.log('Request data:', {
-      participantUid: this.participantUid,
-      trackUid: this.trackUid,
-      startNumber: this.startNumber,
-      checkpointUid: checkpoint.checkpoint_uid
-    });
+    // Making undo check-in request
 
     const response = await firstValueFrom(
       this.http.put<ButtonActionResponse>(url, {})
     );
 
-    console.log('Undo check-in response:', response);
+    // Undo check-in response received
     return response;
   }
 
@@ -669,20 +639,13 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
     const position = await this.getCurrentLocation();
     const params = position ? `?lat=${position.lat}&long=${position.lng}` : '';
 
-    console.log('Making check-in request to:', `${url}${params}`);
-    console.log('Request data:', {
-      participantUid: this.participantUid,
-      trackUid: this.trackUid,
-      startNumber: this.startNumber,
-      checkpointUid: checkpoint.checkpoint_uid,
-      position: position
-    });
+    // Making check-in request
 
     const response = await firstValueFrom(
       this.http.post<ButtonActionResponse>(`${url}${params}`, {})
     );
 
-    console.log('Check-in response:', response);
+    // Check-in response received
     return response;
   }
 
@@ -692,7 +655,7 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
   private async getCurrentLocation(): Promise<{lat: number, lng: number} | null> {
     try {
       if (!navigator.geolocation) {
-        console.warn('Geolocation not supported');
+        // Geolocation not supported
         return null;
       }
 
@@ -709,7 +672,7 @@ export class CheckpointButtonComponent implements OnChanges, OnDestroy {
         lng: position.coords.longitude
       };
     } catch (error) {
-      console.warn('Could not get location:', error);
+      // Could not get location
       return null;
     }
   }

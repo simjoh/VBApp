@@ -22,9 +22,12 @@
     </div>
   } @else {
     <app-competitor-header
+      #headerComponent
       [startNumber]="currentUser?.startnumber ? '#' + currentUser?.startnumber : '#000'"
       [riderName]="getParticipantName()"
       [locationStatus]="getLocationStatus()"
+      [currentCoordinates]="currentCoordinates()"
+      [isLocationFresh]="isLocationFresh()"
       (logout)="logout()">
     </app-competitor-header>
 

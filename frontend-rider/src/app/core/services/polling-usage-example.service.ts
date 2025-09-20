@@ -130,7 +130,9 @@ export class CustomPollingExampleComponent implements OnInit, OnDestroy {
       {
         interval: 45000,
         immediateOnWakeup: true,
-        onError: (error) => console.error('Custom API error:', error)
+        onError: (error) => {
+          // Custom API error
+        }
       }
     ).subscribe(data => {
       this.customData = data;
@@ -232,7 +234,7 @@ export class VisibilityMonitorComponent implements OnInit {
     // Monitor polling state changes using effect (proper signal pattern)
     effect(() => {
       this.pollingState = this.pollingService.getPollingState()();
-      console.log('Polling state changed:', this.pollingState);
+      // Polling state changed
     });
   }
 
@@ -240,7 +242,7 @@ export class VisibilityMonitorComponent implements OnInit {
     // Monitor visibility changes (this returns an Observable, so subscribe is correct)
     this.pollingService.getVisibilityChanges().subscribe(isVisible => {
       this.isVisible = isVisible;
-      console.log(`App visibility changed: ${isVisible ? 'visible' : 'hidden'}`);
+      // App visibility changed
     });
   }
 }
