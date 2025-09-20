@@ -42,20 +42,20 @@ export class AssetService {
     if (!filename) {
       return this.getLogoUrl(); // Fallback to main logo
     }
-    
+
     // Remove leading slash if present
     let cleanFilename = filename.startsWith('/') ? filename.substring(1) : filename;
-    
+
     // Remove 'app' prefix if present (e.g., 'appvannasby-2.svg' -> 'vannasby-2.svg')
     if (cleanFilename.startsWith('app') && cleanFilename.length > 3) {
       cleanFilename = cleanFilename.substring(3);
     }
-    
+
     // Ensure pictureurl ends with proper separator
-    const baseUrl = environment.pictureurl.endsWith('/') 
-      ? environment.pictureurl.slice(0, -1) 
+    const baseUrl = environment.pictureurl.endsWith('/')
+      ? environment.pictureurl.slice(0, -1)
       : environment.pictureurl;
-    
+
     return `${baseUrl}/${cleanFilename}`;
   }
 }
