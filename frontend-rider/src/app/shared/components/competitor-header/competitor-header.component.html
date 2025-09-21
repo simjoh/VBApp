@@ -75,4 +75,21 @@
       <app-flag-language-selector></app-flag-language-selector>
     </div>
   </div>
+
+  <!-- Progress bar -->
+  @if (cyclingProgress && cyclingProgress.totalDistance > 0) {
+    <div class="progress-bar-container">
+      <div class="progress-bar"
+           [style.width.%]="cyclingProgress.progressPercentage">
+      </div>
+      <div class="progress-text">
+        <span class="progress-distance">
+          {{ cyclingProgress.currentDistance.toFixed(1) }} km / {{ cyclingProgress.totalDistance.toFixed(1) }} km
+        </span>
+        <span class="progress-percentage">
+          {{ cyclingProgress.progressPercentage.toFixed(1) }}%
+        </span>
+      </div>
+    </div>
+  }
 </div>

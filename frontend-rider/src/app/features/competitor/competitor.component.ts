@@ -49,6 +49,13 @@ export class CompetitorComponent implements OnInit, OnDestroy, AfterViewInit {
   participantName = signal<string>('Loading...');
   isAbandoned = signal<boolean>(false);
 
+  // Progress tracking
+  cyclingProgress = signal<{ currentDistance: number; totalDistance: number; progressPercentage: number }>({
+    currentDistance: 0,
+    totalDistance: 0,
+    progressPercentage: 0
+  });
+
   constructor() {
     // Initialize position updates subscription in constructor (injection context)
     this.effectRef = effect(() => {
@@ -235,7 +242,8 @@ export class CompetitorComponent implements OnInit, OnDestroy, AfterViewInit {
           // Update track info
           this.trackInfo.set({
             title: data.track.title,
-            distance: data.track.distance + ' km'
+            distance: data.track.distance + ' km',
+            totalDistanceKm: parseFloat(data.track.distance)
           });
 
           // Update checkpoints with backend data - transform to match CheckpointData interface
@@ -264,10 +272,20 @@ export class CompetitorComponent implements OnInit, OnDestroy, AfterViewInit {
               };
             });
             this.checkpoints.set(transformedCheckpoints);
+
+            // Calculate and update progress
+            this.updateProgress();
           } else {
             // Handle case when track has no checkpoints
             this.checkpoints.set([]);
             this.messageService.showInfo('Checkpoints Coming Soon', 'Checkpoints for this track will be available soon.');
+
+            // Reset progress when no checkpoints
+            this.cyclingProgress.set({
+              currentDistance: 0,
+              totalDistance: 0,
+              progressPercentage: 0
+            });
           }
 
               // Update participant info
@@ -530,6 +548,50 @@ export class CompetitorComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this.checkpoints.set(updatedCheckpoints);
+
+    // Update progress after checkpoint status change
+    this.updateProgress();
+  }
+
+  /**
+   * Calculate and update cycling progress based on completed checkpoints
+   */
+  private updateProgress() {
+    const checkpoints = this.checkpoints();
+    const trackInfo = this.trackInfo();
+
+    if (!checkpoints || checkpoints.length === 0 || !trackInfo?.totalDistanceKm) {
+      this.cyclingProgress.set({
+        currentDistance: 0,
+        totalDistance: 0,
+        progressPercentage: 0
+      });
+      return;
+    }
+
+    const totalDistance = trackInfo.totalDistanceKm;
+
+    // Find the farthest checkpoint that has been completed (checked-in or checked-out)
+    // Sort checkpoints by distance and find the last completed one
+    const sortedCheckpoints = [...checkpoints].sort((a, b) => a.distance - b.distance);
+    let farthestCompletedDistance = 0;
+
+    for (const checkpoint of sortedCheckpoints) {
+      if (checkpoint.status === 'checked-in' || checkpoint.status === 'checked-out') {
+        farthestCompletedDistance = checkpoint.distance;
+      } else {
+        // Stop at first non-completed checkpoint to ensure sequential progress
+        break;
+      }
+    }
+
+    const progressPercentage = totalDistance > 0 ? (farthestCompletedDistance / totalDistance) * 100 : 0;
+
+    this.cyclingProgress.set({
+      currentDistance: farthestCompletedDistance,
+      totalDistance: totalDistance,
+      progressPercentage: Math.min(progressPercentage, 100) // Cap at 100%
+    });
   }
 
 }

@@ -6,6 +6,12 @@ import { FlagLanguageSelectorComponent } from '../flag-language-selector/flag-la
 import { TranslationPipe } from '../../pipes/translation.pipe';
 import { TranslationService } from '../../../core/services/translation.service';
 
+export interface CyclingProgress {
+  currentDistance: number;
+  totalDistance: number;
+  progressPercentage: number;
+}
+
 @Component({
   selector: 'app-competitor-header',
   standalone: true,
@@ -19,6 +25,7 @@ export class CompetitorHeaderComponent {
   @Input() locationStatus: 'granted' | 'denied' | 'unknown' = 'unknown';
   @Input() currentCoordinates: { latitude: number; longitude: number } | null = null;
   @Input() isLocationFresh: boolean = false;
+  @Input() cyclingProgress: CyclingProgress | null = null;
   @Output() logout = new EventEmitter<void>();
 
   @ViewChild('locationPopover') locationPopover!: Popover;
