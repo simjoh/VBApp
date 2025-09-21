@@ -7,9 +7,23 @@ Refrerence angualar code style on link below
 https://angular.dev/style-guide
 
 
-dont use older angular coding style and and example. i dont want example earlier then angular 15
+Dont use older angular coding style and and example. i dont want example earlier then angular 15
+ 
+
+# frontend
+## Admin for randonneur events events in focus
+ ###  Style as professional admin system
+ ###  Try to centralize style as a designsystem aproach isntead of spread it
+ ###  Only for admin superuser  developer, volonteers and acp representant. Still competitor is bundle but its deprecated. should be removed in nomvember 2025, frontend-rider replaces the bundle one. maintain competitor part  if needed until it will be removed
 
 
-
-
+# Brevet-rider
 brevet-rider project should use angular 20 coding standards with standalone component and signals if possible
+
+
+## brevet-rider is big focus on mobile experience
+ ### Important that gelocation works well 
+ ### Bettery consumtion is also in focus
+ ### Easy usage due to users diffrent knowlegde
+ ### Only for competitor not admin
+
