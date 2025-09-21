@@ -24,11 +24,47 @@
 
   <div class="toolbar">
     <div class="toolbar-left">
-      <div class="location-status" [title]="getLocationStatusText()">
+      <div class="location-status"
+           (click)="toggleLocationPopover($event)"
+           (touchstart)="toggleLocationPopover($event)"
+           #locationTrigger>
         <i class="pi pi-globe status-icon"
            [class]="'status-' + locationStatus + (isUpdating() ? ' updating' : '') + (isLocationFresh ? ' fresh' : '')"></i>
-        <span class="status-text">Location</span>
+        <span class="status-text">{{ 'geolocation.status' | translate }}</span>
       </div>
+
+      <p-popover #locationPopover>
+        <ng-template pTemplate="content">
+          <div class="location-popover">
+            <div class="popover-header">
+              <i class="pi pi-globe"></i>
+              <span>{{ 'geolocation.statusTitle' | translate }}</span>
+            </div>
+            <div class="popover-content">
+              <div class="status-item">
+                <span class="status-label">{{ 'geolocation.status' | translate }}:</span>
+                <span class="status-value" [class]="'status-' + locationStatus">
+                  {{ getLocationStatusLabel() }}
+                </span>
+              </div>
+              @if (currentCoordinates && locationStatus === 'granted') {
+                <div class="status-item">
+                  <span class="status-label">{{ 'geolocation.coordinates' | translate }}:</span>
+                  <span class="status-value coordinates">
+                    {{ currentCoordinates.latitude.toFixed(6) }}, {{ currentCoordinates.longitude.toFixed(6) }}
+                  </span>
+                </div>
+                <div class="status-item">
+                  <span class="status-label">{{ 'geolocation.freshness' | translate }}:</span>
+                  <span class="status-value" [class]="isLocationFresh ? 'fresh' : 'stale'">
+                    {{ isLocationFresh ? ('🟢 ' + ('geolocation.fresh' | translate)) : ('🟡 ' + ('geolocation.stale' | translate)) }}
+                  </span>
+                </div>
+              }
+            </div>
+          </div>
+        </ng-template>
+      </p-popover>
     </div>
 
     <div class="toolbar-center">

@@ -1,12 +1,15 @@
-import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Popover, PopoverModule } from 'primeng/popover';
 import { LogoComponent } from '../logo/logo.component';
 import { FlagLanguageSelectorComponent } from '../flag-language-selector/flag-language-selector.component';
+import { TranslationPipe } from '../../pipes/translation.pipe';
+import { TranslationService } from '../../../core/services/translation.service';
 
 @Component({
   selector: 'app-competitor-header',
   standalone: true,
-  imports: [CommonModule, LogoComponent, FlagLanguageSelectorComponent],
+  imports: [CommonModule, PopoverModule, LogoComponent, FlagLanguageSelectorComponent, TranslationPipe],
   templateUrl: './competitor-header.component.html',
   styleUrl: './competitor-header.component.scss'
 })
@@ -18,10 +21,17 @@ export class CompetitorHeaderComponent {
   @Input() isLocationFresh: boolean = false;
   @Output() logout = new EventEmitter<void>();
 
+  @ViewChild('locationPopover') locationPopover!: Popover;
+
+  private translationService = inject(TranslationService);
   isUpdating = signal(false);
 
   onLogout() {
     this.logout.emit();
+  }
+
+  toggleLocationPopover(event: Event) {
+    this.locationPopover.toggle(event);
   }
 
   /**
@@ -63,5 +73,18 @@ export class CompetitorHeaderComponent {
     }
 
     return baseText;
+  }
+
+  getLocationStatusLabel(): string {
+    const translate = this.translationService.translate.bind(this.translationService);
+    switch (this.locationStatus) {
+      case 'granted':
+        return translate('geolocation.statusGranted');
+      case 'denied':
+        return translate('geolocation.statusDenied');
+      case 'unknown':
+      default:
+        return translate('geolocation.statusUnknown');
+    }
   }
 }

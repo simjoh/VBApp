@@ -14,9 +14,10 @@ export const unauthorizedInterceptor: HttpInterceptorFn = (req, next) => {
         localStorage.removeItem('riderToken');
         localStorage.removeItem('activeRider');
 
-        // Clear geolocation permissions (user-specific)
-        localStorage.removeItem('geolocationPermissionGranted');
-        localStorage.removeItem('geolocationJustGranted');
+        // Note: Geolocation permissions are preserved even on unauthorized errors
+        // as they are browser-level permissions, not user-specific
+        // The geolocation service will handle permission state management
+
         // Redirect to login or home
         router.navigate(['/']);
       }

@@ -65,9 +65,25 @@ export class CompetitorComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
-    this.checkGeolocationPermission();
+    // Initialize geolocation permission monitoring
+    this.geolocationService.initializePermissionMonitoring();
+
+    // Check if user just granted permission
+    const justGranted = localStorage.getItem('geolocationJustGranted');
+
+    if (justGranted === 'true') {
+      // User just granted permission, don't check again
+      console.log('User just granted permission, skipping permission check');
+      localStorage.removeItem('geolocationJustGranted');
+      this.hasGeolocationPermission.set(true);
+      this.isCheckingPermission.set(false);
+      this.startLocationTracking();
+    } else {
+      // Check geolocation permission normally
+      this.checkGeolocationPermission();
+    }
+
     this.loadCompetitorData();
-    this.startLocationTracking();
     this.startFreshnessCheck();
   }
 
@@ -88,22 +104,29 @@ export class CompetitorComponent implements OnInit, OnDestroy, AfterViewInit {
    * Start background location tracking every 10 minutes
    */
   private startLocationTracking() {
-    // Only start if geolocation permission is granted
-    if (this.hasGeolocationPermission() === true) {
-      // Get initial position to display coordinates
-      this.updateCurrentCoordinates();
+    console.log('Starting location tracking...');
 
-      this.geolocationService.startBackgroundTracking({
-        enabled: true,
-        intervalMinutes: 10, // Every 10 minutes
-        apiEndpoint: this.getLocationUpdateEndpoint(),
-        wakeLockEnabled: false, // Don't keep screen awake
-        backgroundSyncEnabled: true // Enable offline sync
-      }).catch(error => {
-        console.error('Failed to start location tracking:', error);
-        // Don't show error to user as this is background functionality
-      });
-    }
+    // Get initial position to display coordinates
+    this.updateCurrentCoordinates();
+
+    // Start background tracking
+    // For testing: use 1 minute interval, change to 10 for production
+    const intervalMinutes = 1; // Change to 10 for production
+
+    this.geolocationService.startBackgroundTracking({
+      enabled: true,
+      intervalMinutes: intervalMinutes,
+      apiEndpoint: this.getLocationUpdateEndpoint(),
+      wakeLockEnabled: false, // Don't keep screen awake
+      backgroundSyncEnabled: true // Enable offline sync
+    }).then(() => {
+      console.log('Background location tracking started successfully!');
+      console.log(`Location will be updated every ${intervalMinutes} minute(s)`);
+      console.log('API endpoint:', this.getLocationUpdateEndpoint());
+      console.log('Check console for background tracking logs...');
+    }).catch(error => {
+      console.error('Failed to start location tracking:', error);
+    });
   }
 
 
@@ -134,6 +157,7 @@ export class CompetitorComponent implements OnInit, OnDestroy, AfterViewInit {
     this.geolocationService.stopBackgroundTracking();
   }
 
+
   /**
    * Get the location update API endpoint
    */
@@ -153,6 +177,9 @@ export class CompetitorComponent implements OnInit, OnDestroy, AfterViewInit {
     this.competitorService.stopPolling();
     this.stopLocationTracking();
     this.stopFreshnessCheck();
+
+    // Clean up geolocation service
+    this.geolocationService.cleanup();
 
     // Clean up all subscriptions to prevent memory leaks
     this.subscriptions.forEach(subscription => {
@@ -271,18 +298,11 @@ export class CompetitorComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Get location status for header indicator
   getLocationStatus(): 'granted' | 'denied' | 'unknown' {
-    const permissionGranted = localStorage.getItem('geolocationPermissionGranted');
-    const justGranted = localStorage.getItem('geolocationJustGranted');
-
-    if (permissionGranted === 'true' || justGranted === 'true') {
+    if (this.hasGeolocationPermission()) {
       return 'granted';
+    } else {
+      return 'unknown';
     }
-
-    if (permissionGranted === 'false') {
-      return 'denied';
-    }
-
-    return 'unknown';
   }
 
   // Get participant name from backend data
@@ -333,64 +353,39 @@ export class CompetitorComponent implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
 
-      // Check if we have stored permission state
-      const permissionGranted = localStorage.getItem('geolocationPermissionGranted');
-      const justGranted = localStorage.getItem('geolocationJustGranted');
-
-        if (permissionGranted === 'true') {
-          this.hasGeolocationPermission.set(true);
-
-          if (justGranted === 'true') {
-            localStorage.removeItem('geolocationJustGranted');
-          }
-
-          this.isCheckingPermission.set(false);
-          this.startLocationTracking();
-          return;
-        }
-
-        if (justGranted === 'true') {
-          localStorage.removeItem('geolocationJustGranted');
-          this.hasGeolocationPermission.set(true);
-          this.isCheckingPermission.set(false);
-          this.startLocationTracking();
-          return;
-        }
+      // Wait a moment for permission state to settle
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Check current permission status
       const permission = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
 
+      console.log('Checking permission state:', permission.state);
+
       if (permission.state === 'granted') {
+        console.log('Permission granted, starting location tracking');
         this.hasGeolocationPermission.set(true);
-
-        // Try to get current position to verify it actually works
-        try {
-          await firstValueFrom(this.geolocationService.getCurrentPosition());
-        } catch (error) {
-          // Silent fail - permission granted but position unavailable
-        }
-
+        this.isCheckingPermission.set(false);
         this.startLocationTracking();
-      } else if (permission.state === 'denied') {
+        return;
+      } else if (permission.state === 'prompt') {
+        // Permission is in prompt state, redirect to permission page
+        console.log('Permission in prompt state, redirecting to permission page');
         this.hasGeolocationPermission.set(false);
-        // Only redirect if not coming from permission page
-        setTimeout(() => {
-          this.router.navigate(['/geolocation-permission']);
-        }, 100);
+        this.isCheckingPermission.set(false);
+        this.router.navigate(['/geolocation-permission']);
       } else {
-        // Permission is 'prompt' - first time or reset
-        // Only redirect if not already on permission page
-        if (!window.location.pathname.includes('geolocation-permission')) {
-          setTimeout(() => {
-            this.router.navigate(['/geolocation-permission']);
-          }, 100);
-        }
+        // Permission denied, redirect to permission page
+        console.log('Permission denied, redirecting to permission page');
+        this.hasGeolocationPermission.set(false);
+        this.isCheckingPermission.set(false);
+        this.router.navigate(['/geolocation-permission']);
       }
     } catch (error) {
+      console.error('Error checking permission:', error);
+      // Error checking permission - redirect to permission page
       this.hasGeolocationPermission.set(false);
-      this.router.navigate(['/geolocation-permission']);
-    } finally {
       this.isCheckingPermission.set(false);
+      this.router.navigate(['/geolocation-permission']);
     }
   }
 

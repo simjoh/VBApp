@@ -49,6 +49,15 @@ export interface TranslationKeys {
   'geolocation.title': string;
   'geolocation.message': string;
   'geolocation.allowButton': string;
+  'geolocation.status': string;
+  'geolocation.statusTitle': string;
+  'geolocation.statusGranted': string;
+  'geolocation.statusDenied': string;
+  'geolocation.statusUnknown': string;
+  'geolocation.coordinates': string;
+  'geolocation.freshness': string;
+  'geolocation.fresh': string;
+  'geolocation.stale': string;
 
   // Messages
   'message.brevetAbandoned': string;
@@ -113,6 +122,15 @@ export class TranslationService {
       'geolocation.title': 'Location Access Required',
       'geolocation.message': 'This app requires location access to track your progress.',
       'geolocation.allowButton': 'Allow Location Access',
+      'geolocation.status': 'Location',
+      'geolocation.statusTitle': 'Location Status',
+      'geolocation.statusGranted': 'Access Granted',
+      'geolocation.statusDenied': 'Access Denied',
+      'geolocation.statusUnknown': 'Unknown Status',
+      'geolocation.coordinates': 'Coordinates',
+      'geolocation.freshness': 'Freshness',
+      'geolocation.fresh': 'Fresh (≤1 min)',
+      'geolocation.stale': 'May be outdated (>1 min)',
       'message.brevetAbandoned': 'You have successfully abandoned the brevet',
       'message.abandonUndone': 'Brevet abandonment has been successfully undone',
       'message.abandonFailed': 'Failed to abandon brevet. Please try again.',
@@ -165,6 +183,15 @@ export class TranslationService {
       'geolocation.title': 'Platsåtkomst Krävs',
       'geolocation.message': 'Denna app kräver platsåtkomst för att spåra din framgång.',
       'geolocation.allowButton': 'Tillåt Platsåtkomst',
+      'geolocation.status': 'Plats',
+      'geolocation.statusTitle': 'Platsstatus',
+      'geolocation.statusGranted': 'Åtkomst Beviljad',
+      'geolocation.statusDenied': 'Åtkomst Nekad',
+      'geolocation.statusUnknown': 'Okänd Status',
+      'geolocation.coordinates': 'Koordinater',
+      'geolocation.freshness': 'Fräschhet',
+      'geolocation.fresh': 'Fräsch (≤1 min)',
+      'geolocation.stale': 'Kan vara föråldrad (>1 min)',
       'message.brevetAbandoned': 'Du har framgångsrikt övergivit brevet',
       'message.abandonUndone': 'Övergivandet av brevet har framgångsrikt ångrats',
       'message.abandonFailed': 'Misslyckades att överge brevet. Försök igen.',
@@ -217,6 +244,15 @@ export class TranslationService {
       'geolocation.title': 'Accès Localisation Requis',
       'geolocation.message': 'Cette application nécessite l\'accès à la localisation pour suivre vos progrès.',
       'geolocation.allowButton': 'Autoriser Accès Localisation',
+      'geolocation.status': 'Localisation',
+      'geolocation.statusTitle': 'Statut Localisation',
+      'geolocation.statusGranted': 'Accès Accordé',
+      'geolocation.statusDenied': 'Accès Refusé',
+      'geolocation.statusUnknown': 'Statut Inconnu',
+      'geolocation.coordinates': 'Coordonnées',
+      'geolocation.freshness': 'Fraîcheur',
+      'geolocation.fresh': 'Frais (≤1 min)',
+      'geolocation.stale': 'Peut être obsolète (>1 min)',
       'message.brevetAbandoned': 'Vous avez abandonné le brevet avec succès',
       'message.abandonUndone': 'L\'abandon du brevet a été annulé avec succès',
       'message.abandonFailed': 'Échec de l\'abandon du brevet. Veuillez réessayer.',
@@ -269,6 +305,15 @@ export class TranslationService {
       'geolocation.title': 'Standortzugriff Erforderlich',
       'geolocation.message': 'Diese App benötigt Standortzugriff, um Ihren Fortschritt zu verfolgen.',
       'geolocation.allowButton': 'Standortzugriff Erlauben',
+      'geolocation.status': 'Standort',
+      'geolocation.statusTitle': 'Standortstatus',
+      'geolocation.statusGranted': 'Zugriff Gewährt',
+      'geolocation.statusDenied': 'Zugriff Verweigert',
+      'geolocation.statusUnknown': 'Unbekannter Status',
+      'geolocation.coordinates': 'Koordinaten',
+      'geolocation.freshness': 'Aktualität',
+      'geolocation.fresh': 'Aktuell (≤1 min)',
+      'geolocation.stale': 'Kann veraltet sein (>1 min)',
       'message.brevetAbandoned': 'Sie haben das Brevet erfolgreich aufgegeben',
       'message.abandonUndone': 'Das Aufgeben des Brevets wurde erfolgreich rückgängig gemacht',
       'message.abandonFailed': 'Fehler beim Aufgeben des Brevets. Bitte versuchen Sie es erneut.',
@@ -286,6 +331,7 @@ export class TranslationService {
 
   translate(key: keyof TranslationKeys): string {
     const currentLang = this.languageService.getCurrentLanguage();
-    return this.translations[currentLang]?.[key] || key;
+    const translation = this.translations[currentLang]?.[key];
+    return translation ? translation : String(key);
   }
 }

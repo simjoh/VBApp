@@ -54,43 +54,37 @@ export class GeolocationPermissionComponent implements OnDestroy {
         return;
       }
 
-      // Request permission
+      // Request permission directly
       const granted = await firstValueFrom(this.geolocationService.requestPermission());
+
+      console.log('Permission request result:', granted);
 
       if (granted) {
         this.permissionGranted.set(true);
         this.messageService.showSuccess('Geolocation Permission', 'Location access granted!');
 
-        // Get initial position to verify it works
-        this.isDetectingLocation.set(true);
-        try {
-          const position = await firstValueFrom(this.geolocationService.getCurrentPosition());
-          this.messageService.showInfo('Location', 'Your location has been detected successfully');
+        // Set flag to indicate permission was just granted
+        localStorage.setItem('geolocationJustGranted', 'true');
 
-          // Navigate to competitor dashboard immediately after successful location detection
-          // Set permanent flag to indicate permission was granted
-          localStorage.setItem('geolocationJustGranted', 'true');
-          localStorage.setItem('geolocationPermissionGranted', 'true');
-          // Use direct window.location for immediate redirect
-          this.router.navigateByUrl('/dashboard', { replaceUrl: true });
-        } catch (posError) {
-          this.messageService.showWarning('Location', 'Permission granted but unable to get your current location');
-          // Still redirect even if position detection fails
-          setTimeout(() => {
-            localStorage.setItem('geolocationJustGranted', 'true');
-            localStorage.setItem('geolocationPermissionGranted', 'true');
-            this.router.navigateByUrl('/dashboard');
-
-          }, 2000);
-        } finally {
-          this.isDetectingLocation.set(false);
-        }
+        // Add a small delay then redirect
+        setTimeout(() => {
+          console.log('Redirecting to dashboard...');
+          this.router.navigateByUrl('/dashboard', { replaceUrl: true }).then(success => {
+            console.log('Navigation success:', success);
+            if (!success) {
+              // Fallback navigation
+              window.location.href = '/dashboard';
+            }
+          });
+        }, 1000);
       } else {
+        console.log('Permission denied');
         this.error.set('Location access was denied. This app requires location access to function properly.');
         this.messageService.showError('Geolocation Permission', 'Location access is required for this app');
       }
     } catch (error) {
       // Permission request error
+      console.error('Geolocation permission error:', error);
       this.error.set('Failed to request location permission. Please try again.');
       this.messageService.showError('Geolocation Permission', 'Failed to request location access');
     } finally {

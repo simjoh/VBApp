@@ -153,11 +153,11 @@ export class AuthService {
     localStorage.removeItem('riderToken');
     localStorage.removeItem('activeRider');
 
-    // Clear geolocation permissions (user-specific)
-    localStorage.removeItem('geolocationPermissionGranted');
-    localStorage.removeItem('geolocationJustGranted');
+    // Note: Geolocation permissions are preserved across logins
+    // as they are browser-level permissions, not user-specific
+    // The geolocation service will handle permission state management
 
-    // Note: Language preference is preserved across logins
+    // Note: Language preference is also preserved across logins
     // as it's a user preference, not session data
 
     this.changeStatus(false);
