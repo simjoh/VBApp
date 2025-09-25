@@ -186,7 +186,7 @@
         <p style="text-indent: 0pt;text-align: left;"><br /></p>
         <p class="s1" style="padding-left: 4pt;text-indent: 0pt;text-align: left;">Organiser:</p>
         <p style="text-indent: 0pt;text-align: left;"><br /></p>
-        <p class="s3" style="padding-left: 4pt;text-indent: 0pt;text-align: left;">Cykelintresset</p>
+        <p class="s3" style="padding-left: 4pt;text-indent: 0pt;text-align: left;">Randonneurs Laponia</p>
       </td>
       <td style="width:14pt">
         <p style="text-indent: 0pt;text-align: left;"><br /></p>
@@ -195,7 +195,7 @@
         <p style="text-indent: 0pt;text-align: left;"><br /></p>
         <p class="s1" style="padding-left: 4pt;text-indent: 0pt;text-align: left;">Event:</p>
         <p style="text-indent: 0pt;text-align: left;"><br /></p>
-        <p class="s3" style="padding-left: 4pt;text-indent: 0pt;text-align: left;">Midnight Sun Randonnée 2024</p>
+        <p class="s3" style="padding-left: 4pt;text-indent: 0pt;text-align: left;">Midnight Sun Randonnée 2026</p>
       </td>
     </tr>
     <tr style="height:26pt">
@@ -442,7 +442,7 @@
   <p style="text-indent: 0pt;text-align: left;"><br /></p>
   <h2 style="padding-left: 10pt;text-indent: 0pt;text-align: left;">Further information</h2>
   <p class="s10" style="padding-top: 8pt;padding-left: 10pt;text-indent: 0pt;text-align: left;"><a href="{{$completeregistrationlink}}">Follow this link to complete your registration</a><br></p>
-  <p class="s10" style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;"><a href="https://cycling.lachemise.se/collections/midnight-sun">Webshop jersey</a></p><br>
+  <p class="s10" style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;"><a href="https://cycling.lachemise.se/collections/midnight-sun">Webshop jersey</a></p>
   <p class="s10" style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;"><a href="{{$startlistlink}}">Start list</a></p>
   <p class="s10" style="padding-top: 8pt;padding-left: 10pt;text-indent: 0pt;text-align: left;"><a href="{{$updatelink}}">Follow this link to change your registered information </a><br></p>
   <p style="text-indent: 0pt;text-align: left;"><br /></p>

@@ -93,7 +93,7 @@ class CompletedRegistrationSuccessEventListener
                 }
             } else {
                 Log::debug("Sending: MSR CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);
-                Mail::to($email_adress)
+                Mail::to($email_adress)->cc('no-reply@randonneurslaponia.se')
                     ->send(new CompletedRegistrationEmail($registration, $products, $event_event, $club->name, $country->country_name_en, $startlistlink, $updatedetaillink, $person, $organizer, $dnslink));
             }
         } else {

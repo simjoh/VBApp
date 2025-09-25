@@ -59,7 +59,7 @@ class PreRegistrationSuccessEventListener
 
 
         if (App::isProduction()) {
-            Mail::to($email_adress)
+            Mail::to($email_adress)->cc('no-reply@randonneurslaponia.se')
                 ->send(new PreRegistrationSucessEmail($registration, $products, $event_event, $club->name, $country->country_name_en, $startlistlink, $completeregistrationlink, $updatedetaillink, $person));
         } else {
             Mail::to('receiverinbox@mailhog.local')

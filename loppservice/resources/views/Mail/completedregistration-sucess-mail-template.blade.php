@@ -488,7 +488,7 @@
 						{{ $voucherCodes[$optional->productID] }}
 					</p>
 					<p style="margin: 5px 0; font-size: 12px; color: #666;">
-						Use this code in the webshop when ordering your jersey.
+						Use this code in the web shop when ordering your jersey.
 					</p>
 				</div>
 				@else
@@ -554,8 +554,8 @@
 					you can also change your information displayed in the starting list.</span></p>
 				<p>&nbsp;</p>
 				<p class="s3"><strong>MSR Jersey</strong><br />
-					Reminder! If you wish to wear a MSR-jersey during the event, you must place your order in the La Chemise webshop no
-					later than the 31st of March!</p>
+					Reminder! If you wish to wear a MSR-jersey during the event, you must place your order in the La Chemise web shop no
+					later than the 29th of March!</p>
 				<p>&nbsp;</p>
 				<p class="s3"><strong>High-Visibility Vest</strong><br />
 					Bad weather may create low light conditions. On roads with tunnels and/or traffic a high visibility vest is therefore
@@ -569,13 +569,12 @@
 				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="{{$updatelink}}" style="font-size: 12pt">Change registered information</a></p>
 
 				@if(isset($dnslink) && !empty($dnslink))
-				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;">If you do not want to participate: <a href="{{ $dnslink }}" style="font-size: 12pt">Click here</a></p>
+				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="{{ $dnslink }}" style="font-size: 12pt">Click here if you do not want to participate</a></p>
 				@endif
 
-				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://www.midnightsunrandonnee.se/program" style="font-size: 12pt">Event program 14-20 June</a></p>
-				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://cycling.lachemise.se/collections/midnight-sun" style="font-size: 12pt">La Chemise webshop for jersey</a></p>
-				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://sigr.cc" style="font-size: 12pt">Sigr webshop for high-visibility vest</a></p>
-				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="{{$startlistlink}}" style="font-size: 12pt">Starting list {{$event->title}}</a></p>
+				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://www.midnightsunrandonnee.se/program" style="font-size: 12pt">Event program 13-18 June</a></p>
+				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="https://cycling.lachemise.se/collections/midnight-sun" style="font-size: 12pt">La Chemise web shop for jersey</a></p>
+				<p class="s10" style="padding-top: 5pt;text-indent: 0pt;text-align: left;"><a href="{{$startlistlink}}" style="font-size: 12pt">Start list {{$event->title}}</a></p>
 			</td>
 		</tr>
 	</table>

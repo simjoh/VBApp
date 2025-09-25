@@ -212,7 +212,8 @@
                         </div>
                         <div class="ml-3 text-sm">
                             <label for="gdpr-consent" class="font-medium text-gray-900">
-                                I consent to the processing of my personal data for the purpose of event registration <span class="text-red-500">*</span>
+                                 <span class="text-red-500">*</span>
+                                 I consent to the processing of my personal data for the purpose of event registration <a href="https://www.ebrevet.org/datapolicy" target="_blank" class="text-black-500 underline">(GDPR), Regulation (EU) 2016/679)</a>
                             </label>
                             <p class="text-gray-500">By checking this box, you agree to our privacy policy and data processing terms.</p>
                         </div>
@@ -223,7 +224,7 @@
                         data-registration-open="{{ $availabledetails['isRegistrationOpen'] ? 'true' : 'false' }}"
                         data-reservation-active="{{ $showreservationbutton ? 'true' : 'false' }}"
                         class="w-full bg-orange-500 text-white py-2 px-4 font-bold rounded-md hover:bg-orange-400 focus:outline-none focus:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">
-                    RESERVE
+                    RESERVE STARTING PLACE
                 </button>
             </div>
         </form>
@@ -265,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             reserveButton.disabled = false;
             reserveButton.classList.remove('opacity-50', 'cursor-not-allowed');
-            reserveButton.textContent = 'RESERVE';
+            reserveButton.textContent = 'CHECK OUT';
             reserveButton.title = 'Submit your reservation';
         }
     }

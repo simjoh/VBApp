@@ -121,7 +121,7 @@
     <div class="flex items-center gap-x-3">
         <input id="buffet_dinner_paid" name="dinner" value="1006" type="radio"
                class="h-4 w-4 border-black text-black focus:ring-indigo-600">
-        <label for="buffet_dinner_paid" class="block sm:text-base font-sm leading-6 text-gray-600">Buffet Dinner - Saturday the 14th June: 38 EUR</label>
+        <label for="buffet_dinner_paid" class="block sm:text-base font-sm leading-6 text-gray-600">Buffet Dinner - Saturday the 13th June: 38 EUR</label>
     </div>
     <div class="flex items-center gap-x-3">
         <input id="no-buffet-dinner" name="dinner" value="nobuffetdinner" type="radio" checked

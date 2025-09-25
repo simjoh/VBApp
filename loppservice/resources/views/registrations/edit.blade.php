@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @include('base')
-<header class="bg-gray-200 py-0">
-    <div class="container sm:p-1 mx-auto">
-        <img alt="msr logotyp" width="75%" height="800" src="{{ asset('logo2026.svg') }}"/>
-    </div>
+
 <header class="bg-white py-4">
 	<div class="container sm:p-1 mx-auto">
 		<img alt="msr logotyp" width="75%" height="800" src="{{ asset('logo2026.svg') }}"/>
@@ -237,7 +234,7 @@
                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"  @checked(old('1001', $optionalsforregistration->contains(1001)))>
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="lunch_box" class="font-medium sm:text-sm text-gray-900">Lunch box - Baggböle Manor</label>
+                                <label for="lunch_box" class="font-medium sm:text-sm text-gray-900">Lunch box - Brännland Inn</label>
                             </div>
                         </div>
                         <div class="relative flex gap-x-3">
@@ -246,7 +243,7 @@
                                        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" @checked(old('1002', $optionalsforregistration->contains(1002)))>
                             </div>
                             <div class="text-sm leading-6">
-                                <label for="bag_drop" class="font-medium sm:text-sm text-gray-900">Bag drop - Baggböle Manor (to Scandic
+                                <label for="bag_drop" class="font-medium sm:text-sm text-gray-900">Bag drop - Brännland Inn (to Scandic
                                     Plaza)</label>
                             </div>
                         </div>
@@ -257,7 +254,7 @@
                             </div>
                             <div class="text-sm leading-6">
                                 <label for="long_term_parking" class="font-medium sm:text-sm text-gray-900">
-                                    Long-term parking - Baggböle Manor</label>
+                                    Long-term parking</label>
                             </div>
                         </div>
                         <div class="relative flex gap-x-3">
