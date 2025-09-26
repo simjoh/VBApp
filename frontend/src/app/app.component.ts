@@ -6,6 +6,7 @@ import {MenuItem, PrimeNGConfig} from "primeng/api";
 import {AuthService} from "./core/auth/auth.service";
 import {interval, Subscription, Observable} from "rxjs";
 import {switchMap, map} from "rxjs/operators";
+import {LanguageService} from "./core/services/language.service";
 
 @Component({
   selector: 'brevet-root',
@@ -35,7 +36,8 @@ export class AppComponent implements OnInit, OnDestroy{
     injector: Injector,
     private initiatedService: InititatedService,
     private authenticatedservice: AuthenticatedService,
-    private authService: AuthService
+    private authService: AuthService,
+    private languageService: LanguageService
   ) {
     ServiceLocator.injector = injector;
   }
@@ -46,6 +48,13 @@ export class AppComponent implements OnInit, OnDestroy{
 
   ngOnInit() {
     this.primengConfig.ripple = true;
+
+    // Initialize language service
+    try {
+      this.languageService.setLanguage(this.languageService.getCurrentLanguage());
+    } catch (error) {
+      // Language service initialization failed
+    }
 
     // Validate token every 5 minutes
     this.tokenValidationSubscription = interval(5 * 60 * 1000).pipe(

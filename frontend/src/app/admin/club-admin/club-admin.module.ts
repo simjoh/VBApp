@@ -13,6 +13,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
+import { TranslationPipe } from '../../shared/pipes/translation.pipe';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { TooltipModule } from 'primeng/tooltip';
     ButtonModule,
     InputTextModule,
     TableModule,
-    TooltipModule
+    TooltipModule,
+    TranslationPipe
   ]
 })
 export class ClubAdminModule { }

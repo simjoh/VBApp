@@ -4,7 +4,7 @@
   <div class="login-card">
     <div class="login-header">
       <div class="certification-text">
-        <div class="certification-main">Certifierad av Audax Club Parisien</div>
+        <div class="certification-main">{{ 'login.title' | displayTranslate }}</div>
         <div class="certification-sub">DIGITALT BREVET-KORT MED GPS VALIDERING</div>
       </div>
       <div class="logo-container">
@@ -19,7 +19,7 @@
           <input
             type="text"
             class="form-control"
-            placeholder="Användarnamn"
+            [placeholder]="'login.username' | displayTranslate"
             name="username"
             [(ngModel)]="model.username"
             required>
@@ -32,7 +32,7 @@
           <input
             type="password"
             class="form-control"
-            placeholder="Lösenord"
+            [placeholder]="'login.password' | displayTranslate"
             name="password"
             [(ngModel)]="model.password"
             required>
@@ -45,7 +45,7 @@
           type="submit"
           [disabled]="!form.valid">
           <i class="pi pi-sign-in"></i>
-          <span>Logga in</span>
+          <span>{{ 'login.loginButton' | displayTranslate }}</span>
         </button>
 
         <div *ngIf="loginerror$ | async as error" class="error-message">

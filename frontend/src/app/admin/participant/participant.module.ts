@@ -28,6 +28,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { TranslationPipe } from '../../shared/pipes/translation.pipe';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { DynamicDialogModule } from 'primeng/dynamicdialog';
     CheckboxModule,
     ButtonModule,
     TagModule,
-    DynamicDialogModule
+    DynamicDialogModule,
+    TranslationPipe
   ],
   exports: [MoveParticipantsDialogComponent]
 })

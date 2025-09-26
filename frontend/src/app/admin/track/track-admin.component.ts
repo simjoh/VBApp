@@ -1,8 +1,9 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, inject} from '@angular/core';
 import {Router} from '@angular/router';
 import {MenuItem} from "primeng/api";
 import {TrackAdminComponentService} from "./track-admin-component.service";
 import {CompactPageHeaderConfig, CompactActionCardConfig} from '../../shared/components';
+import {TranslationService} from '../../core/services/translation.service';
 
 @Component({
   selector: 'brevet-track-admin',
@@ -12,27 +13,28 @@ import {CompactPageHeaderConfig, CompactActionCardConfig} from '../../shared/com
   providers: [TrackAdminComponentService]
 })
 export class TrackAdminComponent implements OnInit {
+  private translationService = inject(TranslationService);
 
   designTabs = [];
   tabs = [];
 
   headerConfig: CompactPageHeaderConfig = {
     icon: 'pi pi-directions',
-    title: 'Hantera Banor',
-    description: 'Hantera banor, kontrollpunkter och evenemang'
+    title: this.translationService.translate('track.manageTracks'),
+    description: this.translationService.translate('track.manageTracksDescription')
   };
 
   actionCards: CompactActionCardConfig[] = [
     {
       icon: 'pi pi-list',
-      title: 'Banlista',
-      description: 'Visa och hantera alla banor',
+      title: this.translationService.translate('track.trackList'),
+      description: this.translationService.translate('track.trackListDescription'),
       action: 'list'
     },
     {
       icon: 'pi pi-map',
-      title: 'Banbyggare',
-      description: 'Skapa och redigera banor',
+      title: this.translationService.translate('track.trackBuilder'),
+      description: this.translationService.translate('track.trackBuilderDescription'),
       action: 'builder'
     }
   ];

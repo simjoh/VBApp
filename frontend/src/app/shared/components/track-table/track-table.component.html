@@ -14,36 +14,36 @@
           <th style="width: 3rem"></th>
           <th style="width: 20%">
             <div class="flex align-items-center gap-2">
-              <span>Bana</span>
+              <span>{{ 'track.track' | translate }}</span>
             </div>
           </th>
           <th style="width: 10%" class="hide">
             <div class="flex align-items-center gap-2">
-              <span>Länk till bana</span>
+              <span>{{ 'track.trackLink' | translate }}</span>
             </div>
           </th>
           <th style="width: 15%">
             <div class="flex align-items-center gap-2">
-              <span>Datum</span>
+              <span>{{ 'track.date' | translate }}</span>
             </div>
           </th>
           <th style="width: 10%">
             <div class="flex align-items-center gap-2">
-              <span>Distans</span>
+              <span>{{ 'track.distance' | translate }}</span>
             </div>
           </th>
           <th style="width: 15%">
             <div class="flex align-items-center gap-2">
-              <span>Cyklistens vy</span>
+              <span>{{ 'track.cyclistView' | translate }}</span>
             </div>
           </th>
           <th style="width: 15%">
             <div class="flex align-items-center gap-2">
-              <span>Trackingsida</span>
+              <span>{{ 'track.trackingPage' | translate }}</span>
             </div>
           </th>
           <th style="width: 10%">
-            <div class="text-right">Åtgärd</div>
+            <div class="text-right">{{ 'track.action' | translate }}</div>
           </th>
         </tr>
       </ng-template>
@@ -69,7 +69,7 @@
           <td class="hide">
             <div class="flex align-items-center gap-2">
               <i class="pi pi-link text-primary-600"></i>
-              <a target="_blank" href="{{track.trackRepresentation.linktotrack}}">Karta</a>
+              <a target="_blank" href="{{track.trackRepresentation.linktotrack}}">{{ 'common.map' | translate }}</a>
             </div>
           </td>
           <td>
@@ -94,7 +94,7 @@
               <i class="pi pi-link text-primary-600"></i>
               <brevet-html-link
                 [target]="'_blank'"
-                [text]="'Följ deltagare på bana'"
+                [text]="'track.followParticipantsOnTrack' | translate"
                 [rel]="'relation.track.tracktrack'"
                 [link]="track.trackRepresentation.links">
               </brevet-html-link>
@@ -109,7 +109,7 @@
                 pRipple
                 icon="pi pi-trash"
                 class="p-button-rounded p-button-danger p-button-text"
-                pTooltip="Ta bort"
+                [pTooltip]="'track.remove' | translate"
                 tooltipPosition="top">
               </button>
             </div>
@@ -130,8 +130,8 @@
           <td colspan="8" class="text-center p-4">
             <div class="flex align-items-center justify-content-center gap-2">
               <i class="pi pi-folder-open text-primary" style="font-size: 1.5rem"></i>
-              <span class="font-bold text-lg">Inga banor hittades</span>
-              <span class="text-600">- Det finns inga banor på det här eventet.</span>
+              <span class="font-bold text-lg">{{ 'track.noTracksFound' | translate }}</span>
+              <span class="text-600">- {{ 'track.noTracksOnEvent' | translate }}</span>
             </div>
           </td>
         </tr>

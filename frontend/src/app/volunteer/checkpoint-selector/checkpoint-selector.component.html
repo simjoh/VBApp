@@ -2,13 +2,13 @@
 <ng-container *ngIf="$checkpoints | async as checkpoints">
   <div class="checkpoint-selector">
     <p-dropdown
-      pTooltip="Välj den kontroll som du är på"
+      [pTooltip]="'volunteer.selectCheckpoint' | translate"
       tooltipPosition="left"
       styleClass="w-full ultra-compact-selector"
       [options]="checkpoints"
       [(ngModel)]="selectedcheckpoint"
       (ngModelChange)="valdKontroll()"
-      placeholder="Välj kontroll"
+      [placeholder]="'volunteer.selectCheckpoint' | translate"
       [virtualScroll]="true"
       [itemSize]="36"
       [filter]="true"

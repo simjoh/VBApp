@@ -7,8 +7,8 @@
           <i class="pi pi-chart-line"></i>
         </div>
         <div class="header-text">
-                    <h1>Admin Dashboard</h1>
-                    <p>Välkommen tillbaka! Här är din översikt</p>
+                    <h1>{{ 'admin.dashboard' | translate }}</h1>
+                    <p>{{ 'dashboard.welcomeBack' | translate }}</p>
         </div>
       </div>
     </div>
@@ -21,10 +21,10 @@
         </div>
         <div class="stat-content">
           <h3 class="stat-value">{{stats.total | number}}</h3>
-                    <p class="stat-label">Totalt deltagare</p>
+                    <p class="stat-label">{{ 'dashboard.totalParticipants' | translate }}</p>
           <div class="stat-details">
-            <span class="stat-change positive">Senaste 7 dagarna: {{stats.weeklyStats?.countparticipants}}</span>
-            <span class="stat-today">Idag: {{stats.dailyStats?.countparticipants}}</span>
+            <span class="stat-change positive">{{ 'dashboard.last7Days' | translate }}: {{stats.weeklyStats?.countparticipants}}</span>
+            <span class="stat-today">{{ 'dashboard.today' | translate }}: {{stats.dailyStats?.countparticipants}}</span>
           </div>
         </div>
         <div class="stat-progress">
@@ -38,12 +38,12 @@
         </div>
         <div class="stat-content">
           <h3 class="stat-value">{{stats.activeTracks}}</h3>
-          <p class="stat-label">Aktiva banor</p>
-          <span class="stat-change positive">Totalt: {{stats.totalTracks}} banor</span>
+          <p class="stat-label">{{ 'dashboard.activeTracks' | translate }}</p>
+          <span class="stat-change positive">{{ 'dashboard.total' | translate }}: {{stats.totalTracks}} {{ 'dashboard.tracks' | translate }}</span>
         </div>
         <div class="stat-actions">
           <p-button icon="pi pi-plus" size="small" (onClick)="createNewTrack()"
-                    styleClass="p-button-text p-button-sm" pTooltip="Lägg till ny bana"></p-button>
+                    styleClass="p-button-text p-button-sm" [pTooltip]="'dashboard.addNewTrack' | translate"></p-button>
         </div>
       </div>
 
@@ -53,11 +53,11 @@
         </div>
         <div class="stat-content">
           <h3 class="stat-value">{{stats.activeEvents}}</h3>
-          <p class="stat-label">Aktiva evenemang</p>
-          <span class="stat-change">Totalt: {{stats.totalEvents}} evenemang</span>
+          <p class="stat-label">{{ 'dashboard.activeEvents' | translate }}</p>
+          <span class="stat-change">{{ 'dashboard.total' | translate }}: {{stats.totalEvents}} {{ 'dashboard.events' | translate }}</span>
         </div>
         <div class="event-indicator">
-          <span>Aktiva evenemang körs</span>
+          <span>{{ 'dashboard.activeEventsRunning' | translate }}</span>
         </div>
       </div>
 
@@ -69,14 +69,14 @@
         </div>
         <div class="stat-content">
           <h3 class="stat-value">{{stats.finished}}</h3>
-          <p class="stat-label">Slutförda</p>
+          <p class="stat-label">{{ 'dashboard.completed' | translate }}</p>
           <div class="stat-details">
             <span class="stat-change" [class.negative]="stats.dnf > 0"
                   [class.positive]="stats.dnf === 0">
               DNF: {{stats.dnf}} | DNS: {{stats.dns}}
             </span>
-            <span class="stat-today">Senaste 7 dagarna: {{stats.weeklyStats?.completed}}</span>
-            <span class="stat-year">Detta år: {{stats.yearlyStats?.completed}}</span>
+            <span class="stat-today">{{ 'dashboard.last7Days' | translate }}: {{stats.weeklyStats?.completed}}</span>
+            <span class="stat-year">{{ 'dashboard.thisYear' | translate }}: {{stats.yearlyStats?.completed}}</span>
           </div>
         </div>
         <div class="health-indicator">
@@ -92,16 +92,16 @@
         </div>
         <div class="stat-content">
           <h3 class="stat-value">{{stats.registered}}</h3>
-          <p class="stat-label">Registrerade</p>
+          <p class="stat-label">{{ 'dashboard.registered' | translate }}</p>
           <div class="stat-details">
-            <span class="stat-change">Senaste 7 dagarna: {{stats.weeklyStats?.countparticipants}}</span>
-            <span class="stat-today">Detta år: {{stats.yearlyStats?.countparticipants}}</span>
+            <span class="stat-change">{{ 'dashboard.last7Days' | translate }}: {{stats.weeklyStats?.countparticipants}}</span>
+            <span class="stat-today">{{ 'dashboard.thisYear' | translate }}: {{stats.yearlyStats?.countparticipants}}</span>
           </div>
         </div>
         <div class="stat-actions">
           <span class="activity-indicator">
             <i class="pi pi-users"></i>
-            Totalt registrerade
+            {{ 'dashboard.totalRegistered' | translate }}
           </span>
         </div>
       </div>

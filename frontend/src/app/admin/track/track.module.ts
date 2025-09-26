@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 import { TrackRoutingModule } from './track-routing.module';
 import { TrackAdminComponent } from './track-admin.component';
@@ -14,6 +16,9 @@ import {TabViewModule} from "primeng/tabview";
 import {PanelModule} from "primeng/panel";
 import {MenuModule} from "primeng/menu";
 import {TableModule} from "primeng/table";
+import {DropdownModule} from "primeng/dropdown";
+import {CalendarModule} from "primeng/calendar";
+import {CheckboxModule} from "primeng/checkbox";
 import { TrackInfoPopoverComponent } from './track-info-popover/track-info-popover.component';
 import { TrackBuilderComponent } from './track-builder/track-builder.component';
 import { TrackBuilderTrackInfoFormComponent } from './track-builder/track-builder-track-info-form/track-builder-track-info-form.component';
@@ -38,10 +43,21 @@ import { TrackBuilderSummaryComponent } from './track-builder/track-builder-summ
   ],
   imports: [
     CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
     TabMenuModule,
     TrackRoutingModule,
     FileUploadModule,
-    SharedModule
+    SharedModule,
+    AccordionModule,
+    TabViewModule,
+    PanelModule,
+    MenuModule,
+    TableModule,
+    DropdownModule,
+    CalendarModule,
+    CheckboxModule
   ],
   providers: [
     MessageService

@@ -5,7 +5,7 @@
     <div class="col-12">
       <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
         <i class="pi pi-user mr-2 text-blue-600"></i>
-        Användaruppgifter
+        {{ 'userAdmin.userInformation' | translate }}
       </h4>
     </div>
 
@@ -13,7 +13,7 @@
     <div class="col-12 md:col-6 field">
       <label for="givenname" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-user mr-2"></i>
-        Förnamn
+        {{ 'userAdmin.firstName' | translate }}
       </label>
       <input
         pInputText
@@ -21,13 +21,13 @@
         name="givenname"
         #givenname="ngModel"
         [(ngModel)]="userForm.givenname"
-        placeholder="Ange förnamn"
+        [placeholder]="'userAdmin.firstNamePlaceholder' | translate"
         required
         class="w-full"
         [class.ng-invalid]="givenname.invalid && (givenname.dirty || givenname.touched)"
       />
       <small *ngIf="givenname.invalid && (givenname.dirty || givenname.touched)" class="p-error block mt-1">
-        Förnamn krävs
+        {{ 'userAdmin.firstNameRequired' | translate }}
       </small>
     </div>
 
@@ -35,7 +35,7 @@
     <div class="col-12 md:col-6 field">
       <label for="familyname" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-user mr-2"></i>
-        Efternamn
+        {{ 'userAdmin.lastName' | translate }}
       </label>
       <input
         pInputText
@@ -43,13 +43,13 @@
         name="familyname"
         #familyname="ngModel"
         [(ngModel)]="userForm.familyname"
-        placeholder="Ange efternamn"
+        [placeholder]="'userAdmin.lastNamePlaceholder' | translate"
         required
         class="w-full"
         [class.ng-invalid]="familyname.invalid && (familyname.dirty || familyname.touched)"
       />
       <small *ngIf="familyname.invalid && (familyname.dirty || familyname.touched)" class="p-error block mt-1">
-        Efternamn krävs
+        {{ 'userAdmin.lastNameRequired' | translate }}
       </small>
     </div>
 
@@ -57,7 +57,7 @@
     <div class="col-12 field">
       <label for="username" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-at mr-2"></i>
-        Användarnamn
+        {{ 'userAdmin.username' | translate }}
       </label>
       <input
         pInputText
@@ -65,13 +65,13 @@
         name="username"
         #username="ngModel"
         [(ngModel)]="userForm.username"
-        placeholder="Ange användarnamn"
+        [placeholder]="'userAdmin.usernamePlaceholder' | translate"
         required
         class="w-full"
         [class.ng-invalid]="username.invalid && (username.dirty || username.touched)"
       />
       <small *ngIf="username.invalid && (username.dirty || username.touched)" class="p-error block mt-1">
-        Användarnamn krävs
+        {{ 'userAdmin.usernameRequired' | translate }}
       </small>
     </div>
 
@@ -79,7 +79,7 @@
     <div class="col-12 field">
       <label for="password" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-key mr-2"></i>
-        Lösenord
+        {{ 'userAdmin.password' | translate }}
       </label>
       <div class="flex align-items-center gap-2">
         <input
@@ -88,10 +88,10 @@
           name="password"
           type="text"
           [(ngModel)]="userForm.password"
-          placeholder="Ange eller generera lösenord"
+          [placeholder]="'userAdmin.passwordPlaceholder' | translate"
           class="w-full"
         />
-        <button pButton type="button" icon="pi pi-refresh" class="p-button-sm p-button-secondary" (click)="generatePassword()" pTooltip="Generera lösenord"></button>
+        <button pButton type="button" icon="pi pi-refresh" class="p-button-sm p-button-secondary" (click)="generatePassword()" [pTooltip]="'userAdmin.generatePassword' | translate"></button>
       </div>
     </div>
 
@@ -99,7 +99,7 @@
     <div class="col-12">
       <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
         <i class="pi pi-phone mr-2 text-blue-600"></i>
-        Kontaktuppgifter
+        {{ 'userAdmin.contactInformation' | translate }}
       </h4>
     </div>
 
@@ -107,14 +107,14 @@
     <div class="col-12 md:col-6 field">
       <label for="phone" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-phone mr-2"></i>
-        Telefon
+        {{ 'userAdmin.phone' | translate }}
       </label>
       <input
         pInputText
         id="phone"
         name="phone"
         [(ngModel)]="userForm.phone"
-        placeholder="Ange telefonnummer"
+        [placeholder]="'userAdmin.phonePlaceholder' | translate"
         class="w-full"
       />
     </div>
@@ -123,7 +123,7 @@
     <div class="col-12 md:col-6 field">
       <label for="email" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-envelope mr-2"></i>
-        E-post
+        {{ 'userAdmin.emailField' | translate }}
       </label>
       <input
         pInputText
@@ -131,7 +131,7 @@
         name="email"
         type="email"
         [(ngModel)]="userForm.email"
-        placeholder="Ange e-postadress"
+        [placeholder]="'userAdmin.emailPlaceholder' | translate"
         class="w-full"
       />
     </div>
@@ -140,7 +140,7 @@
     <div class="col-12">
       <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
         <i class="pi pi-users mr-2 text-blue-600"></i>
-        Arrangör
+        {{ 'userAdmin.organizer' | translate }}
       </h4>
     </div>
 
@@ -148,17 +148,17 @@
     <div class="col-12 field">
       <label for="organizer_id" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-users mr-2"></i>
-        Välj arrangör
+        {{ 'userAdmin.selectOrganizer' | translate }}
       </label>
       <brevet-organizer-selector
         [(ngModel)]="userForm.organizer_id"
         name="organizer_id"
-        placeholder="Välj arrangör (valfritt)"
+        [placeholder]="'userAdmin.selectOrganizerOptional' | translate"
         [showPreview]="true"
         class="w-full">
       </brevet-organizer-selector>
       <small class="text-gray-500 block mt-1">
-        Välj en arrangör som användaren ska kopplas till (valfritt)
+        {{ 'userAdmin.organizerDescription' | translate }}
         <span *ngIf="userForm.organizer_id" class="text-blue-600 font-medium">
           - Förvald arrangör baserat på din inloggning
         </span>
@@ -169,7 +169,7 @@
     <div class="col-12">
       <h4 class="text-lg font-semibold text-gray-800 mb-3 border-b border-gray-200 pb-2">
         <i class="pi pi-shield mr-2 text-blue-600"></i>
-        Behörigheter
+        {{ 'userAdmin.permissions' | translate }}
       </h4>
     </div>
 
@@ -185,11 +185,11 @@
               [binary]="true">
             </p-checkbox>
             <label for="superuser" class="ml-2 font-medium">
-              Superanvändare
+              {{ 'userAdmin.superuser' | translate }}
             </label>
           </div>
           <small class="text-gray-500 block mt-1">
-            Superanvändare med alla behörigheter
+            {{ 'userAdmin.superuserDescription' | translate }}
           </small>
         </div>
 
@@ -202,11 +202,11 @@
               [binary]="true">
             </p-checkbox>
             <label for="admin" class="ml-2 font-medium">
-              Administratör
+              {{ 'userAdmin.admin' | translate }}
             </label>
           </div>
           <small class="text-gray-500 block mt-1">
-            Administratör med skriv och läsrättigheter
+            {{ 'userAdmin.adminDescription' | translate }}
           </small>
         </div>
 
@@ -219,11 +219,11 @@
               [binary]="true">
             </p-checkbox>
             <label for="user" class="ml-2 font-medium">
-              Användare
+              {{ 'userAdmin.user' | translate }}
             </label>
           </div>
           <small class="text-gray-500 block mt-1">
-            Läsbehörighet och viss skrivbehörighet
+            {{ 'userAdmin.userDescription' | translate }}
           </small>
         </div>
 
@@ -236,11 +236,11 @@
               [binary]="true">
             </p-checkbox>
             <label for="volonteer" class="ml-2 font-medium">
-              Volontär
+              {{ 'userAdmin.volunteer' | translate }}
             </label>
           </div>
           <small class="text-gray-500 block mt-1">
-            Behörighet att checka in och se passeringar vid kontroller
+            {{ 'userAdmin.volunteerDescription' | translate }}
           </small>
         </div>
 
@@ -253,11 +253,11 @@
               [binary]="true">
             </p-checkbox>
             <label for="developer" class="ml-2 font-medium">
-              Utvecklare
+              {{ 'userAdmin.developer' | translate }}
             </label>
           </div>
           <small class="text-gray-500 block mt-1">
-            Specialbehörighet för utvecklare
+            {{ 'userAdmin.developerDescription' | translate }}
           </small>
         </div>
       </div>
@@ -267,14 +267,14 @@
     <div class="col-12 flex justify-content-end gap-2 mt-4">
       <p-button
         icon="pi pi-times"
-        label="Avbryt"
+        [label]="'common.cancel' | translate"
         (click)="cancel()"
         severity="secondary"
         [text]="true">
       </p-button>
       <p-button
         icon="pi pi-check"
-        label="Spara"
+        [label]="'common.save' | translate"
         type="submit"
         [disabled]="!contactForm.valid">
       </p-button>

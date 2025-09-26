@@ -63,6 +63,7 @@ import {ToolbarModule} from "primeng/toolbar";
 import {StepsModule} from "primeng/steps";
 import {CheckboxModule} from "primeng/checkbox";
 import { OrganizerSelectorComponent } from './organizer-selector/organizer-selector.component';
+import { TranslationPipe } from './pipes/translation.pipe';
 
 // New Compact Components
 import { PageHeaderComponent } from './components/page-header/page-header.component';
@@ -139,13 +140,14 @@ import { CompactActionCardComponent } from './components/compact-action-card/com
         TabViewModule,
         PanelModule,
         MenuModule,
-        FormsModule, ReactiveFormsModule, StepsModule, AccordionModule, InputNumberModule, ToolbarModule
+        FormsModule, ReactiveFormsModule, StepsModule, AccordionModule, InputNumberModule, ToolbarModule,
+        TranslationPipe
     ],
     exports: [CommonModule, ToastModule, ConfirmPopupModule, TabViewModule,
         PanelModule, ToolbarModule,
         MenuModule, BadgeModule,CheckboxModule, StepsModule ,ListboxModule, SiteSelectorComponent, EventSelectorComponent, InputNumberModule, TracksForEventSelectorComponent, CheckpointComponent, CheckpointPreviewComponent, CheckpointPreviewDialogComponent, KnobModule, HtmlLinkComponent, ListboxModule, PanelModule, InputTextModule, TagModule, TabMenuModule, ImageModule, FormsModule, MenubarModule, ReactiveFormsModule, CardModule, TooltipModule, ButtonModule,
         LogoComponent, DatePipe, NgbCollapseModule, ProgressSpinnerModule, AccordionModule, TableModule, MultiSelectModule, SliderModule, OverlayPanelModule,
-        ProgressBarModule, TrackTableComponent, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, TimeAgoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent, DateTimePrettyPrintPipe, RemoveAfterPipe, TracksForEventSelectorComponent, CheckpointTableComponent, OrganizerSelectorComponent,
+        ProgressBarModule, TrackTableComponent, DropdownModule, MessageModule, ConfirmDialogModule, DynamicDialogModule, RippleModule, DialogModule, RadioButtonModule, OverlayComponent, YesNoPipe, TimeAgoPipe, CalendarModule, InputTextareaModule, FileUploadModule, DistanceBetweenPipe, DistanceKmPipe, DatetimeBetweenPipe, ToastComponent, DateTimePrettyPrintPipe, RemoveAfterPipe, TracksForEventSelectorComponent, CheckpointTableComponent, OrganizerSelectorComponent, TranslationPipe,
         // New Compact Components
         PageHeaderComponent,
         ActionCardComponent,

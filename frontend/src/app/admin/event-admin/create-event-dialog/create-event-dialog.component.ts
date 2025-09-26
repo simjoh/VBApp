@@ -1,8 +1,9 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {EventRepresentation} from "../../../shared/api/api";
+import { TranslationService } from '../../../core/services/translation.service';
 
 @Component({
   selector: 'brevet-create-event-dialog',
@@ -11,17 +12,24 @@ import {EventRepresentation} from "../../../shared/api/api";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreateEventDialogComponent implements OnInit {
+  private translationService = inject(TranslationService);
 
   eventForm: EventFormModel;
   es: any;
   eventStatus: any;
-  categories: any[] = [{name: 'Aktiv', key: 'A'}, {name: 'Inställd', key: 'I'}, {name: 'Utförd', key: 'U'}];
-
+  categories: any[] = [];
 
   constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig,public datepipe: DatePipe) { }
 
   ngOnInit(): void {
    this.eventForm = this.createObject();
+
+    // Initialize categories with translations
+    this.categories = [
+      {name: this.translationService.translate('event.statusActive'), key: 'A'},
+      {name: this.translationService.translate('event.statusCancelled'), key: 'I'},
+      {name: this.translationService.translate('event.statusCompleted'), key: 'U'}
+    ];
 
     // Set default status to "Aktiv" (Active)
     this.eventStatus = this.categories[0];

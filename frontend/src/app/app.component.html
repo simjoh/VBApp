@@ -6,6 +6,9 @@
       <!-- Admin Header - Only for Competitors -->
       <div class="admin-header" *ngIf="!(isAdminUser$ | async)">
         <brevet-menu></brevet-menu>
+        <div class="header-controls">
+          <app-flag-language-selector></app-flag-language-selector>
+        </div>
       </div>
 
       <!-- Admin Layout -->
@@ -15,64 +18,67 @@
           <div class="sidebar-content">
             <div class="sidebar-header">
               <img src="./assets/ebrevet-prod.svg" height="50" width="60" class="sidebar-logo" alt="Ebrevet logotyp">
-              <h3>Admin Panel</h3>
+              <h3>{{ 'admin.dashboard' | translate }}</h3>
+              <div class="sidebar-language-selector">
+                <app-flag-language-selector></app-flag-language-selector>
+              </div>
             </div>
             <nav class="sidebar-nav">
                   <a routerLink="/admin/brevet-admin-start" routerLinkActive="active" class="nav-item">
                     <i class="pi pi-home"></i>
-                    <span>Översikt</span>
+                    <span>{{ 'dashboard.overview' | translate }}</span>
                   </a>
               <div class="nav-group">
                 <div class="nav-group-header">
                   <i class="pi pi-users"></i>
-                  <span>Deltagare</span>
+                  <span>{{ 'nav.participants' | translate }}</span>
                 </div>
                 <div class="nav-group-items">
                   <a routerLink="/admin/participant" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
                     <i class="pi pi-list"></i>
-                    <span>Deltagarlista</span>
+                    <span>{{ 'nav.participantList' | translate }}</span>
                   </a>
                   <a routerLink="/admin/participant/brevet-participant-upload" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
                     <i class="pi pi-upload"></i>
-                    <span>Ladda upp deltagare</span>
+                    <span>{{ 'nav.uploadParticipants' | translate }}</span>
                   </a>
                 </div>
               </div>
               <div class="nav-group">
                 <div class="nav-group-header">
                   <i class="pi pi-map"></i>
-                  <span>Banor</span>
+                  <span>{{ 'nav.tracks' | translate }}</span>
                 </div>
                 <div class="nav-group-items">
                   <a routerLink="/admin/banor" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
                     <i class="pi pi-list"></i>
-                    <span>Banalista</span>
+                    <span>{{ 'nav.trackList' | translate }}</span>
                   </a>
                   <a routerLink="/admin/banor/brevet-track-builder" [queryParams]="{mode: 'create'}" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
                     <i class="pi pi-plus-circle"></i>
-                    <span>Skapa nytt arrangemang</span>
+                    <span>{{ 'nav.createNewEvent' | translate }}</span>
                   </a>
                   <a routerLink="/admin/banor/brevet-track-builder" [queryParams]="{mode: 'gpx'}" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item coming-soon">
                     <i class="pi pi-file"></i>
-                    <span>GPX Import</span>
-                    <span class="coming-soon-badge">Kommer snart</span>
+                    <span>{{ 'nav.gpxImport' | translate }}</span>
+                    <span class="coming-soon-badge">{{ 'comingSoon.badge' | translate }}</span>
                   </a>
                   <a routerLink="/admin/banor/brevet-track-builder" [queryParams]="{mode: 'copy'}" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item coming-soon">
                     <i class="pi pi-copy"></i>
-                    <span>Kopiera bana</span>
-                    <span class="coming-soon-badge">Kommer snart</span>
+                    <span>{{ 'nav.copyTrack' | translate }}</span>
+                    <span class="coming-soon-badge">{{ 'comingSoon.badge' | translate }}</span>
                   </a>
                 </div>
               </div>
                   <div class="nav-group">
                     <div class="nav-group-header">
                       <i class="pi pi-file-pdf"></i>
-                      <span>Rapportera</span>
+                      <span>{{ 'nav.reports' | translate }}</span>
                     </div>
                     <div class="nav-group-items">
                       <a routerLink="/admin/acp-rapport" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
                         <i class="pi pi-file-export"></i>
-                        <span>Rapport till ACP</span>
+                        <span>{{ 'nav.reportToAcp' | translate }}</span>
                       </a>
                     </div>
                   </div>
@@ -80,28 +86,28 @@
                   <div class="nav-group">
                     <div class="nav-group-header">
                       <i class="pi pi-cog"></i>
-                      <span>System</span>
+                      <span>{{ 'nav.system' | translate }}</span>
                     </div>
                     <div class="nav-group-items">
                       <a routerLink="/admin/useradmin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
                         <i class="pi pi-user"></i>
-                        <span>Användare</span>
+                        <span>{{ 'nav.users' | translate }}</span>
                       </a>
                       <a routerLink="/admin/eventadmin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
                         <i class="pi pi-calendar"></i>
-                        <span>Evenemang</span>
+                        <span>{{ 'nav.events' | translate }}</span>
                       </a>
                       <a routerLink="/admin/clubadmin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
                         <i class="pi pi-shield"></i>
-                        <span>Klubbar</span>
+                        <span>{{ 'nav.clubs' | translate }}</span>
                       </a>
                       <a routerLink="/admin/organizeradmin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
                         <i class="pi pi-users"></i>
-                        <span>Arrangörer</span>
+                        <span>{{ 'nav.organizers' | translate }}</span>
                       </a>
                       <a routerLink="/admin/siteadmin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item sub-item">
                         <i class="pi pi-map-marker"></i>
-                        <span>Kontrollpunkter</span>
+                        <span>{{ 'nav.checkpoints' | translate }}</span>
                       </a>
                     </div>
                   </div>
@@ -110,7 +116,7 @@
               <div class="sidebar-footer">
                 <button (click)="logout()" class="logout-button">
                   <i class="pi pi-sign-out"></i>
-                  <span>Logga ut</span>
+                  <span>{{ 'nav.logout' | translate }}</span>
                 </button>
               </div>
             </nav>

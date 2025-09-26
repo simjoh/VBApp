@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { map, take } from "rxjs/operators";
 import { ClubRepresentation } from "../../../shared/api/api";
 import { Observable, BehaviorSubject, combineLatest } from "rxjs";
@@ -9,6 +9,7 @@ import { DeviceDetectorService } from "ngx-device-detector";
 import { LinkService } from "../../../core/link.service";
 import { CreateClubDialogComponent } from "../create-club-dialog/create-club-dialog.component";
 import { EditClubDialogComponent } from "../edit-club-dialog/edit-club-dialog.component";
+import { TranslationService } from '../../../core/services/translation.service';
 
 @Component({
   selector: 'brevet-club-list',
@@ -17,6 +18,7 @@ import { EditClubDialogComponent } from "../edit-club-dialog/edit-club-dialog.co
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClubListComponent implements OnInit {
+  private translationService = inject(TranslationService);
 
   showOnlyWithAcpCode = false;
   private filterTrigger = new BehaviorSubject<void>(undefined);
@@ -86,7 +88,7 @@ export class ClubListComponent implements OnInit {
       data: {
         id: '51gF3'
       },
-      header: 'Lägg till Klubb',
+      header: this.translationService.translate('dialog.addClub'),
       width: width,
       height: 'auto',
       contentStyle: { 'overflow': 'visible' }

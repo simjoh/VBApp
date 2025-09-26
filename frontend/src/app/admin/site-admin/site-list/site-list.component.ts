@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import {DialogService} from "primeng/dynamicdialog";
 import {ConfirmationService} from "primeng/api";
 import {map, take} from "rxjs/operators";
@@ -10,6 +10,7 @@ import { SiteService } from '../site.service';
 import {LinkService} from "../../../core/link.service";
 import {CreateUserDialogComponent} from "../../user-admin/create-user-dialog/create-user-dialog.component";
 import {EditSiteDialogComponent} from "../edit-site-dialog/edit-site-dialog.component";
+import { TranslationService } from '../../../core/services/translation.service';
 
 
 @Component({
@@ -20,6 +21,7 @@ import {EditSiteDialogComponent} from "../edit-site-dialog/edit-site-dialog.comp
   providers:[DialogService, ConfirmationService]
 })
 export class SiteListComponent implements OnInit {
+  private translationService = inject(TranslationService);
 
   // Image preview properties
   displayImagePreview = false;
@@ -54,7 +56,7 @@ export class SiteListComponent implements OnInit {
       data: {
         id: '51gF3'
       },
-      header: 'Lägg till Plats',
+      header: this.translationService.translate('dialog.addSite'),
     });
 
     ref.onClose.subscribe((event: Site) => {

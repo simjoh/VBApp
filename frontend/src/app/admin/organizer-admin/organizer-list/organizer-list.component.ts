@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { map, take } from "rxjs/operators";
 import { OrganizerRepresentation } from "../organizer.service";
 import { Observable, BehaviorSubject, combineLatest } from "rxjs";
@@ -9,6 +9,7 @@ import { DeviceDetectorService } from "ngx-device-detector";
 import { LinkService } from "../../../core/link.service";
 import { CreateOrganizerDialogComponent } from "../create-organizer-dialog/create-organizer-dialog.component";
 import { EditOrganizerDialogComponent } from "../edit-organizer-dialog/edit-organizer-dialog.component";
+import { TranslationService } from '../../../core/services/translation.service';
 
 @Component({
   selector: 'brevet-organizer-list',
@@ -17,6 +18,7 @@ import { EditOrganizerDialogComponent } from "../edit-organizer-dialog/edit-orga
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrganizerListComponent implements OnInit {
+  private translationService = inject(TranslationService);
 
   showOnlyActive = false;
   private filterTrigger = new BehaviorSubject<void>(undefined);
@@ -80,7 +82,7 @@ export class OrganizerListComponent implements OnInit {
       data: {
         id: '51gF3'
       },
-      header: 'Skapa Arrangör',
+      header: this.translationService.translate('dialog.createOrganizer'),
       width: width,
       height: 'auto',
       maximizable: false,

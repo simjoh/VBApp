@@ -19,21 +19,21 @@ export class ParticipantComponent implements OnInit {
 
   headerConfig: PageHeaderConfig = {
     icon: 'pi pi-users',
-    title: 'Hantera Deltagare',
-    description: 'Hantera deltagare, registreringar och resultat för evenemang'
+    title: 'participant.manageParticipants',
+    description: 'participant.manageParticipantsDescription'
   };
 
   actionCards: ActionCardConfig[] = [
     {
       icon: 'pi pi-list',
-      title: 'Deltagarlista',
-      description: 'Visa och hantera alla deltagare',
+      title: 'participant.participantList',
+      description: 'participant.participantListDescription',
       action: 'list'
     },
     {
       icon: 'pi pi-upload',
-      title: 'Ladda upp',
-      description: 'Importera deltagare från fil',
+      title: 'participant.upload',
+      description: 'participant.uploadDescription',
       action: 'upload'
     }
   ];

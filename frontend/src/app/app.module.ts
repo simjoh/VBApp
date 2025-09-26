@@ -31,6 +31,8 @@ import {FeedbackInterceptor} from "./core/interceptors/feedback.interceptor";
 import {ConfirmationService, MessageService} from "primeng/api";
 import { EnvService } from './core/env.service';
 import {HashLocationStrategy, LocationStrategy } from '@angular/common';
+import {FlagLanguageSelectorComponent} from "./shared/components/flag-language-selector/flag-language-selector.component";
+import {TranslationPipe} from "./shared/pipes/translation.pipe";
 
 @NgModule({ declarations: [
         AppComponent,
@@ -42,7 +44,7 @@ import {HashLocationStrategy, LocationStrategy } from '@angular/common';
         KontrollFormComponent,
         KontrollerCombinerComponent,
     ],
-    exports: [CardModule, NgbModule, SharedModule, AppComponent],
+    exports: [CardModule, NgbModule, SharedModule, AppComponent, FlagLanguageSelectorComponent, TranslationPipe],
     bootstrap: [AppComponent], imports: [BrowserAnimationsModule,
         ButtonModule,
         CoreModule,
@@ -56,7 +58,9 @@ import {HashLocationStrategy, LocationStrategy } from '@angular/common';
         FormsModule,
         ReactiveFormsModule,
         AppRoutingModule,
-        InputTextModule], providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }, MessageService,
+        InputTextModule,
+        FlagLanguageSelectorComponent,
+        TranslationPipe], providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }, MessageService,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,

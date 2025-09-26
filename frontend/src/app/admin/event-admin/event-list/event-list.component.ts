@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import {map, take} from "rxjs/operators";
 import {EventRepresentation, Site, SiteRepresentation, User} from "../../../shared/api/api";
 import {Observable} from "rxjs";
@@ -11,6 +11,7 @@ import {CreateEventDialogComponent} from "../create-event-dialog/create-event-di
 import {LinkService} from "../../../core/link.service";
 import {EditSiteDialogComponent} from "../../site-admin/edit-site-dialog/edit-site-dialog.component";
 import {EditEventDialogComponent} from "../edit-event-dialog/edit-event-dialog.component";
+import { TranslationService } from '../../../core/services/translation.service';
 
 @Component({
   selector: 'brevet-event-list',
@@ -20,7 +21,7 @@ import {EditEventDialogComponent} from "../edit-event-dialog/edit-event-dialog.c
   providers: [DialogService, ConfirmationService]
 })
 export class EventListComponent implements OnInit {
-
+  private translationService = inject(TranslationService);
 
   events$ = this.eventService.eventsWithAdd$.pipe(
     map((s:Array<EventRepresentation>) => {
@@ -52,7 +53,7 @@ export class EventListComponent implements OnInit {
       data: {
         id: '51gF3'
       },
-      header: 'Lägg till Evenemang',
+      header: this.translationService.translate('event.addEvent'),
       width: width,
       height: 'auto',
       contentStyle: { 'overflow': 'visible' }

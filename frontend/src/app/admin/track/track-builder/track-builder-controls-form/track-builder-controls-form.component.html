@@ -4,9 +4,9 @@
       <div class="header-info">
         <h3 class="header-title">
           <i class="pi pi-map-marker mr-2"></i>
-          Kontroller
+          {{ 'controls.title' | translate }}
         </h3>
-        <p class="header-description">Generera efter distans</p>
+        <p class="header-description">{{ 'controls.generateByDistance' | translate }}</p>
       </div>
       <button
         class="add-control-btn"
@@ -15,7 +15,7 @@
         pRipple
         type="button">
         <i class="pi pi-plus mr-2"></i>
-        Lägg till kontroll
+        {{ 'controls.addControl' | translate }}
       </button>
     </div>
   </div>
@@ -27,7 +27,7 @@
           <div class="control-number">
             <span>{{i + 1}}</span>
           </div>
-          <h4 class="control-title">Kontroll #{{i + 1}}</h4>
+          <h4 class="control-title">{{ 'controls.controlNumber' | translate }}{{i + 1}}</h4>
           <button
             class="remove-btn"
             pButton
@@ -35,7 +35,7 @@
             type="button"
             icon="pi pi-trash"
             (click)="removeControl(i)"
-            pTooltip="Ta bort kontroll"
+            [pTooltip]="'controls.removeControl' | translate"
             tooltipPosition="top">
           </button>
         </div>
@@ -44,7 +44,7 @@
           <div class="control-field">
             <label class="field-label">
               <i class="pi pi-map-marker mr-2"></i>
-              Kontrollplats
+              {{ 'controls.controlSite' | translate }}
             </label>
             <brevet-site-selector
               (SiteChange)="addSite($event, i)"
@@ -55,7 +55,7 @@
           <div class="control-field">
             <label class="field-label">
               <i class="pi pi-arrows-h mr-2"></i>
-              Distans (km)
+              {{ 'controls.distance' | translate }}
             </label>
             <input
               type="number"
@@ -66,7 +66,7 @@
               step="0.1"
               placeholder="94"
               pInputText
-              pTooltip="Distans till kontrollpunkt i kilometer"
+              [pTooltip]="'controls.distanceTooltip' | translate"
               class="form-input"
               id="controllength-{{i}}"
               [tabindex]="i + 1">
@@ -80,8 +80,8 @@
     <div class="empty-icon">
       <i class="pi pi-map-marker"></i>
     </div>
-    <h3 class="empty-title">Inga kontroller ännu</h3>
-    <p class="empty-description">Lägg till din första kontroll för att komma igång</p>
+    <h3 class='empty-title'>{{ 'controls.noControlsYet' | translate }}</h3>
+    <p class="empty-description">{{ 'controls.addFirstControl' | translate }}</p>
     <button
       class="add-first-control-btn"
       (click)="addControl()"
@@ -89,7 +89,7 @@
       pRipple
       type="button">
       <i class="pi pi-plus mr-2"></i>
-      Lägg till första kontrollen
+      {{ 'controls.addFirstControlButton' | translate }}
     </button>
   </div>
 </div>

@@ -1,9 +1,9 @@
 <ng-container *ngIf="$eventItems | async as events">
 <p-dropdown
-  styleClass="col-12" pTooltip="Välj ett event"
-  tooltipPosition="left" tooltip="Välj ett event"
+  styleClass="col-12"   [pTooltip]="'volunteer.selectEvent' | translate"
+  tooltipPosition="left" [tooltip]="'volunteer.selectEvent' | translate"
   [options]="events" [(ngModel)]="choosenEvent"
-  (ngModelChange)="valtEvent()" placeholder="Välj event"
+  (ngModelChange)="valtEvent()" [placeholder]="'volunteer.selectEvent' | translate"
   [virtualScroll]="true" [itemSize]="36"
   [filter]="true"
   appendTo="body"

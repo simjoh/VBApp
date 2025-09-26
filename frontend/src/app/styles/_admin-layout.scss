@@ -16,6 +16,17 @@
   background: white;
   border-bottom: 1px solid var(--surface-border);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  height: 60px;
+
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
 }
 
 // Admin Layout
@@ -73,6 +84,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-wrap: wrap;
 
   .sidebar-logo {
     flex-shrink: 0;
@@ -86,6 +98,53 @@
     font-weight: 700;
     color: white;
     flex: 1;
+  }
+
+  .sidebar-language-selector {
+    margin-top: 0.5rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+    ::ng-deep .language-selector {
+      .current-language {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: white;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.15);
+          border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .language-code {
+          color: white;
+        }
+
+        .arrow {
+          color: rgba(255, 255, 255, 0.7);
+        }
+      }
+
+      .language-dropdown {
+        background: rgba(30, 41, 59, 0.95);
+        border-color: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+
+        .language-option {
+          color: white;
+          border-bottom-color: rgba(255, 255, 255, 0.1);
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.1);
+          }
+
+          &.active {
+            background: rgba(99, 102, 241, 0.3);
+          }
+        }
+      }
+    }
   }
 }
 

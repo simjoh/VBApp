@@ -21,14 +21,14 @@
               pInputText
               #filter
               (input)="dt.filterGlobal($event.target.value, 'contains')"
-              placeholder="Sök Arrangemangsgrupper..."
+              [placeholder]="'event.searchEvents' | translate"
               class="p-inputtext-sm"/>
           </span>
           <div class="flex align-items-center gap-2">
             <button
               pButton
               pRipple
-              label="Nytt Evenemang"
+              [label]="'event.newEvent' | translate"
               icon="pi pi-plus"
               class="p-button-success p-button-sm"
               (click)="openNew()">
@@ -39,7 +39,7 @@
               icon="pi pi-refresh"
               class="p-button-text p-button-rounded p-button-sm"
               (click)="dt.reset()"
-              pTooltip="Uppdatera"
+              [pTooltip]="'event.refresh' | translate"
               tooltipPosition="top">
             </button>
           </div>
@@ -48,22 +48,22 @@
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="title">
-            NAMN
+            {{ 'event.name' | translate }}
             <p-sortIcon field="title"></p-sortIcon>
           </th>
           <th pSortableColumn="startdate">
-            STARTDATUM
+            {{ 'event.startDate' | translate }}
             <p-sortIcon field="startdate"></p-sortIcon>
           </th>
           <th pSortableColumn="enddate">
-            SLUTDATUM
+            {{ 'event.endDate' | translate }}
             <p-sortIcon field="enddate"></p-sortIcon>
           </th>
           <th pSortableColumn="active">
-            STATUS
+            {{ 'event.status' | translate }}
             <p-sortIcon field="active"></p-sortIcon>
           </th>
-          <th style="width: 5rem">ÅTGÄRDER</th>
+          <th style="width: 5rem">{{ 'event.actions' | translate }}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-event>
@@ -88,7 +88,7 @@
           </td>
           <td>
             <span [class]="'status-tag ' + (event.completed ? 'status-completed' : event.active && !event.canceled ? 'status-active' : 'status-inactive')">
-              {{event.completed ? 'Genomförd' : event.active && !event.canceled ? 'Pågående' : 'Inställd'}}
+              {{event.completed ? ('event.completed' | translate) : event.active && !event.canceled ? ('event.ongoing' | translate) : ('event.cancelled' | translate)}}
             </span>
           </td>
           <td>
@@ -99,7 +99,7 @@
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-primary p-button-text p-button-sm"
                 (click)="editEvent(event)"
-                pTooltip="Redigera"
+                [pTooltip]="'event.edit' | translate"
                 tooltipPosition="top">
               </button>
               <button
@@ -109,7 +109,7 @@
                 class="p-button-rounded p-button-danger p-button-text p-button-sm"
                 [disabled]="!canDelete(event)"
                 (click)="deleteEvent(event.event_uid)"
-                pTooltip="Ta bort"
+                [pTooltip]="'event.delete' | translate"
                 tooltipPosition="top">
               </button>
             </div>
@@ -121,8 +121,8 @@
           <td colspan="5">
             <div class="flex flex-column align-items-center gap-3 py-5">
               <i class="pi pi-calendar text-primary" style="font-size: 2rem"></i>
-              <span class="text-900 font-medium text-xl">Inga Evenemang Hittades</span>
-              <span class="text-700">Det finns inga evenemang att visa.</span>
+              <span class="text-900 font-medium text-xl">{{ 'event.noEventsFound' | translate }}</span>
+              <span class="text-700">{{ 'event.noEventsToShow' | translate }}</span>
             </div>
           </td>
         </tr>

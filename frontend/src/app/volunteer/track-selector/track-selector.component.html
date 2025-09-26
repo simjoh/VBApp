@@ -1,13 +1,13 @@
 <ng-container *ngIf="$tracks | async as tracks">
   <div class="track-selector">
     <p-dropdown
-      pTooltip="Välj en bana som din kontroll finns utefter"
+      [pTooltip]="'volunteer.selectTrack' | translate"
       tooltipPosition="left"
       styleClass="w-full modern-dropdown"
       [options]="tracks"
       [(ngModel)]="choosentrack"
       (ngModelChange)="valdBana()"
-      placeholder="Välj bana"
+      [placeholder]="'volunteer.selectTrack' | translate"
       [virtualScroll]="true"
       [itemSize]="36"
       [filter]="true"

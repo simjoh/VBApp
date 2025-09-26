@@ -6,7 +6,7 @@
     <div class="col-12 field">
       <label for="place" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-map-marker mr-2"></i>
-        Plats
+        {{ 'siteDialog.place' | translate }}
       </label>
       <input
         pInputText
@@ -14,13 +14,13 @@
         name="place"
         #place="ngModel"
         [(ngModel)]="siteform.place"
-        placeholder="Ex: Broparken"
+        [placeholder]="'siteDialog.placePlaceholder' | translate"
         required
         class="w-full"
         [class.ng-invalid]="place.invalid && (place.dirty || place.touched)"
       />
       <small *ngIf="place.invalid && (place.dirty || place.touched)" class="p-error block mt-1">
-        Plats krävs
+        {{ 'siteDialog.placeRequired' | translate }}
       </small>
     </div>
 
@@ -28,7 +28,7 @@
     <div class="col-12 field">
       <label for="adress" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-home mr-2"></i>
-        Adress
+        {{ 'siteDialog.address' | translate }}
       </label>
       <input
         pInputText
@@ -36,13 +36,13 @@
         name="adress"
         #adress="ngModel"
         [(ngModel)]="siteform.adress"
-        placeholder="Ex: Brogatan 1"
+        [placeholder]="'siteDialog.addressPlaceholder' | translate"
         required
         class="w-full"
         [class.ng-invalid]="adress.invalid && (adress.dirty || adress.touched)"
       />
       <small *ngIf="adress.invalid && (adress.dirty || adress.touched)" class="p-error block mt-1">
-        Adress krävs
+        {{ 'siteDialog.addressRequired' | translate }}
       </small>
     </div>
 
@@ -50,7 +50,7 @@
     <div class="col-12 md:col-6 field">
       <label for="lat" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-globe mr-2"></i>
-        Latitud
+        {{ 'siteDialog.latitude' | translate }}
       </label>
       <input
         pInputText
@@ -58,20 +58,20 @@
         name="lat"
         #lat="ngModel"
         [(ngModel)]="siteform.lat"
-        placeholder="Ex: 59.3293"
+        [placeholder]="'siteDialog.latitudePlaceholder' | translate"
         required
         class="w-full"
         [class.ng-invalid]="lat.invalid && (lat.dirty || lat.touched)"
       />
       <small *ngIf="lat.invalid && (lat.dirty || lat.touched)" class="p-error block mt-1">
-        Latitud krävs
+        {{ 'siteDialog.latitudeRequired' | translate }}
       </small>
     </div>
 
     <div class="col-12 md:col-6 field">
       <label for="lng" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-globe mr-2"></i>
-        Longitud
+        {{ 'siteDialog.longitude' | translate }}
       </label>
       <input
         pInputText
@@ -79,13 +79,13 @@
         name="lng"
         #lng="ngModel"
         [(ngModel)]="siteform.lng"
-        placeholder="Ex: 18.0686"
+        [placeholder]="'siteDialog.longitudePlaceholder' | translate"
         required
         class="w-full"
         [class.ng-invalid]="lng.invalid && (lng.dirty || lng.touched)"
       />
       <small *ngIf="lng.invalid && (lng.dirty || lng.touched)" class="p-error block mt-1">
-        Longitud krävs
+        {{ 'siteDialog.longitudeRequired' | translate }}
       </small>
     </div>
 
@@ -93,7 +93,7 @@
     <div class="col-12 md:col-6 field">
       <label for="check_in_distance" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-map-marker mr-2"></i>
-        Incheckning avstånd (meter)
+        {{ 'siteDialog.checkInDistance' | translate }}
       </label>
       <input
         pInputText
@@ -104,13 +104,13 @@
         name="check_in_distance"
         #check_in_distance="ngModel"
         [(ngModel)]="siteform.check_in_distance"
-        placeholder="Ex: 900"
+        [placeholder]="'siteDialog.checkInDistancePlaceholder' | translate"
         required
         class="w-full"
         [class.ng-invalid]="check_in_distance.invalid && (check_in_distance.dirty || check_in_distance.touched)"
       />
       <small *ngIf="check_in_distance.invalid && (check_in_distance.dirty || check_in_distance.touched)" class="p-error block mt-1">
-        Incheckning avstånd krävs (i meter)
+        {{ 'siteDialog.checkInDistanceRequired' | translate }}
       </small>
     </div>
 
@@ -118,7 +118,7 @@
     <div class="col-12 field">
       <label for="description" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-file-edit mr-2"></i>
-        Beskrivning
+        {{ 'siteDialog.description' | translate }}
       </label>
       <textarea
         pInputTextarea
@@ -127,7 +127,7 @@
         name="description"
         rows="4"
         autoResize="autoResize"
-        placeholder="Beskrivning för platsen..."
+        [placeholder]="'siteDialog.descriptionPlaceholder' | translate"
         class="w-full">
       </textarea>
     </div>
@@ -136,7 +136,7 @@
     <div class="col-12 field">
       <label class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-image mr-2"></i>
-        Ladda upp bild
+        {{ 'siteDialog.uploadImage' | translate }}
       </label>
       <p-fileUpload
         #primeFileUpload
@@ -161,14 +161,14 @@
     <div class="col-12 flex justify-content-end gap-2 mt-4">
       <p-button
         icon="pi pi-times"
-        label="Avbryt"
+        [label]="'common.cancel' | translate"
         (click)="cancel()"
         severity="secondary"
         [text]="true">
       </p-button>
       <p-button
         icon="pi pi-check"
-        label="Spara"
+        [label]="'common.save' | translate"
         type="submit"
         [disabled]="!eventFormName.valid">
       </p-button>

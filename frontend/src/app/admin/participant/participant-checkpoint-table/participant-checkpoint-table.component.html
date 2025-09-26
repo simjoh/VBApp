@@ -9,37 +9,37 @@
         <tr>
           <th style="width: 60px">
             <div class="flex align-items-center">
-              <span>Logga</span>
+              <span>{{ 'checkpoint.logo' | translate }}</span>
             </div>
           </th>
           <th style="width: 30%">
             <div class="flex align-items-center">
-              <span>Adress</span>
+              <span>{{ 'checkpoint.address' | translate }}</span>
             </div>
           </th>
           <th style="width: 15%">
             <div class="flex align-items-center">
-              <span>Ort</span>
+              <span>{{ 'checkpoint.city' | translate }}</span>
             </div>
           </th>
           <th style="width: 80px">
             <div class="flex align-items-center">
-              <span>Distans</span>
+              <span>{{ 'checkpoint.distance' | translate }}</span>
             </div>
           </th>
           <th style="width: 20%">
             <div class="flex align-items-center">
-              <span>Incheckningar</span>
+              <span>{{ 'checkpoint.checkins' | translate }}</span>
             </div>
           </th>
           <th style="width: 20%">
             <div class="flex align-items-center">
-              <span>Utcheckningar</span>
+              <span>{{ 'checkpoint.checkouts' | translate }}</span>
             </div>
           </th>
           <th style="width: 15%">
             <div class="flex align-items-center justify-content-center">
-              <span>Åtgärd</span>
+              <span>{{ 'checkpoint.action' | translate }}</span>
             </div>
           </th>
         </tr>
@@ -89,7 +89,7 @@
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-text p-button-sm"
                 (click)="editCheckpointTime(check)"
-                pTooltip="Ändra tid"
+                [pTooltip]="'checkpoint.changeTime' | translate"
                 tooltipPosition="top">
               </button>
             </div>
@@ -109,7 +109,7 @@
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-text p-button-sm"
                 (click)="editCheckoutTime(check)"
-                pTooltip="Ändra tid"
+                [pTooltip]="'checkpoint.changeTime' | translate"
                 tooltipPosition="top">
               </button>
             </div>
@@ -121,7 +121,7 @@
                 [disabled]="$dim | async"
                 (click)="checkin(check)"
                 [icon]="check.stamptime ? 'pi pi-undo' : 'pi pi-sign-in'"
-                [label]="check.stamptime ? 'Ångra': 'Checka in'"
+                [label]="check.stamptime ? ('checkpoint.undo' | translate): ('checkpoint.checkin' | translate)"
                 type="button"
                 class="p-button-outlined p-button-secondary p-button-sm">
               </button>
@@ -131,7 +131,7 @@
                 [disabled]="($dim | async) || (!participantcheckpoint.hasCheckoutLink(check) && !participantcheckpoint.hasRollbackCheckoutLink(check))"
                 (click)="checkout(check)"
                 [icon]="check.checkouttime ? 'pi pi-undo' : 'pi pi-sign-out'"
-                [label]="check.checkouttime ? 'Ångra checkout': 'Checka ut'"
+                [label]="check.checkouttime ? ('checkpoint.undoCheckout' | translate): ('checkpoint.checkout' | translate)"
                 type="button"
                 class="p-button-outlined p-button-secondary p-button-sm">
               </button>
@@ -145,7 +145,7 @@
           <td colspan="7">
             <div class="flex flex-column align-items-center gap-3 py-5">
               <i class="pi pi-map-marker text-primary" style="font-size: 2rem"></i>
-              <span class="text-700">Välj en bana för att se kontrollpunkter</span>
+              <span class="text-700">{{ 'checkpoint.selectTrackToSeeCheckpoints' | translate }}</span>
             </div>
           </td>
         </tr>

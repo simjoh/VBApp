@@ -9,7 +9,7 @@
   </div>
   <div class="p-fluid dialog-content">
     <div class="field mb-2">
-      <label for="checkpoint-time" class="block text-sm mb-1">Ange datum och tid</label>
+      <label for="checkpoint-time" class="block text-sm mb-1">{{ 'checkpointDialog.enterDateAndTime' | translate }}</label>
       <div class="p-inputgroup">
         <p-calendar [(ngModel)]="checkpointTime"
                   id="checkpoint-time"
@@ -33,11 +33,11 @@
   </div>
   <div class="dialog-footer">
     <p-button icon="pi pi-times"
-              label="Avbryt"
+              [label]="'checkpointDialog.cancel' | translate"
               (click)="ref.close()"
               styleClass="p-button-outlined p-button-secondary"></p-button>
     <p-button icon="pi pi-check"
-              label="Spara"
+              [label]="'checkpointDialog.save' | translate"
               (click)="saveTime()"
               styleClass="p-button-primary"></p-button>
   </div>

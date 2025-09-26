@@ -21,14 +21,14 @@
               pInputText
               #filter
               (input)="dt.filterGlobal($event.target.value, 'contains')"
-              placeholder="Sök organisatörer..."
+              [placeholder]="'organizerAdmin.searchOrganizers' | translate"
               class="p-inputtext-sm"/>
           </span>
           <div class="flex align-items-center gap-2">
             <button
               pButton
               pRipple
-              label="Ny Organisatör"
+              [label]="'organizerAdmin.newOrganizer' | translate"
               icon="pi pi-plus"
               class="p-button-success p-button-sm"
               (click)="openNew()">
@@ -39,7 +39,7 @@
               icon="pi pi-refresh"
               class="p-button-text p-button-rounded p-button-sm"
               (click)="dt.reset()"
-              pTooltip="Uppdatera"
+              [pTooltip]="'organizerAdmin.refresh' | translate"
               tooltipPosition="top">
             </button>
           </div>
@@ -48,18 +48,18 @@
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="organization_name">
-            ORGANISATION
+            {{ 'organizerAdmin.organization' | translate }}
             <p-sortIcon field="organization_name"></p-sortIcon>
           </th>
           <th pSortableColumn="contact_person_name">
-            KONTAKTPERSON
+            {{ 'organizerAdmin.contactPerson' | translate }}
             <p-sortIcon field="contact_person_name"></p-sortIcon>
           </th>
           <th pSortableColumn="active">
-            STATUS
+            {{ 'organizerAdmin.status' | translate }}
             <p-sortIcon field="active"></p-sortIcon>
           </th>
-          <th style="width: 5rem">ÅTGÄRDER</th>
+          <th style="width: 5rem">{{ 'organizerAdmin.actions' | translate }}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-organizer>
@@ -78,7 +78,7 @@
           </td>
           <td>
             <span [class]="'status-tag ' + (organizer.active ? 'status-active' : 'status-inactive')">
-              {{organizer.active ? 'Aktiv' : 'Inaktiv'}}
+              {{organizer.active ? ('organizerAdmin.active' | translate) : ('organizerAdmin.inactive' | translate)}}
             </span>
           </td>
           <td>
@@ -89,7 +89,7 @@
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-primary p-button-text p-button-sm"
                 (click)="editOrganizer(organizer)"
-                pTooltip="Redigera"
+                [pTooltip]="'organizerAdmin.edit' | translate"
                 tooltipPosition="top">
               </button>
               <button
@@ -99,7 +99,7 @@
                 class="p-button-rounded p-button-danger p-button-text p-button-sm"
                 [disabled]="!canDelete(organizer)"
                 (click)="deleteOrganizer(organizer.organizer_uid)"
-                pTooltip="Ta bort"
+                [pTooltip]="'organizerAdmin.delete' | translate"
                 tooltipPosition="top">
               </button>
             </div>
@@ -111,8 +111,8 @@
           <td colspan="4">
             <div class="flex flex-column align-items-center gap-3 py-5">
               <i class="pi pi-briefcase text-primary" style="font-size: 2rem"></i>
-              <span class="text-900 font-medium text-xl">Inga Organisatörer Hittades</span>
-              <span class="text-700">Det finns inga organisatörer att visa.</span>
+              <span class="text-900 font-medium text-xl">{{ 'organizerAdmin.noOrganizersFound' | translate }}</span>
+              <span class="text-700">{{ 'organizerAdmin.noOrganizersToShow' | translate }}</span>
             </div>
           </td>
         </tr>

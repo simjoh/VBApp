@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ViewChild, ChangeDetectorRef, inject} from '@angular/core';
 import {FileUpload} from "primeng/fileupload";
 import {UploadService} from "../../../core/upload.service";
 import {environment} from "../../../../environments/environment";
@@ -6,6 +6,7 @@ import {map} from "rxjs/operators";
 import {ParticipantComponentService} from "../participant-component.service";
 import {MessageService} from "primeng/api";
 import {TrackService} from "../../../shared/track-service";
+import {TranslationService} from "../../../core/services/translation.service";
 
 interface UploadStats {
   total_rows: number;
@@ -27,6 +28,7 @@ interface UploadStats {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UploadParticipantComponent implements OnInit {
+  private translationService = inject(TranslationService);
 
   @ViewChild('primeFileUpload') primeFileUpload: FileUpload;
 
@@ -75,7 +77,7 @@ export class UploadParticipantComponent implements OnInit {
           if (response.error) {
             this.messageService.add({
               severity: 'error',
-              summary: 'Upload Failed',
+              summary: this.translationService.translate('upload.uploadFailed'),
               detail: response.error
             });
             return;
@@ -91,16 +93,16 @@ export class UploadParticipantComponent implements OnInit {
           if (this.uploadStats.successful > 0) {
             this.messageService.add({
               severity: 'success',
-              summary: 'Upload Complete',
-              detail: `Successfully uploaded ${this.uploadStats.successful} participants`
+              summary: this.translationService.translate('upload.uploadComplete'),
+              detail: `${this.translationService.translate('upload.successful')} ${this.uploadStats.successful} ${this.translationService.translate('upload.participant')}`
             });
           }
 
           if (this.uploadStats.failed > 0 || this.uploadStats.skipped > 0) {
             this.messageService.add({
               severity: 'warn',
-              summary: 'Upload Issues',
-              detail: `${this.uploadStats.failed} failed, ${this.uploadStats.skipped} skipped`
+              summary: this.translationService.translate('upload.uploadIssues'),
+              detail: `${this.uploadStats.failed} ${this.translationService.translate('upload.failed')}, ${this.uploadStats.skipped} ${this.translationService.translate('upload.skipped')}`
             });
           }
         }

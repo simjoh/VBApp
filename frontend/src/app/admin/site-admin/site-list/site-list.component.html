@@ -21,14 +21,14 @@
               pInputText
               #filter
               (input)="dt.filterGlobal($event.target.value, 'contains')"
-              placeholder="Sök platser..."
+              [placeholder]="'siteAdmin.searchSites' | translate"
               class="p-inputtext-sm"/>
           </span>
           <div class="flex align-items-center gap-2">
             <button
               pButton
               pRipple
-              label="Ny Plats"
+              [label]="'siteAdmin.newSite' | translate"
               icon="pi pi-plus"
               class="p-button-success p-button-sm"
               (click)="openNew()">
@@ -39,7 +39,7 @@
               icon="pi pi-refresh"
               class="p-button-text p-button-rounded p-button-sm"
               (click)="dt.reset()"
-              pTooltip="Uppdatera"
+              [pTooltip]="'siteAdmin.refresh' | translate"
               tooltipPosition="top">
             </button>
           </div>
@@ -48,25 +48,25 @@
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="title">
-            NAMN
+            {{ 'siteAdmin.name' | translate }}
             <p-sortIcon field="title"></p-sortIcon>
           </th>
           <th pSortableColumn="place">
-            PLATS
+            {{ 'siteAdmin.location' | translate }}
             <p-sortIcon field="place"></p-sortIcon>
           </th>
           <th pSortableColumn="adress">
-            ADRESS
+            {{ 'siteAdmin.address' | translate }}
             <p-sortIcon field="adress"></p-sortIcon>
           </th>
           <th>
-            LOGGA
+            {{ 'siteAdmin.logo' | translate }}
           </th>
           <th pSortableColumn="active">
-            STATUS
+            {{ 'siteAdmin.status' | translate }}
             <p-sortIcon field="active"></p-sortIcon>
           </th>
-          <th style="width: 5rem">ÅTGÄRDER</th>
+          <th style="width: 5rem">{{ 'siteAdmin.actions' | translate }}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-site>
@@ -102,7 +102,7 @@
                   style="object-fit: cover;"
                   (error)="site.image = ''"
                   (click)="showImagePreview(site.image, site.place)"
-                  pTooltip="Click to view image"
+                  [pTooltip]="'siteAdmin.clickToViewImage' | translate"
                   tooltipPosition="top">
                 <div
                   *ngIf="!site.image"
@@ -114,7 +114,7 @@
           </td>
           <td>
             <span [class]="'status-tag ' + (site.check_in_distance ? 'status-active' : 'status-inactive')">
-              {{site.check_in_distance ? 'Aktiv' : 'Inaktiv'}}
+              {{site.check_in_distance ? ('siteAdmin.active' | translate) : ('siteAdmin.inactive' | translate)}}
             </span>
           </td>
           <td>
@@ -125,7 +125,7 @@
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-primary p-button-text p-button-sm"
                 (click)="editSite(site)"
-                pTooltip="Redigera"
+                [pTooltip]="'siteAdmin.edit' | translate"
                 tooltipPosition="top">
               </button>
               <button
@@ -135,7 +135,7 @@
                 class="p-button-rounded p-button-danger p-button-text p-button-sm"
                 [disabled]="!canDelete(site)"
                 (click)="deleteSite(site.site_uid)"
-                pTooltip="Ta bort"
+                [pTooltip]="'siteAdmin.delete' | translate"
                 tooltipPosition="top">
               </button>
             </div>
@@ -147,8 +147,8 @@
           <td colspan="6">
             <div class="flex flex-column align-items-center gap-3 py-5">
               <i class="pi pi-map-marker text-primary" style="font-size: 2rem"></i>
-              <span class="text-900 font-medium text-xl">Inga Platser Hittades</span>
-              <span class="text-700">Det finns inga platser att visa.</span>
+              <span class="text-900 font-medium text-xl">{{ 'siteAdmin.noSitesFound' | translate }}</span>
+              <span class="text-700">{{ 'siteAdmin.noSitesToShow' | translate }}</span>
             </div>
           </td>
         </tr>

@@ -21,14 +21,14 @@
               pInputText
               #filter
               (input)="dt.filterGlobal($event.target.value, 'contains')"
-              placeholder="Sök klubbar..."
+              [placeholder]="'clubAdmin.searchClubs' | translate"
               class="p-inputtext-sm"/>
           </span>
           <div class="flex align-items-center gap-2">
             <button
               pButton
               pRipple
-              label="Ny Klubb"
+              [label]="'clubAdmin.newClub' | translate"
               icon="pi pi-plus"
               class="p-button-success p-button-sm"
               (click)="openNew()">
@@ -39,7 +39,7 @@
               icon="pi pi-refresh"
               class="p-button-text p-button-rounded p-button-sm"
               (click)="dt.reset()"
-              pTooltip="Uppdatera"
+              [pTooltip]="'clubAdmin.refresh' | translate"
               tooltipPosition="top">
             </button>
           </div>
@@ -48,14 +48,14 @@
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="title">
-            NAMN
+            {{ 'clubAdmin.name' | translate }}
             <p-sortIcon field="title"></p-sortIcon>
           </th>
           <th pSortableColumn="acp_kod">
-            ACP KOD
+            {{ 'clubAdmin.acpCode' | translate }}
             <p-sortIcon field="acp_kod"></p-sortIcon>
           </th>
-          <th style="width: 5rem">ÅTGÄRDER</th>
+          <th style="width: 5rem">{{ 'clubAdmin.actions' | translate }}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-club>
@@ -74,7 +74,7 @@
               </span>
               <i *ngIf="club.acp_kod && club.acp_kod !== '0'"
                  class="pi pi-check-circle text-success"
-                 pTooltip="Officiell ACP-klubb"
+                 [pTooltip]="'clubAdmin.officialAcpClub' | translate"
                  tooltipPosition="top">
               </i>
             </div>
@@ -87,7 +87,7 @@
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-primary p-button-text p-button-sm"
                 (click)="editClub(club)"
-                pTooltip="Redigera"
+                [pTooltip]="'common.edit' | translate"
                 tooltipPosition="top">
               </button>
               <button
@@ -97,7 +97,7 @@
                 class="p-button-rounded p-button-danger p-button-text p-button-sm"
                 [disabled]="!canDelete(club)"
                 (click)="deleteClub(club.club_uid)"
-                pTooltip="Ta bort"
+                [pTooltip]="'common.delete' | translate"
                 tooltipPosition="top">
               </button>
             </div>
@@ -109,8 +109,8 @@
           <td colspan="4">
             <div class="flex flex-column align-items-center gap-3 py-5">
               <i class="pi pi-building text-primary" style="font-size: 2rem"></i>
-              <span class="text-900 font-medium text-xl">Inga Klubbar Hittades</span>
-              <span class="text-700">Det finns inga klubbar att visa.</span>
+              <span class="text-900 font-medium text-xl">{{ 'clubAdmin.noClubsFound' | translate }}</span>
+              <span class="text-700">{{ 'clubAdmin.noClubsToShow' | translate }}</span>
             </div>
           </td>
         </tr>

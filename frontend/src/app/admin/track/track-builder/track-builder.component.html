@@ -9,26 +9,26 @@
           <div class="option-icon">
             <i class="pi pi-plus"></i>
           </div>
-          <h3 class="option-title">Skapa nytt arrangemang</h3>
-          <p class="option-description">Skapa ett helt nytt arrangemang i loppservice med kalenderpost</p>
+          <h3 class="option-title">{{ 'trackBuilder.createNewEvent' | translate }}</h3>
+          <p class="option-description">{{ 'trackBuilder.createNewEventDescription' | translate }}</p>
         </div>
 
         <div class="option-card" [class.disabled]="true" (click)="setMode('gpx')">
           <div class="option-icon">
             <i class="pi pi-file"></i>
           </div>
-          <h3 class="option-title">Bygg från GPX-fil</h3>
-          <p class="option-description">Importera en GPX-fil för att automatiskt skapa bana och kontroller</p>
-          <span class="upcoming-badge">Kommande funktion</span>
+          <h3 class="option-title">{{ 'trackBuilder.buildFromGpx' | translate }}</h3>
+          <p class="option-description">{{ 'trackBuilder.buildFromGpxDescription' | translate }}</p>
+          <span class="upcoming-badge">{{ 'trackBuilder.upcomingFeature' | translate }}</span>
         </div>
 
         <div class="option-card" [class.disabled]="true" (click)="setMode('copy')">
           <div class="option-icon">
             <i class="pi pi-copy"></i>
           </div>
-          <h3 class="option-title">Kopiera befintlig bana</h3>
-          <p class="option-description">Skapa en ny bana baserad på en befintlig bana</p>
-          <span class="upcoming-badge">Kommande funktion</span>
+          <h3 class="option-title">{{ 'trackBuilder.copyExistingTrack' | translate }}</h3>
+          <p class="option-description">{{ 'trackBuilder.copyExistingTrackDescription' | translate }}</p>
+          <span class="upcoming-badge">{{ 'trackBuilder.upcomingFeature' | translate }}</span>
         </div>
       </div>
     </ng-container>
@@ -38,8 +38,8 @@
       <!-- Header -->
       <div class="flex align-items-center gap-3 mb-4">
         <div>
-          <h2 class="text-900 m-0 mb-2">Skapa nytt arrangemang</h2>
-          <p class="text-700 m-0">Fyll i informationen nedan för att skapa ditt arrangemang och bana</p>
+          <h2 class="text-900 m-0 mb-2">{{ 'trackBuilder.fillInformation' | translate }}</h2>
+          <p class="text-700 m-0">{{ 'trackBuilder.fillInformationDescription' | translate }}</p>
         </div>
       </div>
 
@@ -50,7 +50,7 @@
           <p-card styleClass="mb-4">
             <ng-template pTemplate="header">
               <div class="px-4 py-3 surface-section border-bottom-1 surface-border">
-                <h3 class="text-900 m-0">Grundläggande information</h3>
+                <h3 class="text-900 m-0">{{ 'trackInfo.basicInformation' | translate }}</h3>
               </div>
             </ng-template>
             <brevet-track-builder-track-info-form></brevet-track-builder-track-info-form>
@@ -60,7 +60,7 @@
           <p-card>
             <ng-template pTemplate="header">
               <div class="px-4 py-3 surface-section border-bottom-1 surface-border">
-                <h3 class="text-900 m-0">Kontroller</h3>
+                <h3 class="text-900 m-0">{{ 'track.controls' | translate }}</h3>
               </div>
             </ng-template>
             <brevet-track-builder-controls-form></brevet-track-builder-controls-form>
@@ -72,7 +72,7 @@
           <p-card styleClass="sticky" style="top: 1rem;">
             <ng-template pTemplate="header">
               <div class="px-4 py-3 surface-section border-bottom-1 surface-border">
-                <h3 class="text-900 m-0">Sammanfattning</h3>
+                <h3 class="text-900 m-0">{{ 'common.summary' | translate }}</h3>
               </div>
             </ng-template>
             <brevet-track-builder-summary></brevet-track-builder-summary>

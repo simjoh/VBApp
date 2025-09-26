@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ViewChild} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ViewChild, inject} from '@angular/core';
 import {UserService} from "../user.service";
 import {User} from "../../../shared/api/api";
 import {Observable} from "rxjs";
@@ -9,6 +9,7 @@ import {CreateUserDialogComponent} from "../create-user-dialog/create-user-dialo
 import {EditUserDialogComponent} from "../edit-user-dialog/edit-user-dialog.component";
 import {DeviceDetectorService} from "ngx-device-detector";
 import {map, tap} from "rxjs/operators";
+import { TranslationService } from '../../../core/services/translation.service';
 
 @Component({
   selector: 'brevet-user-list',
@@ -18,6 +19,7 @@ import {map, tap} from "rxjs/operators";
   providers:[DialogService, ConfirmationService]
 })
 export class UserListComponent implements OnInit {
+  private translationService = inject(TranslationService);
 
   @ViewChild('dt',{ static: false }) table: Table;
   $users = this.userService.usersWithAdd$.pipe(
@@ -102,7 +104,7 @@ export class UserListComponent implements OnInit {
       data: {
         id: '51gF3'
       },
-      header: 'Lägg till Användare',
+      header: this.translationService.translate('dialog.addUser'),
       width: width
     });
 

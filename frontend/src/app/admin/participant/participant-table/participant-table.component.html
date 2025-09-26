@@ -11,7 +11,7 @@
           pInputText
           type="text"
           (input)="dt1.filterGlobal($event.target.value, 'contains')"
-          placeholder="Sök deltagare..."
+          [placeholder]="'participant.searchParticipants' | translate"
           class="w-full"/>
       </span>
     </div>
@@ -22,7 +22,7 @@
         pButton
         pRipple
         icon="pi pi-download"
-        label="Exportera startlista"
+        [label]="'participant.exportStartList' | translate"
         (click)="exportStartList()"
         class="p-button-outlined p-button-info"
         [disabled]="!participantComponentService.getCurrentTrackUid()">
@@ -35,9 +35,9 @@
         pRipple
         disabled
         class="p-button-outlined p-button-secondary"
-        pTooltip="Välj en bana först">
+        [pTooltip]="'participant.selectTrackFirst' | translate">
         <fa-icon [icon]="faBroadcast"></fa-icon>
-        <span class="ml-2">Publicera/Ångra publicera resultat</span>
+        <span class="ml-2">{{ 'participant.publishResults' | translate }}/{{ 'participant.unpublishResults' | translate }}</span>
       </button>
 
       <button
@@ -48,7 +48,7 @@
         [attr.data-track-uid]="currentTrackRepresentation?.track_uid"
         class="publish-btn p-button-outlined p-button-success">
         <fa-icon [icon]="faBroadcast"></fa-icon>
-        <span class="ml-2">Publicera resultat</span>
+        <span class="ml-2">{{ 'participant.publishResults' | translate }}</span>
       </button>
 
       <button
@@ -59,18 +59,18 @@
         [attr.data-track-uid]="currentTrackRepresentation?.track_uid"
         class="unpublish-btn p-button-outlined p-button-danger">
         <fa-icon [icon]="faBroadcast"></fa-icon>
-        <span class="ml-2">Ångra publicera</span>
+        <span class="ml-2">{{ 'participant.unpublishResults' | translate }}</span>
       </button>
 
       <button
         pButton
         pRipple
         icon="pi pi-download"
-        label="Exportera homologation"
+        [label]="'participant.exportHomologation' | translate"
         (click)="exportHomologation()"
         class="p-button-outlined p-button-success"
         [disabled]="!participantComponentService.getCurrentTrackUid() || hasPublishLink()"
-        [pTooltip]="hasPublishLink() ? 'Banan måste vara publicerad först' : ''">
+        [pTooltip]="hasPublishLink() ? ('participant.trackMustBePublished' | translate) : ''">
       </button>
 
       <!-- Move All Participants Button -->
@@ -78,7 +78,7 @@
         pButton
         pRipple
         icon="pi pi-users"
-        label="Flytta Alla Deltagare"
+        [label]="'participant.moveAllParticipants' | translate"
         (click)="openMoveParticipantsDialog('bulk')"
         class="p-button-outlined p-button-warning"
         [disabled]="!participantComponentService.getCurrentTrackUid()">
@@ -99,7 +99,7 @@
     [paginator]="true"
     [rowsPerPageOptions]="[10,25,50]"
     [showCurrentPageReport]="true"
-    currentPageReportTemplate="Visar {first} till {last} av {totalRecords} deltagare"
+    [currentPageReportTemplate]="'participant.showingParticipants' | translate"
     [filterDelay]="0"
     styleClass="p-datatable-sm">
 
@@ -108,30 +108,30 @@
         <th style="width: 3rem"></th>
         <th style="width: 15%" pSortableColumn="participant.startnumber">
           <div class="flex align-items-center gap-2">
-            <span>Startnummer</span>
+            <span>{{ 'participant.startNumber' | translate }}</span>
             <p-sortIcon field="participant.startnumber"></p-sortIcon>
           </div>
         </th>
         <th style="width: 20%" pSortableColumn="competitorRepresentation.family_name">
           <div class="flex align-items-center gap-2">
-            <span>Efternamn</span>
+            <span>{{ 'participant.lastName' | translate }}</span>
             <p-sortIcon field="competitorRepresentation.family_name"></p-sortIcon>
           </div>
         </th>
         <th style="width: 20%" pSortableColumn="competitorRepresentation.given_name">
           <div class="flex align-items-center gap-2">
-            <span>Förnamn</span>
+            <span>{{ 'participant.firstName' | translate }}</span>
             <p-sortIcon field="competitorRepresentation.given_name"></p-sortIcon>
           </div>
         </th>
         <th style="width: 25%" pSortableColumn="clubRepresentation.title">
           <div class="flex align-items-center gap-2">
-            <span>Klubb</span>
+            <span>{{ 'participant.club' | translate }}</span>
             <p-sortIcon field="clubRepresentation.title"></p-sortIcon>
           </div>
         </th>
         <th style="width: 15%">
-          <div class="text-right">Åtgärder</div>
+          <div class="text-right">{{ 'participant.actions' | translate }}</div>
         </th>
       </tr>
     </ng-template>
@@ -177,10 +177,10 @@
               pButton
               pRipple
               icon="pi pi-exchange"
-              label="Flytta"
+              [label]="'participant.move' | translate"
               (click)="openMoveParticipantsDialog('single', participant)"
               class="p-button-sm p-button-outlined p-button-warning"
-              pTooltip="Flytta deltagare till annan bana"
+              [pTooltip]="'participant.moveTooltip' | translate"
               tooltipPosition="top"
               [disabled]="participant.participant.started || participant.participant.finished || participant.participant.dnf || participant.participant.dns">
             </button>
@@ -190,7 +190,7 @@
               icon="pi pi-pencil"
               (click)="editCompetitorInfo(participant)"
               class="p-button-rounded p-button-text p-button-info"
-              pTooltip="Redigera"
+              [pTooltip]="'participant.edit' | translate"
               tooltipPosition="top">
             </button>
             <button
@@ -200,7 +200,7 @@
               pRipple
               icon="pi pi-trash"
               class="p-button-rounded p-button-text p-button-danger"
-              pTooltip="Ta bort"
+              [pTooltip]="'participant.delete' | translate"
               tooltipPosition="top">
             </button>
           </div>
@@ -215,23 +215,23 @@
             <!-- Contact Information -->
             <div class="grid">
               <div class="col-12 md:col-2">
-                <div class="text-500 font-medium mb-2">Adress</div>
+                <div class="text-500 font-medium mb-2">{{ 'participant.address' | translate }}</div>
                 <div class="text-900">{{track.competitorInforepresentation.adress}}</div>
               </div>
               <div class="col-12 md:col-2">
-                <div class="text-500 font-medium mb-2">Ort</div>
+                <div class="text-500 font-medium mb-2">{{ 'participant.city' | translate }}</div>
                 <div class="text-900">{{track.competitorInforepresentation.place}}</div>
               </div>
               <div class="col-12 md:col-2">
-                <div class="text-500 font-medium mb-2">Land</div>
+                <div class="text-500 font-medium mb-2">{{ 'participant.country' | translate }}</div>
                 <div class="text-900">{{track.competitorInforepresentation.country}}</div>
               </div>
               <div class="col-12 md:col-2">
-                <div class="text-500 font-medium mb-2">Telefon</div>
+                <div class="text-500 font-medium mb-2">{{ 'participant.phone' | translate }}</div>
                 <div class="text-900">{{track.competitorInforepresentation.phone}}</div>
               </div>
               <div class="col-12 md:col-4">
-                <div class="text-500 font-medium mb-2">Email</div>
+                <div class="text-500 font-medium mb-2">{{ 'participant.email' | translate }}</div>
                 <div class="text-900">{{track.competitorInforepresentation.email}}</div>
               </div>
             </div>
@@ -246,7 +246,7 @@
                   icon="pi pi-clock"
                   severity="success"
                   [style]="{'cursor': 'pointer'}"
-                  value="Sluttid: {{track.participant.time}}">
+                  [value]="('participant.finishTime' | translate) + ': ' + track.participant.time">
                 </p-tag>
                 <p-tag
                 *ngIf="track.participant.time"
@@ -254,7 +254,7 @@
                   icon="pi pi-id-card"
                   severity="info"
                   [style]="{'cursor': 'pointer'}"
-                  value="Homolg.nr: {{track.participant.brevenr}}">
+                  [value]="('participant.homologationNumber' | translate) + ': ' + track.participant.brevenr">
                 </p-tag>
               </div>
 
@@ -296,7 +296,7 @@
         <td colspan="6" class="text-center p-4">
           <div class="flex flex-column align-items-center">
             <i class="pi pi-search text-primary" style="font-size: 2rem"></i>
-            <span class="text-700 mt-2">Inga deltagare hittades</span>
+            <span class="text-700 mt-2">{{ 'participant.noParticipantsFound' | translate }}</span>
           </div>
         </td>
       </tr>

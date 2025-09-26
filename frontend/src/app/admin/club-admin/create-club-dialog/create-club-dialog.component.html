@@ -5,18 +5,18 @@
     <div class="col-12 field">
       <label for="title" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-users mr-2"></i>
-        Klubbnamn
+        {{ 'form.clubName' | translate }}
       </label>
       <input
         pInputText
         id="title"
         formControlName="title"
-        placeholder="Ange klubbnamn"
+        [placeholder]="'form.enterClubName' | translate"
         class="w-full"
         [class.ng-invalid]="clubForm.get('title').invalid && (clubForm.get('title').dirty || clubForm.get('title').touched)"
       />
       <small *ngIf="clubForm.get('title').invalid && (clubForm.get('title').dirty || clubForm.get('title').touched)" class="p-error block mt-1">
-        Klubbnamn krävs
+        {{ 'validation.clubNameRequired' | translate }}
       </small>
     </div>
 
@@ -24,17 +24,17 @@
     <div class="col-12 field">
       <label for="acp_kod" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-id-card mr-2"></i>
-        ACP-kod (Valfritt)
+        {{ 'form.acpCodeOptional' | translate }}
       </label>
       <input
         pInputText
         id="acp_kod"
         formControlName="acp_kod"
-        placeholder="Lämna tomt om ingen ACP-kod"
+        [placeholder]="'form.leaveEmptyIfNoAcpCode' | translate"
         class="w-full"
       />
       <small class="text-gray-500 block mt-1">
-        Lämna tomt om klubben inte har en ACP-kod
+        {{ 'form.leaveEmptyIfNoAcpCodeDescription' | translate }}
       </small>
     </div>
 
@@ -42,14 +42,14 @@
     <div class="col-12 flex justify-content-end gap-2 mt-4">
       <p-button
         icon="pi pi-times"
-        label="Avbryt"
+        [label]="'common.cancel' | translate"
         (click)="cancel()"
         severity="secondary"
         [text]="true">
       </p-button>
       <p-button
         icon="pi pi-check"
-        label="Spara"
+        [label]="'common.save' | translate"
         type="submit"
         [disabled]="!clubForm.valid">
       </p-button>

@@ -1,8 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, inject } from '@angular/core';
 import {TrackBuilderComponentService} from "../track-builder-component.service";
 import {OrganizerService, OrganizerRepresentation} from "../../../organizer-admin/organizer.service";
 import {map, catchError, take} from "rxjs/operators";
 import {combineLatest, of, Subscription} from "rxjs";
+import { TranslationService } from '../../../../core/services/translation.service';
 
 @Component({
   selector: 'brevet-track-builder-summary',
@@ -24,6 +25,8 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
   organizer: OrganizerRepresentation | null = null;
   formData: any = {};
   buttonDisabled = true;
+
+  private translationService = inject(TranslationService) as TranslationService;
 
   constructor(
     private trackbuildercomponentService: TrackBuilderComponentService,
@@ -318,14 +321,26 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
       const date = new Date(startDate);
       if (!isNaN(date.getTime())) {
         const day = date.getDate();
-        const monthNames = ["Januari", "Februari", "Mars", "April", "Maj", "Juni",
-                           "Juli", "Augusti", "September", "Oktober", "November", "December"];
+        const monthNames = [
+          this.translationService.translate('months.january'),
+          this.translationService.translate('months.february'),
+          this.translationService.translate('months.march'),
+          this.translationService.translate('months.april'),
+          this.translationService.translate('months.may'),
+          this.translationService.translate('months.june'),
+          this.translationService.translate('months.july'),
+          this.translationService.translate('months.august'),
+          this.translationService.translate('months.september'),
+          this.translationService.translate('months.october'),
+          this.translationService.translate('months.november'),
+          this.translationService.translate('months.december')
+        ];
         const month = monthNames[date.getMonth()];
         return `${day} ${month}`;
       }
       return startDate;
     }
-    return '15 Juni';
+    return `15 ${this.translationService.translate('months.june')}`;
   }
 
   getStartTimeDisplayWithPlaceholder(): string {
@@ -338,8 +353,20 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
       const regClosesDate = new Date(this.formData.registration_closes);
       if (!isNaN(regClosesDate.getTime())) {
         const day = regClosesDate.getDate();
-        const monthNames = ["Januari", "Februari", "Mars", "April", "Maj", "Juni",
-                           "Juli", "Augusti", "September", "Oktober", "November", "December"];
+        const monthNames = [
+          this.translationService.translate('months.january'),
+          this.translationService.translate('months.february'),
+          this.translationService.translate('months.march'),
+          this.translationService.translate('months.april'),
+          this.translationService.translate('months.may'),
+          this.translationService.translate('months.june'),
+          this.translationService.translate('months.july'),
+          this.translationService.translate('months.august'),
+          this.translationService.translate('months.september'),
+          this.translationService.translate('months.october'),
+          this.translationService.translate('months.november'),
+          this.translationService.translate('months.december')
+        ];
         const month = monthNames[regClosesDate.getMonth()];
         return `${day} ${month}`;
       }
@@ -353,13 +380,25 @@ export class TrackBuilderSummaryComponent implements OnInit, OnDestroy {
         const lastReg = new Date(date);
         lastReg.setDate(date.getDate() - 1);
         const day = lastReg.getDate();
-        const monthNames = ["Januari", "Februari", "Mars", "April", "Maj", "Juni",
-                           "Juli", "Augusti", "September", "Oktober", "November", "December"];
+        const monthNames = [
+          this.translationService.translate('months.january'),
+          this.translationService.translate('months.february'),
+          this.translationService.translate('months.march'),
+          this.translationService.translate('months.april'),
+          this.translationService.translate('months.may'),
+          this.translationService.translate('months.june'),
+          this.translationService.translate('months.july'),
+          this.translationService.translate('months.august'),
+          this.translationService.translate('months.september'),
+          this.translationService.translate('months.october'),
+          this.translationService.translate('months.november'),
+          this.translationService.translate('months.december')
+        ];
         const month = monthNames[lastReg.getMonth()];
         return `${day} ${month}`;
       }
     }
-    return '14 Juni';
+    return `14 ${this.translationService.translate('months.june')}`;
   }
 
   getStartLocationDisplayWithPlaceholder(): string {

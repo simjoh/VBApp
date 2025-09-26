@@ -6,12 +6,12 @@
         <i class="pi pi-users"></i>
       </div>
       <div class="header-text">
-        <h1>Volontär Kontroll</h1>
-        <p>Hantera deltagare vid din kontroll</p>
+        <h1>{{ 'volunteer.title' | translate }}</h1>
+        <p>{{ 'volunteer.description' | translate }}</p>
       </div>
       <button (click)="op.toggle($event)" pButton pRipple type="button" icon="pi pi-info-circle"
               class="help-button"
-              pTooltip="Hjälp och instruktioner" tooltipPosition="left"></button>
+              [pTooltip]="'volunteer.helpTooltip' | translate" tooltipPosition="left"></button>
     </div>
   </div>
 
@@ -19,21 +19,21 @@
   <p-overlayPanel #op>
     <ng-template pTemplate>
       <div class="p-3" style="max-width: 400px;">
-        <h4 class="mb-3">Hur fungerar det?</h4>
+        <h4 class="mb-3">{{ 'volunteer.howItWorks' | translate }}</h4>
         <div class="mb-3">
-          <p class="text-600 mb-2">För att se deltagare vid din kontroll:</p>
+          <p class="text-600 mb-2">{{ 'volunteer.toSeeParticipants' | translate }}</p>
           <ol class="text-600">
-            <li>Välj event och bana i sidopanelen</li>
-            <li>Välj din kontroll från listan</li>
-            <li>Se deltagare som ska passera eller har passerat</li>
+            <li>{{ 'volunteer.step1' | translate }}</li>
+            <li>{{ 'volunteer.step2' | translate }}</li>
+            <li>{{ 'volunteer.step3' | translate }}</li>
           </ol>
         </div>
         <div class="mb-3">
-          <p class="text-600 mb-2">Som volontär kan du:</p>
+          <p class="text-600 mb-2">{{ 'volunteer.asVolunteer' | translate }}</p>
           <ul class="text-600">
-            <li><i class="pi pi-check-circle text-green-500 mr-2"></i>Checka in deltagare</li>
-            <li><i class="pi pi-times-circle text-red-500 mr-2"></i>Markera DNF (Did Not Finish)</li>
-            <li><i class="pi pi-undo text-blue-500 mr-2"></i>Ångra tidigare åtgärder</li>
+            <li><i class="pi pi-check-circle text-green-500 mr-2"></i>{{ 'volunteer.checkInParticipants' | translate }}</li>
+            <li><i class="pi pi-times-circle text-red-500 mr-2"></i>{{ 'volunteer.markDNF' | translate }}</li>
+            <li><i class="pi pi-undo text-blue-500 mr-2"></i>{{ 'volunteer.undoActions' | translate }}</li>
           </ul>
         </div>
       </div>
@@ -48,7 +48,7 @@
         <div class="selection-icon">
           <i class="pi pi-calendar"></i>
         </div>
-        <div class="selection-label">Event:</div>
+        <div class="selection-label">{{ 'volunteer.event' | translate }}</div>
         <div class="selection-input">
           <brevet-tracks-for-event-selector
             [styleClass]="'w-full modern-selector'"
@@ -62,7 +62,7 @@
         <div class="selection-icon">
           <i class="pi pi-map-marker"></i>
         </div>
-        <div class="selection-label">Kontroll:</div>
+        <div class="selection-label">{{ 'volunteer.checkpoint' | translate }}</div>
         <div class="selection-input">
           <brevet-checkpoint-selector></brevet-checkpoint-selector>
         </div>
@@ -80,9 +80,9 @@
         </div>
         <div class="stat-content">
           <div class="stat-number">{{ stats.started || 0 }}</div>
-          <div class="stat-label">Startade</div>
+          <div class="stat-label">{{ 'volunteer.started' | translate }}</div>
           <div class="stat-percentage">
-            {{ getTotalParticipants(stats) > 0 ? (getTotalStartedParticipants(stats) / getTotalParticipants(stats) * 100).toFixed(1) : '0' }}% totalt
+            {{ getTotalParticipants(stats) > 0 ? (getTotalStartedParticipants(stats) / getTotalParticipants(stats) * 100).toFixed(1) : '0' }}% {{ 'volunteer.totalParticipants' | translate }}
           </div>
         </div>
       </div>
@@ -94,9 +94,9 @@
         </div>
         <div class="stat-content">
           <div class="stat-number">{{ stats.countpassed || 0 }}</div>
-          <div class="stat-label">Checkade in</div>
+          <div class="stat-label">{{ 'volunteer.checkedIn' | translate }}</div>
           <div class="stat-percentage">
-            {{ getStartedParticipants(stats) > 0 ? ((stats.countpassed || 0) / getStartedParticipants(stats) * 100).toFixed(1) : '0' }}% av kvarvarande
+            {{ getStartedParticipants(stats) > 0 ? ((stats.countpassed || 0) / getStartedParticipants(stats) * 100).toFixed(1) : '0' }}% {{ 'volunteer.remaining' | translate }}
           </div>
         </div>
       </div>
@@ -108,9 +108,9 @@
         </div>
         <div class="stat-content">
           <div class="stat-number">{{ stats.dnf || 0 }}</div>
-          <div class="stat-label">DNF</div>
+          <div class="stat-label">{{ 'volunteer.dnf' | translate }}</div>
           <div class="stat-percentage">
-            {{ getTotalParticipants(stats) > 0 ? ((stats.dnf || 0) / getTotalParticipants(stats) * 100).toFixed(1) : '0' }}% totalt
+            {{ getTotalParticipants(stats) > 0 ? ((stats.dnf || 0) / getTotalParticipants(stats) * 100).toFixed(1) : '0' }}% {{ 'volunteer.totalParticipants' | translate }}
           </div>
         </div>
       </div>
@@ -122,9 +122,9 @@
         </div>
         <div class="stat-content">
           <div class="stat-number">{{ stats.checkedout || 0 }}</div>
-          <div class="stat-label">Checkade ut</div>
+          <div class="stat-label">{{ 'volunteer.checkedOut' | translate }}</div>
           <div class="stat-percentage">
-            {{ getStartedParticipants(stats) > 0 ? ((stats.checkedout || 0) / getStartedParticipants(stats) * 100).toFixed(1) : '0' }}% av kvarvarande
+            {{ getStartedParticipants(stats) > 0 ? ((stats.checkedout || 0) / getStartedParticipants(stats) * 100).toFixed(1) : '0' }}% {{ 'volunteer.remaining' | translate }}
           </div>
         </div>
       </div>
@@ -136,9 +136,9 @@
         </div>
         <div class="stat-content">
           <div class="stat-number">{{ (stats.countpassed || 0) - (stats.checkedout || 0) }}</div>
-          <div class="stat-label">Vid kontroll</div>
+          <div class="stat-label">{{ 'volunteer.atCheckpoint' | translate }}</div>
           <div class="stat-percentage">
-            {{ getStartedParticipants(stats) > 0 ? (((stats.countpassed || 0) - (stats.checkedout || 0)) / getStartedParticipants(stats) * 100).toFixed(1) : '0' }}% av kvarvarande
+            {{ getStartedParticipants(stats) > 0 ? (((stats.countpassed || 0) - (stats.checkedout || 0)) / getStartedParticipants(stats) * 100).toFixed(1) : '0' }}% {{ 'volunteer.remaining' | translate }}
           </div>
         </div>
       </div>
@@ -150,9 +150,9 @@
         </div>
         <div class="stat-content">
           <div class="stat-number">{{ stats.expected || 0 }}</div>
-          <div class="stat-label">Förväntade</div>
+          <div class="stat-label">{{ 'volunteer.expected' | translate }}</div>
           <div class="stat-percentage">
-            {{ getExpectedPercentage(stats) }}% av {{ getExpectedPercentageText() }}
+            {{ getExpectedPercentage(stats) }}% {{ 'volunteer.expectedPercentage' | translate }} {{ getExpectedPercentageText() }}
           </div>
         </div>
       </div>
@@ -166,8 +166,8 @@
         <i class="pi pi-list"></i>
       </div>
       <div class="header-text">
-        <h3>Deltagare</h3>
-        <p>Hantera deltagare vid din kontroll</p>
+        <h3>{{ 'volunteer.participants' | translate }}</h3>
+        <p>{{ 'volunteer.manageParticipants' | translate }}</p>
       </div>
     </div>
     <div class="card-content">

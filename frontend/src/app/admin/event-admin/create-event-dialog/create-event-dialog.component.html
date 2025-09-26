@@ -5,7 +5,7 @@
     <div class="col-12 field">
       <label for="title" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-tag mr-2"></i>
-        Titel
+        {{ 'event.title' | translate }}
       </label>
       <input
         pInputText
@@ -13,13 +13,13 @@
         name="title"
         #title="ngModel"
         [(ngModel)]="eventForm.title"
-        placeholder="Ex: Månskensbrevet"
+        [placeholder]="'event.titlePlaceholder' | translate"
         required
         class="w-full"
         [class.ng-invalid]="title.invalid && (title.dirty || title.touched)"
       />
       <small *ngIf="title.invalid && (title.dirty || title.touched)" class="p-error block mt-1">
-        Titel krävs
+        {{ 'event.titleRequired' | translate }}
       </small>
     </div>
 
@@ -27,7 +27,7 @@
     <div class="col-12 field">
       <label for="startdate" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-calendar mr-2"></i>
-        Startdatum
+        {{ 'event.startDate' | translate }}
       </label>
       <p-calendar
         id="startdate"
@@ -47,7 +47,7 @@
     <div class="col-12 field">
       <label for="enddate" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-calendar mr-2"></i>
-        Slutdatum
+        {{ 'event.endDate' | translate }}
       </label>
       <p-calendar
         id="enddate"
@@ -68,7 +68,7 @@
     <div class="col-12 field">
       <label class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-tags mr-2"></i>
-        Status
+        {{ 'event.status' | translate }}
       </label>
       <div class="grid">
         <div *ngFor="let category of categories" class="col-12 md:col-6">
@@ -91,7 +91,7 @@
     <div class="col-12 field">
       <label for="description" class="block mb-2 font-medium text-gray-900">
         <i class="pi pi-file-edit mr-2"></i>
-        Beskrivning
+        {{ 'event.description' | translate }}
       </label>
       <textarea
         pInputTextarea
@@ -100,7 +100,7 @@
         name="description"
         rows="5"
         autoResize="autoResize"
-        placeholder="Ange evenemangsbeskrivning..."
+        [placeholder]="'event.descriptionPlaceholder' | translate"
         class="w-full">
       </textarea>
     </div>
@@ -109,14 +109,14 @@
     <div class="col-12 flex justify-content-end gap-2 mt-4">
       <p-button
         icon="pi pi-times"
-        label="Avbryt"
+        [label]="'event.cancel' | translate"
         (click)="cancel()"
         severity="secondary"
         [text]="true">
       </p-button>
       <p-button
         icon="pi pi-check"
-        label="Spara"
+        [label]="'event.save' | translate"
         type="submit"
         [disabled]="!eventFormName.valid">
       </p-button>

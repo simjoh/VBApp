@@ -6,7 +6,7 @@
       <div class="flex align-items-center">
         <div class="mr-3">
           <h3 class="m-0 text-900">{{ randonneurs.choosenControl }}</h3>
-          <p class="m-0 text-500 text-sm">Vald kontroll</p>
+          <p class="m-0 text-500 text-sm">{{ 'volunteer.selectedCheckpoint' | translate }}</p>
         </div>
       </div>
 
@@ -16,7 +16,7 @@
         <input pInputText
                type="text"
                (input)="dt1.filterGlobal($event.target.value, 'contains')"
-               placeholder="Sök deltagare..."
+               [placeholder]="'volunteer.searchParticipants' | translate"
                class="w-full" />
       </div>
     </div>
@@ -29,7 +29,7 @@
            [paginator]="true"
            [rows]="20"
            [showCurrentPageReport]="true"
-           currentPageReportTemplate="Visar {first} till {last} av {totalRecords} deltagare"
+           [currentPageReportTemplate]="'volunteer.showingResults' | translate"
            [rowsPerPageOptions]="[20,40,60,80,100,120]"
            [value]="randonneurs.randonnerurs"
            styleClass="p-datatable-sm p-datatable-gridlines modern-table">
@@ -38,31 +38,31 @@
       <tr>
         <th class="text-center" style="width: 80px;">
           <div class="flex flex-column align-items-center">
-            <span class="font-semibold">Startnr</span>
+            <span class="font-semibold">{{ 'volunteer.startNumber' | translate }}</span>
           </div>
         </th>
         <th style="width: 200px;">
           <div class="flex flex-column">
-            <span class="font-semibold">Namn</span>
-            <span class="text-500 text-sm">Efternamn, Förnamn</span>
+            <span class="font-semibold">{{ 'volunteer.name' | translate }}</span>
+            <span class="text-500 text-sm">{{ 'volunteer.lastNameFirstName' | translate }}</span>
           </div>
         </th>
         <th style="width: 150px;">
           <div class="flex flex-column">
-            <span class="font-semibold">Tid</span>
-            <span class="text-500 text-sm">Passerade</span>
+            <span class="font-semibold">{{ 'volunteer.time' | translate }}</span>
+            <span class="text-500 text-sm">{{ 'volunteer.passed' | translate }}</span>
           </div>
         </th>
         <th class="text-center" style="width: 120px;">
           <div class="flex flex-column align-items-center">
-            <span class="font-semibold">Status</span>
-            <span class="text-500 text-sm">Checka in/ut</span>
+            <span class="font-semibold">{{ 'volunteer.status' | translate }}</span>
+            <span class="text-500 text-sm">{{ 'volunteer.checkInOut' | translate }}</span>
           </div>
         </th>
         <th class="text-center" style="width: 100px;">
           <div class="flex flex-column align-items-center">
-            <span class="font-semibold">Åtgärder</span>
-            <span class="text-500 text-sm">DNF</span>
+            <span class="font-semibold">{{ 'volunteer.actions' | translate }}</span>
+            <span class="text-500 text-sm">{{ 'volunteer.dnf' | translate }}</span>
           </div>
         </th>
       </tr>
@@ -92,7 +92,7 @@
             <span class="font-medium">{{ participant.passededDateTime | dateTimePrettyPrint }}</span>
             <span *ngIf="participant.volonteer_checkin === true && participant.passed === true"
                   class="text-blue-500 text-sm">
-              <i class="pi pi-user mr-1"></i>Volontär
+              <i class="pi pi-user mr-1"></i>{{ 'volunteer.volunteer' | translate }}
             </span>
           </div>
         </td>
@@ -103,7 +103,7 @@
             <button pButton
                     [disabled]="participant.dnf || participant.has_checkouted"
                     (click)="checkin(participant, $event)"
-                    [label]="participant.passed === true ? 'Ångra Check-in' : 'Check-in'"
+                    [label]="participant.passed === true ? ('volunteer.undoCheckIn' | translate) : ('volunteer.checkIn' | translate)"
                     [icon]="participant.passed === true ? 'pi pi-undo' : 'pi pi-check'"
                     [class]="participant.passed === true ? 'p-button-outlined p-button-warning p-button-sm' : 'p-button-success p-button-sm'"
                     class="w-full">
@@ -113,7 +113,7 @@
             <button pButton
                     [disabled]="participant.dnf || participant.passed === false"
                     (click)="checkout(participant, $event)"
-                    [label]="participant.has_checkouted === true ? 'Ångra Check-out' : 'Check-out'"
+                    [label]="participant.has_checkouted === true ? ('volunteer.undoCheckOut' | translate) : ('volunteer.checkOut' | translate)"
                     [icon]="participant.has_checkouted === true ? 'pi pi-undo' : 'pi pi-sign-out'"
                     [class]="participant.has_checkouted === true ? 'p-button-outlined p-button-warning p-button-sm' : 'p-button-info p-button-sm'"
                     class="w-full">
@@ -124,7 +124,7 @@
         <td class="text-center">
           <button pButton
                   (click)="setdnf(participant, $event)"
-                  [label]="participant.dnf === true ? 'Ångra DNF' : 'DNF'"
+                  [label]="participant.dnf === true ? ('volunteer.undoDNF' | translate) : ('volunteer.dnf' | translate)"
                   [icon]="participant.dnf === true ? 'pi pi-undo' : 'pi pi-times'"
                   [class]="participant.dnf === true ? 'p-button-outlined p-button-warning p-button-sm' : 'p-button-outlined p-button-danger p-button-sm'"
                   class="w-full">
@@ -138,8 +138,8 @@
         <td colspan="5" class="text-center p-4">
           <div class="flex flex-column align-items-center">
             <i class="pi pi-users text-4xl text-400 mb-3"></i>
-            <span class="text-500">Inga deltagare hittades</span>
-            <span class="text-400 text-sm">Välj en kontroll för att se deltagare</span>
+            <span class="text-500">{{ 'volunteer.noParticipantsFound' | translate }}</span>
+            <span class="text-400 text-sm">{{ 'volunteer.selectCheckpointToSee' | translate }}</span>
           </div>
         </td>
       </tr>

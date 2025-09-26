@@ -3,11 +3,11 @@
   <div class="section">
     <h3 class="section-title">
       <i class="pi pi-calendar"></i>
-      Arrangemangsgrupp
+      {{ 'trackInfo.eventGroup' | translate }}
     </h3>
 
             <div class="field-group">
-      <label>Välj arrangemangsgrupp <span class="required-asterisk">*</span></label>
+      <label>{{ 'trackInfo.selectEventGroup' | translate }} <span class="required-asterisk">*</span></label>
       <brevet-event-selector (trackChange)="addEvent($event)"></brevet-event-selector>
     </div>
   </div>
@@ -16,16 +16,16 @@
   <div class="section">
     <h3 class="section-title">
       <i class="pi pi-users"></i>
-      Arrangör
+      {{ 'trackInfo.organizer' | translate }}
     </h3>
 
     <div class="field-group">
-      <label>Arrangör <span class="required-asterisk">*</span></label>
+      <label>{{ 'trackInfo.organizer' | translate }} <span class="required-asterisk">*</span></label>
       <brevet-organizer-selector
         (organizerChange)="onOrganizerChange($event)"
         (organizerObjectChange)="onOrganizerObjectChange($event)"
         [showPreview]="false"
-        placeholder="Välj arrangör"
+        [placeholder]="'trackInfo.selectOrganizer' | translate"
         class="form-input">
       </brevet-organizer-selector>
     </div>
@@ -35,57 +35,57 @@
   <div class="section">
     <h3 class="section-title">
       <i class="pi pi-info-circle"></i>
-      Grundläggande information
+      {{ 'trackInfo.basicInformation' | translate }}
     </h3>
 
     <div class="form-grid">
       <div class="field-group">
-        <label>Arrangemangsnnam <span class="required-asterisk">*</span></label>
+        <label>{{ 'trackInfo.eventName' | translate }} <span class="required-asterisk">*</span></label>
         <input
           (blur)="add()"
           (input)="onTrackNameChange()"
           [(ngModel)]="model.trackname"
-          pTooltip="Banans namn tex MSR 1200"
+          [pTooltip]="'trackInfo.eventNameTooltip' | translate"
           type="text"
           id="trackname"
           pInputText
-          placeholder="t.ex. BRM 300 Bönhamn"
+          [placeholder]="'trackInfo.eventNamePlaceholder' | translate"
           class="form-input">
       </div>
 
       <div class="field-group">
-        <label>Distans (km) <span class="required-asterisk">*</span></label>
+        <label>{{ 'trackInfo.distance' | translate }} <span class="required-asterisk">*</span></label>
         <p-dropdown
           [options]="distanceOptions"
           [(ngModel)]="selectedDistance"
           (onChange)="onDistanceChange($event)"
-          placeholder="Välj eller skriv egen distans"
+          [placeholder]="'trackInfo.distancePlaceholder' | translate"
           [editable]="true"
           optionLabel="label"
           optionValue="value"
           class="form-input"
-          pTooltip="Välj en standarddistans eller skriv egen">
+          [pTooltip]="'trackInfo.distanceTooltip' | translate">
         </p-dropdown>
       </div>
     </div>
 
     <div class="form-grid">
       <div class="field-group">
-        <label>Typ av arrangemang <span class="required-asterisk">*</span></label>
+        <label>{{ 'trackInfo.eventType' | translate }} <span class='required-asterisk'>*</span></label>
         <p-dropdown
           [options]="eventTypeOptions"
           [(ngModel)]="selectedEventType"
           (onChange)="onEventTypeChange()"
-          placeholder="Välj typ av arrangemang"
+          [placeholder]="'trackInfo.eventTypePlaceholder' | translate"
           optionLabel="label"
           optionValue="value"
           class="form-input"
-          pTooltip="Välj typ av arrangemang">
+          [pTooltip]="'trackInfo.eventTypeTooltip' | translate">
         </p-dropdown>
       </div>
 
       <div class="field-group">
-        <label>Höjdskillnad (m)</label>
+        <label>{{ 'trackInfo.elevation' | translate }}</label>
         <input
           [(ngModel)]="model.elevation"
           (blur)="add()"
@@ -94,40 +94,40 @@
           min="0"
           max="99999"
           step="1"
-          placeholder="1700"
+          [placeholder]="'trackInfo.elevationPlaceholder' | translate"
           pInputText
           class="form-input"
-          pTooltip="Total höjdskillnad i meter">
+          [pTooltip]="'trackInfo.elevationTooltip' | translate">
       </div>
     </div>
 
     <div class="form-grid">
       <div class="field-group">
-        <label>Startdatum <span class="required-asterisk">*</span></label>
+        <label>{{ 'trackInfo.startDate' | translate }} <span class='required-asterisk'>*</span></label>
         <p-calendar
           [(ngModel)]="model.startdate"
           (onBlur)="add()"
           (onSelect)="onStartDateChange()"
           dateFormat="yy-mm-dd"
-          placeholder="YYYY-MM-DD"
+          [placeholder]="'trackInfo.startDatePlaceholder' | translate"
           showIcon="true"
           locale="sv"
-          pTooltip="Om fältet lämnas tomt sätt startdatum automatiskt till nästkommande dag"
+          [pTooltip]="'trackInfo.startDateTooltip' | translate"
           class="form-input">
         </p-calendar>
       </div>
 
       <div class="field-group">
-        <label>Starttid <span class="required-asterisk">*</span></label>
+        <label>{{ 'trackInfo.startTime' | translate }} <span class='required-asterisk'>*</span></label>
         <p-calendar
           [(ngModel)]="model.starttime"
           (onBlur)="add()"
           (onSelect)="onStartTimeChange()"
           timeOnly="true"
           hourFormat="24"
-          placeholder="07:00"
+          [placeholder]="'trackInfo.startTimePlaceholder' | translate"
           showIcon="true"
-          pTooltip="24-timmarsformat, t.ex. 07:00"
+          [pTooltip]="'trackInfo.startTimeTooltip' | translate"
           class="form-input">
         </p-calendar>
       </div>
@@ -138,59 +138,59 @@
   <div class="section">
     <h3 class="section-title">
       <i class="pi pi-align-left"></i>
-      Beskrivning och länkar
+      {{ 'trackInfo.descriptionAndLinks' | translate }}
     </h3>
 
     <div class="field-group">
-      <label>Beskrivning</label>
+      <label>{{ 'trackInfo.description' | translate }}</label>
       <textarea
         [(ngModel)]="model.description"
         (blur)="add()"
         (input)="onDescriptionChange()"
         pInputText
         rows="3"
-        placeholder="Beskriv arrangemanget..."
+        [placeholder]="'trackInfo.descriptionPlaceholder' | translate"
         class="form-input">
       </textarea>
     </div>
 
     <div class="form-grid">
       <div class="field-group">
-        <label>Startplats</label>
+        <label>{{ 'trackInfo.startLocation' | translate }}</label>
         <input
           [(ngModel)]="model.startLocation"
           (blur)="add()"
           (input)="onStartLocationChange()"
           type="text"
           pInputText
-          placeholder="t.ex. ICA Kvantum, Norrköping"
+          [placeholder]="'trackInfo.startLocationPlaceholder' | translate"
           class="form-input">
       </div>
 
       <div class="field-group">
-        <label>Betalning</label>
+        <label>{{ 'trackInfo.payment' | translate }}</label>
         <input
           [(ngModel)]="model.payment"
           (blur)="add()"
           (input)="onPaymentChange()"
           type="text"
           pInputText
-          placeholder="t.ex. Swish 123 456 78 90"
+          [placeholder]="'trackInfo.paymentPlaceholder' | translate"
           class="form-input">
       </div>
     </div>
 
     <div class="field-group">
-      <label>Länk till banan</label>
+      <label>{{ 'trackInfo.trackLink' | translate }}</label>
       <input
         (blur)="add()"
         (input)="onLinkChange()"
         [(ngModel)]="model.link"
-        pTooltip="Länk till banan på Strava"
+        [pTooltip]="'trackInfo.trackLinkTooltip' | translate"
         type="url"
         id="linktostrava"
         pInputText
-        placeholder="https://www.ridewithgps.com/routes/..."
+        [placeholder]="'trackInfo.trackLinkPlaceholder' | translate"
         class="form-input">
     </div>
   </div>
@@ -199,25 +199,25 @@
   <div class="section">
     <h3 class="section-title">
       <i class="pi pi-cog"></i>
-      Inställningar
+      {{ 'trackInfo.settings' | translate }}
     </h3>
 
     <div class="field-group">
-      <label>Max deltagare</label>
+      <label>{{ 'trackInfo.maxParticipants' | translate }}</label>
       <input
         type="number"
         min="1"
         max="9999"
         step="1"
-        placeholder="100"
+        [placeholder]="'100'"
         pInputText
         class="form-input"
-        pTooltip="Maximalt antal deltagare">
+        [pTooltip]="'trackInfo.maxParticipantsTooltip' | translate">
     </div>
 
     <div class="form-grid">
       <div class="field-group">
-        <label>Anmälan öppnar</label>
+        <label>{{ 'trackInfo.registrationOpens' | translate }}</label>
         <p-calendar
           [(ngModel)]="model.registration_opens"
           (onSelect)="onRegistrationOpensChange()"
@@ -225,16 +225,16 @@
           dateFormat="yy-mm-dd"
           [showTime]="true"
           hourFormat="24"
-          placeholder="YYYY-MM-DD HH:MM"
+          [placeholder]="'trackInfo.registrationOpensPlaceholder' | translate"
           showIcon="true"
           locale="sv"
-          pTooltip="Datum och tid när anmälan öppnar"
+          [pTooltip]="'trackInfo.registrationOpensTooltip' | translate"
           class="form-input">
         </p-calendar>
       </div>
 
       <div class="field-group">
-        <label>Anmälan stänger</label>
+        <label>{{ 'trackInfo.registrationCloses' | translate }}</label>
         <p-calendar
           [(ngModel)]="model.registration_closes"
           (onSelect)="onRegistrationClosesChange()"
@@ -242,10 +242,10 @@
           dateFormat="yy-mm-dd"
           [showTime]="true"
           hourFormat="24"
-          placeholder="YYYY-MM-DD HH:MM"
+          [placeholder]="'trackInfo.registrationClosesPlaceholder' | translate"
           showIcon="true"
           locale="sv"
-          pTooltip="Datum och tid när anmälan stänger"
+          [pTooltip]="'trackInfo.registrationClosesTooltip' | translate"
           class="form-input">
         </p-calendar>
       </div>
@@ -258,18 +258,18 @@
           [(ngModel)]="stripeEnabled"
           (onChange)="onStripeChange()"
           [binary]="true"
-          label="Stripe kortbetalning">
+          [label]="'trackInfo.stripePayment' | translate">
         </p-checkbox>
-        <span class="option-desc">Aktivera säker kortbetalning</span>
+        <span class="option-desc">{{ 'trackInfo.stripePaymentDesc' | translate }}</span>
       </div>
 
       <div class="option-item">
         <p-checkbox
           inputId="email-confirmation"
           value="email"
-          label="E-postbekräftelse">
+          [label]="'trackInfo.emailConfirmation' | translate">
         </p-checkbox>
-        <span class="option-desc">Skicka bekräftelse vid anmälan</span>
+        <span class="option-desc">{{ 'trackInfo.emailConfirmationDesc' | translate }}</span>
       </div>
     </div>
   </div>

@@ -19,6 +19,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
 import { TooltipModule } from 'primeng/tooltip';
+import { TranslationPipe } from '../shared/pipes/translation.pipe';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import { TooltipModule } from 'primeng/tooltip';
     ProgressSpinnerModule,
     ButtonModule,
     DropdownModule,
-    TooltipModule
+    TooltipModule,
+    TranslationPipe
   ],
   exports: [AdminComponent]
 })

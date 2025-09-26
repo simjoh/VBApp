@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject } from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";
 import { Calendar } from 'primeng/calendar';
+import { TranslationService } from '../../../core/services/translation.service';
 
 @Component({
   selector: 'brevet-edit-checkpoint-time-dialog',
@@ -9,6 +10,8 @@ import { Calendar } from 'primeng/calendar';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditCheckpointTimeDialogComponent implements OnInit {
+  private translationService = inject(TranslationService);
+
   checkpointTime: Date;
   checkpointAddress: string = '';
   checkpointPlace: string = '';
@@ -17,7 +20,7 @@ export class EditCheckpointTimeDialogComponent implements OnInit {
   @ViewChild(Calendar) calendar: Calendar;
 
   get headerText(): string {
-    return this.isCheckout ? 'Ändra utcheckningtid' : 'Ändra incheckningstid';
+    return this.isCheckout ? this.translationService.translate('checkpointDialog.changeCheckoutTime') : this.translationService.translate('checkpointDialog.changeCheckinTime');
   }
 
   constructor(public ref: DynamicDialogRef, public config: DynamicDialogConfig) {}
