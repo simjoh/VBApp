@@ -167,19 +167,28 @@
         </div>
         <div class="card-content">
           <div class="tracks-list" *ngIf="stats.topTracks.length > 0; else noTracks">
-            <div class="track-item" *ngFor="let track of stats.topTracks; let i = index">
-              <div class="track-rank">{{i + 1}}</div>
-              <div class="track-info">
-                <span class="track-name">{{track.track_name}}</span>
-                <div class="track-details">
-                  <span class="track-organizer">{{track.organizer_name || 'No organizer'}}</span>
-                  <span class="track-dates">
-                    {{track.first_registration | date:'d MMM'}} - {{track.last_registration | date:'d MMM yyyy'}}
-                  </span>
-                </div>
+            <div class="track-item"
+                 *ngFor="let track of stats.topTracks; let i = index"
+                 (click)="viewTrackDetails(track)">
+
+              <div class="track-header">
+                <span class="rank-number">{{i + 1}}.</span>
+                <h3 class="track-name">{{track.track_name}}</h3>
               </div>
+
+              <div class="track-meta">
+                <span class="organizer">{{track.organizer_name || 'Ingen arrangör'}}</span>
+                <span class="separator">•</span>
+                <span class="dates">
+                  {{track.first_registration | date:'d MMM'}} - {{track.last_registration | date:'d MMM yyyy'}}
+                </span>
+              </div>
+
               <div class="track-stats">
-                        <span class="participant-count">{{track.participant_count}} deltagare</span>
+                <div class="stat-group">
+                  <span class="stat-label">Deltagare</span>
+                  <span class="stat-value">{{track.participant_count}}</span>
+                </div>
               </div>
             </div>
           </div>

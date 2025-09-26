@@ -62,8 +62,19 @@
   bottom: 0;
   z-index: 999;
   overflow-y: auto;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+
+  @media (max-width: 1024px) {
+    transform: translateX(-100%);
+    width: 100%;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+
+    &.open {
+      transform: translateX(0);
+      animation: slideInFromLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
 
   @media (max-width: 768px) {
     transform: translateX(-100%);
@@ -103,6 +114,44 @@
     font-weight: 700;
     color: white;
     flex: 1;
+  }
+
+  .sidebar-close-btn {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: none;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active {
+      transform: scale(1.05);
+    }
+
+    i {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    @media (max-width: 1024px) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   .sidebar-language-selector {
@@ -355,13 +404,133 @@
   margin-left: 280px;
   background: var(--surface-ground);
   overflow-y: auto;
+  transition: margin-left 0.3s ease;
 
   &.full-width {
     margin-left: 0;
   }
 
+  @media (max-width: 1200px) {
+    margin-left: 280px;
+  }
+
+  @media (max-width: 1024px) {
+    margin-left: 0;
+  }
+
   @media (max-width: 768px) {
     margin-left: 0;
+  }
+}
+
+// Slide-in Menu Trigger
+.slide-menu-trigger {
+  position: fixed;
+  top: 50%;
+  left: -0.5rem;
+  transform: translateY(-50%) rotate(90deg);
+  z-index: 1001;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-600) 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: none;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 50px;
+
+  &:hover {
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+    transform: translateY(-50%) translateY(-2px) scale(1.02) rotate(90deg);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: translateY(-50%) translateY(-1px) scale(1.01) rotate(90deg);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .slide-menu-icon {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5px;
+    width: 14px;
+    height: 10px;
+    justify-content: center;
+    align-items: center;
+    transform: rotate(-90deg);
+
+    span {
+      display: block;
+      width: 100%;
+      height: 1px;
+      background: white;
+      border-radius: 1px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: center;
+    }
+  }
+
+
+  &:hover .slide-menu-icon span {
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  @media (max-width: 1024px) {
+    display: flex;
+  }
+
+  // Add a subtle pulse animation
+  &::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-600) 100%);
+    border-radius: 14px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover::before {
+    opacity: 0.3;
+  }
+}
+
+// Slide-in animation for sidebar
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Sidebar Backdrop
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  display: none;
+
+  @media (max-width: 1024px) {
+    display: block;
   }
 }
 
@@ -376,8 +545,20 @@
   padding: 2rem;
   min-height: 100vh;
 
+  @media (max-width: 1200px) {
+    padding: 1.5rem;
+  }
+
+  @media (max-width: 1024px) {
+    padding: 1.25rem;
+  }
+
   @media (max-width: 768px) {
     padding: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
   }
 }
 

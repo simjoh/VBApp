@@ -13,6 +13,7 @@ import { AuthService } from '../auth/auth.service';
 export class SidebarComponent implements OnInit {
   menuItems$: Observable<SidebarMenuItem[]>;
   isAdminUser$: Observable<boolean>;
+  sidebarOpen$: Observable<boolean>;
 
   constructor(
     private sidebarService: SidebarService,
@@ -20,6 +21,7 @@ export class SidebarComponent implements OnInit {
   ) {
     // Get menu items immediately and also as observable for updates
     this.menuItems$ = this.sidebarService.getMenuItemsForCurrentUser();
+    this.sidebarOpen$ = this.sidebarService.sidebarOpen$;
     this.isAdminUser$ = this.authService.$auth$.pipe(
       map(user => {
         if (!user) return false;
@@ -36,5 +38,13 @@ export class SidebarComponent implements OnInit {
 
   hasChildren(item: SidebarMenuItem): boolean {
     return !!(item.children && item.children.length > 0);
+  }
+
+  toggleSidebar(): void {
+    this.sidebarService.toggleSidebar();
+  }
+
+  closeSidebar(): void {
+    this.sidebarService.closeSidebar();
   }
 }

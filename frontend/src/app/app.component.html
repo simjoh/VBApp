@@ -13,6 +13,23 @@
 
       <!-- Admin Layout -->
       <div class="admin-layout" [class.competitor-layout]="!(shouldShowSidebar$ | async)">
+          <!-- Slide-in Menu Trigger - Only visible on smaller screens -->
+          <div class="slide-menu-trigger" 
+               *ngIf="shouldShowSidebar$ | async" 
+               (click)="toggleSidebar()">
+            <div class="slide-menu-icon">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+
+        <!-- Sidebar Backdrop - Only visible on smaller screens when sidebar is open -->
+        <div class="sidebar-backdrop"
+             *ngIf="(shouldShowSidebar$ | async) && (sidebarOpen$ | async)"
+             (click)="toggleSidebar()">
+        </div>
+
         <!-- Sidebar Navigation - For Admin and Volunteer Users -->
         <brevet-sidebar *ngIf="shouldShowSidebar$ | async"></brevet-sidebar>
 

@@ -21,6 +21,9 @@ export interface SidebarMenuItem {
 export class SidebarService {
   private menuItemsSubject = new BehaviorSubject<SidebarMenuItem[]>([]);
   public menuItems$ = this.menuItemsSubject.asObservable();
+  
+  private sidebarOpenSubject = new BehaviorSubject<boolean>(false);
+  public sidebarOpen$ = this.sidebarOpenSubject.asObservable();
 
   constructor(
     private authService: AuthService,
@@ -274,5 +277,18 @@ export class SidebarService {
     // Force refresh the sidebar menu items
     console.log('SidebarService: Force refreshing sidebar');
     this.checkUserFromStorage();
+  }
+
+  public toggleSidebar(): void {
+    const currentState = this.sidebarOpenSubject.value;
+    this.sidebarOpenSubject.next(!currentState);
+  }
+
+  public openSidebar(): void {
+    this.sidebarOpenSubject.next(true);
+  }
+
+  public closeSidebar(): void {
+    this.sidebarOpenSubject.next(false);
   }
 }

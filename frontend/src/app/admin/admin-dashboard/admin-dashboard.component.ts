@@ -221,4 +221,89 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       this.router.navigate(['/admin/participant']);
     }
   }
+
+  getParticipationClass(participantCount: number): string {
+    if (participantCount >= 10) {
+      return 'high-participation';
+    } else if (participantCount >= 5) {
+      return 'medium-participation';
+    } else {
+      return 'low-participation';
+    }
+  }
+
+  getTrackStatus(track: any): string {
+    const now = new Date();
+    const firstReg = new Date(track.first_registration);
+    const lastReg = new Date(track.last_registration);
+
+    if (now < firstReg) {
+      return 'Upcoming';
+    } else if (now >= firstReg && now <= lastReg) {
+      return 'Active';
+    } else {
+      return 'Completed';
+    }
+  }
+
+  getTrackStatusClass(track: any): string {
+    const now = new Date();
+    const firstReg = new Date(track.first_registration);
+    const lastReg = new Date(track.last_registration);
+
+    if (now < firstReg) {
+      return 'status-upcoming';
+    } else if (now >= firstReg && now <= lastReg) {
+      return 'status-active';
+    } else {
+      return 'status-completed';
+    }
+  }
+
+  getTrackProgress(track: any): number {
+    const now = new Date();
+    const firstReg = new Date(track.first_registration);
+    const lastReg = new Date(track.last_registration);
+    const totalDuration = lastReg.getTime() - firstReg.getTime();
+    const elapsed = now.getTime() - firstReg.getTime();
+
+    if (now < firstReg) {
+      return 0;
+    } else if (now > lastReg) {
+      return 100;
+    } else {
+      return Math.round((elapsed / totalDuration) * 100);
+    }
+  }
+
+  // Simplified UX methods
+  getTrackType(trackName: string): string {
+    if (trackName.includes('BRM')) {
+      return 'BRM';
+    } else if (trackName.match(/\d+/)) {
+      const match = trackName.match(/(\d+)/);
+      return match ? `${match[1]}km` : 'Distance';
+    }
+    return 'Track';
+  }
+
+  getTrackTypeClass(trackName: string): string {
+    if (trackName.includes('BRM')) {
+      return 'brm';
+    } else if (trackName.match(/\d+/)) {
+      return 'distance';
+    }
+    return '';
+  }
+
+  viewTrackDetails(track: any, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    // Navigate to track details or show modal
+    console.log('Viewing track details:', track);
+    // You can implement navigation or modal opening here
+    this.router.navigate(['/admin/banor', track.track_uid]);
+  }
 }

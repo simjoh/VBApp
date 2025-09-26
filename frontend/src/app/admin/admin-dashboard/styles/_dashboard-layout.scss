@@ -58,10 +58,16 @@
     margin-bottom: 2rem;
 
     &:not(.two-column) {
-      grid-template-columns: 2fr 1fr;
+      grid-template-columns: 1.5fr 1fr;
+
+      @media (max-width: 1200px) {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+      }
 
       @media (max-width: 1024px) {
         grid-template-columns: 1fr;
+        gap: 1.5rem;
       }
     }
 

@@ -86,6 +86,7 @@ export class AppComponent implements OnInit, OnDestroy{
   // Sidebar visibility and menu items
   shouldShowSidebar$ = this.sidebarService.shouldShowSidebar();
   sidebarMenuItems$ = this.sidebarService.getMenuItemsForCurrentUser();
+  sidebarOpen$ = this.sidebarService.sidebarOpen$;
 
   constructor(
     private primengConfig: PrimeNGConfig,
@@ -101,6 +102,10 @@ export class AppComponent implements OnInit, OnDestroy{
 
   logout() {
     this.authService.logoutUser();
+  }
+
+  toggleSidebar() {
+    this.sidebarService.toggleSidebar();
   }
 
   ngOnInit() {

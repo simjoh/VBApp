@@ -1,6 +1,9 @@
-<div class="admin-sidebar">
+<div class="admin-sidebar" [class.open]="sidebarOpen$ | async">
   <div class="sidebar-content">
     <div class="sidebar-header">
+      <button class="sidebar-close-btn" (click)="closeSidebar()" *ngIf="(sidebarOpen$ | async)">
+        <i class="pi pi-times"></i>
+      </button>
       <img src="./assets/ebrevet-prod.svg" height="50" width="60" class="sidebar-logo" alt="Ebrevet logotyp">
       <h3>{{ 'admin.dashboard' | translate }}</h3>
       <div class="sidebar-language-selector">
@@ -14,7 +17,8 @@
           <a *ngIf="!hasChildren(item)"
              [routerLink]="item.routerLink"
              routerLinkActive="active"
-             class="nav-item">
+             class="nav-item"
+             (click)="closeSidebar()">
             <i [class]="item.icon"></i>
             <span>{{ item.label | translate }}</span>
           </a>
@@ -30,7 +34,8 @@
                  [routerLink]="child.routerLink"
                  routerLinkActive="active"
                  [routerLinkActiveOptions]="{exact: true}"
-                 [class]="'nav-item sub-item' + (child.cssClass ? ' ' + child.cssClass : '')">
+                 [class]="'nav-item sub-item' + (child.cssClass ? ' ' + child.cssClass : '')"
+                 (click)="closeSidebar()">
                 <i [class]="child.icon"></i>
                 <span>{{ child.label | translate }}</span>
                 <span *ngIf="child.cssClass === 'coming-soon'" class="coming-soon-badge">Coming Soon</span>
@@ -49,7 +54,7 @@
 
       <!-- Logout Section -->
       <div class="sidebar-footer">
-        <button (click)="logout()" class="logout-button">
+        <button (click)="logout(); closeSidebar()" class="logout-button">
           <i class="pi pi-sign-out"></i>
           <span>{{ 'nav.logout' | translate }}</span>
         </button>

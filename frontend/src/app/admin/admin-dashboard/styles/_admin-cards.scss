@@ -10,22 +10,43 @@
   .card-header {
     padding: 1.5rem;
     border-bottom: 1px solid var(--surface-border);
-    background: var(--surface-50);
+    background: linear-gradient(135deg, var(--surface-50) 0%, var(--surface-100) 100%);
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-300) 100%);
+    }
 
     h3 {
       margin: 0;
       font-size: 1.25rem;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      &::before {
+        content: '📊';
+        font-size: 1.1rem;
+      }
     }
 
     p {
-      margin: 0.25rem 0 0 0;
+      margin: 0.5rem 0 0 0;
       color: var(--text-color-secondary);
       font-size: 0.9rem;
+      font-weight: 500;
+      line-height: 1.4;
     }
 
     .chart-controls,
