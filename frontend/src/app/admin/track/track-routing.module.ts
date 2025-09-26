@@ -13,6 +13,9 @@ const routes: Routes = [
       { path: 'brevet-track-upload', component:  UploadTrackComponent},
       { path: 'brevet-track-list', component:  TrackListComponent},
       { path: 'brevet-track-builder', component:  TrackBuilderComponent},
+      { path: 'brevet-track-create', component:  TrackBuilderComponent},
+      { path: 'brevet-track-gpx-import', component:  TrackBuilderComponent},
+      { path: 'brevet-track-copy', component:  TrackBuilderComponent},
       { path: '**', redirectTo: 'brevet-track-list'},
     ]
   }

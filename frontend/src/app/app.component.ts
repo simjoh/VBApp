@@ -7,12 +7,13 @@ import {AuthService} from "./core/auth/auth.service";
 import {interval, Subscription, Observable} from "rxjs";
 import {switchMap, map} from "rxjs/operators";
 import {LanguageService} from "./core/services/language.service";
+import {SidebarService, SidebarMenuItem} from "./core/sidebar/sidebar.service";
 
 @Component({
   selector: 'brevet-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class AppComponent implements OnInit, OnDestroy{
   title = 'Västerbottenbrevet';
@@ -24,12 +25,67 @@ export class AppComponent implements OnInit, OnDestroy{
   $authenticated = this.authenticatedservice.authenticated$;
 
   // Check if user is admin
-  isAdminUser$: Observable<boolean> = this.authService.$auth$.pipe(
-    map(user => {
-      if (!user) return false;
-      return user.roles.includes('ADMIN') || user.roles.includes('SUPERUSER');
+  isAdminUser$: Observable<boolean> = this.authenticatedservice.authenticated$.pipe(
+    map(isAuthenticated => {
+      if (!isAuthenticated) return false;
+
+      const userData = localStorage.getItem("activeUser");
+      if (userData) {
+        try {
+          const parsedUser = JSON.parse(userData);
+          return parsedUser.roles.includes('ADMIN') || parsedUser.roles.includes('SUPERUSER');
+        } catch (e) {
+          return false;
+        }
+      }
+      return false;
     })
   );
+
+  // Check if user is volunteer
+  isVolunteerUser$: Observable<boolean> = this.authenticatedservice.authenticated$.pipe(
+    map(isAuthenticated => {
+      if (!isAuthenticated) return false;
+
+      const userData = localStorage.getItem("activeUser");
+      if (userData) {
+        try {
+          const parsedUser = JSON.parse(userData);
+          return parsedUser.roles.includes('VOLONTEER');
+        } catch (e) {
+          return false;
+        }
+      }
+      return false;
+    })
+  );
+
+  // Check if user should see top menu (only competitors)
+  shouldShowTopMenu$: Observable<boolean> = this.authenticatedservice.authenticated$.pipe(
+    map(isAuthenticated => {
+      if (!isAuthenticated) return false;
+
+      const userData = localStorage.getItem("activeUser");
+      if (userData) {
+        try {
+          const parsedUser = JSON.parse(userData);
+          const roles = parsedUser.roles || [];
+
+          // Only show top menu for competitors (users who are not admin, superuser, or volunteer)
+          return !roles.includes('ADMIN') &&
+                 !roles.includes('SUPERUSER') &&
+                 !roles.includes('VOLONTEER');
+        } catch (e) {
+          return false;
+        }
+      }
+      return false;
+    })
+  );
+
+  // Sidebar visibility and menu items
+  shouldShowSidebar$ = this.sidebarService.shouldShowSidebar();
+  sidebarMenuItems$ = this.sidebarService.getMenuItemsForCurrentUser();
 
   constructor(
     private primengConfig: PrimeNGConfig,
@@ -37,7 +93,8 @@ export class AppComponent implements OnInit, OnDestroy{
     private initiatedService: InititatedService,
     private authenticatedservice: AuthenticatedService,
     private authService: AuthService,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private sidebarService: SidebarService
   ) {
     ServiceLocator.injector = injector;
   }

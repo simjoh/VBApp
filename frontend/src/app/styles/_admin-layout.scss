@@ -6,6 +6,11 @@
   background: var(--surface-ground);
 }
 
+// Define viit color
+:root {
+  --viit-color: #ff6b35; // Orange accent color
+}
+
 // Admin Header
 .admin-header {
   position: fixed;
@@ -246,8 +251,61 @@
             flex-shrink: 0;
           }
         }
+
+        &.viit-color {
+          color: var(--viit-color) !important;
+
+          i {
+            color: var(--viit-color) !important;
+          }
+
+          span {
+            color: var(--viit-color) !important;
+          }
+
+          &:hover {
+            background: rgba(255, 107, 53, 0.1);
+            color: var(--viit-color) !important;
+
+            i, span {
+              color: var(--viit-color) !important;
+            }
+          }
+
+          &.active {
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--viit-color) !important;
+            border-left-color: var(--viit-color);
+
+            i, span {
+              color: var(--viit-color) !important;
+            }
+          }
+        }
       }
     }
+  }
+}
+
+// Sidebar Loading State
+.sidebar-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+
+  i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+  }
+
+  span {
+    font-size: 0.9rem;
+    font-weight: 500;
   }
 }
 

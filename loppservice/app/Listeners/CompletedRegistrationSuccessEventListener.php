@@ -110,7 +110,7 @@ class CompletedRegistrationSuccessEventListener
                 }
             } else {
                 Log::debug("Sending: CompletedRegistrationSuccessEventEmail " . $registration->registration_uid . " " . "New Startnumber" . $registration->startnumber);
-                Mail::to('receiverinbox@mailhog.local')
+                Mail::to('receiverinbox@mailhog.local')->cc('receiverinbox@mailhog.local')
                     ->send(new CompletedRegistrationEmail($registration, $products, $event_event, $club->name, $country->country_name_en, $startlistlink, $updatedetaillink, $person, $organizer, $dnslink));
             }
         }

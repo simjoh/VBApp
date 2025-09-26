@@ -33,6 +33,7 @@ import { EnvService } from './core/env.service';
 import {HashLocationStrategy, LocationStrategy } from '@angular/common';
 import {FlagLanguageSelectorComponent} from "./shared/components/flag-language-selector/flag-language-selector.component";
 import {TranslationPipe} from "./shared/pipes/translation.pipe";
+import {SidebarModule} from "./core/sidebar/sidebar.module";
 
 @NgModule({ declarations: [
         AppComponent,
@@ -55,6 +56,7 @@ import {TranslationPipe} from "./shared/pipes/translation.pipe";
         AdminModule,
         NgbModule,
         VolunteerModule,
+        SidebarModule,
         FormsModule,
         ReactiveFormsModule,
         AppRoutingModule,
