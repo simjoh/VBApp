@@ -21,7 +21,7 @@ export interface SidebarMenuItem {
 export class SidebarService {
   private menuItemsSubject = new BehaviorSubject<SidebarMenuItem[]>([]);
   public menuItems$ = this.menuItemsSubject.asObservable();
-  
+
   private sidebarOpenSubject = new BehaviorSubject<boolean>(false);
   public sidebarOpen$ = this.sidebarOpenSubject.asObservable();
 
