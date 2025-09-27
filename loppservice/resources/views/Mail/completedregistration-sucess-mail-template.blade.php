@@ -427,9 +427,13 @@
 		<tr style="height:22pt">
 			<td colspan="5"
 				style="width:227pt">
-				<p class="s3" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">
-					{{$registration->additional_information}}
-				</p>
+				@if(!empty(trim($registration->additional_information)))
+					<p class="s3" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">
+						{{$registration->additional_information}}
+					</p>
+				@else
+					<p class="s3" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">No selection made</p>
+				@endif
 				<p style="text-indent: 0pt;text-align: left;"></p>
 			</td>
 		</tr>
@@ -437,70 +441,67 @@
 			<td colspan="5"
 				style="width:227pt">
 				<h2 style="padding-top: 10pt">Carpool from Europe</h2>
-			</td>
-		</tr>
-		<tr style="height:22pt">
-			<td colspan="5"
-				style="width:227pt">
-				<p class="s3" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">
+				@if(collect($optionals)->where('categoryID', 4)->count() > 0)
 					@foreach ($optionals as $optional)
 					@if ($optional->categoryID === 4)
-					{{$optional->description}}
-				</p>
+					<p class="s3" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">{{$optional->description}}</p>
+					@endif
+					@endforeach
+				@else
+					<p class="s3" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">No selection made</p>
 				@endif
-				@endforeach
-				<p style="text-indent: 0pt;text-align: left;"></p>
 			</td>
 		</tr>
 		<tr style="height:22pt">
 			<td colspan="5"
 				style="width:227pt">
 				<h2 style="padding-top: 10pt">Event program</h2>
-				@foreach ($optionals as $optional)
-				@if ($optional->categoryID === 3 || $optional->categoryID === 2 || $optional->categoryID === 5)
-			</td>
-		</tr>
-		<tr style="height:22pt">
-			<td colspan="5"
-				style="width:227pt">
-				<p class="s3"
-					style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;line-height: 133%;text-align: left;">
-					{{$optional->description}}
-				</p>
+				@if(collect($optionals)->whereIn('categoryID', [2, 3, 5])->count() > 0)
+					@foreach ($optionals as $optional)
+					@if ($optional->categoryID === 3 || $optional->categoryID === 2 || $optional->categoryID === 5)
+					<p class="s3"
+						style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;line-height: 133%;text-align: left;">
+						{{$optional->description}}
+					</p>
+					@endif
+					@endforeach
+				@else
+					<p class="s3" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">No selection made</p>
 				@endif
-				@endforeach
 			</td>
 		</tr>
 		<tr style="height:22pt">
 			<td colspan="5"
 				style="width:227pt;padding-top: 5px">
-				@if(collect($optionals)->where('categoryID', 1)->count() > 0)
 				<h2 style="padding-top: 10pt;text-indent: 0pt;text-align: left;">MSR Jersey</h2>
-				@endif
-				@foreach ($optionals as $optional)
-				@if ($optional->categoryID === 1)
-				<p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">{{$optional->description}}</p>
+				@if(collect($optionals)->where('categoryID', 1)->count() > 0)
+					@foreach ($optionals as $optional)
+					@if ($optional->categoryID === 1)
+					<p style="padding-top: 5pt;padding-left: 10pt;text-indent: 0pt;text-align: left;">{{$optional->description}}</p>
 
-				@if(isset($voucherCodes[$optional->productID]))
-				<div style="background-color: #f8f9fa; border: 2px solid #007bff; border-radius: 8px; padding: 15px; margin: 10px 0;">
-					<p style="margin: 0; font-weight: bold; color: #007bff; font-size: 16px;">🎟️ Your Digital Voucher Code:</p>
-					<p style="margin: 5px 0; font-family: 'Courier New', monospace; font-size: 18px; font-weight: bold; color: #333; letter-spacing: 1px;">
-						{{ $voucherCodes[$optional->productID] }}
-					</p>
-					<p style="margin: 5px 0; font-size: 12px; color: #666;">
-						Use this code in the web shop when ordering your jersey.
-					</p>
-				</div>
+					@if(isset($voucherCodes[$optional->productID]))
+					<div style="background-color: #f8f9fa; border: 2px solid #007bff; border-radius: 8px; padding: 15px; margin: 10px 0;">
+						<p style="margin: 0; font-weight: bold; color: #007bff; font-size: 16px;">🎟️ Your Digital Voucher Code:</p>
+						<p style="margin: 5px 0; font-family: 'Courier New', monospace; font-size: 18px; font-weight: bold; color: #333; letter-spacing: 1px;">
+							{{ $voucherCodes[$optional->productID] }}
+						</p>
+						<p style="margin: 5px 0; font-size: 12px; color: #666;">
+							Use this code in the web shop when ordering your jersey.
+						</p>
+					</div>
+					@else
+					<div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 10px; margin: 10px 0;">
+						<p style="margin: 0; color: #856404; font-size: 14px;">
+							⚠️ No voucher code available at the moment. You will receive your voucher code via email once available.
+						</p>
+					</div>
+					@endif
+
+					@endif
+					@endforeach
 				@else
-				<div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 10px; margin: 10px 0;">
-					<p style="margin: 0; color: #856404; font-size: 14px;">
-						⚠️ No voucher code available at the moment. You will receive your voucher code via email once available.
-					</p>
-				</div>
+					<p class="s3" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">No selection made</p>
 				@endif
-
-				@endif
-				@endforeach
 			</td>
 		</tr>
 		<tr style="height:22pt">
@@ -557,10 +558,6 @@
 					Reminder! If you wish to wear a MSR-jersey during the event, you must place your order in the La Chemise web shop no
 					later than the 29th of March!</p>
 				<p>&nbsp;</p>
-				<p class="s3"><strong>High-Visibility Vest</strong><br />
-					Bad weather may create low light conditions. On roads with tunnels and/or traffic a high visibility vest is therefore
-					always useful. The international cycling clothing brand Sigr (based in Umeå) is offering a special edition of their
-					light weight high visibility reflective vest Siljan to participants in MSR 2026 at a pre-event discount rate.</p>
 				<p>&nbsp;</p>
 			</td>
 		</tr>

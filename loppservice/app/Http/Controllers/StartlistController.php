@@ -40,7 +40,6 @@ class StartlistController extends Controller
                     'clubs.name AS club_name'
                 )
                 ->where('registrations.course_uid', $course_uid)
-                ->where('registrations.reservation', 0)
                 ->where('orders.payment_status', 'paid')
                 ->orderBy('registrations.startnumber')
                 ->distinct()

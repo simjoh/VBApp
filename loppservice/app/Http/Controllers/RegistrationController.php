@@ -508,7 +508,7 @@ class RegistrationController extends Controller
         $event = Event::where('event_uid', $request['uid'])->first();
         $isMSR = $event && $event->event_type === 'MSR';
 
-        // Convert string month to integer
+        // Convert string month to integer (handle both "01" and "1" formats)
         if (isset($request['month'])) {
             $request->merge(['month' => intval($request['month'])]);
         }
@@ -547,7 +547,7 @@ class RegistrationController extends Controller
             'city' => 'required|string|max:100',
             'email' => 'required|regex:/(.+)@(.+)\.(.+)/i',
             'email-confirm' => 'required|regex:/(.+)@(.+)\.(.+)/i',
-            'year' => 'required|integer|between:1950,' . date('Y', strtotime('-10 year')),
+            'year' => 'required|integer|between:1945,' . date('Y', strtotime('-10 year')),
             'month' => 'required|integer|between:1,12',
             'day' => 'required|integer|between:1,31'
         ], $messages);
@@ -626,6 +626,11 @@ class RegistrationController extends Controller
 
     private function validateMsrCompleteRequest(Request $request): array
     {
+        // Convert string month to integer (handle both "01" and "1" formats)
+        if (isset($request['month'])) {
+            $request->merge(['month' => intval($request['month'])]);
+        }
+
         $messages = [
             'first_name.required' => 'First name is required',
             'first_name.string' => 'First name must be text',
