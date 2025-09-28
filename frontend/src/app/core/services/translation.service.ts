@@ -55,6 +55,8 @@ export interface TranslationKeys {
   'common.all': string;
   'common.optional': string;
   'common.required': string;
+  'common.and': string;
+  'common.to': string;
 
   // Navigation
   'nav.dashboard': string;
@@ -92,6 +94,7 @@ export interface TranslationKeys {
   'login.invalidCredentials': string;
   'login.loginSuccess': string;
   'login.loginError': string;
+  'login.competitorNotAllowed': string;
 
   // Admin
   'admin.dashboard': string;
@@ -806,6 +809,80 @@ export interface TranslationKeys {
   'volunteer.totalParticipants': string;
   'volunteer.remaining': string;
   'volunteer.expectedPercentage': string;
+
+  // MSR
+  'msr.title': string;
+  'msr.overview': string;
+  'msr.participants': string;
+  'msr.other': string;
+  'msr.description': string;
+  'msr.participantsDescription': string;
+  'msr.otherDescription': string;
+  'msr.selectEvent': string;
+  'msr.loadingEvents': string;
+  'msr.loadingStats': string;
+  'msr.loadingParticipants': string;
+  'msr.loadingOptionals': string;
+  'msr.noEventsFound': string;
+  'msr.noStatsFound': string;
+  'msr.noParticipantsFound': string;
+  'msr.noOptionalsFound': string;
+  'msr.errorLoadingEvents': string;
+  'msr.errorLoadingStats': string;
+  'msr.errorLoadingParticipants': string;
+  'msr.errorLoadingOptionals': string;
+  'msr.totalRegistrations': string;
+  'msr.confirmedRegistrations': string;
+  'msr.totalReservations': string;
+  'msr.maxRegistrations': string;
+  'msr.registrationPercentage': string;
+  'msr.optionalProducts': string;
+  'msr.registrationTrends': string;
+  'msr.last7Days': string;
+  'msr.last30Days': string;
+  'msr.searchPlaceholder': string;
+  'msr.searchParticipantsPlaceholder': string;
+  'msr.searchOptionalsPlaceholder': string;
+  'msr.filterByStatus': string;
+  'msr.filterByProduct': string;
+  'msr.filterByDate': string;
+  'msr.allStatuses': string;
+  'msr.allProducts': string;
+  'msr.confirmed': string;
+  'msr.reservation': string;
+  'msr.startDate': string;
+  'msr.endDate': string;
+  'msr.filterType': string;
+  'msr.filterByEvent': string;
+  'msr.activeFilters': string;
+  'msr.productNotFound': string;
+  'msr.exportCsv': string;
+  'msr.refresh': string;
+  'msr.loadStats': string;
+  'msr.loadParticipants': string;
+  'msr.loadOptionals': string;
+  'msr.showingResults': string;
+  'msr.of': string;
+  'msr.products': string;
+  'msr.filtered': string;
+  'msr.registrations': string;
+  'msr.noResultsMatchFilters': string;
+  'msr.csvExportTooltip': string;
+  'msr.csvExportNoData': string;
+  'msr.spots': string;
+  'msr.name': string;
+  'msr.email': string;
+  'msr.quantity': string;
+  'msr.additionalInfo': string;
+  'msr.registrationDate': string;
+  'msr.event': string;
+  'msr.status': string;
+  'msr.product': string;
+  'msr.exportedFrom': string;
+  'msr.exportedAt': string;
+  'msr.numberOfParticipants': string;
+  'msr.numberOfRegistrations': string;
+  'msr.numberOfProducts': string;
 }
 
 @Injectable({
@@ -869,6 +946,8 @@ export class TranslationService {
       'common.all': 'Alla',
       'common.optional': 'Valfri',
       'common.required': 'Obligatorisk',
+      'common.and': 'och',
+      'common.to': 'för att',
 
       // Navigation
       'nav.dashboard': 'Översikt',
@@ -906,6 +985,7 @@ export class TranslationService {
       'login.invalidCredentials': 'Ogiltigt användarnamn eller lösenord',
       'login.loginSuccess': 'Inloggning lyckades',
       'login.loginError': 'Inloggning misslyckades',
+      'login.competitorNotAllowed': 'Tävlande ska använda tävlande-appen',
 
       // Admin
       'admin.dashboard': 'Admin Dashboard',
@@ -1619,7 +1699,81 @@ export class TranslationService {
       'volunteer.showingResults': 'Visar {first} till {last} av {totalRecords} deltagare',
       'volunteer.totalParticipants': 'totalt',
       'volunteer.remaining': 'av kvarvarande',
-      'volunteer.expectedPercentage': 'av'
+      'volunteer.expectedPercentage': 'av',
+
+      // MSR
+      'msr.title': 'MSR',
+      'msr.overview': 'MSR - Översikt',
+      'msr.participants': 'MSR - Deltagare',
+      'msr.other': 'MSR - Övrigt',
+      'msr.description': 'MSR (Midnight Sun Race) administration och översikt',
+      'msr.participantsDescription': 'Hantera och visa deltagare för MSR-evenemang',
+      'msr.otherDescription': 'Översikt över valfria produkter och tjänster för icke-deltagare (t.ex. middagsbiljetter, tröjor)',
+      'msr.selectEvent': 'Välj evenemang',
+      'msr.loadingEvents': 'Laddar evenemang...',
+      'msr.loadingStats': 'Laddar statistik...',
+      'msr.loadingParticipants': 'Laddar deltagare...',
+      'msr.loadingOptionals': 'Laddar valfria produkter...',
+      'msr.noEventsFound': 'Inga evenemang hittades',
+      'msr.noStatsFound': 'Ingen statistik hittades',
+      'msr.noParticipantsFound': 'Inga deltagare hittades',
+      'msr.noOptionalsFound': 'Inga valfria produkter hittades',
+      'msr.errorLoadingEvents': 'Kunde inte ladda MSR-evenemang. Försök igen senare.',
+      'msr.errorLoadingStats': 'Kunde inte ladda statistik. Försök igen senare.',
+      'msr.errorLoadingParticipants': 'Kunde inte ladda deltagare. Försök igen senare.',
+      'msr.errorLoadingOptionals': 'Kunde inte ladda valfria produkter. Försök igen senare.',
+      'msr.totalRegistrations': 'Totalt antal registreringar',
+      'msr.confirmedRegistrations': 'Bekräftade registreringar',
+      'msr.totalReservations': 'Totalt antal reservationer',
+      'msr.maxRegistrations': 'Max antal registreringar',
+      'msr.registrationPercentage': 'Registreringsprocent',
+      'msr.optionalProducts': 'Valfria produkter',
+      'msr.registrationTrends': 'Registreringsutveckling',
+      'msr.last7Days': 'Senaste 7 dagarna',
+      'msr.last30Days': 'Senaste 30 dagarna',
+      'msr.searchPlaceholder': 'Sök efter evenemang...',
+      'msr.searchParticipantsPlaceholder': 'Sök efter namn eller e-post...',
+      'msr.searchOptionalsPlaceholder': 'Sök efter produkt, namn eller e-post...',
+      'msr.filterByStatus': 'Status:',
+      'msr.filterByProduct': 'Produkt:',
+      'msr.filterByDate': 'Datum:',
+      'msr.allStatuses': 'Alla statusar',
+      'msr.allProducts': 'Alla produkter',
+      'msr.confirmed': 'Bekräftad',
+      'msr.reservation': 'Reservation',
+      'msr.startDate': 'Startdatum',
+      'msr.endDate': 'Slutdatum',
+      'msr.filterType': 'Filtrera efter:',
+      'msr.filterByEvent': 'Evenemang',
+      'msr.activeFilters': 'Aktiva filter:',
+      'msr.productNotFound': 'Produkt inte hittad',
+      'msr.exportCsv': 'Exportera CSV',
+      'msr.refresh': 'Uppdatera',
+      'msr.loadStats': 'Ladda statistik',
+      'msr.loadParticipants': 'Ladda deltagare',
+      'msr.loadOptionals': 'Ladda valfria produkter',
+      'msr.showingResults': 'Visar',
+      'msr.of': 'av',
+      'msr.products': 'produkter',
+      'msr.filtered': 'filtrerat',
+      'msr.registrations': 'registreringar',
+      'msr.noResultsMatchFilters': 'Inga produkter matchar de valda filtren.',
+      'msr.csvExportTooltip': 'Kommer att sparas som:',
+      'msr.csvExportNoData': 'Inga registreringar att exportera',
+      'msr.spots': 'platser',
+      'msr.name': 'Namn',
+      'msr.email': 'E-post',
+      'msr.quantity': 'Antal',
+      'msr.additionalInfo': 'Ytterligare information',
+      'msr.registrationDate': 'Registreringsdatum',
+      'msr.event': 'Evenemang',
+      'msr.status': 'Status',
+      'msr.product': 'Produkt',
+      'msr.exportedFrom': 'Exporterad från',
+      'msr.exportedAt': 'Exporterad',
+      'msr.numberOfParticipants': 'Antal deltagare',
+      'msr.numberOfRegistrations': 'Antal registreringar',
+      'msr.numberOfProducts': 'Antal produkter'
     },
     en: {
       // Common
@@ -1675,6 +1829,8 @@ export class TranslationService {
       'common.all': 'All',
       'common.optional': 'Optional',
       'common.required': 'Required',
+      'common.and': 'and',
+      'common.to': 'to',
 
       // Navigation
       'nav.dashboard': 'Dashboard',
@@ -1712,6 +1868,7 @@ export class TranslationService {
       'login.invalidCredentials': 'Invalid username or password',
       'login.loginSuccess': 'Login successful',
       'login.loginError': 'Login failed',
+      'login.competitorNotAllowed': 'Competitors should use the competitor app',
 
       // Admin
       'admin.dashboard': 'Admin Dashboard',
@@ -2425,7 +2582,81 @@ export class TranslationService {
       'volunteer.showingResults': 'Showing {first} to {last} of {totalRecords} participants',
       'volunteer.totalParticipants': 'total',
       'volunteer.remaining': 'of remaining',
-      'volunteer.expectedPercentage': 'of'
+      'volunteer.expectedPercentage': 'of',
+
+      // MSR
+      'msr.title': 'MSR',
+      'msr.overview': 'MSR - Overview',
+      'msr.participants': 'MSR - Participants',
+      'msr.other': 'MSR - Other',
+      'msr.description': 'MSR (Midnight Sun Race) administration and overview',
+      'msr.participantsDescription': 'Manage and view participants for MSR events',
+      'msr.otherDescription': 'Overview of optional products and services for non-participants (e.g. dinner tickets, jerseys)',
+      'msr.selectEvent': 'Select Event',
+      'msr.loadingEvents': 'Loading events...',
+      'msr.loadingStats': 'Loading statistics...',
+      'msr.loadingParticipants': 'Loading participants...',
+      'msr.loadingOptionals': 'Loading optional products...',
+      'msr.noEventsFound': 'No events found',
+      'msr.noStatsFound': 'No statistics found',
+      'msr.noParticipantsFound': 'No participants found',
+      'msr.noOptionalsFound': 'No optional products found',
+      'msr.errorLoadingEvents': 'Could not load MSR events. Please try again later.',
+      'msr.errorLoadingStats': 'Could not load statistics. Please try again later.',
+      'msr.errorLoadingParticipants': 'Could not load participants. Please try again later.',
+      'msr.errorLoadingOptionals': 'Could not load optional products. Please try again later.',
+      'msr.totalRegistrations': 'Total Registrations',
+      'msr.confirmedRegistrations': 'Confirmed Registrations',
+      'msr.totalReservations': 'Total Reservations',
+      'msr.maxRegistrations': 'Max Registrations',
+      'msr.registrationPercentage': 'Registration Percentage',
+      'msr.optionalProducts': 'Optional Products',
+      'msr.registrationTrends': 'Registration Trends',
+      'msr.last7Days': 'Last 7 Days',
+      'msr.last30Days': 'Last 30 Days',
+      'msr.searchPlaceholder': 'Search for events...',
+      'msr.searchParticipantsPlaceholder': 'Search by name or email...',
+      'msr.searchOptionalsPlaceholder': 'Search for product, name or email...',
+      'msr.filterByStatus': 'Status:',
+      'msr.filterByProduct': 'Product:',
+      'msr.filterByDate': 'Date:',
+      'msr.allStatuses': 'All Statuses',
+      'msr.allProducts': 'All Products',
+      'msr.confirmed': 'Confirmed',
+      'msr.reservation': 'Reservation',
+      'msr.startDate': 'Start Date',
+      'msr.endDate': 'End Date',
+      'msr.filterType': 'Filter by:',
+      'msr.filterByEvent': 'Event',
+      'msr.activeFilters': 'Active Filters:',
+      'msr.productNotFound': 'Product not found',
+      'msr.exportCsv': 'Export CSV',
+      'msr.refresh': 'Refresh',
+      'msr.loadStats': 'Load Statistics',
+      'msr.loadParticipants': 'Load Participants',
+      'msr.loadOptionals': 'Load Optional Products',
+      'msr.showingResults': 'Showing',
+      'msr.of': 'of',
+      'msr.products': 'products',
+      'msr.filtered': 'filtered',
+      'msr.registrations': 'registrations',
+      'msr.noResultsMatchFilters': 'No products match the selected filters.',
+      'msr.csvExportTooltip': 'Will be saved as:',
+      'msr.csvExportNoData': 'No registrations to export',
+      'msr.spots': 'spots',
+      'msr.name': 'Name',
+      'msr.email': 'Email',
+      'msr.quantity': 'Quantity',
+      'msr.additionalInfo': 'Additional Info',
+      'msr.registrationDate': 'Registration Date',
+      'msr.event': 'Event',
+      'msr.status': 'Status',
+      'msr.product': 'Product',
+      'msr.exportedFrom': 'Exported from',
+      'msr.exportedAt': 'Exported at',
+      'msr.numberOfParticipants': 'Number of participants',
+      'msr.numberOfRegistrations': 'Number of registrations',
+      'msr.numberOfProducts': 'Number of products'
     }
   };
 

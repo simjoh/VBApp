@@ -61,43 +61,45 @@ class PermissionvalidatorMiddleWare
 
         $permissions = $this->permissionrepository->getPermissionsFor($claims['id']);
 
-        if (empty($permissions) && !Arrays::get($claims['roles'], 'isCompetitor') && !Arrays::get($claims['roles'], 'isVolonteer')) {
-
+        // Check if user has any valid roles
+        $roles = $claims['roles'];
+        $hasValidRole = false;
+        if (is_array($roles)) {
+            $hasValidRole = in_array('USER', $roles) || in_array('ADMIN', $roles) || in_array('SUPERUSER', $roles) || 
+                           in_array('DEVELOPER', $roles) || in_array('COMPETITOR', $roles) || in_array('VOLONTEER', $roles);
+        }
+        
+        if (empty($permissions) && !$hasValidRole) {
             return (new Response())->withStatus(401);
         }
 
 
-        if ((Arrays::get($claims['roles'], 'isUser')) || (Arrays::get($claims['roles'], 'isAdmin')) || (Arrays::get($claims['roles'], 'isSuperuser'))) {
-
-            $request = $request->withAttribute('currentuserUid', $claims['id']);
-            return $handler->handle($request);
-        };
-
-        if ((Arrays::get($claims['roles'], 'isDeveloper'))) {
-            $request = $request->withAttribute('currentuserUid', $claims['id']);
-            return $handler->handle($request);
-        };
-
-        if ((Arrays::get($claims['roles'], 'isCompetitor'))) {
-            if (Strings::startsWith($request->getRequestTarget(), $this->path . "randonneur/") === True) {
+        // Handle new role format (array of role names)
+        $roles = $claims['roles'];
+        if (is_array($roles)) {
+            if (in_array('USER', $roles) || in_array('ADMIN', $roles) || in_array('SUPERUSER', $roles)) {
                 $request = $request->withAttribute('currentuserUid', $claims['id']);
                 return $handler->handle($request);
-            } else {
-
-                return (new Response())->withStatus(401);
             }
-        }
 
-        if ((Arrays::get($claims['roles'], 'isVolonteer'))) {
+            if (in_array('DEVELOPER', $roles)) {
+                $request = $request->withAttribute('currentuserUid', $claims['id']);
+                return $handler->handle($request);
+            }
 
-            $request = $request->withAttribute('currentuserUid', $claims['id']);
-            return $handler->handle($request);
-//            if(Strings::startsWith($request->getRequestTarget(), "/api/volonteer/") === True){
-//                $request = $request->withAttribute('currentuserUid', $claims['id']);
-//                return $handler->handle($request);
-//            } else {
-//                return (new Response())->withStatus(401);
-//            }
+            if (in_array('COMPETITOR', $roles)) {
+                if (Strings::startsWith($request->getRequestTarget(), $this->path . "randonneur/") === True) {
+                    $request = $request->withAttribute('currentuserUid', $claims['id']);
+                    return $handler->handle($request);
+                } else {
+                    return (new Response())->withStatus(401);
+                }
+            }
+
+            if (in_array('VOLONTEER', $roles)) {
+                $request = $request->withAttribute('currentuserUid', $claims['id']);
+                return $handler->handle($request);
+            }
         }
 
         // Skicka iväg detta för att kunna sätta rätt länkar osv

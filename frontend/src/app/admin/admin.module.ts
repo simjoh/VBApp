@@ -11,11 +11,15 @@ import {CheckboxModule} from "primeng/checkbox";
 import {EventAdminModule} from "./event-admin/event-admin.module";
 import { AdminStartComponent } from './admin-start/admin-start.component';
 import { AcpRapportComponent } from './acp-rapport/acp-rapport.component';
+import { MsrComponent } from './msr/msr.component';
+import { MsrParticipantsComponent } from './msr/msr-participants/msr-participants.component';
+import { MsrNonParticipantOptionalsComponent } from './msr/msr-non-participant-optionals/msr-non-participant-optionals.component';
 import {UserAdminModule} from "./user-admin/user-admin.module";
 import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
 import { TooltipModule } from 'primeng/tooltip';
@@ -28,6 +32,9 @@ import { TranslationPipe } from '../shared/pipes/translation.pipe';
     AdminDashboardComponent,
     AdminStartComponent,
     AcpRapportComponent,
+            MsrComponent,
+            MsrParticipantsComponent,
+            MsrNonParticipantOptionalsComponent,
   ],
   imports: [
     CommonModule,
@@ -41,6 +48,7 @@ import { TranslationPipe } from '../shared/pipes/translation.pipe';
     TableModule,
     TagModule,
     ProgressSpinnerModule,
+    CalendarModule,
     ButtonModule,
     DropdownModule,
     TooltipModule,

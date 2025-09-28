@@ -4,12 +4,12 @@
 <!--      Lägg in topbanner med info om vem som är inloggad språkval samt logga ut länk-->
 <!--      <brevet-menu></brevet-menu>-->
       <!-- Top Menu Header - Only for Competitors -->
-      <div class="admin-header" *ngIf="shouldShowTopMenu$ | async">
+      <!-- <div class="admin-header" *ngIf="shouldShowTopMenu$ | async">
         <brevet-menu></brevet-menu>
         <div class="header-controls">
           <app-flag-language-selector></app-flag-language-selector>
         </div>
-      </div>
+      </div> -->
 
       <!-- Admin Layout -->
       <div class="admin-layout" [class.competitor-layout]="!(shouldShowSidebar$ | async)">

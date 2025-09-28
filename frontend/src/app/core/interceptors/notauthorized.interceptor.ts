@@ -13,7 +13,8 @@ export class NotauthorizedInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
         const errorCodes = [401, 403, 405];
-        if (errorCodes.includes(error.status)) {
+        // Don't log out for loppservice API errors - they have their own authentication
+        if (errorCodes.includes(error.status) && !request.url.includes('/loppservice/')) {
           this.authService.logoutUser();
         }
         return throwError(() => error);

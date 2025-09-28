@@ -1,0 +1,192 @@
+<div class="msr-container">
+  <div class="page-header">
+    <div class="header-content">
+      <img src="assets/msr-placeholder-logo.svg" alt="MSR Logo" class="page-logo">
+      <div class="header-text">
+                <h1>{{ 'msr.overview' | translate }}</h1>
+                <p class="page-description">{{ 'msr.description' | translate }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="msr-content">
+    <!-- Event Selection Card -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3>{{ 'msr.selectEvent' | translate }} MSR-evenemang</h3>
+          </div>
+          <div class="card-body">
+            <!-- Loading Events State -->
+            <div *ngIf="loadingEvents" class="text-center">
+              <i class="pi pi-spin pi-spinner"></i>
+              <span class="ml-2">{{ 'msr.loadingEvents' | translate }}</span>
+            </div>
+
+            <!-- Events Error State -->
+            <div *ngIf="eventsError" class="alert alert-danger">
+              <i class="pi pi-exclamation-triangle"></i>
+              <strong>{{ 'common.error' | translate }}:</strong> {{ eventsError }}
+              <button class="btn btn-sm btn-outline-danger ml-2" (click)="loadMsrEvents()">
+                <i class="pi pi-refresh"></i> {{ 'common.retry' | translate }}
+              </button>
+            </div>
+
+            <!-- Event Selection Form -->
+            <div *ngIf="!loadingEvents && !eventsError" class="row">
+              <div class="col-md-8">
+                <label for="eventSelect" class="form-label">{{ 'msr.selectEvent' | translate }}:</label>
+                <select
+                  id="eventSelect"
+                  class="form-select"
+                  [(ngModel)]="selectedEventUid"
+                  (change)="onEventChange()"
+                  [disabled]="msrEvents.length === 0">
+                  <option value="" disabled>{{ 'msr.selectEvent' | translate }}...</option>
+                  <option
+                    *ngFor="let event of msrEvents"
+                    [value]="event.event_uid">
+                    {{ event.title }} ({{ event.startdate | date:'yyyy-MM-dd' }})
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-4 d-flex align-items-end">
+                <button
+                  class="btn btn-primary w-100"
+                  (click)="loadStats()"
+                  [disabled]="!selectedEventUid || loading">
+                  <i class="pi pi-search" *ngIf="!loading"></i>
+                  <i class="pi pi-spin pi-spinner" *ngIf="loading"></i>
+                  {{ loading ? ('msr.loadingStats' | translate) : ('msr.loadStats' | translate) }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Loading State -->
+    <div *ngIf="loading && !loadingEvents" class="text-center">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
+      <p>{{ 'msr.loadingStats' | translate }}</p>
+    </div>
+
+    <!-- Statistics Error State -->
+    <div *ngIf="error && !loadingEvents" class="alert alert-danger">
+      <i class="pi pi-exclamation-triangle"></i>
+      <strong>{{ 'common.error' | translate }}:</strong> {{ error }}
+      <button class="btn btn-sm btn-outline-danger ml-2" (click)="refreshStats()">
+        <i class="pi pi-refresh"></i> {{ 'common.retry' | translate }}
+      </button>
+    </div>
+
+    <!-- Statistics Display -->
+    <div *ngIf="stats && !loading" class="row">
+      <!-- Event Overview Card -->
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3>{{ stats.event_title }}</h3>
+            <button class="btn btn-outline-primary btn-sm" (click)="refreshStats()">
+              <i class="pi pi-refresh"></i> {{ 'msr.refresh' | translate }}
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="stat-card">
+                  <div class="stat-number">{{ stats.total_registrations }}</div>
+                  <div class="stat-label">{{ 'msr.totalRegistrations' | translate }}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-card">
+                  <div class="stat-number">{{ +stats.confirmed_registrations }}</div>
+                  <div class="stat-label">{{ 'msr.confirmedRegistrations' | translate }}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-card">
+                  <div class="stat-number">{{ +stats.total_reservations }}</div>
+                  <div class="stat-label">{{ 'msr.totalReservations' | translate }}</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-card">
+                  <div class="stat-number">{{ stats.registration_percentage }}%</div>
+                  <div class="stat-label">{{ 'msr.registrationPercentage' | translate }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress mt-3">
+              <div class="progress-bar"
+                   [style.width.%]="stats.registration_percentage"
+                   [class.bg-success]="stats.registration_percentage >= 80"
+                   [class.bg-warning]="stats.registration_percentage >= 50 && stats.registration_percentage < 80"
+                   [class.bg-danger]="stats.registration_percentage < 50">
+                {{ stats.registration_percentage }}% {{ 'msr.of' | translate }} {{ stats.max_registrations }} {{ 'msr.spots' | translate }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Optional Products Card -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-header">
+            <h3>{{ 'msr.optionalProducts' | translate }}</h3>
+          </div>
+          <div class="card-body">
+            <div *ngIf="stats.optional_products.length === 0" class="text-muted">
+              {{ 'msr.noOptionalsFound' | translate }}
+            </div>
+            <div *ngIf="stats.optional_products.length > 0" class="row">
+              <div *ngFor="let product of stats.optional_products" class="col-md-6 col-lg-4 mb-3">
+                <div class="product-card">
+                  <div class="product-name">{{ product.product_name }}</div>
+                  <div class="product-stats">
+                    <span class="product-count">{{ product.count }}</span>
+                    <span class="product-percentage">({{ product.percentage }}%)</span>
+                  </div>
+                  <div class="progress mt-2">
+                    <div class="progress-bar bg-info" [style.width.%]="product.percentage"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Registration Trends Card -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-header">
+            <h3>{{ 'msr.registrationTrends' | translate }}</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="trend-card">
+                  <div class="trend-number">{{ +stats.registration_trends.last_7_days }}</div>
+                  <div class="trend-label">{{ 'msr.last7Days' | translate }}</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="trend-card">
+                  <div class="trend-number">{{ +stats.registration_trends.last_30_days }}</div>
+                  <div class="trend-label">{{ 'msr.last30Days' | translate }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

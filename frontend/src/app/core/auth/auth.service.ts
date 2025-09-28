@@ -44,6 +44,12 @@ export class AuthService {
         this.httpClient.post<any>(this.backendUrl() + "login", this.createPayload(model))
           .pipe(
             map(response => {
+              // Check if user is a competitor and show appropriate message
+              if (response.roles && response.roles.includes('COMPETITOR')) {
+                this.eventService.nyHändelse(EventType.Error, new AEvent(EventType.Error, "login.competitorNotAllowed"));
+                return null;
+              }
+
               localStorage.setItem('loggedInUser', JSON.stringify(response.token));
               this.authenticatedService.changeStatus(true);
               return response;
@@ -80,28 +86,23 @@ export class AuthService {
     this.authSubjet.next(activeUser)
   }
 
-  private redirect(roles: string) {
-    let role = null;
-    if (roles.length === 1){
-      role = roles[0];
-    } else {
-
-    }
-
-    if ((role === Role.ADMIN|| role === Role.SUPERUSER ||  role === Role.USER)) {
+  private redirect(roles: string[]) {
+    // Handle multiple roles - check for highest priority role
+    if (roles.includes(Role.ADMIN) || roles.includes(Role.SUPERUSER) || roles.includes(Role.USER)) {
       this.router.navigate(['admin/brevet-admin-start']);
-    } else if (role === Role.COMPETITOR){
-      this.router.navigate(['brevet-list']);
-    } else if (role === Role.VOLONTEER) {
+    } else if (roles.includes(Role.VOLONTEER)) {
       this.router.navigate(['volunteer']);
+    } else {
+      // Default fallback
+      this.router.navigate(['admin/brevet-admin-start']);
     }
   }
 
   private mockLogin(){
     localStorage.setItem('loggedInUser', 'fake_token');
     this.authenticatedService.changeStatus(true);
-    const role = "ADMIN";
-    this.redirect(role)
+    const roles = ["ADMIN"];
+    this.redirect(roles)
   }
 
   private createPayload(loginmodel: LoginModel): LoginPayload{

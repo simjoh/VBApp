@@ -64,6 +64,7 @@ import {StepsModule} from "primeng/steps";
 import {CheckboxModule} from "primeng/checkbox";
 import { OrganizerSelectorComponent } from './organizer-selector/organizer-selector.component';
 import { TranslationPipe } from './pipes/translation.pipe';
+import { MsrStatsService } from './services/msr-stats.service';
 
 // New Compact Components
 import { PageHeaderComponent } from './components/page-header/page-header.component';
@@ -154,6 +155,6 @@ import { CompactActionCardComponent } from './components/compact-action-card/com
         PageLayoutComponent,
         CompactPageHeaderComponent,
         CompactActionCardComponent],
-    providers: [DatePipe, DialogService]
+    providers: [DatePipe, DialogService, MsrStatsService]
 })
 export class SharedModule { }

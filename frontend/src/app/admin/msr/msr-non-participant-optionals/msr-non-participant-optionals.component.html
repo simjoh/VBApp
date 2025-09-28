@@ -1,0 +1,306 @@
+<div class="msr-non-participant-optionals-container">
+  <div class="page-header">
+    <div class="header-content">
+      <img src="assets/msr-placeholder-logo.svg" alt="MSR Logo" class="page-logo">
+      <div class="header-text">
+                <h1>{{ 'msr.other' | translate }}</h1>
+                <p class="page-description">{{ 'msr.otherDescription' | translate }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="msr-non-participant-optionals-content">
+    <!-- Filter Selection Card -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3>{{ 'common.select' | translate }} {{ 'common.filter' | translate }}</h3>
+          </div>
+          <div class="card-body">
+            <!-- Loading Events State -->
+            <div *ngIf="loadingEvents" class="text-center">
+              <i class="pi pi-spin pi-spinner"></i>
+              <span class="ml-2">{{ 'msr.loadingEvents' | translate }}</span>
+            </div>
+
+            <!-- Events Error State -->
+            <div *ngIf="eventsError" class="alert alert-danger">
+              <i class="pi pi-exclamation-triangle"></i>
+              <strong>{{ 'common.error' | translate }}:</strong> {{ eventsError }}
+              <button class="btn btn-sm btn-outline-danger ml-2" (click)="loadMsrEvents()">
+                <i class="pi pi-refresh"></i> {{ 'common.retry' | translate }}
+              </button>
+            </div>
+
+            <!-- Filter Selection Form -->
+            <div *ngIf="!loadingEvents && !eventsError" class="row">
+              <div class="col-md-3">
+                <label class="form-label">{{ 'msr.filterType' | translate }}</label>
+                <div class="btn-group w-100" role="group">
+                  <input type="radio" class="btn-check" id="filterEvent" value="event" [(ngModel)]="filterType" (change)="onFilterTypeChange()">
+                  <label class="btn btn-outline-primary" for="filterEvent">{{ 'msr.filterByEvent' | translate }}</label>
+
+                  <input type="radio" class="btn-check" id="filterDate" value="date" [(ngModel)]="filterType" (change)="onFilterTypeChange()">
+                  <label class="btn btn-outline-primary" for="filterDate">{{ 'msr.filterByDate' | translate }}</label>
+                </div>
+              </div>
+
+              <!-- Event Filter -->
+              <div *ngIf="filterType === 'event'" class="col-md-6">
+                <label for="eventSelect" class="form-label">{{ 'msr.selectEvent' | translate }}:</label>
+                <select
+                  id="eventSelect"
+                  class="form-select"
+                  [(ngModel)]="selectedEventUid"
+                  (change)="onEventChange()"
+                  [disabled]="msrEvents.length === 0">
+                  <option value="" disabled>{{ 'msr.selectEvent' | translate }}...</option>
+                  <option
+                    *ngFor="let event of msrEvents"
+                    [value]="event.event_uid">
+                    {{ event.title }} ({{ event.startdate | date:'yyyy-MM-dd' }})
+                  </option>
+                </select>
+              </div>
+
+              <!-- Date Filter -->
+              <div *ngIf="filterType === 'date'" class="col-md-6">
+                <div class="row">
+                  <div class="col-6">
+                    <label for="startDate" class="form-label">{{ 'msr.startDate' | translate }}:</label>
+                    <p-calendar
+                      id="startDate"
+                      [(ngModel)]="startDate"
+                      (onSelect)="onDateChange()"
+                      dateFormat="yy-mm-dd"
+                      placeholder="yyyy-mm-dd"
+                      [showIcon]="true"
+                      [showButtonBar]="true"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      yearRange="2020:2030"
+                      styleClass="w-100">
+                    </p-calendar>
+                  </div>
+                  <div class="col-6">
+                    <label for="endDate" class="form-label">{{ 'msr.endDate' | translate }}:</label>
+                    <p-calendar
+                      id="endDate"
+                      [(ngModel)]="endDate"
+                      (onSelect)="onDateChange()"
+                      dateFormat="yy-mm-dd"
+                      placeholder="yyyy-mm-dd"
+                      [showIcon]="true"
+                      [showButtonBar]="true"
+                      [monthNavigator]="true"
+                      [yearNavigator]="true"
+                      yearRange="2020:2030"
+                      styleClass="w-100">
+                    </p-calendar>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-3 d-flex align-items-end">
+                <button
+                  class="btn btn-primary w-100"
+                  (click)="loadOptionals()"
+                  [disabled]="(filterType === 'event' && !selectedEventUid) || (filterType === 'date' && (!startDate || !endDate)) || loading">
+                  <i class="pi pi-search" *ngIf="!loading"></i>
+                  <i class="pi pi-spin pi-spinner" *ngIf="loading"></i>
+                  {{ loading ? ('msr.loadingOptionals' | translate) : ('msr.loadOptionals' | translate) }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Loading State -->
+    <div *ngIf="loading && !loadingEvents" class="text-center">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
+      <p>{{ 'msr.loadingOptionals' | translate }}</p>
+    </div>
+
+    <!-- Data Error State -->
+    <div *ngIf="error && !loadingEvents" class="alert alert-danger">
+      <i class="pi pi-exclamation-triangle"></i>
+      <strong>{{ 'common.error' | translate }}:</strong> {{ error }}
+      <button class="btn btn-sm btn-outline-danger ml-2" (click)="loadOptionals()">
+        <i class="pi pi-refresh"></i> {{ 'common.retry' | translate }}
+      </button>
+    </div>
+
+    <!-- Data Display -->
+    <div *ngIf="!loading && !error && optionalsData" class="row">
+      <!-- Summary Card -->
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3>Sammanfattning - {{ getFilterDescription() }}</h3>
+            <button class="btn btn-outline-primary btn-sm" (click)="loadOptionals()">
+              <i class="pi pi-refresh"></i> Uppdatera
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="stat-card">
+                  <div class="stat-number">{{ optionalsData.total_registrations }}</div>
+                  <div class="stat-label">Totala registreringar</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-card">
+                  <div class="stat-number">{{ optionalsData.total_quantity }}</div>
+                  <div class="stat-label">Totala antal</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-card">
+                  <div class="stat-number">{{ optionalsData.products.length }}</div>
+                  <div class="stat-label">Produkter</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-card">
+                  <div class="stat-number">{{ filteredProducts.length }}</div>
+                  <div class="stat-label">{{ 'msr.showingResults' | translate }} {{ 'msr.products' | translate }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search and Filter Controls -->
+      <div class="col-12 mt-4">
+        <div class="card">
+          <div class="card-header">
+            <h3>Produkter och registreringar</h3>
+          </div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="searchInput" class="form-label">Sök:</label>
+                <input
+                  type="text"
+                  id="searchInput"
+                  class="form-control"
+                  [(ngModel)]="searchTerm"
+                  (input)="onSearchChange($event.target.value)"
+                  [placeholder]="'msr.searchOptionalsPlaceholder' | translate">
+              </div>
+              <div class="col-md-4">
+                <label for="productFilterSelect" class="form-label">{{ 'msr.filterByProduct' | translate }}</label>
+                <select
+                  id="productFilterSelect"
+                  class="form-select"
+                  [(ngModel)]="selectedProductId"
+                  (change)="onProductFilterChange()">
+                  <option [value]="null">{{ 'msr.allProducts' | translate }}</option>
+                  <option
+                    *ngFor="let product of availableProducts"
+                    [value]="product.product_id">
+                    {{ product.product_name }} ({{ product.total_registrations }})
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-2 d-flex align-items-end">
+                <button
+                  class="btn btn-success w-100"
+                  (click)="exportToCsv()"
+                  [disabled]="filteredProducts.length === 0"
+                  [title]="getCsvFilenamePreview()">
+                  <i class="pi pi-download"></i>
+                  {{ 'msr.exportCsv' | translate }}
+                </button>
+              </div>
+            </div>
+
+            <div class="row mt-3">
+              <div class="col-12">
+                <small class="text-muted">
+                  {{ 'msr.showingResults' | translate }} {{ filteredProducts.length }} {{ 'msr.of' | translate }} {{ optionalsData.products.length }} {{ 'msr.products' | translate }}
+                  <span *ngIf="searchTerm.trim() || selectedProductId !== null">
+                    ({{ 'msr.filtered' | translate }})
+                  </span>
+                </small>
+                <div *ngIf="searchTerm.trim() || selectedProductId !== null" class="mt-2">
+                  <small class="text-info">
+                    <i class="pi pi-filter"></i>
+                    {{ 'msr.activeFilters' | translate }}
+                    <span *ngIf="searchTerm.trim()" class="badge bg-primary me-1">{{ 'common.search' | translate }}: "{{ searchTerm }}"</span>
+                    <span *ngIf="selectedProductId !== null" class="badge bg-info me-1">
+                      {{ 'msr.filterByProduct' | translate }}: {{ getSelectedProductName() }}
+                    </span>
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Products List -->
+            <div *ngIf="filteredProducts.length > 0" class="mt-4">
+              <div *ngFor="let product of filteredProducts" class="product-section mb-4">
+                <div class="product-header">
+                  <h4>{{ product.product_name }}</h4>
+                  <div class="product-stats">
+                    <span class="badge bg-primary">{{ product.total_registrations }} registreringar</span>
+                    <span class="badge bg-secondary">{{ product.total_quantity }} totalt</span>
+                    <span *ngIf="product.price" class="badge bg-success">{{ product.price }} SEK</span>
+                  </div>
+                </div>
+                <p class="product-description">{{ product.description }}</p>
+
+                <!-- Registrations Table -->
+                <div class="table-responsive">
+                  <table class="table table-striped table-hover table-sm">
+                    <thead>
+                      <tr>
+                        <th>{{ 'msr.name' | translate }}</th>
+                        <th>{{ 'msr.email' | translate }}</th>
+                        <th>{{ 'msr.quantity' | translate }}</th>
+                        <th>{{ 'msr.additionalInfo' | translate }}</th>
+                        <th>{{ 'msr.registrationDate' | translate }}</th>
+                        <th>{{ 'msr.event' | translate }}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let reg of product.registrations">
+                        <td>{{ reg.firstname }} {{ reg.surname }}</td>
+                        <td>{{ reg.email }}</td>
+                        <td>
+                          <span class="badge bg-info">{{ reg.quantity }}</span>
+                        </td>
+                        <td>
+                          <span *ngIf="reg.additional_information" class="text-muted small">
+                            {{ reg.additional_information }}
+                          </span>
+                          <span *ngIf="!reg.additional_information" class="text-muted">-</span>
+                        </td>
+                        <td>{{ reg.created_at | date:'yyyy-MM-dd' }}</td>
+                        <td>{{ reg.event_title }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- No Products Found -->
+            <div *ngIf="filteredProducts.length === 0 && optionalsData.products.length > 0" class="alert alert-info text-center">
+              <i class="pi pi-info-circle"></i> {{ 'msr.noResultsMatchFilters' | translate }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Data Found -->
+    <div *ngIf="!loading && !error && !optionalsData" class="alert alert-info text-center">
+      <i class="pi pi-info-circle"></i> {{ 'msr.selectEvent' | translate }} {{ 'common.and' | translate }} {{ 'msr.loadOptionals' | translate }} {{ 'common.to' | translate }} {{ 'msr.otherDescription' | translate }}
+    </div>
+  </div>
+</div>

@@ -38,8 +38,10 @@ class UserRepository extends BaseRepository
         }
 
         $roleArray = [];
+        $roleNames = [];
         foreach ($result as $row) {
             array_push($roleArray, new Role(intval($row['role_id']), $row['role_name']));
+            array_push($roleNames, $row['role_name']);
         }
 
         $userdetails = $result[0];
@@ -50,7 +52,7 @@ class UserRepository extends BaseRepository
         $user->setFamilyname($userdetails['family_name']);
         $user->setUsername($userdetails['user_name']);
         $user->setToken('');
-        $user->setRoles(array($userdetails['role_name']));
+        $user->setRoles($roleNames); // Use all role names instead of just the first one
         
         // Set organizer_id if it exists
         if (isset($userdetails['organizer_id'])) {

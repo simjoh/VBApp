@@ -725,6 +725,78 @@ class EventController extends Controller
         ], 501);
     }
 
+
+    /**
+     * Get events by event type (MSR, BP, or BRM).
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getByEventType(Request $request): JsonResponse
+    {
+        $eventType = $request->input('event_type');
+
+        // Validate event type
+        $allowedTypes = ['MSR', 'BP', 'BRM'];
+        if (!$eventType || !in_array(strtoupper($eventType), $allowedTypes)) {
+            return response()->json([
+                'message' => 'Invalid event type. Must be one of: ' . implode(', ', $allowedTypes)
+            ], 400);
+        }
+
+        // Get pagination parameters with defaults
+        $perPage = $request->input('per_page', 15);
+        $page = $request->input('page', 1);
+
+        // Get filter parameters
+        $organizerId = $request->input('organizer_id');
+        $completed = $request->input('completed');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        // Build query
+        $query = Event::with(['organizer', 'eventConfiguration', 'routeDetail'])
+            ->where('event_type', strtoupper($eventType));
+
+        // Apply additional filters if provided
+        if ($organizerId !== null) {
+            $query->where('organizer_id', $organizerId);
+        }
+
+        if ($completed !== null) {
+            $query->where('completed', filter_var($completed, FILTER_VALIDATE_BOOLEAN));
+        }
+
+        if ($startDate) {
+            $query->where('startdate', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->where('enddate', '<=', $endDate);
+        }
+
+        // Apply sorting
+        $sortBy = $request->input('sort_by', 'startdate');
+        $sortDir = $request->input('sort_dir', 'asc');
+        $allowedSortFields = ['event_uid', 'title', 'startdate', 'enddate', 'created_at', 'updated_at'];
+
+        if (in_array($sortBy, $allowedSortFields)) {
+            $query->orderBy($sortBy, strtolower($sortDir) === 'desc' ? 'desc' : 'asc');
+        }
+
+        // Get paginated results
+        $events = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json([
+            'event_type' => strtoupper($eventType),
+            'total' => $events->total(),
+            'per_page' => $events->perPage(),
+            'current_page' => $events->currentPage(),
+            'last_page' => $events->lastPage(),
+            'data' => EventResource::collection($events->items())
+        ]);
+    }
+
     public function show(string $eventUid): View
     {
         // Debug: Log the event UID being requested

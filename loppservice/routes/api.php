@@ -20,6 +20,7 @@ use App\Http\Controllers\OrganizerController;
 use App\Http\Controllers\ClubController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\PersonController;
+use App\Http\Controllers\StatsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -63,6 +64,7 @@ Route::prefix('/api')->group(function () {
 
             Route::post('/' , [EventController::class, 'create'])->name('api.events.create');
             Route::get('/all' , [EventController::class, 'all'])->name('api.events.index');
+            Route::get('/by-type' , [EventController::class, 'getByEventType'])->name('api.events.by_type');
             Route::put('/{eventUid}' , [EventController::class, 'update'])->name('api.events.update');
             Route::get('/{eventUid}', [EventController::class, 'eventbyid'])->name('api.events.show');
             Route::delete('/{eventUid}' , [EventController::class, 'delete'])->name('api.events.delete');
@@ -72,11 +74,10 @@ Route::prefix('/api')->group(function () {
             Route::post('/event/{event_uid}/route-details', [EventController::class, 'updateRouteDetails'])->name('api.events.update_route_details');
             Route::put('/event/{event_uid}/route-details', [EventController::class, 'updateRouteDetails']);
 
-            // Registration endpoint
-            Route::get('/{eventUid}/registrations', function () {
-                // This will be implemented later
-                return response()->json(['message' => 'Not implemented yet'], 501);
-            })->name('api.events.registrations');
+            // Statistics endpoints
+            Route::get('/{eventUid}/stats', [StatsController::class, 'getEventStats'])->name('api.events.stats');
+            Route::get('/{eventUid}/optional-products', [StatsController::class, 'getEventOptionalProducts'])->name('api.events.optional_products');
+            Route::get('/{eventUid}/registrations', [StatsController::class, 'getEventRegistrations'])->name('api.events.registrations');
         });
 
         Route::prefix('/event-group')->group(function () {
@@ -105,6 +106,9 @@ Route::prefix('/api')->group(function () {
             Route::put('/{id}', [ClubController::class, 'update'])->name('api.clubs.update');
             Route::delete('/{id}', [ClubController::class, 'destroy'])->name('api.clubs.destroy');
         });
+
+        // Non-participant optionals endpoint
+        Route::get('/non-participant-optionals', [StatsController::class, 'getNonParticipantOptionals'])->name('api.non_participant_optionals');
     });
 
     Route::prefix('/artisan')->group(function () {

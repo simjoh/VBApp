@@ -6,6 +6,9 @@ import {AdminStartComponent} from "./admin-start/admin-start.component";
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { AcpRapportComponent } from './acp-rapport/acp-rapport.component';
+import { MsrComponent } from './msr/msr.component';
+import { MsrParticipantsComponent } from './msr/msr-participants/msr-participants.component';
+import { MsrNonParticipantOptionalsComponent } from './msr/msr-non-participant-optionals/msr-non-participant-optionals.component';
 
 const routes: Routes = [{
   path: 'admin',
@@ -45,6 +48,9 @@ const routes: Routes = [{
       loadChildren: () => import('./organizer-admin/organizer-admin.module').then(m => m.OrganizerAdminModule),
     },
     { path: 'acp-rapport', component: AcpRapportComponent },
+            { path: 'msr', component: MsrComponent },
+            { path: 'msr-participants', component: MsrParticipantsComponent },
+            { path: 'msr-non-participant-optionals', component: MsrNonParticipantOptionalsComponent },
     { path: 'brevet-admin-start', component: AdminDashboardComponent },
     { path: '', redirectTo: 'brevet-admin-start', pathMatch: 'full' }
   ]

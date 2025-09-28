@@ -60,28 +60,28 @@ export class AppComponent implements OnInit, OnDestroy{
     })
   );
 
-  // Check if user should see top menu (only competitors)
-  shouldShowTopMenu$: Observable<boolean> = this.authenticatedservice.authenticated$.pipe(
-    map(isAuthenticated => {
-      if (!isAuthenticated) return false;
+  // Check if user should see top menu (only competitors) - COMMENTED OUT
+  // shouldShowTopMenu$: Observable<boolean> = this.authenticatedservice.authenticated$.pipe(
+  //   map(isAuthenticated => {
+  //     if (!isAuthenticated) return false;
 
-      const userData = localStorage.getItem("activeUser");
-      if (userData) {
-        try {
-          const parsedUser = JSON.parse(userData);
-          const roles = parsedUser.roles || [];
+  //     const userData = localStorage.getItem("activeUser");
+  //     if (userData) {
+  //       try {
+  //         const parsedUser = JSON.parse(userData);
+  //         const roles = parsedUser.roles || [];
 
-          // Only show top menu for competitors (users who are not admin, superuser, or volunteer)
-          return !roles.includes('ADMIN') &&
-                 !roles.includes('SUPERUSER') &&
-                 !roles.includes('VOLONTEER');
-        } catch (e) {
-          return false;
-        }
-      }
-      return false;
-    })
-  );
+  //         // Only show top menu for competitors (users who are not admin, superuser, or volunteer)
+  //         return !roles.includes('ADMIN') &&
+  //                !roles.includes('SUPERUSER') &&
+  //                !roles.includes('VOLONTEER');
+  //       } catch (e) {
+  //         return false;
+  //       }
+  //     }
+  //     return false;
+  //   })
+  // );
 
   // Sidebar visibility and menu items
   shouldShowSidebar$ = this.sidebarService.shouldShowSidebar();

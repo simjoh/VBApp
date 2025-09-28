@@ -6,6 +6,11 @@ import { Observable } from 'rxjs';
 export class AuthInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    // Skip loppservice requests - they have their own authentication
+    if (request.url.includes('/loppservice/')) {
+      return next.handle(request);
+    }
+
     let loggedInUser = "loggedInUser"
     let token = JSON.parse(<string>localStorage.getItem(loggedInUser));
 

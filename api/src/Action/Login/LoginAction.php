@@ -73,42 +73,8 @@ class LoginAction extends BaseAction
     }
 
     private function getRoles($roles): array{
-
-        $rolearray = array();
-
-        foreach ($roles as &$value) {
-            if($value == 'ADMIN'){
-                $rolearray['isAdmin'] = true;
-            } else {
-                $rolearray['isAdmin'] = false;
-            }
-            if($value == 'SUPERUSER'){
-                $rolearray['isSuperuser'] = true;
-            } else {
-                $rolearray['isSuperuser'] = false;
-            }
-            if($value == 'COMPETITOR'){
-                $rolearray['isCompetitor'] = true;
-            } else {
-                $rolearray['isCompetitor'] = false;
-            }
-            if($value == 'VOLONTEER'){
-                $rolearray['isVolonteer'] = true;
-            } else {
-                $rolearray['isVolonteer'] = false;
-            }
-            if($value == 'USER'){
-                $rolearray['isUser'] = true;
-            } else {
-                $rolearray['isUser'] = false;
-            }
-            if($value == 'DEVELOPER'){
-                $rolearray['isDeveloper'] = true;
-            } else {
-                $rolearray['isDeveloper'] = false;
-            }
-        }
-        return $rolearray;
+        // Return the actual role names as an array
+        return $roles;
     }
 
 

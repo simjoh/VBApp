@@ -131,10 +131,15 @@ export class SidebarService {
   private buildMenuItemsForUser(userRoles: string[]): SidebarMenuItem[] {
     const menuItems: SidebarMenuItem[] = [];
 
+    // Helper function to check if user has a specific role (handles multiple roles)
+    const hasRole = (role: string): boolean => {
+      return userRoles && Array.isArray(userRoles) && userRoles.includes(role);
+    };
+
     // Check if user is admin or superuser
-    const isAdmin = userRoles.includes(Role.ADMIN) || userRoles.includes(Role.SUPERUSER);
-    const isSuperUser = userRoles.includes(Role.SUPERUSER);
-    const isVolunteer = userRoles.includes(Role.VOLONTEER);
+    const isAdmin = hasRole(Role.ADMIN) || hasRole(Role.SUPERUSER);
+    const isSuperUser = hasRole(Role.SUPERUSER);
+    const isVolunteer = hasRole(Role.VOLONTEER);
 
     console.log('SidebarService: Building menu for roles:', userRoles);
     console.log('SidebarService: isAdmin:', isAdmin, 'isSuperUser:', isSuperUser, 'isVolunteer:', isVolunteer);
@@ -234,6 +239,34 @@ export class SidebarService {
           ]
         }
       );
+
+      // Add MSR menu item for admins and superusers
+      // This works with multiple roles: ["ADMIN"], ["SUPERUSER"], or ["ADMIN", "SUPERUSER"]
+      if (isAdmin) {
+        menuItems.push(
+          {
+            label: 'msr.title',
+            icon: 'pi pi-sun',
+            children: [
+              {
+                label: 'msr.overview',
+                routerLink: '/admin/msr',
+                icon: 'pi pi-eye'
+              },
+              {
+                label: 'msr.participants',
+                routerLink: '/admin/msr-participants',
+                icon: 'pi pi-users'
+              },
+              {
+                label: 'msr.other',
+                routerLink: '/admin/msr-non-participant-optionals',
+                icon: 'pi pi-shopping-cart'
+              }
+            ]
+          }
+        );
+      }
     }
 
     // Add volunteer menu section for volunteers, superusers, or admins
@@ -255,11 +288,32 @@ export class SidebarService {
     }
 
     console.log('SidebarService: Final menu items:', menuItems);
+    console.log('SidebarService: MSR menu present:', menuItems.some(item => item.label === 'msr.title'));
     return menuItems;
   }
 
   public getMenuItemsForCurrentUser(): Observable<SidebarMenuItem[]> {
     return this.menuItems$;
+  }
+
+  // Temporary method for testing - add SUPERUSER role to current user
+  public addSuperUserRoleForTesting(): void {
+    const userData = localStorage.getItem("activeUser");
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        if (user.roles && !user.roles.includes('SUPERUSER')) {
+          user.roles.push('SUPERUSER');
+          localStorage.setItem('activeUser', JSON.stringify(user));
+          console.log('Added SUPERUSER role for testing. New user data:', user);
+          this.checkUserFromStorage(); // Refresh menu
+        } else {
+          console.log('User already has SUPERUSER role or no roles found');
+        }
+      } catch (error) {
+        console.error('Error adding SUPERUSER role:', error);
+      }
+    }
   }
 
   public shouldShowSidebar(): Observable<boolean> {
