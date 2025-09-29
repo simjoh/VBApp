@@ -28,6 +28,8 @@ import {InputTextModule} from "primeng/inputtext";
 import {CardModule} from "primeng/card";
 import {TokenHeaderInterceptor} from "./core/interceptors/token-header.interceptor";
 import {FeedbackInterceptor} from "./core/interceptors/feedback.interceptor";
+import {LoppserviceTokenInterceptor} from "./core/interceptors/loppservice-token.interceptor";
+import {LoppserviceApiKeyInterceptor} from "./core/interceptors/loppservice-api-key.interceptor";
 import {ConfirmationService, MessageService} from "primeng/api";
 import { EnvService } from './core/env.service';
 import {HashLocationStrategy, LocationStrategy } from '@angular/common';
@@ -91,6 +93,16 @@ import {SidebarModule} from "./core/sidebar/sidebar.module";
         {
             provide: HTTP_INTERCEPTORS,
             useClass: FeedbackInterceptor,
+            multi: true
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: LoppserviceTokenInterceptor,
+            multi: true
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: LoppserviceApiKeyInterceptor,
             multi: true
         }, {
             provide: APP_INITIALIZER,

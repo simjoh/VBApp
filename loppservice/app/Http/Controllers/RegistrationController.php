@@ -973,10 +973,8 @@ class RegistrationController extends Controller
     /**
      * Delete a registration and its related orders and optionals
      */
-    public function delete(Request $request)
+    public function delete(Request $request, $registrationUid)
     {
-        $registrationUid = $request->input('registration_uid');
-
         if (!$registrationUid) {
             return response()->json(['error' => 'Registration UID is required'], 400);
         }

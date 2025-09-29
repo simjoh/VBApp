@@ -42,6 +42,9 @@ class Kernel extends HttpKernel
         'loppservice' => [
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\ThrottleRequests::class . ':loppservice',
+            \App\Http\Middleware\JwtTokenValidatorMiddleware::class,
+            \App\Http\Middleware\JwtRoleValidatorMiddleware::class,
+            \App\Http\Middleware\JwtUserContextMiddleware::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\ApiKeyMiddleware::class.':loppservice'
 
@@ -68,6 +71,9 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'apikey' => \App\Http\Middleware\ApiKeyMiddleware::class,
+        'jwt.auth' => \App\Http\Middleware\JwtTokenValidatorMiddleware::class,
+        'jwt.roles' => \App\Http\Middleware\JwtRoleValidatorMiddleware::class,
+        'jwt.context' => \App\Http\Middleware\JwtUserContextMiddleware::class,
 
     ];
 }

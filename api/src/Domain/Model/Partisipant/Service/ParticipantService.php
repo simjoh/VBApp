@@ -35,6 +35,7 @@ use App\Domain\Model\Organizer\Repository\OrganizerRepository;
 use App\common\Service\EmailService;
 use App\common\Service\LoggerService;
 use App\Domain\Model\Track\Service\TrackService;
+use App\common\Rest\Client\LoppServiceParticipantRestClient;
 use PDO;
 use PDOException;
 
@@ -62,6 +63,7 @@ class ParticipantService extends ServiceAbstract
     private $emailService;
     private $trackService;
     private $logger;
+    private $participantRestClient;
 
     public function __construct(
         ContainerInterface             $c,
@@ -84,7 +86,8 @@ class ParticipantService extends ServiceAbstract
         PDO $connection,
         EmailService $emailService,
         TrackService $trackService,
-        LoggerService $logger
+        LoggerService $logger,
+        LoppServiceParticipantRestClient $participantRestClient = null
     ) {
         $this->trackRepository = $trackRepository;
         $this->participantRepository = $participantRepository;
@@ -107,6 +110,7 @@ class ParticipantService extends ServiceAbstract
         $this->emailService = $emailService;
         $this->trackService = $trackService;
         $this->logger = $logger;
+        $this->participantRestClient = $participantRestClient;
     }
 
 
@@ -526,6 +530,15 @@ class ParticipantService extends ServiceAbstract
             throw new BrevetException("Bana finns inte", 5, null);
         }
 
+        // Try to sync with LoppService, but don't fail if LoppService is unavailable
+        error_log("=== PARTICIPANT DELETION START ===");
+        error_log("Deleting participant: " . $participant->getParticipantUid());
+        try {
+            $this->syncParticipantDeletionToLoppservice($participant);
+        } catch (\Exception $loppServiceException) {
+            // Log the error but continue with local deletion
+            error_log("Failed to sync participant deletion to LoppService: " . $loppServiceException->getMessage());
+        }
 
         $this->competitorService->deleteCompetitorCredentialForParticipant($participant->getParticipantUid(), $participant->getCompetitorUid());
 
@@ -548,6 +561,13 @@ class ParticipantService extends ServiceAbstract
             if (count($participants) > 0) {
 
                 foreach ($participants as $participant) {
+                    // Try to sync with LoppService, but don't fail if LoppService is unavailable
+                    try {
+                        $this->syncParticipantDeletionToLoppservice($participant);
+                    } catch (\Exception $loppServiceException) {
+                        // Log the error but continue with local deletion
+                        error_log("Failed to sync participant deletion to LoppService: " . $loppServiceException->getMessage());
+                    }
 
                     // tabort deltagarens credential för banan
                     $this->competitorService->deleteCompetitorCredentialForParticipant($participant->getParticipantUid(), $participant->getCompetitorUid());
@@ -1957,6 +1977,55 @@ class ParticipantService extends ServiceAbstract
             return $success;
 
         } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Sync participant deletion to LoppService
+     * 
+     * @param Participant $participant The participant to delete from loppservice
+     * @return bool True if sync was successful, false otherwise
+     */
+    private function syncParticipantDeletionToLoppservice(Participant $participant): bool
+    {
+        error_log("=== SYNC PARTICIPANT DELETION START ===");
+        error_log("Participant UID: " . $participant->getParticipantUid());
+        error_log("ParticipantRestClient is null: " . ($this->participantRestClient === null ? 'YES' : 'NO'));
+        
+        // If not injected, create the REST client directly
+        if (!$this->participantRestClient) {
+            error_log("LoppServiceParticipantRestClient not injected, creating directly");
+            try {
+                $this->participantRestClient = new LoppServiceParticipantRestClient($this->settings);
+                error_log("Successfully created LoppServiceParticipantRestClient directly");
+            } catch (\Exception $e) {
+                error_log("ERROR: Failed to create LoppServiceParticipantRestClient directly: " . $e->getMessage());
+                return false;
+            }
+        }
+
+        try {
+            // The participant_uid in the API project corresponds to registration_uid in loppservice
+            $registrationUid = $participant->getParticipantUid();
+            error_log("Attempting to delete registration from LoppService: " . $registrationUid);
+            
+            // Delete the registration from loppservice
+            $success = $this->participantRestClient->deleteRegistration($registrationUid);
+            
+            if ($success) {
+                error_log("SUCCESS: Deleted registration from LoppService: " . $registrationUid);
+            } else {
+                error_log("FAILED: Could not delete registration from LoppService: " . $registrationUid);
+            }
+            
+            error_log("=== SYNC PARTICIPANT DELETION END ===");
+            return $success;
+            
+        } catch (\Exception $e) {
+            error_log("EXCEPTION: Error syncing participant deletion to LoppService: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            error_log("=== SYNC PARTICIPANT DELETION END (ERROR) ===");
             return false;
         }
     }

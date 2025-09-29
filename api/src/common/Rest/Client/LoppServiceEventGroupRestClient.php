@@ -64,6 +64,7 @@ class LoppServiceEventGroupRestClient
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
                 'apikey' => $this->apiKey,
+                'User-Agent' => 'Loppservice/1.0',
                 'Access-Control-Allow-Origin' => '*',
                 'Access-Control-Allow-Methods' => 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
                 'Access-Control-Allow-Headers' => 'Content-Type, Accept, Authorization, apikey'
@@ -325,12 +326,7 @@ class LoppServiceEventGroupRestClient
             ]));
             
             $response = $this->client->request('PUT', $this->baseUrl . '/api/integration/event-group/' . $uid, [
-                'json' => $eventGroup->toArray(),
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                    'apikey' => $this->apiKey
-                ]
+                'json' => $eventGroup->toArray()
             ]);
             
             $data = json_decode($response->getBody()->getContents(), true);

@@ -101,6 +101,10 @@ return [
         return new \App\common\Rest\Client\LoppServiceClubRestClient($container->get('settings'));
     },
 
+    \App\common\Rest\Client\LoppServiceParticipantRestClient::class => function(ContainerInterface $container) {
+        return new \App\common\Rest\Client\LoppServiceParticipantRestClient($container->get('settings'));
+    },
+
     \App\Domain\Model\Organizer\Service\OrganizerService::class => function(ContainerInterface $container) {
         return new \App\Domain\Model\Organizer\Service\OrganizerService(
             $container,
@@ -139,6 +143,7 @@ return [
             $container->get(\App\common\Rest\Client\LoppServiceClubRestClient::class)
         );
     },
+
 
     \App\Action\Club\ClubAction::class => function(ContainerInterface $container) {
         return new \App\Action\Club\ClubAction(

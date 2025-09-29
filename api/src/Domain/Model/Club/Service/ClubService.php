@@ -63,6 +63,14 @@ class ClubService
             
             $this->clubrepository->createClub($club);
             
+            // Try to sync with LoppService, but don't fail if LoppService is unavailable
+            try {
+                $this->syncClubToLoppservice($club);
+            } catch (\Exception $loppServiceException) {
+                // Log the error but continue with local creation
+                throw new BrevetException("Failed to sync club to LoppService: " . $loppServiceException->getMessage(), 1, $loppServiceException);
+            }
+            
             return $this->clubAssembly->toRepresentation($club, $permissions);
         } catch (\Exception $e) {
             throw new BrevetException("Det gick inte att skapa klubben: " . $e->getMessage(), 1, $e);
@@ -79,6 +87,14 @@ class ClubService
                 $club->setAcpKod($clubRepresentation->getAcpKod());
                 
                 $this->clubrepository->updateClub($club);
+                
+                // Try to sync with LoppService, but don't fail if LoppService is unavailable
+                try {
+                    $this->syncClubToLoppservice($club);
+                } catch (\Exception $loppServiceException) {
+                    // Log the error but continue with local update
+                    error_log("Failed to sync club to LoppService: " . $loppServiceException->getMessage());
+                }
                 
                 return $this->clubAssembly->toRepresentation($club, $permissions);
             }
@@ -159,5 +175,38 @@ class ClubService
     public function getPermissions($user_uid): array
     {
         return $this->permissionrepoitory->getPermissionsTodata("CLUB", $user_uid);
+    }
+
+    /**
+     * Sync a club to LoppService
+     * 
+     * @param Club $club The club to sync
+     * @return bool True if sync was successful, false otherwise
+     */
+    private function syncClubToLoppservice(Club $club): bool
+    {
+        if (!$this->clubRestClient) {
+            return false;
+        }
+
+        try {
+            // First check if the club exists in LoppService
+            $existingClub = $this->clubRestClient->getClubById($club->getClubUid());
+            
+            if ($existingClub) {
+                // Club exists, update it
+                $clubDTO = $this->createClubDTOFromClub($club);
+                $updatedClub = $this->clubRestClient->updateClub($club->getClubUid(), $clubDTO);
+                return $updatedClub !== null;
+            } else {
+                // Club doesn't exist, create it
+                $clubDTO = $this->createClubDTOFromClub($club);
+                $createdClub = $this->clubRestClient->createClub($clubDTO);
+                return $createdClub !== null;
+            }
+        } catch (\Exception $e) {
+            error_log("Error syncing club to LoppService: " . $e->getMessage());
+            return false;
+        }
     }
 }

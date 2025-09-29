@@ -116,11 +116,14 @@ this.loppserviceApi.request<ResponseType>('GET', 'endpoint', null, customHeaders
 ## Authentication
 
 The service automatically includes:
-- API Key header (`APIKEY: notsecret_developer_key`)
+- API Key header (`APIKEY: testkey`) for loppservice requests
 - Token header (`TOKEN: <user_token>`) if user is logged in
-- Authorization header (`Authorization: Bearer <user_token>`) if user is logged in
 
-These are handled by the existing interceptors in the application.
+These are handled by the dedicated loppservice interceptors:
+- `LoppserviceTokenInterceptor` - Adds JWT token from localStorage
+- `LoppserviceApiKeyInterceptor` - Adds loppservice API key
+
+The interceptors only apply to requests to `/loppservice/` URLs, ensuring proper authentication for loppservice calls while keeping the main API authentication separate.
 
 ## Error Handling
 

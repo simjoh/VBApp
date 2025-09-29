@@ -32,6 +32,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 //Route::middleware('throttle:60,1')->group(function () {
 
+Route::get('/api/simple-test', function () {
+    return response()->json(['message' => 'Simple test route works']);
+});
+
 Route::prefix('/api')->group(function () {
 
 
@@ -42,6 +46,23 @@ Route::prefix('/api')->group(function () {
     Route::get('/pingapikey', ['middleware' => ['apikey',], function () {
         return 'Testar kontroll av apinyckel';
     }]);
+
+    Route::get('/pingjwt', function () {
+        return response()->json([
+            'message' => 'JWT validation successful',
+            'user_id' => request()->attributes->get('current_user_id'),
+            'organizer_id' => request()->attributes->get('current_organizer_id'),
+            'roles' => request()->attributes->get('current_user_roles', []),
+            'timestamp' => now()->toISOString()
+        ]);
+    });
+
+    Route::get('/testjwt', function () {
+        return response()->json([
+            'message' => 'Test route without JWT middleware',
+            'timestamp' => now()->toISOString()
+        ]);
+    });
 
     Route::prefix('/integration')->middleware('apikey')->group(function () {
 

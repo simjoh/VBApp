@@ -63,7 +63,8 @@ class LoppServiceClubRestClient
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
-                'apikey' => $this->apiKey
+                'apikey' => $this->apiKey,
+                'User-Agent' => 'Loppservice/1.0'
             ]
         ]);
     }
