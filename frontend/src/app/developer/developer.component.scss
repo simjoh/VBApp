@@ -1,0 +1,10 @@
+.developer-layout {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.developer-content {
+  // Remove max-width constraint to match admin layout pattern
+  // Content will use full available width within admin-content padding
+  // admin-content already provides padding: 2rem
+}

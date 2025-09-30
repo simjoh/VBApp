@@ -140,9 +140,12 @@ export class SidebarService {
     const isAdmin = hasRole(Role.ADMIN) || hasRole(Role.SUPERUSER);
     const isSuperUser = hasRole(Role.SUPERUSER);
     const isVolunteer = hasRole(Role.VOLONTEER);
+    const isDeveloper = hasRole(Role.DEVELOPER);
 
     console.log('SidebarService: Building menu for roles:', userRoles);
-    console.log('SidebarService: isAdmin:', isAdmin, 'isSuperUser:', isSuperUser, 'isVolunteer:', isVolunteer);
+    console.log('SidebarService: isAdmin:', isAdmin, 'isSuperUser:', isSuperUser, 'isVolunteer:', isVolunteer, 'isDeveloper:', isDeveloper);
+    console.log('SidebarService: hasRole DEVELOPER:', hasRole(Role.DEVELOPER));
+    console.log('SidebarService: Role.DEVELOPER value:', Role.DEVELOPER);
 
     if (isAdmin) {
       // Admin menu items
@@ -287,6 +290,28 @@ export class SidebarService {
       );
     }
 
+    // Add developer menu section for developers only
+    if (isDeveloper) {
+      menuItems.push(
+        {
+          label: 'nav.developer',
+          icon: 'pi pi-code',
+          children: [
+            {
+              label: 'nav.developerDashboard',
+              routerLink: '/developer',
+              icon: 'pi pi-home'
+            },
+            {
+              label: 'nav.apiTesting',
+              routerLink: '/developer/api-testing',
+              icon: 'pi pi-cog'
+            }
+          ]
+        }
+      );
+    }
+
     console.log('SidebarService: Final menu items:', menuItems);
     console.log('SidebarService: MSR menu present:', menuItems.some(item => item.label === 'msr.title'));
     return menuItems;
@@ -312,6 +337,26 @@ export class SidebarService {
         }
       } catch (error) {
         console.error('Error adding SUPERUSER role:', error);
+      }
+    }
+  }
+
+  // Temporary method for testing - add DEVELOPER role to current user
+  public addDeveloperRoleForTesting(): void {
+    const userData = localStorage.getItem("activeUser");
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        if (user.roles && !user.roles.includes('DEVELOPER')) {
+          user.roles.push('DEVELOPER');
+          localStorage.setItem('activeUser', JSON.stringify(user));
+          console.log('Added DEVELOPER role for testing. New user data:', user);
+          this.checkUserFromStorage(); // Refresh menu
+        } else {
+          console.log('User already has DEVELOPER role or no roles found');
+        }
+      } catch (error) {
+        console.error('Error adding DEVELOPER role:', error);
       }
     }
   }

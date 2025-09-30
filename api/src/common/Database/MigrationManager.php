@@ -21,7 +21,7 @@ class MigrationManager
     /**
      * Initialize the migrations table if it doesn't exist
      */
-    public function initialize(): void
+    public function initialize(bool $suppressOutput = false): void
     {
         $sql = "CREATE TABLE IF NOT EXISTS `{$this->migrationsTable}` (
             `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -34,7 +34,9 @@ class MigrationManager
 
         try {
             $this->connection->exec($sql);
-            echo "✓ Migrations table initialized\n";
+            if (!$suppressOutput) {
+                echo "✓ Migrations table initialized\n";
+            }
         } catch (PDOException $e) {
             throw new Exception("Failed to create migrations table: " . $e->getMessage());
         }
@@ -87,13 +89,15 @@ class MigrationManager
     /**
      * Execute a single migration file
      */
-    private function executeMigration(string $filepath, int $batch): bool
+    private function executeMigration(string $filepath, int $batch, bool $suppressOutput = false): bool
     {
         $migrationName = $this->getMigrationName($filepath);
         $sql = file_get_contents($filepath);
 
         if (empty($sql)) {
-            echo "⚠ Warning: Empty migration file: {$migrationName}\n";
+            if (!$suppressOutput) {
+                echo "⚠ Warning: Empty migration file: {$migrationName}\n";
+            }
             return false;
         }
 
@@ -103,14 +107,18 @@ class MigrationManager
         try {
             if ($isComplexMigration) {
                 // For complex migrations, don't use transactions
-                echo "⚠ Note: Running complex migration without transaction: {$migrationName}\n";
-                return $this->executeComplexMigration($filepath, $migrationName, $batch);
+                if (!$suppressOutput) {
+                    echo "⚠ Note: Running complex migration without transaction: {$migrationName}\n";
+                }
+                return $this->executeComplexMigration($filepath, $migrationName, $batch, $suppressOutput);
             } else {
                 // For simple migrations, use transactions
-                return $this->executeSimpleMigration($filepath, $migrationName, $batch);
+                return $this->executeSimpleMigration($filepath, $migrationName, $batch, $suppressOutput);
             }
         } catch (PDOException $e) {
-            echo "✗ Failed to execute migration {$migrationName}: " . $e->getMessage() . "\n";
+            if (!$suppressOutput) {
+                echo "✗ Failed to execute migration {$migrationName}: " . $e->getMessage() . "\n";
+            }
             return false;
         }
     }
@@ -144,7 +152,7 @@ class MigrationManager
     /**
      * Execute simple migration with transaction
      */
-    private function executeSimpleMigration(string $filepath, string $migrationName, int $batch): bool
+    private function executeSimpleMigration(string $filepath, string $migrationName, int $batch, bool $suppressOutput = false): bool
     {
         $sql = file_get_contents($filepath);
 
@@ -163,7 +171,9 @@ class MigrationManager
             // Commit transaction
             $this->connection->commit();
 
-            echo "✓ Executed migration: {$migrationName}\n";
+            if (!$suppressOutput) {
+                echo "✓ Executed migration: {$migrationName}\n";
+            }
             return true;
 
         } catch (PDOException $e) {
@@ -174,7 +184,9 @@ class MigrationManager
                 }
             } catch (PDOException $rollbackError) {
                 // Ignore rollback errors, just log them
-                echo "⚠ Warning: Could not rollback transaction: " . $rollbackError->getMessage() . "\n";
+                if (!$suppressOutput) {
+                    echo "⚠ Warning: Could not rollback transaction: " . $rollbackError->getMessage() . "\n";
+                }
             }
             
             throw $e;
@@ -184,7 +196,7 @@ class MigrationManager
     /**
      * Execute complex migration without transaction
      */
-    private function executeComplexMigration(string $filepath, string $migrationName, int $batch): bool
+    private function executeComplexMigration(string $filepath, string $migrationName, int $batch, bool $suppressOutput = false): bool
     {
         $sql = file_get_contents($filepath);
 
@@ -197,7 +209,9 @@ class MigrationManager
             $stmt = $this->connection->prepare($insertSql);
             $stmt->execute([$migrationName, $batch]);
 
-            echo "✓ Executed migration: {$migrationName}\n";
+            if (!$suppressOutput) {
+                echo "✓ Executed migration: {$migrationName}\n";
+            }
             return true;
 
         } catch (PDOException $e) {
@@ -208,9 +222,9 @@ class MigrationManager
     /**
      * Run all pending migrations
      */
-    public function migrate(): array
+    public function migrate(bool $suppressOutput = false): array
     {
-        $this->initialize();
+        $this->initialize($suppressOutput);
 
         $migrationFiles = $this->getMigrationFiles();
         $executedMigrations = $this->getExecutedMigrations();
@@ -221,27 +235,33 @@ class MigrationManager
         });
 
         if (empty($pendingMigrations)) {
-            echo "✓ No pending migrations found\n";
+            if (!$suppressOutput) {
+                echo "✓ No pending migrations found\n";
+            }
             return ['success' => true, 'executed' => 0];
         }
 
-        echo "Found " . count($pendingMigrations) . " pending migration(s)\n";
-        echo "Starting batch {$nextBatch}...\n\n";
+        if (!$suppressOutput) {
+            echo "Found " . count($pendingMigrations) . " pending migration(s)\n";
+            echo "Starting batch {$nextBatch}...\n\n";
+        }
 
         $executed = 0;
         $failed = 0;
 
         foreach ($pendingMigrations as $file) {
-            if ($this->executeMigration($file, $nextBatch)) {
+            if ($this->executeMigration($file, $nextBatch, $suppressOutput)) {
                 $executed++;
             } else {
                 $failed++;
             }
         }
 
-        echo "\nMigration summary:\n";
-        echo "- Executed: {$executed}\n";
-        echo "- Failed: {$failed}\n";
+        if (!$suppressOutput) {
+            echo "\nMigration summary:\n";
+            echo "- Executed: {$executed}\n";
+            echo "- Failed: {$failed}\n";
+        }
 
         return [
             'success' => $failed === 0,

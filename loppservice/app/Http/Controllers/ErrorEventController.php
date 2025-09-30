@@ -3,106 +3,40 @@
 namespace App\Http\Controllers;
 
 use App\Events\CreateParticipantInCyclingAppEvent;
-use App\Models\Event;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Session;
 
-class ToolController extends Controller
+/**
+ * Error Event Controller
+ *
+ * Handles error event management and retry operations
+ * Separated from ToolController for better separation of concerns
+ */
+class ErrorEventController extends Controller
 {
-
-    public function index(Request $request)
-    {
-        return view('tool.show')->with(['migratelink' => '', 'callping' => env("APP_URL") . '/api/ping', 'events' => [], 'transferurl' => env("APP_URL") . '/loppservice/api/transfer']);
-    }
-
-    public function run(Request $request)
-    {
-        Artisan::call('migrate', ["--force" => true]);
-        Artisan::call('app:country-update');
-        return view('tool.show')->with(['migratelink' => '', 'callping' => env("APP_URL") . '/api/ping', 'events' => Event::all(), 'transferurl' => env("APP_URL") . '/api/transfer']);
-    }
-
-    public function testappintegration(Request $request)
-    {
-        $response = Http::withHeaders([
-            'APIKEY' => env('BREVET_APP_API_KEY'),
-        ])->get(env("BREVET_APP_URL") . '/ping');
-        return $response;
-    }
-
-
-    public function publishToCyclingappIfNotAlreadyRegister(Request $request)
-    {
-
-
-
-        $course_uid = $request['event'];
-        $reguid = $request['reguid'];
-
-        if($reguid){
-            $results = DB::table('registrations as r')
-            ->select('r.registration_uid', 'p.person_uid', 'r.course_uid')
-            ->distinct()
-            ->join('person as p', 'p.person_uid', '=', 'r.person_uid')
-            ->join('contactinformation as ci', 'ci.person_person_uid', '=', 'p.person_uid')->where('r.registration_uid', '=', $reguid)->get();
-
-        } else {
-
-            $results = DB::table('registrations as r')
-            ->select('r.registration_uid', 'p.person_uid', 'r.course_uid')
-            ->distinct()
-            ->join('person as p', 'p.person_uid', '=', 'r.person_uid')
-            ->join('contactinformation as ci', 'ci.person_person_uid', '=', 'p.person_uid')
-            ->join('clubs as c', 'c.club_uid', '=', 'r.club_uid')
-            ->join('adress as a', 'a.person_person_uid', '=', 'p.person_uid')
-            ->join('countries as co', 'co.country_id', '=', 'a.country_id')
-            ->where('r.course_uid', '=', $course_uid)
-            ->whereNotIn('r.registration_uid', function ($query) {
-                $query->select('registration_uid')
-                    ->from('published_events');
-            })
-            ->get();
-
-        }
-
-
-
-
-
-        $count = 0;
-        if(!$results->isEmpty()){
-            foreach ($results as $result) {
-                event(new CreateParticipantInCyclingAppEvent($result->course_uid, $result->person_uid, $result->registration_uid));
-                sleep(1);
-            }
-            $count = count($results);
-        } else {
-            $count = 0;
-        }
-        return view('tool.show')->with(['migratelink' => '', 'callping' => env("APP_URL") . '/api/ping', 'events' => Event::all(), 'transferurl' => env("APP_URL") . '/api/transfer', 'counttransferred' => $count]);
-
-
-    }
-
-    public function getErrorEvents(Request $request)
+    /**
+     * Get error events with pagination
+     */
+    public function getErrorEvents(Request $request): JsonResponse
     {
         try {
+            $request->validate([
+                'limit' => 'integer|min:1|max:1000',
+                'offset' => 'integer|min:0'
+            ]);
+
             $limit = $request->get('limit', 50);
             $offset = $request->get('offset', 0);
 
-        $errorEvents = DB::table('error_events')
-            ->orderBy('created_at', 'desc')
-            ->limit($limit)
-            ->offset($offset)
-            ->get();
+            $errorEvents = DB::table('error_events')
+                ->orderBy('created_at', 'desc')
+                ->limit($limit)
+                ->offset($offset)
+                ->get();
 
-        $totalCount = DB::table('error_events')->count();
+            $totalCount = DB::table('error_events')->count();
 
             return response()->json([
                 'success' => true,
@@ -111,6 +45,12 @@ class ToolController extends Controller
                 'limit' => $limit,
                 'offset' => $offset
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             Log::error('Error fetching error events: ' . $e->getMessage());
             return response()->json([
@@ -122,11 +62,17 @@ class ToolController extends Controller
     }
 
     /**
-     * Get failed publishToCyclingapp events for retry
+     * Get failed publish events for retry
      */
-    public function getFailedPublishEvents(Request $request)
+    public function getFailedPublishEvents(Request $request): JsonResponse
     {
         try {
+            $request->validate([
+                'limit' => 'integer|min:1|max:1000',
+                'offset' => 'integer|min:0',
+                'event_type' => 'string|in:eventregistration,eventupdate,eventdelete'
+            ]);
+
             $limit = $request->get('limit', 50);
             $offset = $request->get('offset', 0);
             $eventType = $request->get('event_type', 'eventregistration');
@@ -150,6 +96,12 @@ class ToolController extends Controller
                 'offset' => $offset,
                 'event_type' => $eventType
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             Log::error('Error fetching failed publish events: ' . $e->getMessage());
             return response()->json([
@@ -161,11 +113,15 @@ class ToolController extends Controller
     }
 
     /**
-     * Retry a single failed publishToCyclingapp event
+     * Retry a single failed publish event
      */
-    public function retryPublishEvent(Request $request, $errorEventUid)
+    public function retryPublishEvent(Request $request, string $errorEventUid): JsonResponse
     {
         try {
+            $request->validate([
+                'errorEventUid' => 'required|string|uuid'
+            ]);
+
             // Get the error event
             $errorEvent = DB::table('error_events')
                 ->where('errorevent_uid', $errorEventUid)
@@ -213,9 +169,16 @@ class ToolController extends Controller
                     'registration_uid' => $registration->registration_uid,
                     'course_uid' => $registration->course_uid,
                     'person_uid' => $registration->person_uid
-                ]
+                ],
+                'timestamp' => now()->toISOString()
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             Log::error('Error retrying publish event: ' . $e->getMessage());
             return response()->json([
@@ -227,13 +190,18 @@ class ToolController extends Controller
     }
 
     /**
-     * Retry all failed publishToCyclingapp events
+     * Retry all failed publish events
      */
-    public function retryAllPublishEvents(Request $request)
+    public function retryAllPublishEvents(Request $request): JsonResponse
     {
         try {
+            $request->validate([
+                'event_type' => 'string|in:eventregistration,eventupdate,eventdelete',
+                'limit' => 'integer|min:1|max:1000'
+            ]);
+
             $eventType = $request->get('event_type', 'eventregistration');
-            $limit = $request->get('limit', 100); // Limit to prevent overwhelming the system
+            $limit = $request->get('limit', 100);
 
             // Get all failed publish events
             $errorEvents = DB::table('error_events')
@@ -295,9 +263,16 @@ class ToolController extends Controller
                 'message' => "Retry completed. Successfully retried {$retriedCount} events, {$failedCount} failed",
                 'retried_count' => $retriedCount,
                 'failed_count' => $failedCount,
-                'errors' => $errors
+                'errors' => $errors,
+                'timestamp' => now()->toISOString()
             ]);
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             Log::error('Error retrying all publish events: ' . $e->getMessage());
             return response()->json([
@@ -307,27 +282,4 @@ class ToolController extends Controller
             ], 500);
         }
     }
-
-    public function getPublishedEventsCount(Request $request)
-    {
-        try {
-            $count = DB::table('published_events')->count();
-
-            return response()->json([
-                'success' => true,
-                'count' => $count,
-                'message' => "Found {$count} published events"
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Error getting published events count: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'count' => 0,
-                'message' => 'Failed to get published events count',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
 }

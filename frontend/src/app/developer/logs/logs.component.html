@@ -1,0 +1,48 @@
+<div class="logs">
+  <div class="page-header">
+    <h1>{{ 'developer.logs.title' | translate }}</h1>
+    <p>{{ 'developer.logs.description' | translate }}</p>
+  </div>
+
+  <div class="logs-controls">
+    <div class="filter-controls">
+      <select class="form-control">
+        <option value="all">{{ 'developer.logs.allLogs' | translate }}</option>
+        <option value="error">{{ 'developer.logs.errorsOnly' | translate }}</option>
+        <option value="warning">{{ 'developer.logs.warningsOnly' | translate }}</option>
+        <option value="info">{{ 'developer.logs.infoOnly' | translate }}</option>
+      </select>
+
+      <input type="date" class="form-control" [placeholder]="'developer.logs.fromDate' | translate" />
+      <input type="date" class="form-control" [placeholder]="'developer.logs.toDate' | translate" />
+
+      <button class="btn btn-primary">{{ 'developer.logs.refreshLogs' | translate }}</button>
+    </div>
+  </div>
+
+  <div class="logs-content">
+    <div class="log-entry error">
+      <div class="log-timestamp">2025-01-27 10:30:15</div>
+      <div class="log-level">ERROR</div>
+      <div class="log-message">Database connection failed: Connection timeout after 30 seconds</div>
+    </div>
+
+    <div class="log-entry warning">
+      <div class="log-timestamp">2025-01-27 10:25:42</div>
+      <div class="log-level">WARNING</div>
+      <div class="log-message">High memory usage detected: 85% of available memory in use</div>
+    </div>
+
+    <div class="log-entry info">
+      <div class="log-timestamp">2025-01-27 10:20:18</div>
+      <div class="log-level">INFO</div>
+      <div class="log-message">User login successful: user&#64;example.com</div>
+    </div>
+
+    <div class="log-entry info">
+      <div class="log-timestamp">2025-01-27 10:15:33</div>
+      <div class="log-level">INFO</div>
+      <div class="log-message">API request processed: GET /api/participants</div>
+    </div>
+  </div>
+</div>

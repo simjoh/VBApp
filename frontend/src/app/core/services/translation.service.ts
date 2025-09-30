@@ -83,6 +83,9 @@ export interface TranslationKeys {
   'nav.copyTrack': string;
   'nav.reportToAcp': string;
   'nav.system': string;
+  'nav.developer': string;
+  'nav.developerDashboard': string;
+  'nav.apiTesting': string;
 
   // Login
   'login.title': string;
@@ -883,6 +886,45 @@ export interface TranslationKeys {
   'msr.numberOfParticipants': string;
   'msr.numberOfRegistrations': string;
   'msr.numberOfProducts': string;
+
+  // Developer
+  'developer.dashboard.title': string;
+  'developer.dashboard.welcome': string;
+  'developer.dashboard.updating': string;
+  'developer.dashboard.autoRefresh': string;
+  'developer.dashboard.publishedEvents': string;
+  'developer.dashboard.eventsPublished': string;
+  'developer.dashboard.successfullyPublished': string;
+  'developer.dashboard.errorEvents': string;
+  'developer.dashboard.failedToPublish': string;
+  'developer.dashboard.never': string;
+
+  'developer.apiTesting.title': string;
+  'developer.apiTesting.description': string;
+  'developer.apiTesting.debugLoaded': string;
+  'developer.apiTesting.quickActions': string;
+  'developer.apiTesting.runMainMigration': string;
+  'developer.apiTesting.runLoppserviceMigration': string;
+  'developer.apiTesting.runCacheCommands': string;
+  'developer.apiTesting.loadErrorEvents': string;
+  'developer.apiTesting.errorEvents': string;
+  'developer.apiTesting.selectAll': string;
+  'developer.apiTesting.retrySelected': string;
+  'developer.apiTesting.type': string;
+  'developer.apiTesting.timestamp': string;
+  'developer.apiTesting.errorCode': string;
+  'developer.apiTesting.message': string;
+  'developer.apiTesting.eventUid': string;
+  'developer.apiTesting.response': string;
+  'developer.apiTesting.noRequestSent': string;
+  'developer.apiTesting.runningCommand': string;
+  'developer.apiTesting.customTest': string;
+  'developer.apiTesting.httpMethod': string;
+  'developer.apiTesting.url': string;
+  'developer.apiTesting.headers': string;
+  'developer.apiTesting.requestBody': string;
+  'developer.apiTesting.sendRequest': string;
+
 }
 
 @Injectable({
@@ -974,6 +1016,9 @@ export class TranslationService {
       'nav.copyTrack': 'Kopiera bana',
       'nav.reportToAcp': 'Rapport till ACP',
       'nav.system': 'System',
+      'nav.developer': 'Utvecklare',
+      'nav.developerDashboard': 'Utvecklardashboard',
+      'nav.apiTesting': 'Verktyg',
 
       // Login
       'login.title': 'Digitalt Brevet-kort med GPS-validering',
@@ -1773,7 +1818,45 @@ export class TranslationService {
       'msr.exportedAt': 'Exporterad',
       'msr.numberOfParticipants': 'Antal deltagare',
       'msr.numberOfRegistrations': 'Antal registreringar',
-      'msr.numberOfProducts': 'Antal produkter'
+      'msr.numberOfProducts': 'Antal produkter',
+
+      // Developer
+      'developer.dashboard.title': 'Utvecklardashboard',
+      'developer.dashboard.welcome': 'Välkommen till utvecklarverktyg-sektionen. Här kan du komma åt olika utvecklingsverktyg och systeminformation.',
+      'developer.dashboard.updating': 'Uppdaterar...',
+      'developer.dashboard.autoRefresh': 'Uppdateras automatiskt varje minut',
+      'developer.dashboard.publishedEvents': 'Publicerade händelser',
+      'developer.dashboard.eventsPublished': 'Händelser publicerade',
+      'developer.dashboard.successfullyPublished': 'Framgångsrikt publicerat till externa system',
+      'developer.dashboard.errorEvents': 'Felhändelser',
+      'developer.dashboard.failedToPublish': 'Misslyckades att publicera till externa system',
+      'developer.dashboard.never': 'Aldrig',
+
+      'developer.apiTesting.title': 'API-testning',
+      'developer.apiTesting.description': 'Testa API-endpoints och visa svar i realtid',
+      'developer.apiTesting.debugLoaded': 'Debug: Komponenten laddades framgångsrikt!',
+      'developer.apiTesting.quickActions': 'Snabbåtgärder',
+      'developer.apiTesting.runMainMigration': 'Kör huvud-API-migration',
+      'developer.apiTesting.runLoppserviceMigration': 'Kör Loppservice-migration',
+      'developer.apiTesting.runCacheCommands': 'Kör cache-kommandon',
+      'developer.apiTesting.loadErrorEvents': 'Ladda felhändelser',
+      'developer.apiTesting.errorEvents': 'Felhändelser',
+      'developer.apiTesting.selectAll': 'Välj alla',
+      'developer.apiTesting.retrySelected': 'Försök igen valda',
+      'developer.apiTesting.type': 'Typ',
+      'developer.apiTesting.timestamp': 'Tidsstämpel',
+      'developer.apiTesting.errorCode': 'Felkod',
+      'developer.apiTesting.message': 'Meddelande',
+      'developer.apiTesting.eventUid': 'Händelse-UID',
+      'developer.apiTesting.response': 'Svar',
+      'developer.apiTesting.noRequestSent': 'Ingen begäran skickad än. Använd snabbåtgärderna ovan eller formuläret nedan för att testa en API-endpoint.',
+      'developer.apiTesting.runningCommand': 'Kör kommando...',
+      'developer.apiTesting.customTest': 'Anpassad API-test',
+      'developer.apiTesting.httpMethod': 'HTTP-metod',
+      'developer.apiTesting.url': 'URL',
+      'developer.apiTesting.headers': 'Headers (JSON)',
+      'developer.apiTesting.requestBody': 'Begärandetext (JSON)',
+      'developer.apiTesting.sendRequest': 'Skicka begäran'
     },
     en: {
       // Common
@@ -1857,6 +1940,9 @@ export class TranslationService {
       'nav.copyTrack': 'Copy Track',
       'nav.reportToAcp': 'Report to ACP',
       'nav.system': 'System',
+      'nav.developer': 'Developer',
+      'nav.developerDashboard': 'Developer Dashboard',
+      'nav.apiTesting': 'Tools',
 
       // Login
       'login.title': 'Digital Brevet Card with GPS Validation',
@@ -2656,7 +2742,45 @@ export class TranslationService {
       'msr.exportedAt': 'Exported at',
       'msr.numberOfParticipants': 'Number of participants',
       'msr.numberOfRegistrations': 'Number of registrations',
-      'msr.numberOfProducts': 'Number of products'
+      'msr.numberOfProducts': 'Number of products',
+
+      // Developer
+      'developer.dashboard.title': 'Developer Dashboard',
+      'developer.dashboard.welcome': 'Welcome to the developer tools section. Here you can access various development utilities and system information.',
+      'developer.dashboard.updating': 'Updating...',
+      'developer.dashboard.autoRefresh': 'Auto-refreshes every minute',
+      'developer.dashboard.publishedEvents': 'Published Events',
+      'developer.dashboard.eventsPublished': 'Events Published',
+      'developer.dashboard.successfullyPublished': 'Successfully published to external systems',
+      'developer.dashboard.errorEvents': 'Error Events',
+      'developer.dashboard.failedToPublish': 'Failed to publish to external systems',
+      'developer.dashboard.never': 'Never',
+
+      'developer.apiTesting.title': 'API Testing',
+      'developer.apiTesting.description': 'Test API endpoints and view responses in real-time',
+      'developer.apiTesting.debugLoaded': 'Debug: Component loaded successfully!',
+      'developer.apiTesting.quickActions': 'Quick Actions',
+      'developer.apiTesting.runMainMigration': 'Run Main API Migration',
+      'developer.apiTesting.runLoppserviceMigration': 'Run Loppservice Migration',
+      'developer.apiTesting.runCacheCommands': 'Run Cache Commands',
+      'developer.apiTesting.loadErrorEvents': 'Load Error Events',
+      'developer.apiTesting.errorEvents': 'Error Events',
+      'developer.apiTesting.selectAll': 'Select All',
+      'developer.apiTesting.retrySelected': 'Retry Selected',
+      'developer.apiTesting.type': 'Type',
+      'developer.apiTesting.timestamp': 'Timestamp',
+      'developer.apiTesting.errorCode': 'Error Code',
+      'developer.apiTesting.message': 'Message',
+      'developer.apiTesting.eventUid': 'Event UID',
+      'developer.apiTesting.response': 'Response',
+      'developer.apiTesting.noRequestSent': 'No request sent yet. Use the quick actions above or the form below to test an API endpoint.',
+      'developer.apiTesting.runningCommand': 'Running command...',
+      'developer.apiTesting.customTest': 'Custom API Test',
+      'developer.apiTesting.httpMethod': 'HTTP Method',
+      'developer.apiTesting.url': 'URL',
+      'developer.apiTesting.headers': 'Headers (JSON)',
+      'developer.apiTesting.requestBody': 'Request Body (JSON)',
+      'developer.apiTesting.sendRequest': 'Send Request'
     }
   };
 

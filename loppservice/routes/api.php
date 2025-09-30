@@ -15,6 +15,10 @@
 
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ToolController;
+use App\Http\Controllers\TestController;
+use App\Http\Controllers\DeveloperController;
+use App\Http\Controllers\ErrorEventController;
+use App\Http\Controllers\IntegrationController;
 use App\Http\Controllers\EventGroupController;
 use App\Http\Controllers\OrganizerController;
 use App\Http\Controllers\ClubController;
@@ -32,37 +36,20 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 //Route::middleware('throttle:60,1')->group(function () {
 
-Route::get('/api/simple-test', function () {
-    return response()->json(['message' => 'Simple test route works']);
-});
+Route::get('/api/simple-test', [TestController::class, 'simpleTest']);
 
 Route::prefix('/api')->group(function () {
 
 
-    Route::get('/ping' , [ToolController::class, 'testappintegration']);
+    Route::get('/ping' , [IntegrationController::class, 'testCyclingAppIntegration']);
 
-    Route::post('/transfer' , [ToolController::class, 'publishToCyclingappIfNotAlreadyRegister']);
+    Route::post('/transfer' , [IntegrationController::class, 'publishToCyclingApp']);
 
-    Route::get('/pingapikey', ['middleware' => ['apikey',], function () {
-        return 'Testar kontroll av apinyckel';
-    }]);
+    Route::get('/pingapikey', [TestController::class, 'pingApiKey'])->middleware('apikey');
 
-    Route::get('/pingjwt', function () {
-        return response()->json([
-            'message' => 'JWT validation successful',
-            'user_id' => request()->attributes->get('current_user_id'),
-            'organizer_id' => request()->attributes->get('current_organizer_id'),
-            'roles' => request()->attributes->get('current_user_roles', []),
-            'timestamp' => now()->toISOString()
-        ]);
-    });
+    Route::get('/pingjwt', [TestController::class, 'pingJwt']);
 
-    Route::get('/testjwt', function () {
-        return response()->json([
-            'message' => 'Test route without JWT middleware',
-            'timestamp' => now()->toISOString()
-        ]);
-    });
+    Route::get('/testjwt', [TestController::class, 'testJwt']);
 
     Route::prefix('/integration')->middleware('apikey')->group(function () {
 
@@ -130,28 +117,22 @@ Route::prefix('/api')->group(function () {
 
         // Non-participant optionals endpoint
         Route::get('/non-participant-optionals', [StatsController::class, 'getNonParticipantOptionals'])->name('api.non_participant_optionals');
+
+        // Error events endpoints
+        Route::get('/error-events', [ErrorEventController::class, 'getErrorEvents'])->name('api.error_events');
+        Route::get('/failed-publish-events', [ErrorEventController::class, 'getFailedPublishEvents'])->name('api.failed_publish_events');
+        Route::post('/retry-publish-event/{errorEventUid}', [ErrorEventController::class, 'retryPublishEvent'])->name('api.retry_publish_event');
+        Route::post('/retry-all-publish-events', [ErrorEventController::class, 'retryAllPublishEvents'])->name('api.retry_all_publish_events');
+
+        // Integration endpoints
+        Route::get('/published-events-count', [IntegrationController::class, 'getPublishedEventsCount'])->name('api.published_events_count');
     });
 
     Route::prefix('/artisan')->group(function () {
-
-        Route::get('/migrate', function () {
-            Artisan::call('migrate', ["--force" => true]);
-            Artisan::call('app:country-update');
-        });
-
-        Route::get('/command/country/run', function () {
-            Artisan::call('app:country-update');
-        });
-
-        Route::get('/command/cache/run', function () {
-            Artisan::call('view:cache');
-            Artisan::call('route:cache');
-           Artisan::call('event:cache');
-        });
-
-        Route::get('/command/schedule/run', function () {
-            Artisan::call('schedule:run');
-        });
+        Route::get('/migrate', [DeveloperController::class, 'migrate']);
+        Route::get('/command/country/run', [DeveloperController::class, 'countryUpdate']);
+        Route::get('/command/cache/run', [DeveloperController::class, 'cacheRun']);
+        Route::get('/command/schedule/run', [DeveloperController::class, 'scheduleRun']);
     });
 });
 

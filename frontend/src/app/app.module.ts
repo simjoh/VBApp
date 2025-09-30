@@ -1,5 +1,12 @@
-import {APP_INITIALIZER, NgModule } from '@angular/core';
+import {APP_INITIALIZER, NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { registerLocaleData } from '@angular/common';
+import localeSv from '@angular/common/locales/sv';
+import localeEn from '@angular/common/locales/en';
+
+// Register locale data globally
+registerLocaleData(localeSv, 'sv-SE');
+registerLocaleData(localeEn, 'en-US');
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -36,6 +43,7 @@ import {HashLocationStrategy, LocationStrategy } from '@angular/common';
 import {FlagLanguageSelectorComponent} from "./shared/components/flag-language-selector/flag-language-selector.component";
 import {TranslationPipe} from "./shared/pipes/translation.pipe";
 import {SidebarModule} from "./core/sidebar/sidebar.module";
+import {LanguageService} from "./core/services/language.service";
 
 @NgModule({ declarations: [
         AppComponent,
@@ -109,5 +117,13 @@ import {SidebarModule} from "./core/sidebar/sidebar.module";
             useFactory: (envService: EnvService) => () => envService.init(),
             deps: [EnvService],
             multi: true
-        }, ConfirmationService, provideHttpClient(withInterceptorsFromDi())] })
+        }, ConfirmationService, provideHttpClient(withInterceptorsFromDi()),
+        {
+          provide: LOCALE_ID,
+          useFactory: (languageService: any) => {
+            const currentLang = languageService.getCurrentLanguage();
+            return currentLang === 'sv' ? 'sv-SE' : 'en-US';
+          },
+          deps: [LanguageService]
+        }] })
 export class AppModule { }

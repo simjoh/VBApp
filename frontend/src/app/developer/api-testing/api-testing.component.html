@@ -1,0 +1,174 @@
+<div class="api-testing">
+  <div class="page-header">
+    <h1>{{ 'developer.apiTesting.title' | translate }}</h1>
+    <p>{{ 'developer.apiTesting.description' | translate }}</p>
+    <p><strong>{{ 'developer.apiTesting.debugLoaded' | translate }}</strong></p>
+  </div>
+
+  <div class="api-testing-content">
+    <div class="content-grid">
+      <!-- Left Column -->
+      <div class="left-column">
+        <div class="quick-actions">
+          <h3>{{ 'developer.apiTesting.quickActions' | translate }}</h3>
+          <div class="action-buttons">
+            <button class="btn btn-success" (click)="runMainApiMigration()">
+              <i class="pi pi-database"></i>
+              {{ 'developer.apiTesting.runMainMigration' | translate }}
+            </button>
+            <button class="btn btn-success" (click)="runLoppserviceMigration()">
+              <i class="pi pi-database"></i>
+              {{ 'developer.apiTesting.runLoppserviceMigration' | translate }}
+            </button>
+            <button class="btn btn-warning" (click)="runCacheCommands()">
+              <i class="pi pi-refresh"></i>
+              {{ 'developer.apiTesting.runCacheCommands' | translate }}
+            </button>
+            <button class="btn btn-info" (click)="loadErrorEvents()">
+              <i class="pi pi-exclamation-triangle"></i>
+              {{ 'developer.apiTesting.loadErrorEvents' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <div class="error-events-section" *ngIf="errorEvents.length > 0">
+      <h3>{{ 'developer.apiTesting.errorEvents' | translate }} ({{ errorEvents.length }})</h3>
+      <div class="table-container">
+        <div class="table-controls" *ngIf="errorEvents.length > 0">
+          <div class="selection-controls">
+            <label class="checkbox-label">
+              <input
+                type="checkbox"
+                [checked]="isAllErrorEventsSelected()"
+                [indeterminate]="isSomeErrorEventsSelected()"
+                (change)="toggleAllErrorEventsSelection()">
+              <span class="checkmark"></span>
+              {{ 'developer.apiTesting.selectAll' | translate }} ({{ selectedErrorEvents.length }}/{{ errorEvents.length }})
+            </label>
+            <button
+              class="btn btn-sm btn-primary retry-selected-btn"
+              (click)="retrySelectedErrorEvents()"
+              [disabled]="selectedErrorEvents.length === 0 || loading">
+              <i class="pi pi-refresh"></i>
+              {{ 'developer.apiTesting.retrySelected' | translate }} ({{ selectedErrorEvents.length }})
+            </button>
+          </div>
+        </div>
+
+        <table class="error-events-table">
+          <thead>
+            <tr>
+              <th class="checkbox-column">
+                <input
+                  type="checkbox"
+                  [checked]="isAllErrorEventsSelected()"
+                  [indeterminate]="isSomeErrorEventsSelected()"
+                  (change)="toggleAllErrorEventsSelection()">
+              </th>
+              <th class="type-column">{{ 'developer.apiTesting.type' | translate }}</th>
+              <th class="timestamp-column">{{ 'developer.apiTesting.timestamp' | translate }}</th>
+              <th class="error-code-column">{{ 'developer.apiTesting.errorCode' | translate }}</th>
+              <th class="message-column">{{ 'developer.apiTesting.message' | translate }}</th>
+              <th class="uid-column">{{ 'developer.apiTesting.eventUid' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let event of errorEvents" class="error-event-row" [class.selected]="isErrorEventSelected(event.errorevent_uid)">
+              <td class="checkbox-cell">
+                <input
+                  type="checkbox"
+                  [checked]="isErrorEventSelected(event.errorevent_uid)"
+                  (change)="toggleErrorEventSelection(event.errorevent_uid)">
+              </td>
+               <td class="type-column">
+                 <span class="error-level-badge"
+                       [class]="'level-' + (event.type || 'error').toLowerCase()"
+                       [title]="event.type || 'ERROR'">
+                   {{ event.type || 'ERROR' }}
+                 </span>
+               </td>
+              <td class="timestamp-cell">
+                {{ event.created_at | translatedDate:'d/M/yyyy, HH:mm' }}
+              </td>
+              <td class="error-code-cell">
+                <span class="error-code-badge" [class]="'code-' + event.error_code">
+                  {{ event.error_code || '-' }}
+                </span>
+              </td>
+              <td class="message-cell">
+                <div class="message-content" [title]="event.error_message">
+                  {{ event.error_message }}
+                </div>
+              </td>
+              <td class="uid-cell">
+                <div class="uid-content" [title]="event.errorevent_uid">
+                  {{ event.errorevent_uid | slice:0:12 }}...
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="right-column">
+        <div class="response-section">
+          <h3>{{ 'developer.apiTesting.response' | translate }}</h3>
+          <div class="response-content" *ngIf="response; else noResponse">
+            <div class="response-header">
+              <div class="status-info">
+                <span class="status" [class.success]="response.status === 'Success'" [class.error]="response.status === 'Error'">
+                  {{ response.status }}
+                </span>
+                <span class="service" *ngIf="response.service">{{ response.service }}</span>
+              </div>
+              <span class="timestamp">{{ response.timestamp | translatedDate:'d/M/yyyy, HH:mm' }}</span>
+            </div>
+            <pre>{{ response.data || response.error | json }}</pre>
+          </div>
+          <ng-template #noResponse>
+            <p>{{ 'developer.apiTesting.noRequestSent' | translate }}</p>
+          </ng-template>
+          <div *ngIf="loading" class="loading-indicator">
+            <i class="pi pi-spin pi-spinner"></i>
+            <span>{{ 'developer.apiTesting.runningCommand' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="test-form">
+          <h3>{{ 'developer.apiTesting.customTest' | translate }}</h3>
+          <form>
+            <div class="form-group">
+              <label for="method">{{ 'developer.apiTesting.httpMethod' | translate }}</label>
+              <select id="method" class="form-control">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="DELETE">DELETE</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="url">{{ 'developer.apiTesting.url' | translate }}</label>
+              <input type="text" id="url" class="form-control" placeholder="http://localhost:8090/api/..." />
+            </div>
+
+            <div class="form-group">
+              <label for="headers">{{ 'developer.apiTesting.headers' | translate }}</label>
+              <textarea id="headers" class="form-control" rows="4" placeholder='{"Content-Type": "application/json"}'></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="body">{{ 'developer.apiTesting.requestBody' | translate }}</label>
+              <textarea id="body" class="form-control" rows="6" placeholder='{"key": "value"}'></textarea>
+            </div>
+
+            <button type="button" class="btn btn-primary">{{ 'developer.apiTesting.sendRequest' | translate }}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

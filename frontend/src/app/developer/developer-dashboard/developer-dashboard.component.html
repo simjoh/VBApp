@@ -1,0 +1,55 @@
+<div class="developer-dashboard">
+  <div class="dashboard-header">
+    <h1>{{ 'developer.dashboard.title' | translate }}</h1>
+    <p>{{ 'developer.dashboard.welcome' | translate }}</p>
+  </div>
+
+  <!-- Statistics Overview -->
+  <div class="stats-overview" *ngIf="stats || loading">
+    <div class="auto-refresh-indicator">
+      <i class="pi pi-clock" [class.pi-spin]="loading"></i>
+      <span>{{ loading ? ('developer.dashboard.updating' | translate) : ('developer.dashboard.autoRefresh' | translate) }}</span>
+    </div>
+    <div class="stats-grid">
+      <!-- Published Events Card -->
+      <div class="stats-card published-events">
+        <div class="stats-header">
+          <h3>{{ 'developer.dashboard.publishedEvents' | translate }}</h3>
+          <div class="status-indicator success">
+            <i class="pi pi-check-circle"></i>
+          </div>
+        </div>
+        <div class="stats-content">
+          <div class="stat-value">{{ stats?.publishedEvents || 0 }}</div>
+          <div class="stat-label">{{ 'developer.dashboard.eventsPublished' | translate }}</div>
+          <div class="stat-description">{{ 'developer.dashboard.successfullyPublished' | translate }}</div>
+        </div>
+        <div class="stats-footer">
+          <span class="last-updated">{{ stats?.lastUpdated | translatedDate:'d/M/yyyy, HH:mm' || ('developer.dashboard.never' | translate) }}</span>
+        </div>
+      </div>
+
+      <!-- Error Events Card -->
+      <div class="stats-card error-events">
+        <div class="stats-header">
+          <h3>{{ 'developer.dashboard.errorEvents' | translate }}</h3>
+          <div class="traffic-light-container">
+            <div [class]="getTrafficLightClass()">
+              <i [class]="getTrafficLightIcon()"></i>
+            </div>
+            <span class="traffic-light-label">{{ stats?.trafficLightStatus?.toUpperCase() || 'LOADING' }}</span>
+          </div>
+        </div>
+        <div class="stats-content">
+          <div class="stat-value error-count">{{ stats?.errorEvents || 0 }}</div>
+          <div class="stat-label">{{ 'developer.dashboard.errorEvents' | translate }}</div>
+          <div class="stat-description">{{ 'developer.dashboard.failedToPublish' | translate }}</div>
+        </div>
+        <div class="stats-footer">
+          <span class="last-updated">{{ stats?.lastUpdated | translatedDate:'d/M/yyyy, HH:mm' || ('developer.dashboard.never' | translate) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

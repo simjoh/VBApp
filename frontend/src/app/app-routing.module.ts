@@ -31,6 +31,11 @@ export const ROUTES: Routes = [
         loadChildren: () => import('./volunteer/volunteer.module').then(m => m.VolunteerModule),
       },
       {
+        path: 'developer',
+        canActivate: [AuthenticatedGuard],
+        loadChildren: () => import('./developer/developer.module').then(m => m.DeveloperModule),
+      },
+      {
         path: '',
         redirectTo: '/admin/brevet-admin-start',
         pathMatch: 'full'

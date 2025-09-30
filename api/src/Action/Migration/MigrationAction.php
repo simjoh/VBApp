@@ -23,7 +23,7 @@ class MigrationAction extends BaseAction
             
             switch ($action) {
                 case 'migrate':
-                    $result = $this->migrationManager->migrate();
+                    $result = $this->migrationManager->migrate(true); // Suppress output for API
                     $data = [
                         'success' => $result['success'],
                         'message' => "Executed {$result['executed']} migrations",

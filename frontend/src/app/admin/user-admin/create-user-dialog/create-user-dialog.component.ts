@@ -72,7 +72,7 @@ export class CreateUserDialogComponent implements OnInit {
     if (form.controls.developer.value == true){
       roles.push({
         id: Roles.DEVELOPER.valueOf(),
-        role_name: Role.ADMIN
+        role_name: Role.DEVELOPER
       })
     }
 
