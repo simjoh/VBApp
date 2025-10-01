@@ -362,6 +362,9 @@ class RegistrationController extends Controller
             $registration->use_physical_brevet_card = $request->has('use_physical_brevet_card') && $request->input('use_physical_brevet_card') == '1';
             // This is a BRM event
             $registration->club_uid = $request['club_uid'];
+        } else {
+            // This is an MSR event - handle club assignment
+            $this->handleMsrClubAssignment($request, $registration);
         }
 
         $person->update();
@@ -445,7 +448,8 @@ class RegistrationController extends Controller
             'birthyear' => $year,
             'optionalsforregistration' => $optionalsforreg,
             'genders' => $this->gendersEn(),
-            'clubs' => $clubs
+            'clubs' => $clubs,
+            'event' => $event
         ];
 
         // Check if the event exists and its type is BRM
@@ -616,8 +620,14 @@ class RegistrationController extends Controller
             'city' => 'required|string|max:100',
             'country' => 'required|integer|exists:countries,country_id',
             'year' => 'required|integer|between:1950,' . date('Y', strtotime('-10 year')),
-            'month' => 'required|integer|between:1,12',
-            'day' => 'required|integer|between:1,31',
+            'month' => [
+                'required',
+                'regex:/^(0?[1-9]|1[0-2])$/'
+            ],
+            'day' => [
+                'required',
+                'regex:/^(0?[1-9]|[12][0-9]|3[01])$/'
+            ],
             'gender' => 'required|string',
             'club' => 'required|string|max:100',
             'gdpr_consent' => 'required|accepted'
@@ -687,8 +697,14 @@ class RegistrationController extends Controller
             'city' => 'required|string|max:100',
             'country' => 'required|integer|exists:countries,country_id',
             'year' => 'required|integer|between:1950,' . date('Y', strtotime('-10 year')),
-            'month' => 'required|integer|between:1,12',
-            'day' => 'required|integer|between:1,31',
+            'month' => [
+                'required',
+                'regex:/^(0?[1-9]|1[0-2])$/'
+            ],
+            'day' => [
+                'required',
+                'regex:/^(0?[1-9]|[12][0-9]|3[01])$/'
+            ],
             'gender' => 'required|string',
             'club' => 'required|string|max:100',
             'gdpr_consent' => 'required|accepted'

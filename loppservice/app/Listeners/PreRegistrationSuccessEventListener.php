@@ -31,6 +31,7 @@ class PreRegistrationSuccessEventListener
         if (!$registration) {
             return; // Exit if registration not found
         }
+        $public_path = App::isProduction() ? '/public' : '';
         $event_event = Event::where('event_uid',$registration->course_uid)->first();
         $registration->reservation = true;
         $registration->reservation_valid_until = $event_event->eventconfiguration->reservationconfig->use_reservation_until;
@@ -49,9 +50,9 @@ class PreRegistrationSuccessEventListener
         $collection = collect($event_event->eventconfiguration->products);
         $resevation_product = $collection->where('categoryID', 7)->first();
         $startlistlink = env("APP_URL") . '/startlist/event/' . $registration->course_uid . '/showall';
-        $completeregistrationlink = env("APP_URL") . '/events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/msrcomplete?productID=' . $resevation_product->productID;
+        $completeregistrationlink = env("APP_URL") . $public_path . '/events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/msrcomplete?productID=' . $resevation_product->productID;
 
-        $updatedetaillink = env("APP_URL") . '/events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/getregitration';
+        $updatedetaillink = env("APP_URL") . $public_path . '/events/' . $registration->course_uid . '/registration/' . $registration->registration_uid . '/getregitration';
 
 
         $registration->startnumber = $this->getStartnumber($event_event->event_uid, $event_event->eventconfiguration->startnumberconfig);
