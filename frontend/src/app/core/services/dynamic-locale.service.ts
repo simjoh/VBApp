@@ -15,3 +15,5 @@ export class DynamicLocaleService {
     return currentLang === 'sv' ? 'sv-SE' : 'en-US';
   }
 }
+
+

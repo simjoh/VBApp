@@ -41,6 +41,8 @@ class StartlistController extends Controller
                 )
                 ->where('registrations.course_uid', $course_uid)
                 ->where('orders.payment_status', 'paid')
+                ->orderBy('person.surname')
+                ->orderBy('person.firstname')
                 ->orderBy('registrations.startnumber')
                 ->distinct()
                 ->get();
@@ -68,6 +70,8 @@ class StartlistController extends Controller
                 )
                 ->where('registrations.course_uid', $course_uid)
                 ->where('registrations.reservation', 0)
+                ->orderBy('person.surname')
+                ->orderBy('person.firstname')
                 ->orderBy('registrations.startnumber')
                 ->distinct()
                 ->get();
