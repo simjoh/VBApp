@@ -25,6 +25,7 @@ use App\Http\Controllers\ClubController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\StatsController;
+use App\Http\Controllers\StripeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -126,6 +127,32 @@ Route::prefix('/api')->group(function () {
 
         // Integration endpoints
         Route::get('/published-events-count', [IntegrationController::class, 'getPublishedEventsCount'])->name('api.published_events_count');
+
+        // Stripe API endpoints
+        Route::prefix('/stripe')->group(function () {
+            Route::get('/status', [StripeController::class, 'getStatus'])->name('api.stripe.status');
+            Route::get('/products', [StripeController::class, 'getProducts'])->name('api.stripe.products');
+            Route::get('/products/{productId}', [StripeController::class, 'getProduct'])->name('api.stripe.product');
+            Route::get('/prices', [StripeController::class, 'getDefaultPrices'])->name('api.stripe.prices');
+            Route::get('/balance', [StripeController::class, 'getBalance'])->name('api.stripe.balance');
+
+            // Transaction endpoints
+            Route::get('/transactions/counts', [StripeController::class, 'getTransactionCounts'])->name('api.stripe.transaction_counts');
+            Route::get('/transactions/recent', [StripeController::class, 'getRecentTransactions'])->name('api.stripe.recent_transactions');
+
+            // Product management endpoints
+            Route::post('/products', [StripeController::class, 'createProduct'])->name('api.stripe.create_product');
+            Route::put('/products/{productId}', [StripeController::class, 'updateProduct'])->name('api.stripe.update_product');
+            Route::delete('/products/{productId}', [StripeController::class, 'deleteProduct'])->name('api.stripe.delete_product');
+            Route::put('/products/{productId}/archive', [StripeController::class, 'archiveProduct'])->name('api.stripe.archive_product');
+            Route::put('/products/{productId}/restore', [StripeController::class, 'restoreProduct'])->name('api.stripe.restore_product');
+
+            // Price management endpoints
+            Route::get('/products/{productId}/prices', [StripeController::class, 'getProductPrices'])->name('api.stripe.product_prices');
+            Route::post('/products/{productId}/prices', [StripeController::class, 'createPrice'])->name('api.stripe.create_price');
+            Route::put('/products/{productId}/prices/default', [StripeController::class, 'setDefaultPrice'])->name('api.stripe.set_default_price');
+            Route::post('/products/{productId}/prices/create-and-set-default', [StripeController::class, 'createAndSetDefaultPrice'])->name('api.stripe.create_and_set_default_price');
+        });
     });
 
     Route::prefix('/artisan')->group(function () {
