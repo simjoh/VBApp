@@ -189,6 +189,7 @@
 
 
                 </div>
+                @if(!$registration->reservation)
                 <hr class="h-1 bg-gray-200 border-0 dark:bg-gray-700">
                 <fieldset class="mt-5 mb-5">
                     <legend class="text-xl font-semibold leading-6 text-gray-900">Carpool from Europe</legend>
@@ -214,6 +215,8 @@
                         </div>
                     </div>
                 </fieldset>
+                @endif
+                @if(!$registration->reservation)
                 <hr class="h-1 bg-gray-200 border-0 dark:bg-gray-700">
                 <fieldset class="mt-5 mb-5">
                     <legend class="text-xl font-semibold leading-6 text-gray-900">Included in the entry fee</legend>
@@ -279,6 +282,7 @@
                         </div>
                     </div>
                 </fieldset>
+                @endif
                 <hr class="h-1 my-12 bg-gray-900 border-0 dark:bg-gray-700">
                 <div class="grid md:grid-cols-2 gap-3 mt-4 sm:grid-cols-1">
                     <button type="submit" value="reserve" name="save"
