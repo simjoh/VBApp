@@ -41,13 +41,13 @@ class CheckoutController extends Controller
         if (!App::isProduction()) {
             foreach ($optionals as $option) {
                 $product = Product::find($option->productID);
-
                 if ($product->categoryID == 1) {
-                    array_push($line_items, array('price' => env('STRIPE_TEST_PRODUCT_JERSEY'), "quantity" => 1));
+                    $product_1007 = Product::where('productID', 1007)->first();
+                    array_push($line_items, array('price' => $product_1007->price_id, "quantity" => 1));
                 }
-
                 if ($product->categoryID == 2 && $product->productname == 'Buffet Dinner') {
-                    array_push($line_items, array('price' => 'price_1S3WroJLy5yXc4qVebfY11Pu', "quantity" => 1));
+                    $product_1006 = Product::where('productID', 1006)->first();
+                    array_push($line_items, array('price' => $product_1006->price_id, "quantity" => 1));
                 }
             }
         }

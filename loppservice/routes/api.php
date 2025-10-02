@@ -26,6 +26,7 @@ use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\StripeController;
+use App\Http\Controllers\StripeSyncWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -153,6 +154,14 @@ Route::prefix('/api')->group(function () {
             Route::put('/products/{productId}/prices/default', [StripeController::class, 'setDefaultPrice'])->name('api.stripe.set_default_price');
             Route::post('/products/{productId}/prices/create-and-set-default', [StripeController::class, 'createAndSetDefaultPrice'])->name('api.stripe.create_and_set_default_price');
         });
+
+        // Stripe Sync Manual endpoints (for testing/debugging)
+        Route::prefix('/syncing')->group(function () {
+            Route::post('/manual-sync', [StripeSyncWebhookController::class, 'manualSync'])->name('api.stripe.manual_sync');
+            Route::get('/test', function () {
+                return response()->json(['message' => 'Manual sync endpoint is working!']);
+            });
+        });
     });
 
     Route::prefix('/artisan')->group(function () {
@@ -162,6 +171,7 @@ Route::prefix('/api')->group(function () {
         Route::get('/command/schedule/run', [DeveloperController::class, 'scheduleRun']);
     });
 });
+
 
 
 //});

@@ -26,7 +26,7 @@
 			</ul>
 		</div>
 		@endif
-		<p class="mb-2 mt-2">Please join us on Saturday the 14th of June, the day before the event, for a pre-booked buffet dinner at
+		<p class="mb-2 mt-2">Please join us on Saturday the 13th of June, the day before the event, for a pre-booked buffet dinner at
 			Brännland Inn which starts at 17:00.</p>
 		<p class="mb-2">The dinner provides an excellent opportunity to meet participants and make new friends before the event starts.
 			At the dinner you can also pick up and try on your pre-orded MSR-jersey. We’ll have a few extra jerseys available if you

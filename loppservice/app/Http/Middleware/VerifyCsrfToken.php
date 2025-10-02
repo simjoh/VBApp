@@ -13,5 +13,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'payments/events',
+        'syncing/events',
+        'api/syncing/events',
     ];
 }

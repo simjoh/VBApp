@@ -9,6 +9,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\StartlistController;
 use App\Http\Controllers\ToolController;
 use App\Http\Controllers\WebhookController;
+use App\Http\Controllers\StripeSyncWebhookController;
 use App\Models\Event;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
@@ -62,6 +63,10 @@ Route::get('/checkout/create', [CheckoutController::class, 'create'])->name("che
 Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkoutsuccess');
 Route::get('/checkout/cancel', [CheckoutController::class, 'cancel']);
 Route::post('/payments/events', [WebhookController::class, 'index']);
+
+// Stripe sync webhook endpoints (for product/price synchronization)
+Route::post('/syncing/events', [StripeSyncWebhookController::class, 'handleWebhook']);
+Route::post('/api/syncing/events', [StripeSyncWebhookController::class, 'handleWebhook']);
 
 Route::get('/startlist/event/{eventuid}/showall', [StartlistController::class, 'startlistFor']);
 

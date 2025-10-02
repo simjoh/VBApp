@@ -180,7 +180,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td class="s3">Date/Time: Saturday 14th June, 17:00 - 20:00</td>
+			<td class="s3">Date/Time: Saturday 13th June, 17:00 - 20:00</td>
 		</tr>
 		<tr>
 			<td class="s3">Casual Attire. Free parking.</td>
@@ -208,25 +208,6 @@
 		<tr>
 			<td class="s3">Paid by: {{$optionals-&gt;firstname}}
 				{{$optionals-&gt;surname}}
-			</td>
-		</tr>
-		<tr>
-			<td><p>&nbsp;</p>
-
-				<h4><span class="s3"><strong>MENU</strong></span></h4>
-				<span class="s3">Roast beef<br/>
-            BBQ-grilled Carré sausage with Västerbotten cheese <br/>
-            Västerbotten pie<br/>
-            Pasta salad with sun-dried tomato and olives<br/>
-            Creamy potato salad<br/>
-            Mixed green salad <br/>
-            Coleslaw<br/>
-            Tomato salad<br/>
-            Marinated vegetables <br/>
-            Bearnaise sauce and BBQ sauce <br/>
-            Bread and butter<br/>
-            Cookies<br/>
-            Coffee/Tea</span><br/>
 			</td>
 		</tr>
 		<tr>

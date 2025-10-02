@@ -14,7 +14,7 @@ if you need a competitor token use curl -X POST -H "Content-Type: application/js
 skip db-1 and db-2 if trying to conect to db. use .env 
 
 
-when i mention app db i mean vasterbottenbrevet_se
+# when i mention app db i mean vasterbottenbrevet_se
 
 DB_HOST=192.168.1.194
 DB_PORT=3310
@@ -30,6 +30,8 @@ DB_PORT=3309
 DB_USERNAME=root
 DB_DATABASE=vasterbottenbrevet_se_db_2
 DB_PASSWORD=secret
+
+use --skip-ssl
 
 
 
@@ -62,6 +64,12 @@ Log important things for system
 
 if not stripe cli has correct forward try to run this
 stripe listen --forward-to http://localhost:8082/payments/events 
+
+For Stripe sync webhook (product/price synchronization):
+stripe listen --forward-to http://localhost:8082/syncing/events 
+
+stripe listen --forward-to http://localhost:8082/syncing/events --events product.created,product.updated,product.deleted,price.created,price.updated,price.deleted
+
 
 Test trigger event do 
 stripe trigger payment_intent.succeeded

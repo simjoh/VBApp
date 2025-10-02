@@ -752,6 +752,43 @@ class StripeService
     }
 
     /**
+     * Create Stripe product from local product data
+     *
+     * @param array $productData
+     * @param array $priceData
+     * @return array
+     * @throws ApiErrorException
+     */
+    public function createProductFromLocal(array $productData, array $priceData = []): array
+    {
+        try {
+            Log::info("Creating Stripe product from local product data");
+
+            // Prepare metadata with local product ID
+            $metadata = array_merge($productData['metadata'] ?? [], [
+                'local_product_id' => $productData['productID'],
+                'category_id' => $productData['categoryID']
+            ]);
+
+            // Create product in Stripe
+            $stripeProduct = $this->createProduct(
+                $productData['productname'],
+                $productData['description'],
+                $metadata,
+                $productData['active'],
+                $priceData
+            );
+
+            Log::info("Successfully created Stripe product from local data");
+            return $stripeProduct;
+
+        } catch (ApiErrorException $e) {
+            Log::error("Failed to create Stripe product from local data: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    /**
      * Check if we're in test mode
      *
      * @return bool
