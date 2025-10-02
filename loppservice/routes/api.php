@@ -127,7 +127,7 @@ Route::prefix('/api')->group(function () {
         Route::post('/retry-all-publish-events', [ErrorEventController::class, 'retryAllPublishEvents'])->name('api.retry_all_publish_events');
 
         // Integration endpoints
-        Route::get('/published-events-count', [IntegrationController::class, 'getPublishedEventsCount'])->name('api.published_events_count');
+        Route::get('/published-events-count', [ToolController::class, 'getPublishedEventsCount'])->name('api.published_events_count');
 
         // Stripe API endpoints
         Route::prefix('/stripe')->group(function () {
