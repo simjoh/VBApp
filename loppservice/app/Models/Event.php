@@ -71,7 +71,7 @@ class Event extends Model
     /**
      * Get the event configuration for this event.
      */
-    public function eventconfiguration()
+    public function eventConfiguration()
     {
         return $this->morphOne(EventConfiguration::class, 'eventconfiguration');
     }
@@ -82,6 +82,14 @@ class Event extends Model
     public function registrations()
     {
         return $this->hasMany(Registration::class, 'course_uid', 'event_uid');
+    }
+
+    /**
+     * Get the route detail for this event.
+     */
+    public function routeDetail()
+    {
+        return $this->hasOne(RouteDetail::class, 'event_uid', 'event_uid');
     }
 
     // The organizer() relationship is automatically provided by AutoOrganizerId trait
