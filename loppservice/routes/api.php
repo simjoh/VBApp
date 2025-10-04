@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/api/simple-test', [TestController::class, 'simpleTest']);
 
+
 Route::prefix('/api')->group(function () {
 
 

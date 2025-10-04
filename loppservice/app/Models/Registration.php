@@ -27,5 +27,14 @@ class Registration extends Model
         return $this->belongsTo(Person::class, 'person_uid', 'person_uid');
     }
 
+    /**
+     * Get the event that this registration belongs to.
+     * Note: course_uid in registrations is actually the event_uid
+     */
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(Event::class, 'course_uid', 'event_uid');
+    }
+
     //protected $with = ['person'];
 }

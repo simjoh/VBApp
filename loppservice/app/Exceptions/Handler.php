@@ -40,14 +40,14 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         // For API requests, return JSON response instead of redirecting to login
-        if ($request->expectsJson() || $request->is('api/*') || $request->is('loppservice/api/*')) {
+        if ($request->expectsJson() || $request->is('api/*') || $request->is('loppservice/*')) {
             return response()->json([
                 'message' => $exception->getMessage() ?: 'Unauthenticated.',
                 'error' => 'Authentication failed'
             ], 401);
         }
 
-        // For web requests, redirect to login (but we don't have a login route, so this won't be used)
-        return redirect()->guest(route('login'));
+        // For web requests, return a simple error response since we don't have a login route
+        return response('Unauthenticated.', 401);
     }
 }

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\AutoOrganizerId;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, AutoOrganizerId;
 
     protected $primaryKey = 'productID';
 
@@ -26,7 +27,8 @@ class Product extends Model
         'stripe_metadata',
         'sync_to_stripe',
         'productable_type',
-        'productable_id'
+        'productable_id',
+        'organizer_id'
     ];
 
     protected $casts = [
@@ -35,6 +37,7 @@ class Product extends Model
         'last_stripe_sync' => 'datetime',
         'sync_to_stripe' => 'boolean'
     ];
+
 
     // Define the productable relationship
     public function productable()
@@ -51,6 +54,7 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class, 'categoryID');
     }
+
 
     // Check if product is synced with Stripe
     public function isStripeSynced(): bool

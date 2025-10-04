@@ -16,6 +16,7 @@ use App\Models\Registration;
 use App\Traits\DaysTrait;
 use App\Traits\GenderTrait;
 use App\Traits\HashTrait;
+use App\Traits\HasJwtContext;
 use App\Traits\MonthsTrait;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -32,6 +33,7 @@ class RegistrationController extends Controller
     use DaysTrait;
     use HashTrait;
     use GenderTrait;
+    use HasJwtContext;
 
     // Use class constants instead of enum
     private const PRODUCT_REGISTRATION = 6;
@@ -127,7 +129,6 @@ class RegistrationController extends Controller
                 'isRegistrationOpen' => $isRegistrationOpen,
                 'availabledetails' => $registrationConfig
             ]);
-
         } else {
 
 
@@ -141,7 +142,6 @@ class RegistrationController extends Controller
                 'isRegistrationOpen' => $isRegistrationOpen,
                 'availabledetails' => $registrationConfig
             ]);
-
         }
     }
 
@@ -165,6 +165,11 @@ class RegistrationController extends Controller
         if (!$current_event) {
             Log::error('Event not found for course_uid: ' . $preregistration->course_uid);
             abort(404, 'Event not found');
+        }
+
+        if (!$preregistration->reservation && !$preregistration->reservation_valid_until) {
+            // No reservation required and no reservation period set, treat as completed
+            return view('registrations.updatesuccess')->with(['text' => 'You have already completed your registration.']);
         }
 
         $nowDate = Carbon::now();
@@ -202,7 +207,6 @@ class RegistrationController extends Controller
             'registration_uid' => $registration_uid,
             'reservation_expired' => $nowDate->gt($reservationValidTo->addHours(12))
         ]);
-
     }
 
 
@@ -271,6 +275,8 @@ class RegistrationController extends Controller
             Log::error('Event not found for course_uid: ' . $preregistration->course_uid);
             abort(404, 'Event not found');
         }
+
+
 
         $nowDate = Carbon::now();
         $reservationValidTo = Carbon::parse($current_event->eventconfiguration->reservationconfig->use_reservation_until);
@@ -1016,7 +1022,6 @@ class RegistrationController extends Controller
 
             Log::info('Registration deleted successfully: ' . $registrationUid);
             return response()->json(['message' => 'Registration deleted successfully'], 200);
-
         } catch (\Exception $e) {
             Log::error('Error deleting registration: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to delete registration: ' . $e->getMessage()], 500);
@@ -1091,6 +1096,41 @@ class RegistrationController extends Controller
         return false;
     }
 
+    /**
+     * Example method showing how to use organizer_id for registrations
+     * This demonstrates the UserContext pattern usage
+     */
+    public function getRegistrationsForOrganizer(Request $request)
+    {
+        // Get organizer_id from JWT context
+        $organizerId = $this->getCurrentOrganizerId();
 
+        if (!$organizerId) {
+            return response()->json([
+                'error' => 'No organizer context available',
+                'userAgent' => $request->header('User-Agent'),
+                'isBypassRequest' => $request->header('User-Agent') === config('jwt.bypass_user_agent'),
+            ], 403);
+        }
 
+        // Check if user has permission to view registrations
+        if (!$this->isAdmin() && !$this->isVolonteer()) {
+            return response()->json([
+                'error' => 'Insufficient permissions'
+            ], 403);
+        }
+
+        // Get registrations for the organizer
+        // Note: course_uid in registrations is actually the event_uid
+        $registrations = Registration::whereHas('event', function ($query) use ($organizerId) {
+            $query->where('organizer_id', $organizerId);
+        })->with(['event', 'person'])->get();
+
+        return response()->json([
+            'organizer_id' => $organizerId,
+            'registrations' => $registrations,
+            'userAgent' => $request->header('User-Agent'),
+            'isBypassRequest' => $request->header('User-Agent') === config('jwt.bypass_user_agent'),
+        ]);
+    }
 }

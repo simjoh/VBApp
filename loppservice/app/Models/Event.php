@@ -2,78 +2,88 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Traits\AutoOrganizerId;
 
 class Event extends Model
 {
-    use HasFactory;
-    use HasUuids;
+    use HasFactory, HasUuids, AutoOrganizerId;
 
-    public function event()
-    {
-        return $this->morphTo();
-    }
-
-    public function eventConfiguration()
-    {
-        return $this->morphOne('App\Models\EventConfiguration', 'eventconfiguration');
-    }
-
-    protected $with = ['eventConfiguration'];
+    /**
+     * The primary key for the model.
+     *
+     * @var string
+     */
     protected $primaryKey = 'event_uid';
-    protected $dateFormat = 'Y-m-d';
-    // protected $keyType = "string";
-    protected $startlisturl;
+
+    /**
+     * The "type" of the primary key ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
+
+    /**
+     * Indicates if the model's ID is auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
 
     protected $fillable = [
-        'county_id',
-        'event_group_uid',
-        'organizer_id'
+        'event_uid',
+        'title',
+        'description',
+        'startdate',
+        'enddate',
+        'completed',
+        'organizer_id' // This will be automatically set by the trait
+    ];
+
+    protected $casts = [
+        'startdate' => 'date',
+        'enddate' => 'date',
+        'completed' => 'boolean'
     ];
 
     /**
-     * Get the county that the event belongs to.
-     */
-    public function county(): BelongsTo
-    {
-        return $this->belongsTo(County::class);
-    }
-
-    /**
-     * Get the event group that the event belongs to (optional).
-     */
-    public function eventGroup(): BelongsTo
-    {
-        return $this->belongsTo(EventGroup::class, 'event_group_uid', 'uid');
-    }
-
-    /**
-     * Get the organizer of this event.
-     */
-    public function organizer()
-    {
-        return $this->belongsTo(Organizer::class, 'organizer_id', 'id');
-    }
-
-    /**
-     * Get the route details for this event.
+     * Get the columns that should receive a unique identifier.
      *
-     * Each Event has exactly one RouteDetail that contains information about:
-     * - distance (in kilometers)
-     * - height_difference (in meters)
-     * - start_time
-     * - name (optional)
-     * - description (optional)
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return array
      */
-    public function routeDetail()
+    public function uniqueIds(): array
     {
-        return $this->hasOne(RouteDetail::class, 'event_uid', 'event_uid');
+        return ['event_uid'];
     }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'event_uid';
+    }
+
+    /**
+     * Get the event configuration for this event.
+     */
+    public function eventconfiguration()
+    {
+        return $this->morphOne(EventConfiguration::class, 'eventconfiguration');
+    }
+
+    /**
+     * Get the registrations for this event.
+     */
+    public function registrations()
+    {
+        return $this->hasMany(Registration::class, 'course_uid', 'event_uid');
+    }
+
+    // The organizer() relationship is automatically provided by AutoOrganizerId trait
+    // The forCurrentOrganizer() and forOrganizer() scopes are also provided by the trait
 }

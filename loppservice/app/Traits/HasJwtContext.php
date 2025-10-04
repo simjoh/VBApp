@@ -2,8 +2,20 @@
 
 namespace App\Traits;
 
+use App\Context\UserContext;
+
 trait HasJwtContext
 {
+    /**
+     * Get the UserContext instance
+     *
+     * @return UserContext
+     */
+    protected function getUserContext(): UserContext
+    {
+        return UserContext::getInstance();
+    }
+
     /**
      * Get the current user ID from JWT context
      *
@@ -11,17 +23,17 @@ trait HasJwtContext
      */
     protected function getCurrentUserId(): ?string
     {
-        return request()->attributes->get('current_user_id');
+        return $this->getUserContext()->getUserId();
     }
 
     /**
      * Get the current organizer ID from JWT context
      *
-     * @return string|null
+     * @return int|null
      */
-    protected function getCurrentOrganizerId(): ?string
+    protected function getCurrentOrganizerId(): ?int
     {
-        return request()->attributes->get('current_organizer_id');
+        return $this->getUserContext()->getOrganizerId();
     }
 
     /**
@@ -31,7 +43,7 @@ trait HasJwtContext
      */
     protected function getCurrentUserRoles(): array
     {
-        return request()->attributes->get('current_user_roles', []);
+        return $this->getUserContext()->getRoles();
     }
 
     /**
@@ -42,7 +54,7 @@ trait HasJwtContext
      */
     protected function hasRole(string $role): bool
     {
-        return in_array($role, $this->getCurrentUserRoles());
+        return $this->getUserContext()->hasRole($role);
     }
 
     /**
@@ -64,6 +76,66 @@ trait HasJwtContext
     protected function isJwtAuthenticated(): bool
     {
         return !is_null($this->getCurrentUserId());
+    }
+
+    /**
+     * Check if the current user has an organization
+     *
+     * @return bool
+     */
+    protected function hasOrganization(): bool
+    {
+        return $this->getUserContext()->hasOrganization();
+    }
+
+    /**
+     * Check if the current user is an admin
+     *
+     * @return bool
+     */
+    protected function isAdmin(): bool
+    {
+        return $this->getUserContext()->isAdmin();
+    }
+
+    /**
+     * Check if the current user is a super user
+     *
+     * @return bool
+     */
+    protected function isSuperUser(): bool
+    {
+        return $this->getUserContext()->isSuperUser();
+    }
+
+    /**
+     * Check if the current user is a volunteer
+     *
+     * @return bool
+     */
+    protected function isVolonteer(): bool
+    {
+        return $this->getUserContext()->isVolonteer();
+    }
+
+    /**
+     * Check if the current user is a competitor
+     *
+     * @return bool
+     */
+    protected function isCompetitor(): bool
+    {
+        return $this->getUserContext()->isCompetitor();
+    }
+
+    /**
+     * Check if the current user is a developer
+     *
+     * @return bool
+     */
+    protected function isDeveloper(): bool
+    {
+        return $this->getUserContext()->isDeveloper();
     }
 }
 
