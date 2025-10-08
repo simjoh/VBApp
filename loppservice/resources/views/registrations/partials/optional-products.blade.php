@@ -36,7 +36,7 @@
                        class="h-4 w-4 border-black text-black focus:ring-indigo-600">
             </div>
             <div class="text-sm leading-2">
-                <label for="pre_event_coffee_ride" class="font-sm sm:text-base text-gray-600">Pre-event coffee ride -
+                <label for="pre_event_coffee_ride" class="font-sm sm:text-base text-gray-600">Coffee ride -
                     Scandic Plaza</label>
             </div>
         </div>
@@ -55,8 +55,8 @@
                        class="h-4 w-4 border-black text-black focus:ring-indigo-600">
             </div>
             <div class="text-sm leading-6">
-                <label for="bag_drop" class="font-sm sm:text-base text-gray-600">Bag drop - Brännland Inn (to Scandic
-                    Plaza)</label>
+                <label for="bag_drop" class="font-sm sm:text-base text-gray-600">Bag drop - Brännland Inn to Scandic
+                    Plaza</label>
             </div>
         </div>
         <div class="relative flex gap-x-3">
@@ -66,7 +66,7 @@
             </div>
             <div class="text-sm leading-6">
                 <label for="long_term_parking" class="font-sm sm:text-base text-gray-600">
-                    Long-term parking - Brännland Inn</label>
+                    Long-term parking - Umeå</label>
             </div>
         </div>
         <div class="relative flex gap-x-3">
@@ -75,7 +75,7 @@
                        class="h-4 w-4 border-black text-black focus:ring-gray-600">
             </div>
             <div class="text-sm leading-6">
-                <label for="buffet_dinner" class="font-sm sm:text-base text-gray-600">Pre-ride meal - Brännland
+                <label for="buffet_dinner" class="font-sm sm:text-base text-gray-600">Evening meal - Brännland
                     Inn</label>
             </div>
         </div>
@@ -99,14 +99,12 @@
         <div class="flex items-center gap-x-3">
             <input id="malefemale-tor" name="jersey" value="1008" type="radio"
                    class="h-4 w-4 border-black text-black focus:ring-indigo-600">
-            <label for="malefemale-tor" class="block sm:text-base font-sm leading-6 text-gray-600">TOR 3.0 jersey F/M
-                (107 EUR in webshop -20%): 86 EUR</label>
+            <label for="malefemale-tor" class="block sm:text-base font-sm leading-6 text-gray-600">TOR 4.0 SUPERSLIM JERSEY: 86 EUR</label>
         </div>
         <div class="flex items-center gap-x-3">
             <input id="malefemale-grand" name="jersey" value="1007" type="radio"
                    class="h-4 w-4 border-black text-black focus:ring-indigo-600">
-            <label for="malefemale-grand" class="block sm:text-base font-sm leading-6 text-gray-600">GRAND jersey F/M
-                (87 EUR in webshop -20%): 70 EUR</label>
+            <label for="malefemale-grand" class="block sm:text-base font-sm leading-6 text-gray-600">GRAND 2.0 SS JERSEY: 70 EUR</label>
         </div>
         <div class="flex items-center gap-x-3">
             <input id="no-jersey" name="jersey" value="nojersey" type="radio" checked
@@ -115,7 +113,7 @@
         </div>
     </div>
 
-    <p class="mt-1 text-base leading-6 text-gray-900 mb-6">Please join us on Saturday the 14th of June, the day before the event, for a pre-booked buffet dinner at Brännland Inn which starts at 17:00. The dinner provides an excellent opportunity to meet participants and make new friends before the event starts.
+    <p class="mt-1 text-base leading-6 text-gray-900 mb-6">Please join us on Saturday the 13th of June, the day before the event, for a pre-booked buffet dinner at Brännland Inn which starts at 17:00. The dinner provides an excellent opportunity to meet participants and make new friends before the event starts.
         At the dinner you can also pick up and try on your pre-ordered MSR-jersey.</p>
 
     <div class="flex items-center gap-x-3">

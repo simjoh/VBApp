@@ -432,7 +432,7 @@
 						{{$registration->additional_information}}
 					</p>
 				@else
-					<p class="s3" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">No selection made</p>
+					<p class="s3" style="padding-left: 10pt;text-indent: 0pt;text-align: left;">Regular menu</p>
 				@endif
 				<p style="text-indent: 0pt;text-align: left;"></p>
 			</td>
